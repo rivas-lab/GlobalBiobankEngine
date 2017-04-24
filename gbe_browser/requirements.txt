@@ -1,0 +1,16 @@
+git+https://github.com/mitsuhiko/flask.git
+Flask-Script==2.0.5
+ipython==2.1.0
+Flask-Compress==1.0.2
+Flask-ErrorMail==0.2.2
+numpy
+python-slugify
+flask_compress
+sklearn
+pysam=0.10.0
+pymongo
+flask_oauth
+flask_errormail
+flask_wtf
+numpy
+scipy

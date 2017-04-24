@@ -1,0 +1,1231 @@
+<!doctype html>
+<head>
+    <title>IBD Exomes Browser</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel=stylesheet type=text/css href="/static/typeaheadjs.css">
+    <link rel=stylesheet type=text/css href="/static/css/font-awesome.min.css">
+    <script type="text/javascript" src="/static/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="/static/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/static/typeahead.bundle.min.js"></script>
+
+    <script type="text/javascript" src="/static/jquery.tablesorter.min.js"></script>
+    <script type="text/javascript" src="/static/jquery.tablesorter.pager.js"></script>
+    <link rel=stylesheet type=text/css href="/static/theme.default.css">
+    <script type="text/javascript" src="/static/underscore-min.js"></script>
+
+    <link rel=stylesheet type=text/css href="/static/bootstrap.min.css">
+    <link rel=stylesheet type=text/css href="/static/style.css">
+    <script type="text/javascript" src="/static/d3.v3.min.js"></script>
+    <script type="text/javascript" src="http://gabelerner.github.io/canvg/rgbcolor.js"></script>
+    <script type="text/javascript" src="http://gabelerner.github.io/canvg/StackBlur.js"></script>
+    <script type="text/javascript" src="http://gabelerner.github.io/canvg/canvg.js"></script>
+    <script type="text/javascript" src="/static/index.js"></script>
+    <script type="text/javascript" src="/static/exac.js"></script>
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-55729303-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+    <script type="text/javascript">
+        number_of_samples = 60706;
+        release_number = 0.3;
+        number_of_samples_full = 91796;
+        $(document).ready(function() {
+            $('.number_samples').html(Number(number_of_samples).toLocaleString('en'));
+            $('.number_samples_full').html(Number(number_of_samples_full).toLocaleString('en'));
+            $('.release_number').html(Number(release_number).toLocaleString('en'));
+        });
+        $(function() {
+            var bestPictures = new Bloodhound({
+              datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+              queryTokenizer: Bloodhound.tokenizers.whitespace,
+              remote: '/autocomplete/%QUERY'
+            });
+
+            bestPictures.initialize();
+
+            $('.awesomebar').typeahead(
+                {
+                    autoselect: true,
+                },
+                {
+                    name: 'best-pictures',
+                    displayKey: 'value',
+                    source: bestPictures.ttAdapter(),
+                }
+            );
+            $('.awesomebar').bind('typeahead:selected', function(obj, datum) {
+                window.location.href = '/awesome?query=' + datum.value;
+            });
+        });
+    </script>
+</head>
+<body>
+<nav class="navbar navbar-default" role="navigation" style="background: #663399;">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle pull-right" data-toggle="collapse" data-target="#navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/" style="color: white; font-weight: bold; float: left; font-size: 15px;">IBD Exomes Browser Alpha</a>
+            <div class="col-xs-5" id="navbar_form_container">
+                <form action="/awesome" class="navbar-form" role="search">
+                    <div class="form-group" id="navbar-awesomebar">
+                        <input type="submit" style="display: none;"/>
+                        <input id="navbar-searchbox-input" name="query" class="form-control awesomebar" type="text" placeholder="Gene, transcript, variant, or region"/>
+                        <input type="submit" style="position: absolute; left: -9999px"/>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/about" style="color: white; font-weight: bold;">About</a></li>
+                <li><a href="/downloads" style="color: white; font-weight: bold;">Downloads</a></li>
+                <li><a href="/terms" style="color: white; font-weight: bold;">Terms</a></li>
+                <li><a href="/contact" style="color: white; font-weight: bold;">Contact</a></li>
+                <li><a href="/faq" style="color: white; font-weight: bold;">FAQ</a></li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- Render context vars in JS here -->
+    <script type="text/javascript">
+        window.gene = {"canonical_transcript": "ENST00000262795", "chrom": "22", "full_gene_name": "SH3 and multiple ankyrin repeat domains 3", "gene_id": "ENSG00000251322", "gene_name": "SHANK3", "gene_name_upper": "SHANK3", "omim_accession": "606230", "omim_description": " SH3 AND MULTIPLE ANKYRIN REPEAT DOMAINS 3; SHANK3", "other_names": ["SPANK-2", "PROSAP2", "KIAA1650", "PSAP2"], "start": 51112844, "stop": 51171727, "strand": "+", "xstart": 22051112844, "xstop": 22051171727};
+        window.transcript = {"chrom": "22", "exons": [{"chrom": "22", "feature_type": "exon", "gene_id": "ENSG00000251322", "start": 51113071, "stop": 51113133, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051113071, "xstop": 22051113133}, {"chrom": "22", "feature_type": "CDS", "gene_id": "ENSG00000251322", "start": 51113071, "stop": 51113133, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051113071, "xstop": 22051113133}, {"chrom": "22", "feature_type": "exon", "gene_id": "ENSG00000251322", "start": 51113477, "stop": 51113680, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051113477, "xstop": 22051113680}, {"chrom": "22", "feature_type": "CDS", "gene_id": "ENSG00000251322", "start": 51113477, "stop": 51113680, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051113477, "xstop": 22051113680}, {"chrom": "22", "feature_type": "exon", "gene_id": "ENSG00000251322", "start": 51115051, "stop": 51115122, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051115051, "xstop": 22051115122}, {"chrom": "22", "feature_type": "CDS", "gene_id": "ENSG00000251322", "start": 51115051, "stop": 51115122, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051115051, "xstop": 22051115122}, {"chrom": "22", "feature_type": "exon", "gene_id": "ENSG00000251322", "start": 51117014, "stop": 51117122, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051117014, "xstop": 22051117122}, {"chrom": "22", "feature_type": "CDS", "gene_id": "ENSG00000251322", "start": 51117014, "stop": 51117122, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051117014, "xstop": 22051117122}, {"chrom": "22", "feature_type": "exon", "gene_id": "ENSG00000251322", "start": 51117198, "stop": 51117349, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051117198, "xstop": 22051117349}, {"chrom": "22", "feature_type": "CDS", "gene_id": "ENSG00000251322", "start": 51117198, "stop": 51117349, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051117198, "xstop": 22051117349}, {"chrom": "22", "feature_type": "exon", "gene_id": "ENSG00000251322", "start": 51117448, "stop": 51117615, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051117448, "xstop": 22051117615}, {"chrom": "22", "feature_type": "CDS", "gene_id": "ENSG00000251322", "start": 51117448, "stop": 51117615, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051117448, "xstop": 22051117615}, {"chrom": "22", "feature_type": "exon", "gene_id": "ENSG00000251322", "start": 51117741, "stop": 51117857, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051117741, "xstop": 22051117857}, {"chrom": "22", "feature_type": "CDS", "gene_id": "ENSG00000251322", "start": 51117741, "stop": 51117857, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051117741, "xstop": 22051117857}, {"chrom": "22", "feature_type": "exon", "gene_id": "ENSG00000251322", "start": 51121769, "stop": 51121846, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051121769, "xstop": 22051121846}, {"chrom": "22", "feature_type": "CDS", "gene_id": "ENSG00000251322", "start": 51121769, "stop": 51121846, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051121769, "xstop": 22051121846}, {"chrom": "22", "feature_type": "exon", "gene_id": "ENSG00000251322", "start": 51123014, "stop": 51123080, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051123014, "xstop": 22051123080}, {"chrom": "22", "feature_type": "CDS", "gene_id": "ENSG00000251322", "start": 51123014, "stop": 51123080, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051123014, "xstop": 22051123080}, {"chrom": "22", "feature_type": "exon", "gene_id": "ENSG00000251322", "start": 51133204, "stop": 51133477, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051133204, "xstop": 22051133477}, {"chrom": "22", "feature_type": "CDS", "gene_id": "ENSG00000251322", "start": 51133204, "stop": 51133477, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051133204, "xstop": 22051133477}, {"chrom": "22", "feature_type": "exon", "gene_id": "ENSG00000251322", "start": 51135672, "stop": 51135720, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051135672, "xstop": 22051135720}, {"chrom": "22", "feature_type": "CDS", "gene_id": "ENSG00000251322", "start": 51135672, "stop": 51135720, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051135672, "xstop": 22051135720}, {"chrom": "22", "feature_type": "exon", "gene_id": "ENSG00000251322", "start": 51135952, "stop": 51136144, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051135952, "xstop": 22051136144}, {"chrom": "22", "feature_type": "CDS", "gene_id": "ENSG00000251322", "start": 51135952, "stop": 51136144, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051135952, "xstop": 22051136144}, {"chrom": "22", "feature_type": "exon", "gene_id": "ENSG00000251322", "start": 51137119, "stop": 51137232, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051137119, "xstop": 22051137232}, {"chrom": "22", "feature_type": "CDS", "gene_id": "ENSG00000251322", "start": 51137119, "stop": 51137232, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051137119, "xstop": 22051137232}, {"chrom": "22", "feature_type": "exon", "gene_id": "ENSG00000251322", "start": 51142289, "stop": 51142364, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051142289, "xstop": 22051142364}, {"chrom": "22", "feature_type": "CDS", "gene_id": "ENSG00000251322", "start": 51142289, "stop": 51142364, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051142289, "xstop": 22051142364}, {"chrom": "22", "feature_type": "exon", "gene_id": "ENSG00000251322", "start": 51142595, "stop": 51142677, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051142595, "xstop": 22051142677}, {"chrom": "22", "feature_type": "CDS", "gene_id": "ENSG00000251322", "start": 51142595, "stop": 51142677, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051142595, "xstop": 22051142677}, {"chrom": "22", "feature_type": "exon", "gene_id": "ENSG00000251322", "start": 51143167, "stop": 51143291, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051143167, "xstop": 22051143291}, {"chrom": "22", "feature_type": "CDS", "gene_id": "ENSG00000251322", "start": 51143167, "stop": 51143291, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051143167, "xstop": 22051143291}, {"chrom": "22", "feature_type": "exon", "gene_id": "ENSG00000251322", "start": 51143393, "stop": 51143525, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051143393, "xstop": 22051143525}, {"chrom": "22", "feature_type": "CDS", "gene_id": "ENSG00000251322", "start": 51143393, "stop": 51143525, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051143393, "xstop": 22051143525}, {"chrom": "22", "feature_type": "exon", "gene_id": "ENSG00000251322", "start": 51144501, "stop": 51144581, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051144501, "xstop": 22051144581}, {"chrom": "22", "feature_type": "CDS", "gene_id": "ENSG00000251322", "start": 51144501, "stop": 51144581, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051144501, "xstop": 22051144581}, {"chrom": "22", "feature_type": "exon", "gene_id": "ENSG00000251322", "start": 51150044, "stop": 51150067, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051150044, "xstop": 22051150067}, {"chrom": "22", "feature_type": "CDS", "gene_id": "ENSG00000251322", "start": 51150044, "stop": 51150067, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051150044, "xstop": 22051150067}, {"chrom": "22", "feature_type": "exon", "gene_id": "ENSG00000251322", "start": 51153346, "stop": 51153476, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051153346, "xstop": 22051153476}, {"chrom": "22", "feature_type": "CDS", "gene_id": "ENSG00000251322", "start": 51153346, "stop": 51153476, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051153346, "xstop": 22051153476}, {"chrom": "22", "feature_type": "exon", "gene_id": "ENSG00000251322", "start": 51154098, "stop": 51154182, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051154098, "xstop": 22051154182}, {"chrom": "22", "feature_type": "CDS", "gene_id": "ENSG00000251322", "start": 51154098, "stop": 51154182, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051154098, "xstop": 22051154182}, {"chrom": "22", "feature_type": "exon", "gene_id": "ENSG00000251322", "start": 51158613, "stop": 51160866, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051158613, "xstop": 22051160866}, {"chrom": "22", "feature_type": "CDS", "gene_id": "ENSG00000251322", "start": 51158613, "stop": 51160866, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051158613, "xstop": 22051160866}, {"chrom": "22", "feature_type": "exon", "gene_id": "ENSG00000251322", "start": 51169150, "stop": 51171642, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051169150, "xstop": 22051171642}, {"chrom": "22", "feature_type": "CDS", "gene_id": "ENSG00000251322", "start": 51169150, "stop": 51169738, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051169150, "xstop": 22051169738}, {"chrom": "22", "feature_type": "UTR", "gene_id": "ENSG00000251322", "start": 51169739, "stop": 51171642, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051169739, "xstop": 22051171642}], "gene_id": "ENSG00000251322", "start": 51113071, "stop": 51171642, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051113071, "xstop": 22051171642};
+        window.table_variants = [{"CANONICAL": "YES", "HGVSc": "c.268-19C\u003eG", "HGVSp": "", "allele_count": 0.0, "allele_freq": 0.999398, "allele_num": 6.38162093172e-05, "alt": "G", "category": "other_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 1.03761e-08, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 6.38162093172e-05}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.999398}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 1.03761e-08}, "pos": 51115031, "quality_metrics": {"BaseQRankSum": "-2.507e+00", "ClippingRankSum": "0.306", "DP": "1118370", "FS": "0.678", "InbreedingCoeff": "-0.0031", "MQ": "60.00", "MQRankSum": "0.036", "QD": "11.39", "ReadPosRankSum": "-2.950e-01", "VQSLOD": "1.69"}, "ref": "C", "rsid": ".", "variant_id": "22-51115031-C-G"}, {"CANONICAL": "YES", "HGVSc": "c.312T\u003eC", "HGVSp": "p.Asp104Asp", "allele_count": 0.0, "allele_freq": 0.99944, "allele_num": 6.29247420086e-05, "alt": "C", "category": "synonymous_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 3.68946e-08, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 6.29247420086e-05}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.99944}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 3.68946e-08}, "pos": 51115094, "quality_metrics": {"BaseQRankSum": "0.966", "ClippingRankSum": "1.49", "DP": "1406116", "FS": "0.000", "InbreedingCoeff": "-0.0005", "MQ": "60.00", "MQRankSum": "0.322", "QD": "9.39", "ReadPosRankSum": "-2.410e-01", "VQSLOD": "0.456"}, "ref": "T", "rsid": ".", "variant_id": "22-51115094-T-C"}, {"CANONICAL": "YES", "HGVSc": "c.339+1G\u003eC", "HGVSp": "", "allele_count": 0.0, "allele_freq": 0.999417, "allele_num": 6.38895987733e-05, "alt": "C", "category": "lof_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 1.82006e-08, "major_consequence": "splice_donor_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 6.38895987733e-05}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.999417}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 1.82006e-08}, "pos": 51115122, "quality_metrics": {"BaseQRankSum": "1.61", "ClippingRankSum": "-1.271e+00", "DP": "1249263", "FS": "1.498", "InbreedingCoeff": "-0.0018", "MQ": "60.00", "MQRankSum": "-9.620e-01", "QD": "5.27", "ReadPosRankSum": "1.20", "VQSLOD": "-2.028e+00"}, "ref": "G", "rsid": ".", "variant_id": "22-51115122-G-C"}, {"CANONICAL": "YES", "HGVSc": "c.339+12C\u003eT", "HGVSp": "", "allele_count": 0.0, "allele_freq": 0.999188, "allele_num": 0.00013133701077, "alt": "T", "category": "other_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 2.63388e-08, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.00013133701077}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.999188}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 2.63388e-08}, "pos": 51115133, "quality_metrics": {"BaseQRankSum": "2.38", "ClippingRankSum": "-3.650e-01", "DP": "1154861", "FS": "15.624", "InbreedingCoeff": "-0.0039", "MQ": "60.00", "MQRankSum": "0.136", "QD": "11.73", "ReadPosRankSum": "0.365", "VQSLOD": "-1.194e+00"}, "ref": "C", "rsid": "rs185055409", "variant_id": "22-51115133-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.384G\u003eA", "HGVSp": "p.Thr128Thr", "allele_count": 0.0, "allele_freq": 0.999404, "allele_num": 6.45911380959e-05, "alt": "A", "category": "synonymous_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 1.23388e-08, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 6.45911380959e-05}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.999404}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 1.23388e-08}, "pos": 51117057, "quality_metrics": {"BaseQRankSum": "0.770", "ClippingRankSum": "-1.330e-01", "DP": "1400702", "FS": "0.000", "InbreedingCoeff": "-0.0011", "MQ": "60.00", "MQRankSum": "0.804", "QD": "9.86", "ReadPosRankSum": "0.558", "VQSLOD": "0.786"}, "ref": "G", "rsid": ".", "variant_id": "22-51117057-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.426C\u003eT", "HGVSp": "p.Asn142Asn", "allele_count": 0.00210084033613, "allele_freq": 0.0104162, "allele_num": 6.45661157025e-05, "alt": "T", "category": "synonymous_variant", "chrom": "22", "enrichment": -9.0, "filter": "PASS", "hom_count": 38.997, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.00210084033613}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 6.45661157025e-05}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0104162}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 38.997}, "pos": 51117099, "quality_metrics": {"BaseQRankSum": "-1.788e+00", "ClippingRankSum": "0.239", "DP": "1436456", "FS": "0.522", "InbreedingCoeff": "-0.0003", "MQ": "59.33", "MQRankSum": "-1.570e-01", "QD": "11.64", "ReadPosRankSum": "0.406", "VQSLOD": "0.929"}, "ref": "C", "rsid": ".", "variant_id": "22-51117099-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.448+16G\u003eA", "HGVSp": "", "allele_count": 0.607871720117, "allele_freq": 0.356786, "allele_num": 0.621227887617, "alt": "A", "category": "other_variant", "chrom": "22", "enrichment": 2.01488806373, "filter": "PASS", "hom_count": 0.95288, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.607871720117, "European (Finnish)": 0.38025210084}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.621227887617, "European (Finnish)": 0.380924092409}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.356786, "European (Finnish)": 0.836375}, "pop_homs": {"European (Ashkenazi-Jewish)": 0.95288, "European (Finnish)": 0.980229}, "pos": 51117137, "quality_metrics": {"BaseQRankSum": "0.571", "ClippingRankSum": "-2.540e-01", "DP": "1733098", "FS": "2.517", "InbreedingCoeff": "0.0724", "MQ": "60.00", "MQRankSum": "0.044", "QD": "18.87", "ReadPosRankSum": "0.248", "VQSLOD": "2.24"}, "ref": "G", "rsid": "rs9616914", "variant_id": "22-51117137-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.448+36C\u003eT", "HGVSp": "", "allele_count": 0.0, "allele_freq": 0.999294, "allele_num": 0.000258131130614, "alt": "T", "category": "other_variant", "chrom": "22", "enrichment": 16.4970307255, "filter": "AC_Adj0", "hom_count": 4.27483e-10, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.0, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.000258131130614, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.999294, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 4.27483e-10, "European (Finnish)": -9.0}, "pos": 51117157, "quality_metrics": {"BaseQRankSum": "-4.290e-01", "ClippingRankSum": "0.413", "DP": "1384529", "FS": "8.324", "InbreedingCoeff": "-0.0009", "MQ": "58.76", "MQRankSum": "0.673", "QD": "15.61", "ReadPosRankSum": "0.727", "VQSLOD": "-1.315e+00"}, "ref": "C", "rsid": ".", "variant_id": "22-51117157-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.805C\u003eG", "HGVSp": "p.Leu269Val", "allele_count": 0.0, "allele_freq": 0.998502, "allele_num": 0.000462595823421, "alt": "G", "category": "missense_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 3.31454e-08, "major_consequence": "missense_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.000462595823421}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.998502}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 3.31454e-08}, "pos": 51117776, "quality_metrics": {"BaseQRankSum": "-1.494e+00", "ClippingRankSum": "-2.460e-01", "DP": "1369788", "FS": "9.407", "InbreedingCoeff": "-0.0003", "MQ": "58.99", "MQRankSum": "-2.200e-01", "QD": "8.58", "ReadPosRankSum": "0.283", "VQSLOD": "-1.522e+00"}, "ref": "C", "rsid": ".", "variant_id": "22-51117776-C-G"}, {"CANONICAL": "YES", "HGVSc": "c.891C\u003eT", "HGVSp": "p.Ser297Ser", "allele_count": 0.00036443148688, "allele_freq": 0.999315, "allele_num": 0.0, "alt": "T", "category": "synonymous_variant", "chrom": "22", "enrichment": -9.0, "filter": "PASS", "hom_count": 1243660000.0, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.00036443148688, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.999315, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 1243660000.0, "European (Finnish)": -9.0}, "pos": 51121773, "quality_metrics": {"BaseQRankSum": "-1.683e+00", "ClippingRankSum": "-1.680e-01", "DP": "1355295", "FS": "0.000", "InbreedingCoeff": "0.0119", "MQ": "60.00", "MQRankSum": "0.263", "QD": "12.48", "ReadPosRankSum": "0.549", "VQSLOD": "5.59"}, "ref": "C", "rsid": ".", "variant_id": "22-51121773-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.964-37C\u003eG", "HGVSp": "", "allele_count": 0.0, "allele_freq": 0.999208, "allele_num": 0.000135446295544, "alt": "G", "category": "other_variant", "chrom": "22", "enrichment": -9.0, "filter": "VQSRTrancheSNP99.60to99.80", "hom_count": 3.77446e-08, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.000135446295544}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.999208}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 3.77446e-08}, "pos": 51122976, "quality_metrics": {"BaseQRankSum": "-1.959e+00", "ClippingRankSum": "0.157", "DP": "1868486", "FS": "1.472", "InbreedingCoeff": "0.0034", "MQ": "60.00", "MQRankSum": "-4.270e-01", "QD": "28.18", "ReadPosRankSum": "-5.200e-01", "VQSLOD": "-2.856e+00"}, "ref": "C", "rsid": ".", "variant_id": "22-51122976-C-G"}, {"CANONICAL": "YES", "HGVSc": "c.1030+13C\u003eT", "HGVSp": "", "allele_count": 0.00036469730124, "allele_freq": 0.999302, "allele_num": 0.0, "alt": "T", "category": "other_variant", "chrom": "22", "enrichment": -9.0, "filter": "PASS", "hom_count": 1843010000.0, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.00036469730124, "European (Finnish)": 0.00840336134454}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0, "European (Finnish)": 0.00278477655483}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.999302, "European (Finnish)": 0.042107}, "pop_homs": {"European (Ashkenazi-Jewish)": 1843010000.0, "European (Finnish)": 2.80647}, "pos": 51123092, "quality_metrics": {"BaseQRankSum": "-2.616e+00", "ClippingRankSum": "-3.400e-02", "DP": "1915844", "FS": "0.000", "InbreedingCoeff": "-0.0019", "MQ": "59.70", "MQRankSum": "0.231", "QD": "12.37", "ReadPosRankSum": "0.305", "VQSLOD": "6.10"}, "ref": "C", "rsid": "rs187458677", "variant_id": "22-51123092-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.1030+22G\u003eA", "HGVSp": "", "allele_count": 0.0, "allele_freq": 0.999406, "allele_num": 6.68270515905e-05, "alt": "A", "category": "other_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 1.32887e-08, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 6.68270515905e-05}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.999406}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 1.32887e-08}, "pos": 51123101, "quality_metrics": {"BaseQRankSum": "-2.257e+00", "ClippingRankSum": "0.00", "DP": "1912583", "FS": "0.000", "InbreedingCoeff": "0.0198", "MQ": "59.71", "MQRankSum": "0.362", "QD": "13.02", "ReadPosRankSum": "0.285", "VQSLOD": "4.85"}, "ref": "G", "rsid": "rs139076185", "variant_id": "22-51123101-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.1114C\u003eT", "HGVSp": "p.Arg372Cys", "allele_count": 0.0, "allele_freq": 0.999305, "allele_num": 0.000301204819277, "alt": "T", "category": "missense_variant", "chrom": "22", "enrichment": 20.10816511, "filter": "AC_Adj0_Filter", "hom_count": 5.9111e-10, "major_consequence": "missense_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.0, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.000301204819277, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.999305, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 5.9111e-10, "European (Finnish)": -9.0}, "pos": 51133286, "quality_metrics": {"BaseQRankSum": "-8.760e-01", "ClippingRankSum": "-7.290e-01", "DP": "526692", "FS": "3.522", "InbreedingCoeff": "-0.0312", "MQ": "60.00", "MQRankSum": "0.00", "QD": "6.16", "ReadPosRankSum": "0.876", "VQSLOD": "-1.172e+00"}, "ref": "C", "rsid": ".", "variant_id": "22-51133286-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.1185C\u003eG", "HGVSp": "p.Ser395Arg", "allele_count": 0.0010989010989, "allele_freq": 0.998773, "allele_num": 0.0, "alt": "G", "category": "missense_variant", "chrom": "22", "enrichment": -9.0, "filter": "PASS", "hom_count": 2315160000.0, "major_consequence": "missense_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.0010989010989, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.998773, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 2315160000.0, "European (Finnish)": -9.0}, "pos": 51133357, "quality_metrics": {"BaseQRankSum": "-1.135e+00", "ClippingRankSum": "-1.309e+00", "DP": "730859", "FS": "0.000", "InbreedingCoeff": "-0.0126", "MQ": "59.28", "MQRankSum": "0.087", "QD": "12.49", "ReadPosRankSum": "1.50", "VQSLOD": "0.599"}, "ref": "C", "rsid": ".", "variant_id": "22-51133357-C-G"}, {"CANONICAL": "YES", "HGVSc": "c.1240G\u003eT", "HGVSp": "p.Asp414Tyr", "allele_count": 0.000369276218612, "allele_freq": 0.999298, "allele_num": 0.0, "alt": "T", "category": "missense_variant", "chrom": "22", "enrichment": -9.0, "filter": "PASS", "hom_count": 2084220000.0, "major_consequence": "missense_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.000369276218612, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.999298, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 2084220000.0, "European (Finnish)": -9.0}, "pos": 51133412, "quality_metrics": {"BaseQRankSum": "-2.001e+00", "ClippingRankSum": "0.658", "DP": "632736", "FS": "4.049", "InbreedingCoeff": "-0.0199", "MQ": "59.66", "MQRankSum": "0.467", "QD": "8.58", "ReadPosRankSum": "-8.880e-01", "VQSLOD": "-2.159e-01"}, "ref": "G", "rsid": ".", "variant_id": "22-51133412-G-T"}, {"CANONICAL": "YES", "HGVSc": "c.1245C\u003eT", "HGVSp": "p.Ala415Ala", "allele_count": 0.00294985250737, "allele_freq": 0.981904, "allele_num": 0.00299043062201, "alt": "T", "category": "synonymous_variant", "chrom": "22", "enrichment": 4.9925014997, "filter": "PASS", "hom_count": 1.01089, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.00294985250737, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.00299043062201, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.981904, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 1.01089, "European (Finnish)": -9.0}, "pos": 51133417, "quality_metrics": {"BaseQRankSum": "1.28", "ClippingRankSum": "0.212", "DP": "623159", "FS": "0.000", "InbreedingCoeff": "-0.0230", "MQ": "60.00", "MQRankSum": "0.224", "QD": "13.08", "ReadPosRankSum": "0.322", "VQSLOD": "5.69"}, "ref": "C", "rsid": "rs116756129", "variant_id": "22-51133417-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.1547-25C\u003eT", "HGVSp": "", "allele_count": 0.000799360511591, "allele_freq": 0.999014, "allele_num": 0.0, "alt": "T", "category": "other_variant", "chrom": "22", "enrichment": -9.0, "filter": "PASS", "hom_count": 1751140000.0, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.000799360511591, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.999014, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 1751140000.0, "European (Finnish)": -9.0}, "pos": 51137093, "quality_metrics": {"BaseQRankSum": "-1.965e+00", "ClippingRankSum": "0.017", "DP": "1459567", "FS": "0.688", "InbreedingCoeff": "0.0103", "MQ": "60.00", "MQRankSum": "0.023", "QD": "12.40", "ReadPosRankSum": "0.345", "VQSLOD": "3.54"}, "ref": "C", "rsid": ".", "variant_id": "22-51137093-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.1547-24G\u003eA", "HGVSp": "", "allele_count": 0.0552441953563, "allele_freq": 0.252865, "allele_num": 0.0484455958549, "alt": "A", "category": "other_variant", "chrom": "22", "enrichment": 0.352737683614, "filter": "PASS", "hom_count": 1.14486, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.0552441953563, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0484455958549, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.252865, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 1.14486, "European (Finnish)": -9.0}, "pos": 51137094, "quality_metrics": {"BaseQRankSum": "1.95", "ClippingRankSum": "-2.670e-01", "DP": "1587351", "FS": "0.692", "InbreedingCoeff": "0.0305", "MQ": "60.00", "MQRankSum": "0.032", "QD": "15.24", "ReadPosRankSum": "0.270", "VQSLOD": "4.10"}, "ref": "G", "rsid": "rs9616942", "variant_id": "22-51137094-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.1599G\u003eA", "HGVSp": "p.Thr533Thr", "allele_count": 0.0, "allele_freq": 0.999397, "allele_num": 6.56943896991e-05, "alt": "A", "category": "synonymous_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 9.85387e-09, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 6.56943896991e-05}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.999397}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 9.85387e-09}, "pos": 51137170, "quality_metrics": {"BaseQRankSum": "0.654", "ClippingRankSum": "0.233", "DP": "1756560", "FS": "2.125", "InbreedingCoeff": "0.0058", "MQ": "59.67", "MQRankSum": "-7.300e-02", "QD": "14.24", "ReadPosRankSum": "-2.200e-01", "VQSLOD": "1.03"}, "ref": "G", "rsid": ".", "variant_id": "22-51137170-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.1660+18T\u003eC", "HGVSp": "", "allele_count": 0.826965466569, "allele_freq": 0.744779, "allele_num": 0.831869834711, "alt": "C", "category": "other_variant", "chrom": "22", "enrichment": 1.10470646251, "filter": "PASS", "hom_count": 0.978508, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.826965466569, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.831869834711, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.744779, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 0.978508, "European (Finnish)": -9.0}, "pos": 51137249, "quality_metrics": {"BaseQRankSum": "1.47", "ClippingRankSum": "-1.570e-01", "DP": "1970973", "FS": "0.728", "InbreedingCoeff": "0.0442", "MQ": "60.00", "MQRankSum": "0.049", "QD": "27.93", "ReadPosRankSum": "0.156", "VQSLOD": "4.51"}, "ref": "T", "rsid": "rs1557620", "variant_id": "22-51137249-T-C"}, {"CANONICAL": "YES", "HGVSc": "c.1660+22C\u003eG", "HGVSp": "", "allele_count": 0.00588235294118, "allele_freq": 0.918455, "allele_num": 0.00659282700422, "alt": "G", "category": "other_variant", "chrom": "22", "enrichment": 1.27489614648, "filter": "PASS", "hom_count": 0.967372, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.00588235294118, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.00659282700422, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.918455, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 0.967372, "European (Finnish)": -9.0}, "pos": 51137253, "quality_metrics": {"BaseQRankSum": "2.84", "ClippingRankSum": "0.00", "DP": "1334891", "FS": "0.000", "InbreedingCoeff": "0.0237", "MQ": "60.00", "MQRankSum": "0.265", "QD": "14.15", "ReadPosRankSum": "0.465", "VQSLOD": "6.06"}, "ref": "C", "rsid": "rs11704325", "variant_id": "22-51137253-C-G"}, {"CANONICAL": "YES", "HGVSc": "c.1661-8C\u003eT", "HGVSp": "", "allele_count": 0.00292611558157, "allele_freq": 0.865244, "allele_num": 0.00276395798784, "alt": "T", "category": "synonymous_variant", "chrom": "22", "enrichment": 2.70088209775, "filter": "PASS", "hom_count": 1.08441, "major_consequence": "splice_region_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.00292611558157, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.00276395798784, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.865244, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 1.08441, "European (Finnish)": -9.0}, "pos": 51142280, "quality_metrics": {"BaseQRankSum": "-1.285e+00", "ClippingRankSum": "0.039", "DP": "769882", "FS": "0.583", "InbreedingCoeff": "0.0191", "MQ": "60.00", "MQRankSum": "0.231", "QD": "13.61", "ReadPosRankSum": "0.361", "VQSLOD": "4.58"}, "ref": "C", "rsid": "rs112659165", "variant_id": "22-51142280-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.1921C\u003eT", "HGVSp": "p.Arg641Cys", "allele_count": 0.0, "allele_freq": 0.999395, "allele_num": 6.35727908455e-05, "alt": "T", "category": "missense_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 9.40174e-09, "major_consequence": "missense_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 6.35727908455e-05}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.999395}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 9.40174e-09}, "pos": 51143267, "quality_metrics": {"BaseQRankSum": "-1.522e+00", "ClippingRankSum": "-4.370e-01", "DP": "1455831", "FS": "3.015", "InbreedingCoeff": "-0.0001", "MQ": "60.00", "MQRankSum": "0.165", "QD": "11.97", "ReadPosRankSum": "0.648", "VQSLOD": "1.80"}, "ref": "C", "rsid": ".", "variant_id": "22-51143267-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.1944+9G\u003eA", "HGVSp": "", "allele_count": 0.0, "allele_freq": 0.999405, "allele_num": 6.23363670365e-05, "alt": "A", "category": "other_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 1.27038e-08, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 6.23363670365e-05}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.999405}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 1.27038e-08}, "pos": 51143299, "quality_metrics": {"BaseQRankSum": "1.66", "ClippingRankSum": "-7.130e-01", "DP": "1506435", "FS": "1.972", "InbreedingCoeff": "0.0067", "MQ": "59.68", "MQRankSum": "0.060", "QD": "14.42", "ReadPosRankSum": "0.722", "VQSLOD": "1.99"}, "ref": "G", "rsid": ".", "variant_id": "22-51143299-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.1944+17C\u003eT", "HGVSp": "", "allele_count": 0.0, "allele_freq": 0.999324, "allele_num": 0.000255623721881, "alt": "T", "category": "other_variant", "chrom": "22", "enrichment": 2.80951163385, "filter": "AC_Adj0", "hom_count": 1.07561e-09, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.0, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.000255623721881, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.999324, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 1.07561e-09, "European (Finnish)": -9.0}, "pos": 51143307, "quality_metrics": {"BaseQRankSum": "0.083", "ClippingRankSum": "0.050", "DP": "1513097", "FS": "2.331", "InbreedingCoeff": "0.0018", "MQ": "60.00", "MQRankSum": "0.131", "QD": "13.67", "ReadPosRankSum": "0.193", "VQSLOD": "2.31"}, "ref": "C", "rsid": ".", "variant_id": "22-51143307-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.1944+19G\u003eC", "HGVSp": "", "allele_count": 0.0299051787017, "allele_freq": 0.50197, "allele_num": 0.0273195876289, "alt": "C", "category": "other_variant", "chrom": "22", "enrichment": 0.531447738698, "filter": "PASS", "hom_count": 1.10654, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.0299051787017, "European (Finnish)": 0.046218487395}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0273195876289, "European (Finnish)": 0.0390186040704}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.50197, "European (Finnish)": 0.669074}, "pop_homs": {"European (Ashkenazi-Jewish)": 1.10654, "European (Finnish)": 1.09932}, "pos": 51143309, "quality_metrics": {"BaseQRankSum": "1.34", "ClippingRankSum": "-2.800e-01", "DP": "1745659", "FS": "0.000", "InbreedingCoeff": "0.0237", "MQ": "59.70", "MQRankSum": "0.077", "QD": "16.08", "ReadPosRankSum": "0.334", "VQSLOD": "6.24"}, "ref": "G", "rsid": "rs8141844", "variant_id": "22-51143309-G-C"}, {"CANONICAL": "YES", "HGVSc": "c.1945-41C\u003eT", "HGVSp": "", "allele_count": 0.00255474452555, "allele_freq": 0.851676, "allele_num": 0.00255885363357, "alt": "T", "category": "other_variant", "chrom": "22", "enrichment": 0.544658010025, "filter": "PASS", "hom_count": 0.910387, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.00255474452555, "European (Finnish)": 0.00420168067227}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.00255885363357, "European (Finnish)": 0.00124223602484}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.851676, "European (Finnish)": 0.12231}, "pop_homs": {"European (Ashkenazi-Jewish)": 0.910387, "European (Finnish)": 3.20035}, "pos": 51143351, "quality_metrics": {"BaseQRankSum": "-1.776e+00", "ClippingRankSum": "-2.120e-01", "DP": "1994968", "FS": "0.585", "InbreedingCoeff": "0.0020", "MQ": "59.76", "MQRankSum": "0.153", "QD": "12.95", "ReadPosRankSum": "0.655", "VQSLOD": "4.51"}, "ref": "C", "rsid": "rs147115189", "variant_id": "22-51143351-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.1951G\u003eA", "HGVSp": "p.Gly651Arg", "allele_count": 0.0, "allele_freq": 0.99917, "allele_num": 0.000124038700074, "alt": "A", "category": "missense_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 1.94636e-08, "major_consequence": "missense_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.000124038700074}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.99917}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 1.94636e-08}, "pos": 51143398, "quality_metrics": {"BaseQRankSum": "0.867", "ClippingRankSum": "0.624", "DP": "1973535", "FS": "0.613", "InbreedingCoeff": "0.0044", "MQ": "59.70", "MQRankSum": "-8.610e-01", "QD": "11.60", "ReadPosRankSum": "-3.150e-01", "VQSLOD": "0.298"}, "ref": "G", "rsid": ".", "variant_id": "22-51143398-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.2007T\u003eC", "HGVSp": "p.Gly669Gly", "allele_count": 0.0, "allele_freq": 0.999402, "allele_num": 6.21581302834e-05, "alt": "C", "category": "synonymous_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 1.14889e-08, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 6.21581302834e-05}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.999402}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 1.14889e-08}, "pos": 51143454, "quality_metrics": {"BaseQRankSum": "0.091", "ClippingRankSum": "-1.990e-01", "DP": "1973399", "FS": "1.751", "InbreedingCoeff": "0.0225", "MQ": "59.57", "MQRankSum": "-2.700e-02", "QD": "12.29", "ReadPosRankSum": "0.567", "VQSLOD": "1.94"}, "ref": "T", "rsid": ".", "variant_id": "22-51143454-T-C"}, {"CANONICAL": "YES", "HGVSc": "c.2012A\u003eG", "HGVSp": "p.Asn671Ser", "allele_count": 0.0, "allele_freq": 0.999404, "allele_num": 6.21658585105e-05, "alt": "G", "category": "missense_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 1.22716e-08, "major_consequence": "missense_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 6.21658585105e-05}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.999404}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 1.22716e-08}, "pos": 51143459, "quality_metrics": {"BaseQRankSum": "4.38", "ClippingRankSum": "1.35", "DP": "1970037", "FS": "1.368", "InbreedingCoeff": "0.0060", "MQ": "59.29", "MQRankSum": "0.295", "QD": "13.42", "ReadPosRankSum": "-1.180e-01", "VQSLOD": "0.662"}, "ref": "A", "rsid": ".", "variant_id": "22-51143459-A-G"}, {"CANONICAL": "YES", "HGVSc": "c.2045G\u003eA", "HGVSp": "p.Arg682Lys", "allele_count": 0.0, "allele_freq": 0.999419, "allele_num": 6.20270437911e-05, "alt": "A", "category": "missense_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 1.98219e-08, "major_consequence": "missense_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 6.20270437911e-05}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.999419}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 1.98219e-08}, "pos": 51143492, "quality_metrics": {"BaseQRankSum": "-9.590e-01", "ClippingRankSum": "1.05", "DP": "1965671", "FS": "0.000", "InbreedingCoeff": "0.0014", "MQ": "59.83", "MQRankSum": "1.05", "QD": "11.44", "ReadPosRankSum": "1.39", "VQSLOD": "0.552"}, "ref": "G", "rsid": ".", "variant_id": "22-51143492-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.2077+33A\u003eG", "HGVSp": "", "allele_count": 0.00036469730124, "allele_freq": 0.999302, "allele_num": 0.0, "alt": "G", "category": "other_variant", "chrom": "22", "enrichment": -9.0, "filter": "PASS", "hom_count": 1820360000.0, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.00036469730124, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.999302, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 1820360000.0, "European (Finnish)": -9.0}, "pos": 51143557, "quality_metrics": {"BaseQRankSum": "-7.640e-01", "ClippingRankSum": "1.19", "DP": "1838495", "FS": "0.000", "InbreedingCoeff": "0.0045", "MQ": "60.00", "MQRankSum": "-2.900e-01", "QD": "15.10", "ReadPosRankSum": "-1.449e+00", "VQSLOD": "-6.481e-01"}, "ref": "A", "rsid": ".", "variant_id": "22-51143557-A-G"}, {"CANONICAL": "YES", "HGVSc": "c.2159-12C\u003eG", "HGVSp": "", "allele_count": 0.0, "allele_freq": 0.998545, "allele_num": 0.000381000762002, "alt": "G", "category": "other_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 1.39948e-08, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.000381000762002}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.998545}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 1.39948e-08}, "pos": 51150031, "quality_metrics": {"BaseQRankSum": "-3.800e-01", "ClippingRankSum": "-5.300e-01", "DP": "1270714", "FS": "7.335", "InbreedingCoeff": "-0.0012", "MQ": "60.00", "MQRankSum": "0.429", "QD": "13.25", "ReadPosRankSum": "0.542", "VQSLOD": "0.695"}, "ref": "C", "rsid": ".", "variant_id": "22-51150031-C-G"}, {"CANONICAL": "YES", "HGVSc": "c.2209G\u003eA", "HGVSp": "p.Ala737Thr", "allele_count": 0.0256598240469, "allele_freq": 0.529552, "allele_num": 0.0285126396238, "alt": "A", "category": "missense_variant", "chrom": "22", "enrichment": 0.43568291644, "filter": "PASS", "hom_count": 0.903326, "major_consequence": "missense_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.0256598240469, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0285126396238, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.529552, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 0.903326, "European (Finnish)": -9.0}, "pos": 51153371, "quality_metrics": {"BaseQRankSum": "-1.460e-01", "ClippingRankSum": "-3.650e-01", "DP": "663925", "FS": "1.124", "InbreedingCoeff": "-0.0039", "MQ": "60.00", "MQRankSum": "0.200", "QD": "13.40", "ReadPosRankSum": "0.462", "VQSLOD": "4.70"}, "ref": "G", "rsid": "rs61729471", "variant_id": "22-51153371-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.2358G\u003eA", "HGVSp": "p.Pro786Pro", "allele_count": 0.00036443148688, "allele_freq": 0.79188, "allele_num": 0.000254194204372, "alt": "A", "category": "synonymous_variant", "chrom": "22", "enrichment": 0.0328771630697, "filter": "PASS", "hom_count": 0.687524, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.00036443148688, "European (Finnish)": 0.0252100840336}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.000254194204372, "European (Finnish)": 0.0260481270156}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.79188, "European (Finnish)": 0.934623}, "pop_homs": {"European (Ashkenazi-Jewish)": 0.687524, "European (Finnish)": 0.976038}, "pos": 51154141, "quality_metrics": {"BaseQRankSum": "0.901", "ClippingRankSum": "-2.780e-01", "DP": "2222296", "FS": "0.000", "InbreedingCoeff": "0.0153", "MQ": "59.63", "MQRankSum": "0.310", "QD": "13.04", "ReadPosRankSum": "0.701", "VQSLOD": "5.88"}, "ref": "G", "rsid": "rs117066889", "variant_id": "22-51154141-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.2374G\u003eA", "HGVSp": "p.Gly792Arg", "allele_count": 0.0, "allele_freq": 0.999414, "allele_num": 6.20424370269e-05, "alt": "A", "category": "missense_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 1.66383e-08, "major_consequence": "missense_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 6.20424370269e-05}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.999414}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 1.66383e-08}, "pos": 51154157, "quality_metrics": {"BaseQRankSum": "2.28", "ClippingRankSum": "-1.035e+00", "DP": "2142983", "FS": "1.915", "InbreedingCoeff": "0.0006", "MQ": "59.51", "MQRankSum": "-4.900e-02", "QD": "11.19", "ReadPosRankSum": "0.577", "VQSLOD": "1.07"}, "ref": "G", "rsid": ".", "variant_id": "22-51154157-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.2398+23C\u003eT", "HGVSp": "", "allele_count": 0.0, "allele_freq": 0.999424, "allele_num": 6.30119722747e-05, "alt": "T", "category": "other_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 2.24365e-08, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 6.30119722747e-05}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.999424}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 2.24365e-08}, "pos": 51154204, "quality_metrics": {"BaseQRankSum": "-2.747e+00", "ClippingRankSum": "-3.140e-01", "DP": "2074059", "FS": "1.641", "InbreedingCoeff": "0.0010", "MQ": "58.83", "MQRankSum": "0.589", "QD": "11.62", "ReadPosRankSum": "0.914", "VQSLOD": "-5.820e-02"}, "ref": "C", "rsid": ".", "variant_id": "22-51154204-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.3309G\u003eA", "HGVSp": "p.Gly1103Gly", "allele_count": 0.000370644922165, "allele_freq": 0.999298, "allele_num": 0.0, "alt": "A", "category": "synonymous_variant", "chrom": "22", "enrichment": -9.0, "filter": "PASS", "hom_count": 2069030000.0, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.000370644922165, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.999298, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 2069030000.0, "European (Finnish)": -9.0}, "pos": 51159522, "quality_metrics": {"BaseQRankSum": "-9.120e-01", "ClippingRankSum": "0.608", "DP": "1034380", "FS": "2.430", "InbreedingCoeff": "0.0095", "MQ": "60.00", "MQRankSum": "1.06", "QD": "9.23", "ReadPosRankSum": "0.244", "VQSLOD": "0.207"}, "ref": "G", "rsid": ".", "variant_id": "22-51159522-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.3382C\u003eT", "HGVSp": "p.Leu1128Leu", "allele_count": 0.0125553914328, "allele_freq": 0.457729, "allele_num": 0.0145788336933, "alt": "T", "category": "synonymous_variant", "chrom": "22", "enrichment": 8.04788293898, "filter": "PASS", "hom_count": 0.84851, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.0125553914328, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0145788336933, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.457729, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 0.84851, "European (Finnish)": -9.0}, "pos": 51159595, "quality_metrics": {"BaseQRankSum": "-8.250e-01", "ClippingRankSum": "0.072", "DP": "858333", "FS": "0.000", "InbreedingCoeff": "-0.0042", "MQ": "60.00", "MQRankSum": "0.259", "QD": "12.71", "ReadPosRankSum": "0.361", "VQSLOD": "5.73"}, "ref": "C", "rsid": ".", "variant_id": "22-51159595-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.3396G\u003eA", "HGVSp": "p.Glu1132Glu", "allele_count": 0.00184911242604, "allele_freq": 0.155237, "allele_num": 0.00384615384615, "alt": "A", "category": "synonymous_variant", "chrom": "22", "enrichment": 20.0381810382, "filter": "PASS", "hom_count": 0.472723, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.00184911242604, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.00384615384615, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.155237, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 0.472723, "European (Finnish)": -9.0}, "pos": 51159609, "quality_metrics": {"BaseQRankSum": "-1.973e+00", "ClippingRankSum": "-2.990e-01", "DP": "823075", "FS": "2.473", "InbreedingCoeff": "-0.0090", "MQ": "60.00", "MQRankSum": "0.289", "QD": "11.38", "ReadPosRankSum": "0.429", "VQSLOD": "1.59"}, "ref": "G", "rsid": ".", "variant_id": "22-51159609-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.3411C\u003eT", "HGVSp": "p.Ser1137Ser", "allele_count": 0.0, "allele_freq": 0.998813, "allele_num": 0.000831485587583, "alt": "T", "category": "synonymous_variant", "chrom": "22", "enrichment": 0.12862448687, "filter": "AC_Adj0", "hom_count": 8.0479e-10, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.0, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.000831485587583, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.998813, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 8.0479e-10, "European (Finnish)": -9.0}, "pos": 51159624, "quality_metrics": {"BaseQRankSum": "-4.750e-01", "ClippingRankSum": "0.046", "DP": "811051", "FS": "0.525", "InbreedingCoeff": "-0.0077", "MQ": "60.00", "MQRankSum": "0.259", "QD": "13.13", "ReadPosRankSum": "0.380", "VQSLOD": "4.11"}, "ref": "C", "rsid": ".", "variant_id": "22-51159624-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.3565G\u003eA", "HGVSp": "p.Ala1189Thr", "allele_count": 0.000364166059723, "allele_freq": 0.713396, "allele_num": 0.000254194204372, "alt": "A", "category": "missense_variant", "chrom": "22", "enrichment": 1.46224256293, "filter": "PASS", "hom_count": 1.68377, "major_consequence": "missense_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.000364166059723, "European (Finnish)": 0.00210084033613}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.000254194204372, "European (Finnish)": 0.00301862556198}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.713396, "European (Finnish)": 0.869758}, "pop_homs": {"European (Ashkenazi-Jewish)": 1.68377, "European (Finnish)": 0.848785}, "pos": 51159778, "quality_metrics": {"BaseQRankSum": "-2.127e+00", "ClippingRankSum": "-2.250e-01", "DP": "1365513", "FS": "0.537", "InbreedingCoeff": "0.0046", "MQ": "59.92", "MQRankSum": "0.087", "QD": "11.72", "ReadPosRankSum": "0.564", "VQSLOD": "3.28"}, "ref": "G", "rsid": "rs139686326", "variant_id": "22-51159778-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.3585G\u003eA", "HGVSp": "p.Lys1195Lys", "allele_count": 0.0127458120903, "allele_freq": 0.378754, "allele_num": 0.0150203665988, "alt": "A", "category": "synonymous_variant", "chrom": "22", "enrichment": 1.38707556011, "filter": "PASS", "hom_count": 0.825118, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.0127458120903, "European (Finnish)": 0.00420168067227}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0150203665988, "European (Finnish)": 0.00242997825809}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.378754, "European (Finnish)": 0.549081}, "pop_homs": {"European (Ashkenazi-Jewish)": 0.825118, "European (Finnish)": 1.55228}, "pos": 51159798, "quality_metrics": {"BaseQRankSum": "-7.960e-01", "ClippingRankSum": "-1.410e-01", "DP": "1385500", "FS": "0.000", "InbreedingCoeff": "0.0014", "MQ": "60.00", "MQRankSum": "0.253", "QD": "12.09", "ReadPosRankSum": "0.511", "VQSLOD": "5.55"}, "ref": "G", "rsid": "rs145196448", "variant_id": "22-51159798-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.3588C\u003eT", "HGVSp": "p.Val1196Val", "allele_count": 0.000364166059723, "allele_freq": 0.538321, "allele_num": 0.000762582613116, "alt": "T", "category": "synonymous_variant", "chrom": "22", "enrichment": 16.0465530399, "filter": "PASS", "hom_count": 0.490751, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.000364166059723, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.000762582613116, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.538321, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 0.490751, "European (Finnish)": -9.0}, "pos": 51159801, "quality_metrics": {"BaseQRankSum": "-1.819e+00", "ClippingRankSum": "0.155", "DP": "1360413", "FS": "0.000", "InbreedingCoeff": "0.0027", "MQ": "60.00", "MQRankSum": "0.341", "QD": "12.03", "ReadPosRankSum": "-1.920e-01", "VQSLOD": "2.89"}, "ref": "C", "rsid": ".", "variant_id": "22-51159801-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.3600G\u003eA", "HGVSp": "p.Glu1200Glu", "allele_count": 0.0, "allele_freq": 0.99934, "allele_num": 0.000254194204372, "alt": "A", "category": "synonymous_variant", "chrom": "22", "enrichment": 15.8319349097, "filter": "VQSRTrancheSNP99.60to99.80", "hom_count": 1.72076e-09, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.0, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.000254194204372, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.99934, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 1.72076e-09, "European (Finnish)": -9.0}, "pos": 51159813, "quality_metrics": {"BaseQRankSum": "-1.858e+00", "ClippingRankSum": "-7.960e-01", "DP": "1333992", "FS": "1.520", "InbreedingCoeff": "-0.0001", "MQ": "59.38", "MQRankSum": "-9.730e-01", "QD": "3.53", "ReadPosRankSum": "0.796", "VQSLOD": "-2.924e+00"}, "ref": "G", "rsid": ".", "variant_id": "22-51159813-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.3906A\u003eG", "HGVSp": "p.Pro1302Pro", "allele_count": 0.00437636761488, "allele_freq": 0.0858528, "allele_num": 0.0017884517118, "alt": "G", "category": "synonymous_variant", "chrom": "22", "enrichment": 5.50723437571, "filter": "PASS", "hom_count": 2.28969, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.00437636761488, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0017884517118, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.0858528, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 2.28969, "European (Finnish)": -9.0}, "pos": 51160119, "quality_metrics": {"BaseQRankSum": "-9.220e-01", "ClippingRankSum": "-2.540e-01", "DP": "1121695", "FS": "0.000", "InbreedingCoeff": "-0.0036", "MQ": "59.55", "MQRankSum": "0.221", "QD": "10.89", "ReadPosRankSum": "0.423", "VQSLOD": "5.08"}, "ref": "A", "rsid": ".", "variant_id": "22-51160119-A-G"}, {"CANONICAL": "YES", "HGVSc": "c.3927C\u003eT", "HGVSp": "p.Ser1309Ser", "allele_count": 0.000364166059723, "allele_freq": 0.99928, "allele_num": 0.0, "alt": "T", "category": "synonymous_variant", "chrom": "22", "enrichment": -9.0, "filter": "PASS", "hom_count": 3584140000.0, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.000364166059723, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.99928, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 3584140000.0, "European (Finnish)": -9.0}, "pos": 51160140, "quality_metrics": {"BaseQRankSum": "0.093", "ClippingRankSum": "0.057", "DP": "1124035", "FS": "0.000", "InbreedingCoeff": "-0.0025", "MQ": "60.00", "MQRankSum": "0.340", "QD": "11.51", "ReadPosRankSum": "0.409", "VQSLOD": "4.09"}, "ref": "C", "rsid": ".", "variant_id": "22-51160140-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.3941G\u003eA", "HGVSp": "p.Arg1314Lys", "allele_count": 0.000364166059723, "allele_freq": 0.999315, "allele_num": 0.0, "alt": "A", "category": "missense_variant", "chrom": "22", "enrichment": -9.0, "filter": "PASS", "hom_count": 1237300000.0, "major_consequence": "missense_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.000364166059723, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.999315, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 1237300000.0, "European (Finnish)": -9.0}, "pos": 51160154, "quality_metrics": {"BaseQRankSum": "-7.310e-01", "ClippingRankSum": "0.058", "DP": "1024591", "FS": "0.000", "InbreedingCoeff": "-0.0058", "MQ": "60.00", "MQRankSum": "0.042", "QD": "11.81", "ReadPosRankSum": "0.095", "VQSLOD": "4.75"}, "ref": "G", "rsid": ".", "variant_id": "22-51160154-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.4264C\u003eG", "HGVSp": "p.Leu1422Val", "allele_count": 0.00109249817917, "allele_freq": 0.859579, "allele_num": 0.00101781170483, "alt": "G", "category": "missense_variant", "chrom": "22", "enrichment": 4.77220894236, "filter": "PASS", "hom_count": 1.14592, "major_consequence": "missense_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.00109249817917, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.00101781170483, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.859579, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 1.14592, "European (Finnish)": -9.0}, "pos": 51160477, "quality_metrics": {"BaseQRankSum": "-1.162e+00", "ClippingRankSum": "-4.960e-01", "DP": "1264768", "FS": "4.928", "InbreedingCoeff": "-0.0011", "MQ": "59.55", "MQRankSum": "0.338", "QD": "11.98", "ReadPosRankSum": "0.253", "VQSLOD": "1.39"}, "ref": "C", "rsid": ".", "variant_id": "22-51160477-C-G"}, {"CANONICAL": "YES", "HGVSc": "c.4326G\u003eA", "HGVSp": "p.Pro1442Pro", "allele_count": 0.0, "allele_freq": 0.998963, "allele_num": 0.000201207243461, "alt": "A", "category": "synonymous_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 1.25932e-08, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.000201207243461}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.998963}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 1.25932e-08}, "pos": 51160539, "quality_metrics": {"BaseQRankSum": "0.204", "ClippingRankSum": "0.091", "DP": "1125588", "FS": "1.216", "InbreedingCoeff": "-0.0020", "MQ": "60.00", "MQRankSum": "-1.220e-01", "QD": "13.71", "ReadPosRankSum": "-3.350e-01", "VQSLOD": "1.75"}, "ref": "G", "rsid": "rs186474600", "variant_id": "22-51160539-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.4405G\u003eA", "HGVSp": "p.Gly1469Arg", "allele_count": 0.00036496350365, "allele_freq": 0.999286, "allele_num": 0.0, "alt": "A", "category": "missense_variant", "chrom": "22", "enrichment": -9.0, "filter": "PASS", "hom_count": 2955610000.0, "major_consequence": "missense_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.00036496350365, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.999286, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 2955610000.0, "European (Finnish)": -9.0}, "pos": 51160618, "quality_metrics": {"BaseQRankSum": "-1.085e+00", "ClippingRankSum": "0.651", "DP": "1049559", "FS": "0.000", "InbreedingCoeff": "-0.0071", "MQ": "60.00", "MQRankSum": "-9.400e-01", "QD": "13.69", "ReadPosRankSum": "-8.680e-01", "VQSLOD": "0.832"}, "ref": "G", "rsid": ".", "variant_id": "22-51160618-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.4538T\u003eC", "HGVSp": "p.Leu1513Pro", "allele_count": 0.0, "allele_freq": 0.998584, "allele_num": 0.000407442618498, "alt": "C", "category": "missense_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 3.22501e-08, "major_consequence": "missense_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.000407442618498}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.998584}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 3.22501e-08}, "pos": 51160751, "quality_metrics": {"BaseQRankSum": "0.613", "ClippingRankSum": "-6.330e-01", "DP": "1381104", "FS": "4.776", "InbreedingCoeff": "-0.0010", "MQ": "60.00", "MQRankSum": "0.520", "QD": "14.31", "ReadPosRankSum": "1.27", "VQSLOD": "0.839"}, "ref": "T", "rsid": ".", "variant_id": "22-51160751-T-C"}, {"CANONICAL": "YES", "HGVSc": "c.4571C\u003eT", "HGVSp": "p.Thr1524Met", "allele_count": 0.0, "allele_freq": 0.999449, "allele_num": 6.79532481653e-05, "alt": "T", "category": "missense_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0_Filter", "hom_count": 4.85056e-08, "major_consequence": "missense_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 6.79532481653e-05}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.999449}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 4.85056e-08}, "pos": 51160784, "quality_metrics": {"BaseQRankSum": "0.731", "ClippingRankSum": "-7.310e-01", "DP": "1376229", "FS": "1.740", "InbreedingCoeff": "-0.0011", "MQ": "60.00", "MQRankSum": "-3.040e-01", "QD": "12.86", "ReadPosRankSum": "0.731", "VQSLOD": "1.07"}, "ref": "C", "rsid": ".", "variant_id": "22-51160784-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.4652+11C\u003eT", "HGVSp": "", "allele_count": 0.00036443148688, "allele_freq": 0.999286, "allele_num": 0.0, "alt": "T", "category": "other_variant", "chrom": "22", "enrichment": -9.0, "filter": "PASS", "hom_count": 2986910000.0, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.00036443148688, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.999286, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 2986910000.0, "European (Finnish)": -9.0}, "pos": 51160876, "quality_metrics": {"BaseQRankSum": "1.21", "ClippingRankSum": "-5.790e-01", "DP": "1338335", "FS": "2.706", "InbreedingCoeff": "-0.0014", "MQ": "59.66", "MQRankSum": "0.303", "QD": "11.74", "ReadPosRankSum": "0.694", "VQSLOD": "2.21"}, "ref": "C", "rsid": ".", "variant_id": "22-51160876-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.4652+12G\u003eA", "HGVSp": "", "allele_count": 0.00036469730124, "allele_freq": 0.734192, "allele_num": 0.000255885363357, "alt": "A", "category": "other_variant", "chrom": "22", "enrichment": 0.112414358472, "filter": "PASS", "hom_count": 1.61773, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.00036469730124, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.000255885363357, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.734192, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 1.61773, "European (Finnish)": -9.0}, "pos": 51160877, "quality_metrics": {"BaseQRankSum": "0.297", "ClippingRankSum": "-1.310e-01", "DP": "1339322", "FS": "0.564", "InbreedingCoeff": "0.0005", "MQ": "60.00", "MQRankSum": "0.178", "QD": "13.29", "ReadPosRankSum": "0.530", "VQSLOD": "4.04"}, "ref": "G", "rsid": "rs182725302", "variant_id": "22-51160877-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.4652+48G\u003eA", "HGVSp": "", "allele_count": 0.00512820512821, "allele_freq": 0.0192791, "allele_num": 0.00182481751825, "alt": "A", "category": "other_variant", "chrom": "22", "enrichment": 2.88713557202, "filter": "PASS", "hom_count": 2.99319, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.00512820512821, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.00182481751825, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.0192791, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 2.99319, "European (Finnish)": -9.0}, "pos": 51160913, "quality_metrics": {"BaseQRankSum": "-1.543e+00", "ClippingRankSum": "-1.930e-01", "DP": "1266331", "FS": "0.000", "InbreedingCoeff": "0.0001", "MQ": "60.00", "MQRankSum": "0.290", "QD": "13.25", "ReadPosRankSum": "0.423", "VQSLOD": "6.11"}, "ref": "G", "rsid": "rs142301047", "variant_id": "22-51160913-G-A"}];
+        window.variants_in_transcript = [{"CANONICAL": "YES", "HGVSc": "c.268-19C\u003eG", "HGVSp": "", "allele_count": 0.0, "allele_freq": 0.999398, "allele_num": 6.38162093172e-05, "alt": "G", "category": "other_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 1.03761e-08, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 6.38162093172e-05}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.999398}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 1.03761e-08}, "pos": 51115031, "quality_metrics": {"BaseQRankSum": "-2.507e+00", "ClippingRankSum": "0.306", "DP": "1118370", "FS": "0.678", "InbreedingCoeff": "-0.0031", "MQ": "60.00", "MQRankSum": "0.036", "QD": "11.39", "ReadPosRankSum": "-2.950e-01", "VQSLOD": "1.69"}, "ref": "C", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 0}, "variant_id": "22-51115031-C-G"}, {"CANONICAL": "YES", "HGVSc": "c.312T\u003eC", "HGVSp": "p.Asp104Asp", "allele_count": 0.0, "allele_freq": 0.99944, "allele_num": 6.29247420086e-05, "alt": "C", "category": "synonymous_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 3.68946e-08, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 6.29247420086e-05}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.99944}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 3.68946e-08}, "pos": 51115094, "quality_metrics": {"BaseQRankSum": "0.966", "ClippingRankSum": "1.49", "DP": "1406116", "FS": "0.000", "InbreedingCoeff": "-0.0005", "MQ": "60.00", "MQRankSum": "0.322", "QD": "9.39", "ReadPosRankSum": "-2.410e-01", "VQSLOD": "0.456"}, "ref": "T", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 644}, "variant_id": "22-51115094-T-C"}, {"CANONICAL": "YES", "HGVSc": "c.339+1G\u003eC", "HGVSp": "", "allele_count": 0.0, "allele_freq": 0.999417, "allele_num": 6.38895987733e-05, "alt": "C", "category": "lof_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 1.82006e-08, "major_consequence": "splice_donor_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 6.38895987733e-05}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.999417}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 1.82006e-08}, "pos": 51115122, "quality_metrics": {"BaseQRankSum": "1.61", "ClippingRankSum": "-1.271e+00", "DP": "1249263", "FS": "1.498", "InbreedingCoeff": "-0.0018", "MQ": "60.00", "MQRankSum": "-9.620e-01", "QD": "5.27", "ReadPosRankSum": "1.20", "VQSLOD": "-2.028e+00"}, "ref": "G", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 672}, "variant_id": "22-51115122-G-C"}, {"CANONICAL": "YES", "HGVSc": "c.339+12C\u003eT", "HGVSp": "", "allele_count": 0.0, "allele_freq": 0.999188, "allele_num": 0.00013133701077, "alt": "T", "category": "other_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 2.63388e-08, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.00013133701077}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.999188}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 2.63388e-08}, "pos": 51115133, "quality_metrics": {"BaseQRankSum": "2.38", "ClippingRankSum": "-3.650e-01", "DP": "1154861", "FS": "15.624", "InbreedingCoeff": "-0.0039", "MQ": "60.00", "MQRankSum": "0.136", "QD": "11.73", "ReadPosRankSum": "0.365", "VQSLOD": "-1.194e+00"}, "ref": "C", "rsid": "rs185055409", "transcript_coordinates": {"ENST00000262795": 0}, "variant_id": "22-51115133-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.384G\u003eA", "HGVSp": "p.Thr128Thr", "allele_count": 0.0, "allele_freq": 0.999404, "allele_num": 6.45911380959e-05, "alt": "A", "category": "synonymous_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 1.23388e-08, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 6.45911380959e-05}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.999404}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 1.23388e-08}, "pos": 51117057, "quality_metrics": {"BaseQRankSum": "0.770", "ClippingRankSum": "-1.330e-01", "DP": "1400702", "FS": "0.000", "InbreedingCoeff": "-0.0011", "MQ": "60.00", "MQRankSum": "0.804", "QD": "9.86", "ReadPosRankSum": "0.558", "VQSLOD": "0.786"}, "ref": "G", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 823}, "variant_id": "22-51117057-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.426C\u003eT", "HGVSp": "p.Asn142Asn", "allele_count": 0.00210084033613, "allele_freq": 0.0104162, "allele_num": 6.45661157025e-05, "alt": "T", "category": "synonymous_variant", "chrom": "22", "enrichment": -9.0, "filter": "PASS", "hom_count": 38.997, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.00210084033613}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 6.45661157025e-05}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0104162}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 38.997}, "pos": 51117099, "quality_metrics": {"BaseQRankSum": "-1.788e+00", "ClippingRankSum": "0.239", "DP": "1436456", "FS": "0.522", "InbreedingCoeff": "-0.0003", "MQ": "59.33", "MQRankSum": "-1.570e-01", "QD": "11.64", "ReadPosRankSum": "0.406", "VQSLOD": "0.929"}, "ref": "C", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 865}, "variant_id": "22-51117099-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.448+16G\u003eA", "HGVSp": "", "allele_count": 0.607871720117, "allele_freq": 0.356786, "allele_num": 0.621227887617, "alt": "A", "category": "other_variant", "chrom": "22", "enrichment": 2.01488806373, "filter": "PASS", "hom_count": 0.95288, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.607871720117, "European (Finnish)": 0.38025210084}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.621227887617, "European (Finnish)": 0.380924092409}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.356786, "European (Finnish)": 0.836375}, "pop_homs": {"European (Ashkenazi-Jewish)": 0.95288, "European (Finnish)": 0.980229}, "pos": 51117137, "quality_metrics": {"BaseQRankSum": "0.571", "ClippingRankSum": "-2.540e-01", "DP": "1733098", "FS": "2.517", "InbreedingCoeff": "0.0724", "MQ": "60.00", "MQRankSum": "0.044", "QD": "18.87", "ReadPosRankSum": "0.248", "VQSLOD": "2.24"}, "ref": "G", "rsid": "rs9616914", "transcript_coordinates": {"ENST00000262795": 0}, "variant_id": "22-51117137-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.448+36C\u003eT", "HGVSp": "", "allele_count": 0.0, "allele_freq": 0.999294, "allele_num": 0.000258131130614, "alt": "T", "category": "other_variant", "chrom": "22", "enrichment": 16.4970307255, "filter": "AC_Adj0", "hom_count": 4.27483e-10, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.0, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.000258131130614, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.999294, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 4.27483e-10, "European (Finnish)": -9.0}, "pos": 51117157, "quality_metrics": {"BaseQRankSum": "-4.290e-01", "ClippingRankSum": "0.413", "DP": "1384529", "FS": "8.324", "InbreedingCoeff": "-0.0009", "MQ": "58.76", "MQRankSum": "0.673", "QD": "15.61", "ReadPosRankSum": "0.727", "VQSLOD": "-1.315e+00"}, "ref": "C", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 0}, "variant_id": "22-51117157-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.805C\u003eG", "HGVSp": "p.Leu269Val", "allele_count": 0.0, "allele_freq": 0.998502, "allele_num": 0.000462595823421, "alt": "G", "category": "missense_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 3.31454e-08, "major_consequence": "missense_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.000462595823421}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.998502}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 3.31454e-08}, "pos": 51117776, "quality_metrics": {"BaseQRankSum": "-1.494e+00", "ClippingRankSum": "-2.460e-01", "DP": "1369788", "FS": "9.407", "InbreedingCoeff": "-0.0003", "MQ": "58.99", "MQRankSum": "-2.200e-01", "QD": "8.58", "ReadPosRankSum": "0.283", "VQSLOD": "-1.522e+00"}, "ref": "C", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 1675}, "variant_id": "22-51117776-C-G"}, {"CANONICAL": "YES", "HGVSc": "c.891C\u003eT", "HGVSp": "p.Ser297Ser", "allele_count": 0.00036443148688, "allele_freq": 0.999315, "allele_num": 0.0, "alt": "T", "category": "synonymous_variant", "chrom": "22", "enrichment": -9.0, "filter": "PASS", "hom_count": 1243660000.0, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.00036443148688, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.999315, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 1243660000.0, "European (Finnish)": -9.0}, "pos": 51121773, "quality_metrics": {"BaseQRankSum": "-1.683e+00", "ClippingRankSum": "-1.680e-01", "DP": "1355295", "FS": "0.000", "InbreedingCoeff": "0.0119", "MQ": "60.00", "MQRankSum": "0.263", "QD": "12.48", "ReadPosRankSum": "0.549", "VQSLOD": "5.59"}, "ref": "C", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 1837}, "variant_id": "22-51121773-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.964-37C\u003eG", "HGVSp": "", "allele_count": 0.0, "allele_freq": 0.999208, "allele_num": 0.000135446295544, "alt": "G", "category": "other_variant", "chrom": "22", "enrichment": -9.0, "filter": "VQSRTrancheSNP99.60to99.80", "hom_count": 3.77446e-08, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.000135446295544}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.999208}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 3.77446e-08}, "pos": 51122976, "quality_metrics": {"BaseQRankSum": "-1.959e+00", "ClippingRankSum": "0.157", "DP": "1868486", "FS": "1.472", "InbreedingCoeff": "0.0034", "MQ": "60.00", "MQRankSum": "-4.270e-01", "QD": "28.18", "ReadPosRankSum": "-5.200e-01", "VQSLOD": "-2.856e+00"}, "ref": "C", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 0}, "variant_id": "22-51122976-C-G"}, {"CANONICAL": "YES", "HGVSc": "c.1030+13C\u003eT", "HGVSp": "", "allele_count": 0.00036469730124, "allele_freq": 0.999302, "allele_num": 0.0, "alt": "T", "category": "other_variant", "chrom": "22", "enrichment": -9.0, "filter": "PASS", "hom_count": 1843010000.0, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.00036469730124, "European (Finnish)": 0.00840336134454}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0, "European (Finnish)": 0.00278477655483}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.999302, "European (Finnish)": 0.042107}, "pop_homs": {"European (Ashkenazi-Jewish)": 1843010000.0, "European (Finnish)": 2.80647}, "pos": 51123092, "quality_metrics": {"BaseQRankSum": "-2.616e+00", "ClippingRankSum": "-3.400e-02", "DP": "1915844", "FS": "0.000", "InbreedingCoeff": "-0.0019", "MQ": "59.70", "MQRankSum": "0.231", "QD": "12.37", "ReadPosRankSum": "0.305", "VQSLOD": "6.10"}, "ref": "C", "rsid": "rs187458677", "transcript_coordinates": {"ENST00000262795": 0}, "variant_id": "22-51123092-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.1030+22G\u003eA", "HGVSp": "", "allele_count": 0.0, "allele_freq": 0.999406, "allele_num": 6.68270515905e-05, "alt": "A", "category": "other_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 1.32887e-08, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 6.68270515905e-05}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.999406}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 1.32887e-08}, "pos": 51123101, "quality_metrics": {"BaseQRankSum": "-2.257e+00", "ClippingRankSum": "0.00", "DP": "1912583", "FS": "0.000", "InbreedingCoeff": "0.0198", "MQ": "59.71", "MQRankSum": "0.362", "QD": "13.02", "ReadPosRankSum": "0.285", "VQSLOD": "4.85"}, "ref": "G", "rsid": "rs139076185", "transcript_coordinates": {"ENST00000262795": 0}, "variant_id": "22-51123101-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.1114C\u003eT", "HGVSp": "p.Arg372Cys", "allele_count": 0.0, "allele_freq": 0.999305, "allele_num": 0.000301204819277, "alt": "T", "category": "missense_variant", "chrom": "22", "enrichment": 20.10816511, "filter": "AC_Adj0_Filter", "hom_count": 5.9111e-10, "major_consequence": "missense_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.0, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.000301204819277, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.999305, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 5.9111e-10, "European (Finnish)": -9.0}, "pos": 51133286, "quality_metrics": {"BaseQRankSum": "-8.760e-01", "ClippingRankSum": "-7.290e-01", "DP": "526692", "FS": "3.522", "InbreedingCoeff": "-0.0312", "MQ": "60.00", "MQRankSum": "0.00", "QD": "6.16", "ReadPosRankSum": "0.876", "VQSLOD": "-1.172e+00"}, "ref": "C", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 2397}, "variant_id": "22-51133286-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.1185C\u003eG", "HGVSp": "p.Ser395Arg", "allele_count": 0.0010989010989, "allele_freq": 0.998773, "allele_num": 0.0, "alt": "G", "category": "missense_variant", "chrom": "22", "enrichment": -9.0, "filter": "PASS", "hom_count": 2315160000.0, "major_consequence": "missense_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.0010989010989, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.998773, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 2315160000.0, "European (Finnish)": -9.0}, "pos": 51133357, "quality_metrics": {"BaseQRankSum": "-1.135e+00", "ClippingRankSum": "-1.309e+00", "DP": "730859", "FS": "0.000", "InbreedingCoeff": "-0.0126", "MQ": "59.28", "MQRankSum": "0.087", "QD": "12.49", "ReadPosRankSum": "1.50", "VQSLOD": "0.599"}, "ref": "C", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 2468}, "variant_id": "22-51133357-C-G"}, {"CANONICAL": "YES", "HGVSc": "c.1240G\u003eT", "HGVSp": "p.Asp414Tyr", "allele_count": 0.000369276218612, "allele_freq": 0.999298, "allele_num": 0.0, "alt": "T", "category": "missense_variant", "chrom": "22", "enrichment": -9.0, "filter": "PASS", "hom_count": 2084220000.0, "major_consequence": "missense_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.000369276218612, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.999298, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 2084220000.0, "European (Finnish)": -9.0}, "pos": 51133412, "quality_metrics": {"BaseQRankSum": "-2.001e+00", "ClippingRankSum": "0.658", "DP": "632736", "FS": "4.049", "InbreedingCoeff": "-0.0199", "MQ": "59.66", "MQRankSum": "0.467", "QD": "8.58", "ReadPosRankSum": "-8.880e-01", "VQSLOD": "-2.159e-01"}, "ref": "G", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 2523}, "variant_id": "22-51133412-G-T"}, {"CANONICAL": "YES", "HGVSc": "c.1245C\u003eT", "HGVSp": "p.Ala415Ala", "allele_count": 0.00294985250737, "allele_freq": 0.981904, "allele_num": 0.00299043062201, "alt": "T", "category": "synonymous_variant", "chrom": "22", "enrichment": 4.9925014997, "filter": "PASS", "hom_count": 1.01089, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.00294985250737, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.00299043062201, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.981904, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 1.01089, "European (Finnish)": -9.0}, "pos": 51133417, "quality_metrics": {"BaseQRankSum": "1.28", "ClippingRankSum": "0.212", "DP": "623159", "FS": "0.000", "InbreedingCoeff": "-0.0230", "MQ": "60.00", "MQRankSum": "0.224", "QD": "13.08", "ReadPosRankSum": "0.322", "VQSLOD": "5.69"}, "ref": "C", "rsid": "rs116756129", "transcript_coordinates": {"ENST00000262795": 2528}, "variant_id": "22-51133417-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.1547-25C\u003eT", "HGVSp": "", "allele_count": 0.000799360511591, "allele_freq": 0.999014, "allele_num": 0.0, "alt": "T", "category": "other_variant", "chrom": "22", "enrichment": -9.0, "filter": "PASS", "hom_count": 1751140000.0, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.000799360511591, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.999014, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 1751140000.0, "European (Finnish)": -9.0}, "pos": 51137093, "quality_metrics": {"BaseQRankSum": "-1.965e+00", "ClippingRankSum": "0.017", "DP": "1459567", "FS": "0.688", "InbreedingCoeff": "0.0103", "MQ": "60.00", "MQRankSum": "0.023", "QD": "12.40", "ReadPosRankSum": "0.345", "VQSLOD": "3.54"}, "ref": "C", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 0}, "variant_id": "22-51137093-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.1547-24G\u003eA", "HGVSp": "", "allele_count": 0.0552441953563, "allele_freq": 0.252865, "allele_num": 0.0484455958549, "alt": "A", "category": "other_variant", "chrom": "22", "enrichment": 0.352737683614, "filter": "PASS", "hom_count": 1.14486, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.0552441953563, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0484455958549, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.252865, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 1.14486, "European (Finnish)": -9.0}, "pos": 51137094, "quality_metrics": {"BaseQRankSum": "1.95", "ClippingRankSum": "-2.670e-01", "DP": "1587351", "FS": "0.692", "InbreedingCoeff": "0.0305", "MQ": "60.00", "MQRankSum": "0.032", "QD": "15.24", "ReadPosRankSum": "0.270", "VQSLOD": "4.10"}, "ref": "G", "rsid": "rs9616942", "transcript_coordinates": {"ENST00000262795": 0}, "variant_id": "22-51137094-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.1599G\u003eA", "HGVSp": "p.Thr533Thr", "allele_count": 0.0, "allele_freq": 0.999397, "allele_num": 6.56943896991e-05, "alt": "A", "category": "synonymous_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 9.85387e-09, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 6.56943896991e-05}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.999397}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 9.85387e-09}, "pos": 51137170, "quality_metrics": {"BaseQRankSum": "0.654", "ClippingRankSum": "0.233", "DP": "1756560", "FS": "2.125", "InbreedingCoeff": "0.0058", "MQ": "59.67", "MQRankSum": "-7.300e-02", "QD": "14.24", "ReadPosRankSum": "-2.200e-01", "VQSLOD": "1.03"}, "ref": "G", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 3232}, "variant_id": "22-51137170-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.1660+18T\u003eC", "HGVSp": "", "allele_count": 0.826965466569, "allele_freq": 0.744779, "allele_num": 0.831869834711, "alt": "C", "category": "other_variant", "chrom": "22", "enrichment": 1.10470646251, "filter": "PASS", "hom_count": 0.978508, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.826965466569, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.831869834711, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.744779, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 0.978508, "European (Finnish)": -9.0}, "pos": 51137249, "quality_metrics": {"BaseQRankSum": "1.47", "ClippingRankSum": "-1.570e-01", "DP": "1970973", "FS": "0.728", "InbreedingCoeff": "0.0442", "MQ": "60.00", "MQRankSum": "0.049", "QD": "27.93", "ReadPosRankSum": "0.156", "VQSLOD": "4.51"}, "ref": "T", "rsid": "rs1557620", "transcript_coordinates": {"ENST00000262795": 0}, "variant_id": "22-51137249-T-C"}, {"CANONICAL": "YES", "HGVSc": "c.1660+22C\u003eG", "HGVSp": "", "allele_count": 0.00588235294118, "allele_freq": 0.918455, "allele_num": 0.00659282700422, "alt": "G", "category": "other_variant", "chrom": "22", "enrichment": 1.27489614648, "filter": "PASS", "hom_count": 0.967372, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.00588235294118, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.00659282700422, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.918455, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 0.967372, "European (Finnish)": -9.0}, "pos": 51137253, "quality_metrics": {"BaseQRankSum": "2.84", "ClippingRankSum": "0.00", "DP": "1334891", "FS": "0.000", "InbreedingCoeff": "0.0237", "MQ": "60.00", "MQRankSum": "0.265", "QD": "14.15", "ReadPosRankSum": "0.465", "VQSLOD": "6.06"}, "ref": "C", "rsid": "rs11704325", "transcript_coordinates": {"ENST00000262795": 0}, "variant_id": "22-51137253-C-G"}, {"CANONICAL": "YES", "HGVSc": "c.1661-8C\u003eT", "HGVSp": "", "allele_count": 0.00292611558157, "allele_freq": 0.865244, "allele_num": 0.00276395798784, "alt": "T", "category": "synonymous_variant", "chrom": "22", "enrichment": 2.70088209775, "filter": "PASS", "hom_count": 1.08441, "major_consequence": "splice_region_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.00292611558157, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.00276395798784, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.865244, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 1.08441, "European (Finnish)": -9.0}, "pos": 51142280, "quality_metrics": {"BaseQRankSum": "-1.285e+00", "ClippingRankSum": "0.039", "DP": "769882", "FS": "0.583", "InbreedingCoeff": "0.0191", "MQ": "60.00", "MQRankSum": "0.231", "QD": "13.61", "ReadPosRankSum": "0.361", "VQSLOD": "4.58"}, "ref": "C", "rsid": "rs112659165", "transcript_coordinates": {"ENST00000262795": 0}, "variant_id": "22-51142280-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.1921C\u003eT", "HGVSp": "p.Arg641Cys", "allele_count": 0.0, "allele_freq": 0.999395, "allele_num": 6.35727908455e-05, "alt": "T", "category": "missense_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 9.40174e-09, "major_consequence": "missense_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 6.35727908455e-05}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.999395}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 9.40174e-09}, "pos": 51143267, "quality_metrics": {"BaseQRankSum": "-1.522e+00", "ClippingRankSum": "-4.370e-01", "DP": "1455831", "FS": "3.015", "InbreedingCoeff": "-0.0001", "MQ": "60.00", "MQRankSum": "0.165", "QD": "11.97", "ReadPosRankSum": "0.648", "VQSLOD": "1.80"}, "ref": "C", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 3832}, "variant_id": "22-51143267-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.1944+9G\u003eA", "HGVSp": "", "allele_count": 0.0, "allele_freq": 0.999405, "allele_num": 6.23363670365e-05, "alt": "A", "category": "other_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 1.27038e-08, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 6.23363670365e-05}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.999405}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 1.27038e-08}, "pos": 51143299, "quality_metrics": {"BaseQRankSum": "1.66", "ClippingRankSum": "-7.130e-01", "DP": "1506435", "FS": "1.972", "InbreedingCoeff": "0.0067", "MQ": "59.68", "MQRankSum": "0.060", "QD": "14.42", "ReadPosRankSum": "0.722", "VQSLOD": "1.99"}, "ref": "G", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 0}, "variant_id": "22-51143299-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.1944+17C\u003eT", "HGVSp": "", "allele_count": 0.0, "allele_freq": 0.999324, "allele_num": 0.000255623721881, "alt": "T", "category": "other_variant", "chrom": "22", "enrichment": 2.80951163385, "filter": "AC_Adj0", "hom_count": 1.07561e-09, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.0, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.000255623721881, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.999324, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 1.07561e-09, "European (Finnish)": -9.0}, "pos": 51143307, "quality_metrics": {"BaseQRankSum": "0.083", "ClippingRankSum": "0.050", "DP": "1513097", "FS": "2.331", "InbreedingCoeff": "0.0018", "MQ": "60.00", "MQRankSum": "0.131", "QD": "13.67", "ReadPosRankSum": "0.193", "VQSLOD": "2.31"}, "ref": "C", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 0}, "variant_id": "22-51143307-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.1944+19G\u003eC", "HGVSp": "", "allele_count": 0.0299051787017, "allele_freq": 0.50197, "allele_num": 0.0273195876289, "alt": "C", "category": "other_variant", "chrom": "22", "enrichment": 0.531447738698, "filter": "PASS", "hom_count": 1.10654, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.0299051787017, "European (Finnish)": 0.046218487395}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0273195876289, "European (Finnish)": 0.0390186040704}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.50197, "European (Finnish)": 0.669074}, "pop_homs": {"European (Ashkenazi-Jewish)": 1.10654, "European (Finnish)": 1.09932}, "pos": 51143309, "quality_metrics": {"BaseQRankSum": "1.34", "ClippingRankSum": "-2.800e-01", "DP": "1745659", "FS": "0.000", "InbreedingCoeff": "0.0237", "MQ": "59.70", "MQRankSum": "0.077", "QD": "16.08", "ReadPosRankSum": "0.334", "VQSLOD": "6.24"}, "ref": "G", "rsid": "rs8141844", "transcript_coordinates": {"ENST00000262795": 0}, "variant_id": "22-51143309-G-C"}, {"CANONICAL": "YES", "HGVSc": "c.1945-41C\u003eT", "HGVSp": "", "allele_count": 0.00255474452555, "allele_freq": 0.851676, "allele_num": 0.00255885363357, "alt": "T", "category": "other_variant", "chrom": "22", "enrichment": 0.544658010025, "filter": "PASS", "hom_count": 0.910387, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.00255474452555, "European (Finnish)": 0.00420168067227}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.00255885363357, "European (Finnish)": 0.00124223602484}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.851676, "European (Finnish)": 0.12231}, "pop_homs": {"European (Ashkenazi-Jewish)": 0.910387, "European (Finnish)": 3.20035}, "pos": 51143351, "quality_metrics": {"BaseQRankSum": "-1.776e+00", "ClippingRankSum": "-2.120e-01", "DP": "1994968", "FS": "0.585", "InbreedingCoeff": "0.0020", "MQ": "59.76", "MQRankSum": "0.153", "QD": "12.95", "ReadPosRankSum": "0.655", "VQSLOD": "4.51"}, "ref": "C", "rsid": "rs147115189", "transcript_coordinates": {"ENST00000262795": 0}, "variant_id": "22-51143351-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.1951G\u003eA", "HGVSp": "p.Gly651Arg", "allele_count": 0.0, "allele_freq": 0.99917, "allele_num": 0.000124038700074, "alt": "A", "category": "missense_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 1.94636e-08, "major_consequence": "missense_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.000124038700074}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.99917}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 1.94636e-08}, "pos": 51143398, "quality_metrics": {"BaseQRankSum": "0.867", "ClippingRankSum": "0.624", "DP": "1973535", "FS": "0.613", "InbreedingCoeff": "0.0044", "MQ": "59.70", "MQRankSum": "-8.610e-01", "QD": "11.60", "ReadPosRankSum": "-3.150e-01", "VQSLOD": "0.298"}, "ref": "G", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 3993}, "variant_id": "22-51143398-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.2007T\u003eC", "HGVSp": "p.Gly669Gly", "allele_count": 0.0, "allele_freq": 0.999402, "allele_num": 6.21581302834e-05, "alt": "C", "category": "synonymous_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 1.14889e-08, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 6.21581302834e-05}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.999402}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 1.14889e-08}, "pos": 51143454, "quality_metrics": {"BaseQRankSum": "0.091", "ClippingRankSum": "-1.990e-01", "DP": "1973399", "FS": "1.751", "InbreedingCoeff": "0.0225", "MQ": "59.57", "MQRankSum": "-2.700e-02", "QD": "12.29", "ReadPosRankSum": "0.567", "VQSLOD": "1.94"}, "ref": "T", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 4049}, "variant_id": "22-51143454-T-C"}, {"CANONICAL": "YES", "HGVSc": "c.2012A\u003eG", "HGVSp": "p.Asn671Ser", "allele_count": 0.0, "allele_freq": 0.999404, "allele_num": 6.21658585105e-05, "alt": "G", "category": "missense_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 1.22716e-08, "major_consequence": "missense_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 6.21658585105e-05}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.999404}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 1.22716e-08}, "pos": 51143459, "quality_metrics": {"BaseQRankSum": "4.38", "ClippingRankSum": "1.35", "DP": "1970037", "FS": "1.368", "InbreedingCoeff": "0.0060", "MQ": "59.29", "MQRankSum": "0.295", "QD": "13.42", "ReadPosRankSum": "-1.180e-01", "VQSLOD": "0.662"}, "ref": "A", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 4054}, "variant_id": "22-51143459-A-G"}, {"CANONICAL": "YES", "HGVSc": "c.2045G\u003eA", "HGVSp": "p.Arg682Lys", "allele_count": 0.0, "allele_freq": 0.999419, "allele_num": 6.20270437911e-05, "alt": "A", "category": "missense_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 1.98219e-08, "major_consequence": "missense_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 6.20270437911e-05}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.999419}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 1.98219e-08}, "pos": 51143492, "quality_metrics": {"BaseQRankSum": "-9.590e-01", "ClippingRankSum": "1.05", "DP": "1965671", "FS": "0.000", "InbreedingCoeff": "0.0014", "MQ": "59.83", "MQRankSum": "1.05", "QD": "11.44", "ReadPosRankSum": "1.39", "VQSLOD": "0.552"}, "ref": "G", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 4087}, "variant_id": "22-51143492-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.2077+33A\u003eG", "HGVSp": "", "allele_count": 0.00036469730124, "allele_freq": 0.999302, "allele_num": 0.0, "alt": "G", "category": "other_variant", "chrom": "22", "enrichment": -9.0, "filter": "PASS", "hom_count": 1820360000.0, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.00036469730124, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.999302, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 1820360000.0, "European (Finnish)": -9.0}, "pos": 51143557, "quality_metrics": {"BaseQRankSum": "-7.640e-01", "ClippingRankSum": "1.19", "DP": "1838495", "FS": "0.000", "InbreedingCoeff": "0.0045", "MQ": "60.00", "MQRankSum": "-2.900e-01", "QD": "15.10", "ReadPosRankSum": "-1.449e+00", "VQSLOD": "-6.481e-01"}, "ref": "A", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 0}, "variant_id": "22-51143557-A-G"}, {"CANONICAL": "YES", "HGVSc": "c.2159-12C\u003eG", "HGVSp": "", "allele_count": 0.0, "allele_freq": 0.998545, "allele_num": 0.000381000762002, "alt": "G", "category": "other_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 1.39948e-08, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.000381000762002}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.998545}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 1.39948e-08}, "pos": 51150031, "quality_metrics": {"BaseQRankSum": "-3.800e-01", "ClippingRankSum": "-5.300e-01", "DP": "1270714", "FS": "7.335", "InbreedingCoeff": "-0.0012", "MQ": "60.00", "MQRankSum": "0.429", "QD": "13.25", "ReadPosRankSum": "0.542", "VQSLOD": "0.695"}, "ref": "C", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 0}, "variant_id": "22-51150031-C-G"}, {"CANONICAL": "YES", "HGVSc": "c.2209G\u003eA", "HGVSp": "p.Ala737Thr", "allele_count": 0.0256598240469, "allele_freq": 0.529552, "allele_num": 0.0285126396238, "alt": "A", "category": "missense_variant", "chrom": "22", "enrichment": 0.43568291644, "filter": "PASS", "hom_count": 0.903326, "major_consequence": "missense_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.0256598240469, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0285126396238, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.529552, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 0.903326, "European (Finnish)": -9.0}, "pos": 51153371, "quality_metrics": {"BaseQRankSum": "-1.460e-01", "ClippingRankSum": "-3.650e-01", "DP": "663925", "FS": "1.124", "InbreedingCoeff": "-0.0039", "MQ": "60.00", "MQRankSum": "0.200", "QD": "13.40", "ReadPosRankSum": "0.462", "VQSLOD": "4.70"}, "ref": "G", "rsid": "rs61729471", "transcript_coordinates": {"ENST00000262795": 4481}, "variant_id": "22-51153371-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.2358G\u003eA", "HGVSp": "p.Pro786Pro", "allele_count": 0.00036443148688, "allele_freq": 0.79188, "allele_num": 0.000254194204372, "alt": "A", "category": "synonymous_variant", "chrom": "22", "enrichment": 0.0328771630697, "filter": "PASS", "hom_count": 0.687524, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.00036443148688, "European (Finnish)": 0.0252100840336}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.000254194204372, "European (Finnish)": 0.0260481270156}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.79188, "European (Finnish)": 0.934623}, "pop_homs": {"European (Ashkenazi-Jewish)": 0.687524, "European (Finnish)": 0.976038}, "pos": 51154141, "quality_metrics": {"BaseQRankSum": "0.901", "ClippingRankSum": "-2.780e-01", "DP": "2222296", "FS": "0.000", "InbreedingCoeff": "0.0153", "MQ": "59.63", "MQRankSum": "0.310", "QD": "13.04", "ReadPosRankSum": "0.701", "VQSLOD": "5.88"}, "ref": "G", "rsid": "rs117066889", "transcript_coordinates": {"ENST00000262795": 4713}, "variant_id": "22-51154141-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.2374G\u003eA", "HGVSp": "p.Gly792Arg", "allele_count": 0.0, "allele_freq": 0.999414, "allele_num": 6.20424370269e-05, "alt": "A", "category": "missense_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 1.66383e-08, "major_consequence": "missense_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 6.20424370269e-05}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.999414}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 1.66383e-08}, "pos": 51154157, "quality_metrics": {"BaseQRankSum": "2.28", "ClippingRankSum": "-1.035e+00", "DP": "2142983", "FS": "1.915", "InbreedingCoeff": "0.0006", "MQ": "59.51", "MQRankSum": "-4.900e-02", "QD": "11.19", "ReadPosRankSum": "0.577", "VQSLOD": "1.07"}, "ref": "G", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 4729}, "variant_id": "22-51154157-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.2398+23C\u003eT", "HGVSp": "", "allele_count": 0.0, "allele_freq": 0.999424, "allele_num": 6.30119722747e-05, "alt": "T", "category": "other_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 2.24365e-08, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 6.30119722747e-05}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.999424}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 2.24365e-08}, "pos": 51154204, "quality_metrics": {"BaseQRankSum": "-2.747e+00", "ClippingRankSum": "-3.140e-01", "DP": "2074059", "FS": "1.641", "InbreedingCoeff": "0.0010", "MQ": "58.83", "MQRankSum": "0.589", "QD": "11.62", "ReadPosRankSum": "0.914", "VQSLOD": "-5.820e-02"}, "ref": "C", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 0}, "variant_id": "22-51154204-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.3309G\u003eA", "HGVSp": "p.Gly1103Gly", "allele_count": 0.000370644922165, "allele_freq": 0.999298, "allele_num": 0.0, "alt": "A", "category": "synonymous_variant", "chrom": "22", "enrichment": -9.0, "filter": "PASS", "hom_count": 2069030000.0, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.000370644922165, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.999298, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 2069030000.0, "European (Finnish)": -9.0}, "pos": 51159522, "quality_metrics": {"BaseQRankSum": "-9.120e-01", "ClippingRankSum": "0.608", "DP": "1034380", "FS": "2.430", "InbreedingCoeff": "0.0095", "MQ": "60.00", "MQRankSum": "1.06", "QD": "9.23", "ReadPosRankSum": "0.244", "VQSLOD": "0.207"}, "ref": "G", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 7916}, "variant_id": "22-51159522-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.3382C\u003eT", "HGVSp": "p.Leu1128Leu", "allele_count": 0.0125553914328, "allele_freq": 0.457729, "allele_num": 0.0145788336933, "alt": "T", "category": "synonymous_variant", "chrom": "22", "enrichment": 8.04788293898, "filter": "PASS", "hom_count": 0.84851, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.0125553914328, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0145788336933, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.457729, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 0.84851, "European (Finnish)": -9.0}, "pos": 51159595, "quality_metrics": {"BaseQRankSum": "-8.250e-01", "ClippingRankSum": "0.072", "DP": "858333", "FS": "0.000", "InbreedingCoeff": "-0.0042", "MQ": "60.00", "MQRankSum": "0.259", "QD": "12.71", "ReadPosRankSum": "0.361", "VQSLOD": "5.73"}, "ref": "C", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 7989}, "variant_id": "22-51159595-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.3396G\u003eA", "HGVSp": "p.Glu1132Glu", "allele_count": 0.00184911242604, "allele_freq": 0.155237, "allele_num": 0.00384615384615, "alt": "A", "category": "synonymous_variant", "chrom": "22", "enrichment": 20.0381810382, "filter": "PASS", "hom_count": 0.472723, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.00184911242604, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.00384615384615, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.155237, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 0.472723, "European (Finnish)": -9.0}, "pos": 51159609, "quality_metrics": {"BaseQRankSum": "-1.973e+00", "ClippingRankSum": "-2.990e-01", "DP": "823075", "FS": "2.473", "InbreedingCoeff": "-0.0090", "MQ": "60.00", "MQRankSum": "0.289", "QD": "11.38", "ReadPosRankSum": "0.429", "VQSLOD": "1.59"}, "ref": "G", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 8003}, "variant_id": "22-51159609-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.3411C\u003eT", "HGVSp": "p.Ser1137Ser", "allele_count": 0.0, "allele_freq": 0.998813, "allele_num": 0.000831485587583, "alt": "T", "category": "synonymous_variant", "chrom": "22", "enrichment": 0.12862448687, "filter": "AC_Adj0", "hom_count": 8.0479e-10, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.0, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.000831485587583, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.998813, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 8.0479e-10, "European (Finnish)": -9.0}, "pos": 51159624, "quality_metrics": {"BaseQRankSum": "-4.750e-01", "ClippingRankSum": "0.046", "DP": "811051", "FS": "0.525", "InbreedingCoeff": "-0.0077", "MQ": "60.00", "MQRankSum": "0.259", "QD": "13.13", "ReadPosRankSum": "0.380", "VQSLOD": "4.11"}, "ref": "C", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 8018}, "variant_id": "22-51159624-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.3565G\u003eA", "HGVSp": "p.Ala1189Thr", "allele_count": 0.000364166059723, "allele_freq": 0.713396, "allele_num": 0.000254194204372, "alt": "A", "category": "missense_variant", "chrom": "22", "enrichment": 1.46224256293, "filter": "PASS", "hom_count": 1.68377, "major_consequence": "missense_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.000364166059723, "European (Finnish)": 0.00210084033613}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.000254194204372, "European (Finnish)": 0.00301862556198}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.713396, "European (Finnish)": 0.869758}, "pop_homs": {"European (Ashkenazi-Jewish)": 1.68377, "European (Finnish)": 0.848785}, "pos": 51159778, "quality_metrics": {"BaseQRankSum": "-2.127e+00", "ClippingRankSum": "-2.250e-01", "DP": "1365513", "FS": "0.537", "InbreedingCoeff": "0.0046", "MQ": "59.92", "MQRankSum": "0.087", "QD": "11.72", "ReadPosRankSum": "0.564", "VQSLOD": "3.28"}, "ref": "G", "rsid": "rs139686326", "transcript_coordinates": {"ENST00000262795": 8172}, "variant_id": "22-51159778-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.3585G\u003eA", "HGVSp": "p.Lys1195Lys", "allele_count": 0.0127458120903, "allele_freq": 0.378754, "allele_num": 0.0150203665988, "alt": "A", "category": "synonymous_variant", "chrom": "22", "enrichment": 1.38707556011, "filter": "PASS", "hom_count": 0.825118, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.0127458120903, "European (Finnish)": 0.00420168067227}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0150203665988, "European (Finnish)": 0.00242997825809}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.378754, "European (Finnish)": 0.549081}, "pop_homs": {"European (Ashkenazi-Jewish)": 0.825118, "European (Finnish)": 1.55228}, "pos": 51159798, "quality_metrics": {"BaseQRankSum": "-7.960e-01", "ClippingRankSum": "-1.410e-01", "DP": "1385500", "FS": "0.000", "InbreedingCoeff": "0.0014", "MQ": "60.00", "MQRankSum": "0.253", "QD": "12.09", "ReadPosRankSum": "0.511", "VQSLOD": "5.55"}, "ref": "G", "rsid": "rs145196448", "transcript_coordinates": {"ENST00000262795": 8192}, "variant_id": "22-51159798-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.3588C\u003eT", "HGVSp": "p.Val1196Val", "allele_count": 0.000364166059723, "allele_freq": 0.538321, "allele_num": 0.000762582613116, "alt": "T", "category": "synonymous_variant", "chrom": "22", "enrichment": 16.0465530399, "filter": "PASS", "hom_count": 0.490751, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.000364166059723, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.000762582613116, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.538321, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 0.490751, "European (Finnish)": -9.0}, "pos": 51159801, "quality_metrics": {"BaseQRankSum": "-1.819e+00", "ClippingRankSum": "0.155", "DP": "1360413", "FS": "0.000", "InbreedingCoeff": "0.0027", "MQ": "60.00", "MQRankSum": "0.341", "QD": "12.03", "ReadPosRankSum": "-1.920e-01", "VQSLOD": "2.89"}, "ref": "C", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 8195}, "variant_id": "22-51159801-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.3600G\u003eA", "HGVSp": "p.Glu1200Glu", "allele_count": 0.0, "allele_freq": 0.99934, "allele_num": 0.000254194204372, "alt": "A", "category": "synonymous_variant", "chrom": "22", "enrichment": 15.8319349097, "filter": "VQSRTrancheSNP99.60to99.80", "hom_count": 1.72076e-09, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.0, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.000254194204372, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.99934, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 1.72076e-09, "European (Finnish)": -9.0}, "pos": 51159813, "quality_metrics": {"BaseQRankSum": "-1.858e+00", "ClippingRankSum": "-7.960e-01", "DP": "1333992", "FS": "1.520", "InbreedingCoeff": "-0.0001", "MQ": "59.38", "MQRankSum": "-9.730e-01", "QD": "3.53", "ReadPosRankSum": "0.796", "VQSLOD": "-2.924e+00"}, "ref": "G", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 8207}, "variant_id": "22-51159813-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.3906A\u003eG", "HGVSp": "p.Pro1302Pro", "allele_count": 0.00437636761488, "allele_freq": 0.0858528, "allele_num": 0.0017884517118, "alt": "G", "category": "synonymous_variant", "chrom": "22", "enrichment": 5.50723437571, "filter": "PASS", "hom_count": 2.28969, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.00437636761488, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0017884517118, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.0858528, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 2.28969, "European (Finnish)": -9.0}, "pos": 51160119, "quality_metrics": {"BaseQRankSum": "-9.220e-01", "ClippingRankSum": "-2.540e-01", "DP": "1121695", "FS": "0.000", "InbreedingCoeff": "-0.0036", "MQ": "59.55", "MQRankSum": "0.221", "QD": "10.89", "ReadPosRankSum": "0.423", "VQSLOD": "5.08"}, "ref": "A", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 8513}, "variant_id": "22-51160119-A-G"}, {"CANONICAL": "YES", "HGVSc": "c.3927C\u003eT", "HGVSp": "p.Ser1309Ser", "allele_count": 0.000364166059723, "allele_freq": 0.99928, "allele_num": 0.0, "alt": "T", "category": "synonymous_variant", "chrom": "22", "enrichment": -9.0, "filter": "PASS", "hom_count": 3584140000.0, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.000364166059723, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.99928, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 3584140000.0, "European (Finnish)": -9.0}, "pos": 51160140, "quality_metrics": {"BaseQRankSum": "0.093", "ClippingRankSum": "0.057", "DP": "1124035", "FS": "0.000", "InbreedingCoeff": "-0.0025", "MQ": "60.00", "MQRankSum": "0.340", "QD": "11.51", "ReadPosRankSum": "0.409", "VQSLOD": "4.09"}, "ref": "C", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 8534}, "variant_id": "22-51160140-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.3941G\u003eA", "HGVSp": "p.Arg1314Lys", "allele_count": 0.000364166059723, "allele_freq": 0.999315, "allele_num": 0.0, "alt": "A", "category": "missense_variant", "chrom": "22", "enrichment": -9.0, "filter": "PASS", "hom_count": 1237300000.0, "major_consequence": "missense_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.000364166059723, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.999315, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 1237300000.0, "European (Finnish)": -9.0}, "pos": 51160154, "quality_metrics": {"BaseQRankSum": "-7.310e-01", "ClippingRankSum": "0.058", "DP": "1024591", "FS": "0.000", "InbreedingCoeff": "-0.0058", "MQ": "60.00", "MQRankSum": "0.042", "QD": "11.81", "ReadPosRankSum": "0.095", "VQSLOD": "4.75"}, "ref": "G", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 8548}, "variant_id": "22-51160154-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.4264C\u003eG", "HGVSp": "p.Leu1422Val", "allele_count": 0.00109249817917, "allele_freq": 0.859579, "allele_num": 0.00101781170483, "alt": "G", "category": "missense_variant", "chrom": "22", "enrichment": 4.77220894236, "filter": "PASS", "hom_count": 1.14592, "major_consequence": "missense_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.00109249817917, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.00101781170483, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.859579, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 1.14592, "European (Finnish)": -9.0}, "pos": 51160477, "quality_metrics": {"BaseQRankSum": "-1.162e+00", "ClippingRankSum": "-4.960e-01", "DP": "1264768", "FS": "4.928", "InbreedingCoeff": "-0.0011", "MQ": "59.55", "MQRankSum": "0.338", "QD": "11.98", "ReadPosRankSum": "0.253", "VQSLOD": "1.39"}, "ref": "C", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 8871}, "variant_id": "22-51160477-C-G"}, {"CANONICAL": "YES", "HGVSc": "c.4326G\u003eA", "HGVSp": "p.Pro1442Pro", "allele_count": 0.0, "allele_freq": 0.998963, "allele_num": 0.000201207243461, "alt": "A", "category": "synonymous_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 1.25932e-08, "major_consequence": "synonymous_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.000201207243461}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.998963}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 1.25932e-08}, "pos": 51160539, "quality_metrics": {"BaseQRankSum": "0.204", "ClippingRankSum": "0.091", "DP": "1125588", "FS": "1.216", "InbreedingCoeff": "-0.0020", "MQ": "60.00", "MQRankSum": "-1.220e-01", "QD": "13.71", "ReadPosRankSum": "-3.350e-01", "VQSLOD": "1.75"}, "ref": "G", "rsid": "rs186474600", "transcript_coordinates": {"ENST00000262795": 8933}, "variant_id": "22-51160539-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.4405G\u003eA", "HGVSp": "p.Gly1469Arg", "allele_count": 0.00036496350365, "allele_freq": 0.999286, "allele_num": 0.0, "alt": "A", "category": "missense_variant", "chrom": "22", "enrichment": -9.0, "filter": "PASS", "hom_count": 2955610000.0, "major_consequence": "missense_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.00036496350365, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.999286, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 2955610000.0, "European (Finnish)": -9.0}, "pos": 51160618, "quality_metrics": {"BaseQRankSum": "-1.085e+00", "ClippingRankSum": "0.651", "DP": "1049559", "FS": "0.000", "InbreedingCoeff": "-0.0071", "MQ": "60.00", "MQRankSum": "-9.400e-01", "QD": "13.69", "ReadPosRankSum": "-8.680e-01", "VQSLOD": "0.832"}, "ref": "G", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 9012}, "variant_id": "22-51160618-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.4538T\u003eC", "HGVSp": "p.Leu1513Pro", "allele_count": 0.0, "allele_freq": 0.998584, "allele_num": 0.000407442618498, "alt": "C", "category": "missense_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0", "hom_count": 3.22501e-08, "major_consequence": "missense_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.000407442618498}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.998584}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 3.22501e-08}, "pos": 51160751, "quality_metrics": {"BaseQRankSum": "0.613", "ClippingRankSum": "-6.330e-01", "DP": "1381104", "FS": "4.776", "InbreedingCoeff": "-0.0010", "MQ": "60.00", "MQRankSum": "0.520", "QD": "14.31", "ReadPosRankSum": "1.27", "VQSLOD": "0.839"}, "ref": "T", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 9145}, "variant_id": "22-51160751-T-C"}, {"CANONICAL": "YES", "HGVSc": "c.4571C\u003eT", "HGVSp": "p.Thr1524Met", "allele_count": 0.0, "allele_freq": 0.999449, "allele_num": 6.79532481653e-05, "alt": "T", "category": "missense_variant", "chrom": "22", "enrichment": -9.0, "filter": "AC_Adj0_Filter", "hom_count": 4.85056e-08, "major_consequence": "missense_variant", "pop_acs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.0}, "pop_ans": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 6.79532481653e-05}, "pop_freq": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 0.999449}, "pop_homs": {"European (Ashkenazi-Jewish)": -9.0, "European (Finnish)": 4.85056e-08}, "pos": 51160784, "quality_metrics": {"BaseQRankSum": "0.731", "ClippingRankSum": "-7.310e-01", "DP": "1376229", "FS": "1.740", "InbreedingCoeff": "-0.0011", "MQ": "60.00", "MQRankSum": "-3.040e-01", "QD": "12.86", "ReadPosRankSum": "0.731", "VQSLOD": "1.07"}, "ref": "C", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 9178}, "variant_id": "22-51160784-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.4652+11C\u003eT", "HGVSp": "", "allele_count": 0.00036443148688, "allele_freq": 0.999286, "allele_num": 0.0, "alt": "T", "category": "other_variant", "chrom": "22", "enrichment": -9.0, "filter": "PASS", "hom_count": 2986910000.0, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.00036443148688, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.0, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.999286, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 2986910000.0, "European (Finnish)": -9.0}, "pos": 51160876, "quality_metrics": {"BaseQRankSum": "1.21", "ClippingRankSum": "-5.790e-01", "DP": "1338335", "FS": "2.706", "InbreedingCoeff": "-0.0014", "MQ": "59.66", "MQRankSum": "0.303", "QD": "11.74", "ReadPosRankSum": "0.694", "VQSLOD": "2.21"}, "ref": "C", "rsid": ".", "transcript_coordinates": {"ENST00000262795": 0}, "variant_id": "22-51160876-C-T"}, {"CANONICAL": "YES", "HGVSc": "c.4652+12G\u003eA", "HGVSp": "", "allele_count": 0.00036469730124, "allele_freq": 0.734192, "allele_num": 0.000255885363357, "alt": "A", "category": "other_variant", "chrom": "22", "enrichment": 0.112414358472, "filter": "PASS", "hom_count": 1.61773, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.00036469730124, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.000255885363357, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.734192, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 1.61773, "European (Finnish)": -9.0}, "pos": 51160877, "quality_metrics": {"BaseQRankSum": "0.297", "ClippingRankSum": "-1.310e-01", "DP": "1339322", "FS": "0.564", "InbreedingCoeff": "0.0005", "MQ": "60.00", "MQRankSum": "0.178", "QD": "13.29", "ReadPosRankSum": "0.530", "VQSLOD": "4.04"}, "ref": "G", "rsid": "rs182725302", "transcript_coordinates": {"ENST00000262795": 0}, "variant_id": "22-51160877-G-A"}, {"CANONICAL": "YES", "HGVSc": "c.4652+48G\u003eA", "HGVSp": "", "allele_count": 0.00512820512821, "allele_freq": 0.0192791, "allele_num": 0.00182481751825, "alt": "A", "category": "other_variant", "chrom": "22", "enrichment": 2.88713557202, "filter": "PASS", "hom_count": 2.99319, "major_consequence": "intron_variant", "pop_acs": {"European (Ashkenazi-Jewish)": 0.00512820512821, "European (Finnish)": -9.0}, "pop_ans": {"European (Ashkenazi-Jewish)": 0.00182481751825, "European (Finnish)": -9.0}, "pop_freq": {"European (Ashkenazi-Jewish)": 0.0192791, "European (Finnish)": -9.0}, "pop_homs": {"European (Ashkenazi-Jewish)": 2.99319, "European (Finnish)": -9.0}, "pos": 51160913, "quality_metrics": {"BaseQRankSum": "-1.543e+00", "ClippingRankSum": "-1.930e-01", "DP": "1266331", "FS": "0.000", "InbreedingCoeff": "0.0001", "MQ": "60.00", "MQRankSum": "0.290", "QD": "13.25", "ReadPosRankSum": "0.423", "VQSLOD": "6.11"}, "ref": "G", "rsid": "rs142301047", "transcript_coordinates": {"ENST00000262795": 0}, "variant_id": "22-51160913-G-A"}];
+        window.transcripts_in_gene = [{"chrom": "22", "gene_id": "ENSG00000251322", "start": 51112844, "stop": 51171727, "strand": "+", "transcript_id": "ENST00000414786", "xstart": 22051112844, "xstop": 22051171727}, {"chrom": "22", "gene_id": "ENSG00000251322", "start": 51113071, "stop": 51171642, "strand": "+", "transcript_id": "ENST00000262795", "xstart": 22051113071, "xstop": 22051171642}, {"chrom": "22", "gene_id": "ENSG00000251322", "start": 51113071, "stop": 51171642, "strand": "+", "transcript_id": "ENST00000445220", "xstart": 22051113071, "xstop": 22051171642}];
+        window.coverage_stats = [{"-log10pvalue": 0.0, "log_odds_ratio": -18.384, "odds_ratio": 0.0, "pos": 51115031, "pvalue": 0.9994}, {"-log10pvalue": 0.0, "log_odds_ratio": -17.115, "odds_ratio": 0.0, "pos": 51115094, "pvalue": 0.99944}, {"-log10pvalue": 0.0, "log_odds_ratio": -17.822, "odds_ratio": 0.0, "pos": 51115122, "pvalue": 0.99942}, {"-log10pvalue": 0.0, "log_odds_ratio": -17.452, "odds_ratio": 0.0, "pos": 51115133, "pvalue": 0.99919}, {"-log10pvalue": 0.0, "log_odds_ratio": -18.211, "odds_ratio": 0.0, "pos": 51117057, "pvalue": 0.9994}, {"-log10pvalue": 1.98, "log_odds_ratio": 3.6635, "odds_ratio": 39.0, "pos": 51117099, "pvalue": 0.010416}, {"-log10pvalue": 0.45, "log_odds_ratio": -0.048266, "odds_ratio": 0.95, "pos": 51117137, "pvalue": 0.35679}, {"-log10pvalue": 0.0, "log_odds_ratio": -21.573, "odds_ratio": 0.0, "pos": 51117157, "pvalue": 0.99929}, {"-log10pvalue": 0.0, "log_odds_ratio": -17.222, "odds_ratio": 0.0, "pos": 51117776, "pvalue": 0.9985}, {"-log10pvalue": 0.0, "log_odds_ratio": 20.941, "odds_ratio": 1243660000.0, "pos": 51121773, "pvalue": 0.99931}, {"-log10pvalue": 0.0, "log_odds_ratio": -17.092, "odds_ratio": 0.0, "pos": 51122976, "pvalue": 0.99921}, {"-log10pvalue": 0.0, "log_odds_ratio": 21.335, "odds_ratio": 1843010000.0, "pos": 51123092, "pvalue": 0.9993}, {"-log10pvalue": 0.0, "log_odds_ratio": -18.136, "odds_ratio": 0.0, "pos": 51123101, "pvalue": 0.99941}, {"-log10pvalue": 0.0, "log_odds_ratio": -21.249, "odds_ratio": 0.0, "pos": 51133286, "pvalue": 0.9993}, {"-log10pvalue": 0.0, "log_odds_ratio": 21.563, "odds_ratio": 2315160000.0, "pos": 51133357, "pvalue": 0.99877}, {"-log10pvalue": 0.0, "log_odds_ratio": 21.458, "odds_ratio": 2084220000.0, "pos": 51133412, "pvalue": 0.9993}, {"-log10pvalue": 0.01, "log_odds_ratio": 0.010831, "odds_ratio": 1.01, "pos": 51133417, "pvalue": 0.9819}, {"-log10pvalue": 0.0, "log_odds_ratio": 21.284, "odds_ratio": 1751140000.0, "pos": 51137093, "pvalue": 0.99901}, {"-log10pvalue": 0.6, "log_odds_ratio": 0.13528, "odds_ratio": 1.14, "pos": 51137094, "pvalue": 0.25287}, {"-log10pvalue": 0.0, "log_odds_ratio": -18.435, "odds_ratio": 0.0, "pos": 51137170, "pvalue": 0.9994}, {"-log10pvalue": 0.59, "log_odds_ratio": -0.28864, "odds_ratio": 0.75, "pos": 51137247, "pvalue": 0.25558}, {"-log10pvalue": 0.13, "log_odds_ratio": -0.021726, "odds_ratio": 0.98, "pos": 51137249, "pvalue": 0.74478}, {"-log10pvalue": 0.04, "log_odds_ratio": -0.033172, "odds_ratio": 0.97, "pos": 51137253, "pvalue": 0.91846}, {"-log10pvalue": 0.06, "log_odds_ratio": 0.081036, "odds_ratio": 1.08, "pos": 51142280, "pvalue": 0.86524}, {"-log10pvalue": 0.0, "log_odds_ratio": -18.482, "odds_ratio": 0.0, "pos": 51143267, "pvalue": 0.9994}, {"-log10pvalue": 0.0, "log_odds_ratio": -18.181, "odds_ratio": 0.0, "pos": 51143299, "pvalue": 0.9994}, {"-log10pvalue": 0.0, "log_odds_ratio": -20.65, "odds_ratio": 0.0, "pos": 51143307, "pvalue": 0.99932}, {"-log10pvalue": 0.3, "log_odds_ratio": 0.10124, "odds_ratio": 1.11, "pos": 51143309, "pvalue": 0.50197}, {"-log10pvalue": 0.07, "log_odds_ratio": -0.093885, "odds_ratio": 0.91, "pos": 51143351, "pvalue": 0.85168}, {"-log10pvalue": 0.0, "log_odds_ratio": -17.755, "odds_ratio": 0.0, "pos": 51143398, "pvalue": 0.99917}, {"-log10pvalue": 0.0, "log_odds_ratio": -18.282, "odds_ratio": 0.0, "pos": 51143454, "pvalue": 0.9994}, {"-log10pvalue": 0.0, "log_odds_ratio": -18.216, "odds_ratio": 0.0, "pos": 51143459, "pvalue": 0.9994}, {"-log10pvalue": 0.0, "log_odds_ratio": -17.736, "odds_ratio": 0.0, "pos": 51143492, "pvalue": 0.99942}, {"-log10pvalue": 0.0, "log_odds_ratio": 21.322, "odds_ratio": 1820360000.0, "pos": 51143557, "pvalue": 0.9993}, {"-log10pvalue": 0.0, "log_odds_ratio": -18.085, "odds_ratio": 0.0, "pos": 51150031, "pvalue": 0.99855}, {"-log10pvalue": 0.28, "log_odds_ratio": -0.10167, "odds_ratio": 0.9, "pos": 51153371, "pvalue": 0.52955}, {"-log10pvalue": 0.24, "log_odds_ratio": 0.37315, "odds_ratio": 1.45, "pos": 51154049, "pvalue": 0.58115}, {"-log10pvalue": 0.1, "log_odds_ratio": -0.37466, "odds_ratio": 0.69, "pos": 51154141, "pvalue": 0.79188}, {"-log10pvalue": 0.0, "log_odds_ratio": -17.912, "odds_ratio": 0.0, "pos": 51154157, "pvalue": 0.99941}, {"-log10pvalue": 0.0, "log_odds_ratio": -17.613, "odds_ratio": 0.0, "pos": 51154204, "pvalue": 0.99942}, {"-log10pvalue": 0.0, "log_odds_ratio": 21.45, "odds_ratio": 2069030000.0, "pos": 51159522, "pvalue": 0.9993}, {"-log10pvalue": 0.34, "log_odds_ratio": -0.16427, "odds_ratio": 0.85, "pos": 51159595, "pvalue": 0.45773}, {"-log10pvalue": 0.81, "log_odds_ratio": -0.74925, "odds_ratio": 0.47, "pos": 51159609, "pvalue": 0.15524}, {"-log10pvalue": 0.0, "log_odds_ratio": -20.94, "odds_ratio": 0.0, "pos": 51159624, "pvalue": 0.99881}, {"-log10pvalue": 0.15, "log_odds_ratio": 0.52104, "odds_ratio": 1.68, "pos": 51159778, "pvalue": 0.7134}, {"-log10pvalue": 0.42, "log_odds_ratio": -0.19223, "odds_ratio": 0.83, "pos": 51159798, "pvalue": 0.37875}, {"-log10pvalue": 0.27, "log_odds_ratio": -0.71182, "odds_ratio": 0.49, "pos": 51159801, "pvalue": 0.53832}, {"-log10pvalue": 0.0, "log_odds_ratio": -20.18, "odds_ratio": 0.0, "pos": 51159813, "pvalue": 0.99934}, {"-log10pvalue": 1.07, "log_odds_ratio": 0.82842, "odds_ratio": 2.29, "pos": 51160119, "pvalue": 0.085853}, {"-log10pvalue": 0.0, "log_odds_ratio": 22.0, "odds_ratio": 3584140000.0, "pos": 51160140, "pvalue": 0.99928}, {"-log10pvalue": 0.0, "log_odds_ratio": 20.936, "odds_ratio": 1237300000.0, "pos": 51160154, "pvalue": 0.99931}, {"-log10pvalue": 0.07, "log_odds_ratio": 0.13621, "odds_ratio": 1.15, "pos": 51160477, "pvalue": 0.85958}, {"-log10pvalue": 0.0, "log_odds_ratio": -18.19, "odds_ratio": 0.0, "pos": 51160539, "pvalue": 0.99896}, {"-log10pvalue": 0.0, "log_odds_ratio": 21.807, "odds_ratio": 2955610000.0, "pos": 51160618, "pvalue": 0.99929}, {"-log10pvalue": 0.0, "log_odds_ratio": -17.25, "odds_ratio": 0.0, "pos": 51160751, "pvalue": 0.99858}, {"-log10pvalue": 0.0, "log_odds_ratio": -16.842, "odds_ratio": 0.0, "pos": 51160784, "pvalue": 0.99945}, {"-log10pvalue": 0.0, "log_odds_ratio": 21.818, "odds_ratio": 2986910000.0, "pos": 51160876, "pvalue": 0.99929}, {"-log10pvalue": 0.13, "log_odds_ratio": 0.48102, "odds_ratio": 1.62, "pos": 51160877, "pvalue": 0.73419}, {"-log10pvalue": 1.71, "log_odds_ratio": 1.0963, "odds_ratio": 2.99, "pos": 51160913, "pvalue": 0.019279}];
+        window.page_name = window.gene.gene_id;
+    </script>
+    <style>
+div.transbox
+{
+  background-color: #ffffff;
+  border: 2px solid gray;
+
+}
+    </style>
+    <script>
+        $(document).ready(function() {
+            $("#variants_loading").hide();
+            $("#variants_table_container").show();
+        });
+    </script>
+    <div class="container-fluid">
+        <div class="col-md-10 col-xs-offset-1 col-md-offset-1">
+	  
+            <h1>Gene: SHANK3</h1>
+	   
+	  
+            <hr/>
+        </div>
+        <div class="row">
+            <div class="col-md-6 col-xs-10 col-xs-offset-1 col-md-offset-0">
+                <dl class="dl-horizontal">
+                    
+                    
+                        <dt>SHANK3</dt>
+                        <dd>SH3 and multiple ankyrin repeat domains 3</dd>
+                    
+                    <dt>Number of variants</dt>
+                    <dd><span id="number_of_variants"></span> (Including filtered: 57)</dd>
+
+
+                    <script>
+                        filtered_variants = _.filter(window.table_variants, function(d) {
+                            return d.filter == 'PASS';
+                        });
+                        $('#number_of_variants').replaceWith(filtered_variants.length);
+                        lof_filtered_variants = _.filter(window.table_variants, function(d) {
+                            return d.filter == 'PASS' && d.category == 'lof_variant';
+                        });
+                        $('#number_of_lof_variants').replaceWith(lof_filtered_variants.length);
+                    </script>
+
+
+                    <dt class="hidden-xs">UCSC Browser</dt>
+                    <dd class="hidden-xs">
+                        <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr22%3A51112843-51171726" target="_blank">
+                            22:51112843-51171726
+                            <i class="fa fa-external-link"></i>
+                        </a>
+                    </dd>
+                    <dt class="hidden-xs">GeneCards</dt>
+                    <dd class="hidden-xs">
+                        <a href="http://www.genecards.org/cgi-bin/carddisp.pl?gene=SHANK3" target="_blank">
+                            SHANK3
+                            <i class="fa fa-external-link"></i>
+                        </a>
+                    </dd>
+                    
+                        <dt>OMIM</dt>
+                        <dd>
+                            <a href="http://omim.org/entry/606230" target="_blank">
+                                SHANK3
+                                <i class="fa fa-external-link"></i>
+                            </a>
+                        </dd>
+                    
+                    <dt>Other</dt>
+                    <dd>
+                        <div class="dropdown">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="external_ref_dropdown" data-toggle="dropdown">
+                                External References
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu" aria-labelledby="external_ref_dropdown">
+                                <li role="presentation" class="visible-xs-block">
+                                    <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr22%3A51112843-51171726" target="_blank">
+                                        UCSC Browser
+                                        <i class="fa fa-external-link"></i>
+                                    </a>
+                                </li>
+                                <li role="presentation" class="visible-xs-block">
+                                    <a href="http://www.genecards.org/cgi-bin/carddisp.pl?gene=SHANK3" target="_blank">
+                                        GeneCards
+                                        <i class="fa fa-external-link"></i>
+                                    </a>
+                                </li>
+                                <li role="presentation">
+                                    <a role="menuitem" tabindex="-1" href="http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?g=ENSG00000251322" target="_blank">
+                                        Ensembl <i class="fa fa-external-link"></i>
+                                    </a>
+                                </li>
+                                <li role="presentation">
+                                    <a role="menuitem" tabindex="-1" href="http://en.wikipedia.org/SHANK3" target="_blank">
+                                        Wikipedia <i class="fa fa-external-link"></i>
+                                    </a>
+                                </li>
+                                <li role="presentation">
+                                    <a role="menuitem" tabindex="-1" href="http://www.ncbi.nlm.nih.gov/pubmed?term=SHANK3" target="_blank">
+                                        PubMed Search <i class="fa fa-external-link"></i>
+                                    </a>
+                                </li>
+                                <li role="presentation">
+                                    <a role="menuitem" tabindex="-1" href="http://www.wikigenes.org/?search=SHANK3" target="_blank">
+                                        Wikigenes <i class="fa fa-external-link"></i>
+                                    </a>
+                                </li>
+                                <li role="presentation">
+                                    <a role="menuitem" tabindex="-1" href="http://www.gtexportal.org/home/gene/SHANK3" target="_blank">
+                                        GTEx (Expression) <i class="fa fa-external-link"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+			
+                    </dd>
+		    
+	    
+                </dl>
+            </div>
+	    
+            <div class="col-md-6 hidden-xs">
+                <div class="dropdown">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="transcript_dropdown" data-toggle="dropdown">
+                        Transcripts
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="transcript_dropdown">
+                        
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="/transcript/ENST00000414786" target="_blank">
+                                    ENST00000414786
+                                    
+                                </a>
+                            </li>
+                        
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="/transcript/ENST00000262795" target="_blank">
+                                    ENST00000262795
+                                    
+                                        *
+                                    
+                                </a>
+                            </li>
+                        
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" href="/transcript/ENST00000445220" target="_blank">
+                                    ENST00000445220
+                                    
+                                </a>
+                            </li>
+                        
+                    </ul>
+                </div>
+		</div>
+	    
+	    
+        </div>
+        <div class="row">
+            <div class="col-md-10 col-md-offset-1">
+                <h3>Gene summary</h3>
+                <div class="row">
+                    
+                        <div id="gene_plot">
+    <span class="hidden-xs">
+        <label for="display_coverage_metric_group">
+            Display:
+        </label>
+        <span class="btn-group" data-toggle="buttons" id="display_coverage_metric_group">
+            <button class="btn btn-primary active display_coverage_metric_buttons"
+                    id="display_coverage_overview_button" data-tooltip="Shows all exons">
+                <input type="radio">Overview</input>
+            </button>
+            <button class="btn btn-primary display_coverage_metric_buttons"
+                    id="display_coverage_detail_button" data-tooltip="Zoomed in view (can scroll horizontally if needed)">
+                <input type="radio">Detail</input>
+            </button>
+        </span>
+        <label>
+            <input type="checkbox" id="include_utrs_checkbox" value=""> Include UTRs in plot
+        </label>
+    </span>
+    <span style="float:right;" class="hidden-xs">
+    <span style="float: right;">
+        <label for="coverage_metric_group">
+            Association statistic:
+        </label>
+        <span class="btn-group" data-toggle="buttons" id="coverage_metric_group">
+            <button class="btn btn-primary active coverage_metric_buttons"
+                    id="covered_mean_covmet_button" data-tooltip="-log10(P-value) &#xa;threshold. Capped at 20">
+                    <input type="radio">P-value</input>
+            </button>
+            <button class="btn btn-primary coverage_metric_buttons" id="covered_covmet_button"
+                data-tooltip="Risk or protective odds ratio.&#xa;Use drop down below to select X.">
+                <input type="radio">Odds Ratio</input>
+            </button>
+        </span>
+    </span>
+    <br/>
+<div class="coverage_subcat_selectors" id="over_x_select_container" style="display: none; float:right;">
+        <label for="over_x_select">
+            Odds Ratio
+        </label>
+        <select id="over_x_select">
+            <option selected>odds_ratio</option>
+        </select>
+    </div>
+    <div class="coverage_subcat_selectors" id="average_select_container" style="display: none; float:right;">
+        <label for="average_select">
+            -log10(P-value):
+        </label>
+        <select id="average_select">
+            <option selected>-log10pvalue</option>
+        </select>
+    </div>
+
+<!--    <div class="coverage_subcat_selectors" id="average_select_container" style="display: none; float:right;">
+        <label for="average_select">
+            Log Odds ratio:
+        </label>
+       <select id="average_select">
+            <option selected>log_odds_ratio</option>
+            <option>odds_ratio</option>
+        </select>
+    </div> -->
+
+</span>
+    <br/>
+    <div id="gene_plot_container_container">
+        <div id="loading_coverage">
+            Loading coverage...
+            <br/><br/>
+        </div>
+        <span id="gene_plot_axis_container" class="hidden-xs" style="width:50px; display: inline-block;"></span>
+        <span id="gene_plot_container" style="overflow-x:scroll; display: inline-block;"></span>
+        <a class="btn btn-success" id="coverage_plot_download" target="_blank" download="SHANK3_coverage">Save association plot</a>
+        <a class="btn btn-success" id="exon_plot_download" target="_blank" download="SHANK3_exon">Save exon image</a>
+    </div>
+</div>
+<div id="not_covered" style="display: none;">
+    No coverage for this transcript.
+</div>
+<br/>
+<script>
+function gene_chart(data, new_data, variant_data, _transcript) {
+    var coords = 'pos_coding_noutr';
+    var coding_coordinate_params = get_coding_coordinate_params(_transcript, true);
+    var chart_width = gene_chart_width;
+    var metric = '-log10pvalue';
+
+    var exon_x_scale = d3.scale.linear()
+        .domain([0, coding_coordinate_params.size])
+        .range([0, chart_width]);
+    var max_cov = (metric == '-log10pvalue') ? 20 : 4;
+    var min_cov = (metric == '-log10pvalue') ? 0 : 0;
+    var y = d3.scale.linear()
+        .domain([min_cov, max_cov])
+        .range([gene_chart_height, 0]);
+
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left");
+
+    var svg = d3.select('#gene_plot_container').append("svg")
+        .attr("width", chart_width + gene_chart_margin.left + gene_chart_margin.right)
+        .attr("height", gene_chart_height + gene_chart_margin.top + gene_chart_margin.bottom)
+        .attr('id', 'inner_svg')
+        .attr('class', 'hidden-xs')
+        .append("g")
+        .attr('id', 'inner_graph')
+        .attr("transform", "translate(" + gene_chart_margin.left + "," + gene_chart_margin.top + ")");
+
+    var area = d3.svg.area()
+        .x( function(d) {
+            return exon_x_scale(d[coords]);
+        }).y0( function(d) {
+            return gene_chart_height;
+        }).y1( function(d) {
+            return (metric in d) ? y(d[metric]) : gene_chart_height;
+        });
+
+    svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis);
+
+    svg.selectAll("circle")
+        .data(data)
+        .enter()
+        .append("circle")
+        .attr("class", "dot")
+        .attr("cx", function(d) {
+            if (d['pos_coding_noutr'] == undefined) {
+                return -100;
+            } else {
+                return exon_x_scale(d[coords]);
+            }
+        })
+        .attr("cy", function(d){
+               return (metric in d) ? y(d[metric]) : gene_chart_height;
+        })
+        .attr('r', 4 )
+        .style("fill", "orange");
+
+    d3.select('#gene_plot_container').append("br"); //make sure track_svg is below graph and not to the right of it
+
+    // plot exons
+    var svg_outer = d3.select('#gene_plot_container').append("svg")
+        .attr("width", chart_width + gene_chart_margin_lower.left + gene_chart_margin_lower.right)
+        .attr("height", lower_gene_chart_height)
+        .attr('id', 'track_svg')
+        .append("g")
+        .attr('id', 'track')
+        .attr("transform", "translate(" + gene_chart_margin_lower.left + "," + 0 + ")");
+    var exon_color = "lightsteelblue";
+    svg_outer.append("line")
+        .attr("y1", lower_gene_chart_height/2)
+        .attr("y2", lower_gene_chart_height/2)
+        .attr("x1", 0)
+        .attr("x2", exon_x_scale(coding_coordinate_params.size))
+        .attr('id', 'boundary_line')
+        .attr("stroke-width", 5)
+        .attr("stroke", exon_color);
+
+    console.log(_transcript);
+    // plot exon rects
+    svg_outer.selectAll("bar")
+        .data(_transcript.exons)
+        .enter()
+        .append("rect")
+        .attr('class', 'track_bar')
+        .style("fill", exon_color)
+        .attr("x", function(d, i) { return exon_x_scale(get_coding_coordinate(_transcript, d.start, true)); })
+        .attr("y", function(d, i) {
+            if (d.feature_type == 'CDS') {
+                return 0;
+            } else {
+                return lower_gene_chart_height/4;
+            }
+        })
+
+
+        .attr("width", function(d, i) {
+            if (get_coding_coordinate(_transcript, d.start, true) == -100) {
+                return exon_x_scale(175);
+            }
+            return exon_x_scale(d.stop-d.start+1);
+        })
+        .attr("height", function(d, i) {
+            if (d.feature_type == 'CDS') {
+                return lower_gene_chart_height;
+            } else {
+                return lower_gene_chart_height/2;
+            }
+        });
+
+
+    var a_s = _transcript.strand == "-"? -1 : 1; //arrow direction
+    var a_x = -5;  //arrow position on x-axis
+    var a_y = lower_gene_chart_height/2.0; //arrow position on y-axis
+    var a_w = 2; //arrow width
+    var points = [[a_x+a_s*6, a_y], [a_x+a_s*1, a_y+a_w*3], [a_x+a_s*1, a_y+a_w], [a_x-a_s*9, a_y+a_w],
+        [a_x-a_s*9, a_y-a_w], [a_x+a_s*1, a_y-a_w], [a_x+a_s*1, a_y-a_w*3]];
+    svg_outer.append("polygon")
+            .attr("points", points.join(" "))
+            .attr("fill", "steelblue")
+            .attr("stroke", "black");
+
+    var bounds = get_af_bounds(variant_data);
+    var min_af = bounds[0];
+    var max_af = bounds[1];
+    var variant_size_scale = d3.scale.log()
+        .domain([min_af, max_af])
+        //Circle/Ellipse
+        .range([2, lower_gene_chart_height/3]);
+        //Rectangle
+//        .range([lower_gene_chart_height, 2]);
+
+    // show variant category on hover
+    var tip = d3.tip().attr('class', 'd3-tip').html(function(d) {
+        if (d.category) {
+            var csq = d.major_consequence.replace('_variant', '')
+                    .replace('_', ' ')
+                    .replace('utr', 'UTR')
+                    .replace('3 prime', "3'")
+                    .replace('5 prime', "5'")
+                    .replace('nc ', "non-coding ");
+            var output = csq + '<br/>' + d.chrom + ':' + d.pos + ' ' + d.ref + '&#8594;' + d.alt;
+            if (d.major_consequence == 'missense_variant' || d.major_consequence == 'synonymous_variant') {
+                output += '<br/>' + d.HGVSp;
+            }
+            output += '<br/>P-value: ' + d.allele_freq.toPrecision(3);
+            output += '<br/>Odds Ratio: ' + d.hom_count.toPrecision(3);
+            return output;
+        } else {
+            return 'None';
+        }
+    });
+    svg.call(tip);
+
+    // plot variants
+    svg_outer.selectAll("bar")
+        .data(variant_data)
+        .enter()
+        .append("a")
+        .attr('class', 'track_variant_link')
+        .attr("xlink:href", function(d, i) { return "/variant/" + d.chrom + "-" + d.pos + "-" + d.ref + "-" + d.alt; })
+        .attr("data-toggle", "tooltip")
+        .attr('filter_status', function(d) {
+            return d.filter;
+        })
+        .attr('category', function(d) {
+            return d.category;
+        })
+        .attr('variant_id', function(d) {
+            return d.variant_id;
+        })
+        .on('mouseover', function(d) {
+            $('#variant_' + d.variant_id).find('td').addClass('table_hover');
+            tip.show(d);
+        })
+        .on('mouseout', function(d) {
+            $('#variant_' + d.variant_id).find('td').removeClass('table_hover');
+            tip.hide(d);
+        })
+        //Circle
+//        .append("circle")
+        //Ellipse
+        .append("ellipse")
+        .attr("class", function(d) {
+            return "track_variant " + d.category;
+        })
+        .style("opacity", 0.5)
+        .attr("cx",  function(d) {
+            if (d['pos_coding_noutr'] == undefined) {
+                return -100;
+            } else {
+                return exon_x_scale(d[coords]);
+            }
+        })
+        .attr("cy", lower_gene_chart_height/2)
+        //Circle
+//        .attr("r", function(d, i) { return variant_size_scale(d.allele_freq); })
+        //Ellipse
+        .attr("rx", 2)
+        .attr("ry", function(d, i) {
+            if (!d.allele_freq) {
+                return 0;
+            } else {
+                return (2*(variant_size_scale(max_af) - variant_size_scale(d.allele_freq)));
+            }
+        })
+        // Workaround for exporting d3 to SVG (other delcaration in style.css).
+        .attr('stroke', variant_colors)
+        .attr('fill', variant_colors);
+        //Rectangle
+//        .append("rect")
+//        .attr("class", "track_variant")
+//        .style("fill", "darkred")
+//        .style("opacity", 0.5)
+//        .attr("x", function(d, i) {
+//            var tx_coord = d.transcript_coordinates[transcript];
+//            if (tx_coord == 0) {
+//                return -1000;
+//            } else {
+//                var variant_exon_number = d.vep_annotations[0]['EXON'].split('/')[0] - 1;
+//                return exon_x_scale(tx_coord + variant_exon_number*padding);
+//            }
+//        })
+//        .attr("y", function(d, i) { return lower_gene_chart_height/2 - variant_size_scale(d.allele_freq)/2; } )
+//        .attr("width", 2)
+//        .attr("height", function(d, i) { return variant_size_scale(d.allele_freq); })
+//        .attr("rx", 6)
+//        .attr("ry", 6);
+
+}
+
+function variant_colors(d) {
+    if (d.category == 'lof_variant') {
+        return '#cd2932';
+    } else if (d.category == 'missense_variant') {
+        return '#a96500';
+    } else if (d.category == 'synonymous_variant') {
+        return '#157e28';
+    }
+}
+
+function change_coverage_chart(data, new_data, variant_data, _transcript, scale_type, metric, skip_utrs, container) {
+    var coords = skip_utrs ? 'pos_coding_noutr' : 'pos_coding';
+    var max_cov = (metric == '-log10pvalue') ? 20 : 4;
+    var min_cov = (metric == '-log10pvalue') ? 0 : 0;
+    var coding_coordinate_params = get_coding_coordinate_params(_transcript, skip_utrs);
+    var chart_width;
+    if (scale_type == 'overview') {
+        chart_width = gene_chart_width;
+    } else {
+        chart_width = coding_coordinate_params.size*2;
+    }
+
+    var exon_x_scale = d3.scale.linear()
+        .domain([0, coding_coordinate_params.size])
+        .range([0, chart_width]);
+
+    var svg = d3.select(container).select('#inner_svg')
+        .attr("width", chart_width + gene_chart_margin.left + gene_chart_margin.right)
+        .attr("height", gene_chart_height + gene_chart_margin.top + gene_chart_margin.bottom)
+        .select('#inner_graph');
+
+    var y = d3.scale.linear()
+        .domain([min_cov, max_cov])
+        .range([gene_chart_height, 0]);
+
+    var area = d3.svg.area()
+        .x( function(d) {
+            return exon_x_scale(d[coords]);
+        }).y0( function(d) {
+            return gene_chart_height;
+        }).y1( function(d) {
+            return (metric in d) ? y(d[metric]) : gene_chart_height;
+        });
+
+
+
+    svg.selectAll("circle")
+        .data(data)
+        .transition()
+        .duration(500)
+        .attr("class", "dot")
+        .attr("cx", function(d) {
+            if (d['pos_coding_noutr'] == undefined) {
+                return -100;
+            } else {
+                return exon_x_scale(d[coords]);
+            }
+        })
+        .attr("cy", function(d){
+               return (metric in d) ? y(d[metric]) : gene_chart_height;
+        })
+        .attr('r', 4 )
+        .style("fill", "orange");
+;
+
+    // plot exons
+    var svg_outer = d3.select(container).select('#track_svg')
+        .attr("width", chart_width + gene_chart_margin_lower.left + gene_chart_margin_lower.right)
+        .attr("height", lower_gene_chart_height).select('#track');
+
+    svg_outer.select('#boundary_line')
+        .attr("x2", exon_x_scale(coding_coordinate_params.size));
+
+    // plot exon rounded rects
+    svg_outer.selectAll("rect")
+        .data(_transcript.exons)
+        .transition()
+        .duration(500)
+        .attr("x", function(d, i) { return exon_x_scale(get_coding_coordinate(_transcript, d.start, skip_utrs)); })
+        .attr("width", function(d, i) {
+            if (get_coding_coordinate(_transcript, d.start, skip_utrs) == -100) {
+                return exon_x_scale(175);
+            }
+            return exon_x_scale(d.stop-d.start+1);
+        })
+        .attr("height", function(d, i) {
+            if (d.feature_type == 'CDS') {
+                return lower_gene_chart_height;
+            } else {
+                return lower_gene_chart_height/2;
+            }
+        });
+
+    // plot variants
+    svg_outer.selectAll("a")
+        .data(variant_data)
+        .transition()
+        .duration(500)
+        .selectAll('ellipse')
+        .attr("cx", function(d) {
+            if (d[coords] == undefined) {
+                return -100;
+            } else {
+                return exon_x_scale(d[coords]);
+            }
+        });
+
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left");
+
+    svg.select(".y.axis")
+        .transition()
+        .duration(200)
+        .call(yAxis);
+}
+
+function create_new_data(data, coords) {
+    var data_object = {};
+    $.each(data, function(i, d) {
+        data_object[d[coords]] = d;
+    });
+    var new_data = [];
+    for (var i = d3.min(data, function(d) { return d[coords] }); i < d3.max(data, function(d) { return d[coords] }); i++) {
+        var x = {'has_coverage': false};
+        x[coords] = i;
+        //Check the previous base to see if this is the beginning of an exon
+
+        if (i in data_object && !(i-1 in data_object)) {
+            new_data.push(x);
+        }
+        //Check the previous base to see if this is the end of an exon
+
+        if (!(i in data_object) && i-1 in data_object) {
+            x[coords] = i-1;
+            new_data.push(x);
+        }
+        if (i in data_object) {
+            new_data.push(data_object[i]);
+        } else {
+            new_data.push(x);
+        }
+    }
+    return new_data;
+}
+
+function coverage_sum(key) {
+    var total = 0;
+    $.map(window.coverage_stats, function(entry) {
+        total += entry[key];
+    });
+    return (total/window.coverage_stats.length).toPrecision(4);
+}
+
+function refresh_links() {
+    $("#coverage_plot_download").attr('href', set_plot_image('gene_plot_container', 0));
+    $("#exon_plot_download").attr('href', set_plot_image('gene_plot_container', 1));
+}
+
+$(document).ready(function() {
+    if ($(window).width() < 768) {
+        $('#gene_plot_container').css('width', $(window).width() + "px");
+    } else {
+        $('#gene_plot_container').css('width', $(window).width()*10/12 + "px");
+    }
+    precalc_coding_coordinates(window.transcript, window.coverage_stats, 'pos');
+    precalc_coding_coordinates(window.transcript, window.variants_in_transcript, 'pos');
+
+    // only show variants that have a coding coordinate
+    window.variants_in_transcript = _.filter(window.variants_in_transcript, function(variant) {
+        return variant.pos_coding != undefined;
+    });
+
+    // only show coding rects that have a coding coordinate
+    window.coverage_stats = _.filter(window.coverage_stats, function(d) {
+        return d.pos_coding != undefined;
+    });
+    $('#avg_coverage').html(coverage_sum('-log10pvalue'));
+    $('#avg_coverage_x').html(coverage_sum('30')*100 + '%');
+
+    var new_data = create_new_data(window.coverage_stats, 'pos_coding');
+    var new_data_skip_utr = create_new_data(window.coverage_stats, 'pos_coding_noutr');
+    if (window.coverage_stats != null) {
+        gene_chart(window.coverage_stats, new_data_skip_utr, window.variants_in_transcript, window.transcript);
+        if (window.variants_in_transcript.length) {
+            update_variants();
+        }
+        $('#loading_coverage').hide();
+    } else {
+        $('#gene_plot').hide();
+        $('#not_covered').show();
+    }
+    // Change coverage plot
+    $('.coverage_metric_buttons').change(function () {
+        var v = $(this).attr('id').replace('_covmet_button', '');
+        $('.coverage_subcat_selectors').hide();
+        if (v == 'covered') {
+           $('#over_x_select_container').show();
+            v = $('#over_x_select').val().replace('X', ''); 
+        } else {
+            $('#average_select_container').show();
+            v = $("#average_select").val();
+        }
+        var detail = $('.display_coverage_metric_buttons.active').attr('id').replace('display_coverage_', '').replace('_button', '');
+        var include_utrs = $('#include_utrs_checkbox').is(':checked');
+        var plot_data = include_utrs ? new_data : new_data_skip_utr;
+        change_coverage_chart(window.coverage_stats, plot_data, window.variants_in_transcript, window.transcript, detail, v, !include_utrs, '#gene_plot_container');
+        refresh_links();
+    });
+    $('#over_x_select').change(function () {
+        var detail = $('.display_coverage_metric_buttons.active').attr('id').replace('display_coverage_', '').replace('_button', '');
+        var include_utrs = $('#include_utrs_checkbox').is(':checked');
+        var plot_data = include_utrs ? new_data : new_data_skip_utr;
+        $('#avg_coverage_type_x').html($(this).val());
+        $('#avg_coverage_x').html(coverage_sum($(this).val().replace('X', ''))*100 + '%');
+        change_coverage_chart(window.coverage_stats, plot_data, window.variants_in_transcript, window.transcript, detail, $(this).val().replace('X', ''), !include_utrs, '#gene_plot_container');
+        refresh_links();
+    });
+    $('#average_select').change(function () {
+        var detail = $('.display_coverage_metric_buttons.active').attr('id').replace('display_coverage_', '').replace('_button', '');
+        var include_utrs = $('#include_utrs_checkbox').is(':checked');
+        var plot_data = include_utrs ? new_data : new_data_skip_utr;
+        $('#avg_coverage_type').html($(this).val());
+        $('#avg_coverage').html(coverage_sum($(this).val()));
+        change_coverage_chart(window.coverage_stats, plot_data, window.variants_in_transcript, window.transcript, detail, $(this).val(), !include_utrs, '#gene_plot_container');
+        refresh_links();
+    });
+    $('#include_utrs_checkbox').change(function () {
+        setTimeout(function() {
+            var detail = $('.display_coverage_metric_buttons.active').attr('id').replace('display_coverage_', '').replace('_button', '');
+            var v = $('.coverage_metric_buttons.active').attr('id').replace('_covmet_button', '');
+            v = (v == 'covered') ? $('#over_x_select').val().replace('X', '') : $("#average_select").val(); 
+            var include_utrs = $('#include_utrs_checkbox').is(':checked');
+            var plot_data = include_utrs ? new_data : new_data_skip_utr;
+            change_coverage_chart(window.coverage_stats, plot_data, window.variants_in_transcript, window.transcript, detail, v, !include_utrs, '#gene_plot_container');
+            refresh_links();
+        }, 10);
+    });
+
+// Change exon diagram
+    $('#inverted_checkbox').change(function () {
+        setTimeout(function () {
+            var v = $('#inverted_checkbox').is(':checked');
+            change_track_chart_variant_size(window.variants_in_transcript, v, '#gene_plot_container');
+            refresh_links();
+        }, 10);
+    });
+
+    $('.consequence_display_buttons, #filtered_checkbox').change(function () {
+        setTimeout(function() {
+            update_variants();
+            refresh_links();
+        }, 10);
+    });
+
+    $('.display_coverage_metric_buttons').change(function () {
+        var detail = $(this).attr('id').replace('display_coverage_', '').replace('_button', '');
+        var v = $('.coverage_metric_buttons.active').attr('id').replace('_covmet_button', '');
+        if (v == 'covered') {
+            $('#over_x_select_container').show();
+            v = $('#over_x_select').val().replace('X', ''); 
+
+        } else {
+            $('#average_select_container').show();
+            v = $("#average_select").val();
+        }
+        var include_utrs = $('#include_utrs_checkbox').is(':checked');
+        var plot_data = include_utrs ? new_data : new_data_skip_utr;
+        change_coverage_chart(window.coverage_stats, plot_data, window.variants_in_transcript, window.transcript, detail, v, !include_utrs, '#gene_plot_container');
+        refresh_links();
+    });
+    refresh_links();
+});
+</script>
+                    
+                </div>
+                <div class="row">
+                    
+                        
+                        
+<span id="variant_selectors_container">
+    <label for="variant_consequence_types">
+        <span class="btn-group" data-toggle="buttons" id="variant_consequence_types">
+            <button class="btn btn-primary consequence_display_buttons active" id="consequence_other_variant_button">
+                <input type="radio" >All
+            </button>
+            <button class="btn btn-primary consequence_display_buttons" id="consequence_missense_variant_button">
+                <input type="radio" >Missense + LoF
+            </button>
+            <button class="btn btn-primary consequence_display_buttons" id="consequence_lof_variant_button">
+                <input type="radio">LoF
+            </button>
+        </span>
+    </label>
+    <label class='hidden-xs'>
+        <input type="checkbox" id="filtered_checkbox" value=""> Include filtered (non-PASS) variants
+    </label>
+</span>
+<span style="float:right">
+    <label class='hidden-xs'>
+        <input type="checkbox" id="inverted_checkbox" value=""> Invert (highlight rare variants)
+    </label>
+</span>
+<script type="text/javascript">
+    window.is_gene = typeof window.transcripts_in_gene != 'undefined';
+</script>
+<script type="text/template" id="variant-table-template">
+<span>
+    <a class="btn btn-success hidden-xs" id="export_to_csv">Export table to CSV</a>
+</span>
+
+    <span style="float:left">
+        <small>&dagger; denotes a consequence that is for a non-canonical transcript</small>
+    </span>
+
+<table id="variant_table" class="tablesorter">
+    <thead>
+        <tr>
+            <th class="tooltip-table-header omit_csv" data-tooltip="chr:pos reference/alternate &#xa;(dbSNP135 rsID)">
+                Variant</th>
+            <th class="hidden-xs tooltip-table-header" data-tooltip="Population enrichment: log of the ratio comparing allele frequency in Ashkenazi population to NFE (non-Finnish European) in ExAC &#xa;">Enrichment</th>
+            <th class='hidden-xs'>Position</th>
+            <td class="hidden">RSID</td>
+            <th class="hidden">Reference</th>
+            <th class="hidden">Alternate</th>
+            <th class="hidden-xs tooltip-table-header" data-tooltip="HGVS annotation (protein change, where defined, or transcript change for splice variants, otherwise empty)">Consequence</th>
+            <th class="hidden">Protein Consequence</th>
+            <th class="hidden">Transcript Consequence</th>
+            <th class="hidden-xs tooltip-table-header" data-tooltip="VQSR sensitivity filter & hard filters">Filter</th>
+            <th class="tooltip-table-header" data-tooltip="Variant Effect Predictor (VEP) &#xa; annotation using Gencode 75.&#xa; Worst across all transcripts of this gene.">Annotation</th>
+            <th class="tooltip-table-header" data-tooltip="Crohn's disease alternate allele frequency &#xa;">
+                CD AF</th>
+            <th class="hidden-xs tooltip-table-header" data-tooltip="non-Crohn's disease alternate allele frequency &#xa;">
+                non-CD AF</th>
+            
+                <th class="hidden-xs tooltip-table-header" data-tooltip="Combined Odds Ratio (meta-analysis)">Odds Ratio</th>
+            
+            
+            <th class="tooltip-table-header allele_frequency_column" data-tooltip="P-value of case-control association &#xa; The graphic displays &#xa; p-value on a  &#xa; discrete scale: &#xa; <0.01, <0.001, < 1e-4, <1e-5">
+                P-value</th>
+            <th class="hidden">Allele Count African</th>
+            <th class="hidden">Allele Number African</th>
+            <th class="hidden">Homozygote Count African</th>
+            <th class="hidden">Allele Count East Asian</th>
+            <th class="hidden">Allele Number East Asian</th>
+            <th class="hidden">Homozygote Count East Asian</th>
+            <th class="hidden">Allele Count European (Non-Finnish)</th>
+            <th class="hidden">Allele Number European (Non-Finnish)</th>
+            <th class="hidden">Homozygote Count European (Non-Finnish)</th>
+            <th class="hidden">Allele Count Finnish</th>
+            <th class="hidden">Allele Number Finnish</th>
+            <th class="hidden">Homozygote Count Finnish</th>
+            <th class="hidden">Allele Count Latino</th>
+            <th class="hidden">Allele Number Latino</th>
+            <th class="hidden">Homozygote Count Latino</th>
+            <th class="hidden">Allele Count Other</th>
+            <th class="hidden">Allele Number Other</th>
+            <th class="hidden">Homozygote Count Other</th>
+            <th class="hidden">Allele Count South Asian</th>
+            <th class="hidden">Allele Number South Asian</th>
+            <th class="hidden">Homozygote Count South Asian</th>
+        </tr>
+    </thead>
+    <tbody>
+    <% _.each(table_variants, function(variant) { %>
+        <tr class="table_variant" id="variant_<%= variant.variant_id %>"
+            category="<%= variant.category %>" filter_status="<%= variant.filter %>" frequency="<%= variant.allele_freq %>">
+            <td class="omit_csv">
+                <a href="/variant/<%= variant.chrom %>-<%= variant.pos %>-<%= variant.ref %>-<%= variant.alt %>" target="_blank">
+                <%= variant.chrom %>:<%= variant.pos %>
+                <% if (variant.ref.length > 20) { %>
+                    <%= variant.ref.slice(0,20) %>...
+                <% } else { %>
+                    <%= variant.ref %>
+                <% } %> /
+                <% if (variant.alt.length > 20) { %>
+                    <%= variant.alt.slice(0,20) %>...
+                <% } else { %>
+                    <%= variant.alt %>
+                <% } %>
+                <% if (variant.rsid != '.') { %>
+                    (<%= variant.rsid %>)
+                <% } %>
+                </a>
+            </td>
+<!--            <td class='hidden-xs'> <%= variant.chrom %></td> -->
+                <td class='hidden-xs'><% if (variant.enrichment != -9) { %>
+                    <%= variant.enrichment.toPrecision(4) %>
+                <% } else { %>
+		
+<!--                    <%=  variant.enrichment %> -->
+                <% } %></td>
+            <td class='hidden-xs'> <%= variant.pos %></td>
+            <td class="hidden"><%= variant.rsid %></td>
+            <th class="hidden"> <%= variant.ref %></th>
+            <th class="hidden"> <%= variant.alt %></th>
+            <td class='hidden-xs'>
+                <% if (variant.HGVSp != '') { %>
+                    <%= variant.HGVSp %><% if (is_gene & variant.CANONICAL != 'YES') { %>&dagger;<% } %>
+                <% } else { %>
+                    <% if (variant.major_consequence == 'splice_donor_variant' | variant.major_consequence == 'splice_acceptor_variant' | variant.major_consequence == 'splice_region_variant') { %>
+                        <% if (variant.HGVSc.length > 20) { %>
+                            <%= variant.HGVSc.slice(0,20) %>...<% } else { %>
+                            <%= variant.HGVSc %><% } %><% if (is_gene & variant.CANONICAL != 'YES') { %>&dagger;<% } %>
+                    <% } %>
+                <% } %>
+            </td>
+            <td class='hidden'> <%= variant.HGVSp %></td>
+            <td class='hidden'> <%= variant.HGVSc %></td>
+            <td class='hidden-xs'> <%= variant.filter %> </td>
+            <td class="<%= variant.category %>" data-consequence="<%= variant.major_consequence %>"><b>
+                <% if (variant.major_consequence) { %>
+                    <%= variant.major_consequence.replace('_variant', '').replace(/_/g, ' ').replace('utr', 'UTR').replace('3 prime', "3'").replace('5 prime', "5'").replace('nc ', "non-coding ") %>
+                <% } %>
+            </b> </td>
+            <td> <%= variant.allele_count.toPrecision(3) %> </td>
+            <td class='hidden-xs'> <%= variant.allele_num.toPrecision(3) %> </td>
+            
+                <td class="hidden-xs"> <%= variant.hom_count.toPrecision(3) %> </td>
+            
+            
+            <td>
+                <% if (variant.allele_freq) { %>
+                    <%= variant.allele_freq.toPrecision(4) %>
+                <% } else { %>
+                    <%= variant.allele_freq %>
+                <% } %>
+                <div id="variant_af_box_<%= variant.variant_id %>" style="float: right;"></div>
+            </td>
+            <td class="hidden"> <%= variant.pop_acs["African"] %></td>
+            <td class="hidden"> <%= variant.pop_ans["African"] %></td>
+            <td class="hidden"> <%= variant.pop_homs["African"] %></td>
+            <td class="hidden"> <%= variant.pop_acs["East Asian"] %></td>
+            <td class="hidden"> <%= variant.pop_ans["East Asian"] %></td>
+            <td class="hidden"> <%= variant.pop_homs["East Asian"] %></td>
+            <td class="hidden"> <%= variant.pop_acs["European (Non-Finnish)"] %></td>
+            <td class="hidden"> <%= variant.pop_ans["European (Non-Finnish)"] %></td>
+            <td class="hidden"> <%= variant.pop_homs["European (Non-Finnish)"] %></td>
+            <td class="hidden"> <%= variant.pop_acs["European (Finnish)"] %></td>
+            <td class="hidden"> <%= variant.pop_ans["European (Finnish)"] %></td>
+            <td class="hidden"> <%= variant.pop_homs["European (Finnish)"] %></td>
+            <td class="hidden"> <%= variant.pop_acs["Latino"] %></td>
+            <td class="hidden"> <%= variant.pop_ans["Latino"] %></td>
+            <td class="hidden"> <%= variant.pop_homs["Latino"] %></td>
+            <td class="hidden"> <%= variant.pop_acs["Other"] %></td>
+            <td class="hidden"> <%= variant.pop_ans["Other"] %></td>
+            <td class="hidden"> <%= variant.pop_homs["Other"] %></td>
+            <td class="hidden"> <%= variant.pop_acs["South Asian"] %></td>
+            <td class="hidden"> <%= variant.pop_ans["South Asian"] %></td>
+            <td class="hidden"> <%= variant.pop_homs["South Asian"] %></td>
+        </tr>
+    <% }); %>
+    </tbody>
+</table>
+</script>
+<script>
+    $(document).ready(function() {
+
+        // This list is simply copied from utils.py.
+        // Obviously that's not ideal, but I wanted to keep this diff isolated.
+        // I'm also not sure how you want to serve additional context to the client -
+        // yet another template variable also seems suboptimal.
+        // xBrowse has a variable DICTIONARY in global scope where we store stuff like this -
+        // might want to try that!
+        var csq_order = ["transcript_ablation",
+            "splice_donor_variant",
+            "splice_acceptor_variant",
+            "stop_gained",
+            "frameshift_variant",
+            "stop_lost",
+            "initiator_codon_variant",
+            "transcript_amplification",
+            "inframe_insertion",
+            "inframe_deletion",
+            "missense_variant",
+            "splice_region_variant",
+            "incomplete_terminal_codon_variant",
+            "stop_retained_variant",
+            "synonymous_variant",
+            "coding_sequence_variant",
+            "mature_miRNA_variant",
+            "5_prime_UTR_variant",
+            "3_prime_UTR_variant",
+            "non_coding_transcript_exon_variant",
+            "non_coding_exon_variant",
+            "intron_variant",
+            "NMD_transcript_variant",
+            "non_coding_transcript_variant",
+            "nc_transcript_variant",
+            "upstream_gene_variant",
+            "downstream_gene_variant",
+            "TFBS_ablation",
+            "TFBS_amplification",
+            "TF_binding_site_variant",
+            "regulatory_region_ablation",
+            "regulatory_region_amplification",
+            "regulatory_region_variant",
+            "feature_elongation",
+            "feature_truncation",
+            "intergenic_variant",
+        ""];
+
+        // Make a map of consequence -> index
+        // That'll be the actual sort key, so lower i => more severe consequence
+        var csq_order_index = {};
+        _.each(csq_order, function(c, i) {
+            csq_order_index[c] = i;
+        });
+
+        // Here we add a new sort parser - its global identifier is 'consequence'
+        $.tablesorter.addParser({
+            id: 'consequence',
+            is: function(s) {
+                return false;  // don't auto-detect parser
+            },
+            // this is the actual
+            format: function(s, table, cell) {
+                // I added the "original" VEP consequence as a data attribute to the table cell
+                // This is what we use to look up the consequence order
+                var original_csq = $(cell).data('consequence');
+                return csq_order_index[original_csq];
+            },
+            type: 'numeric'
+        });
+
+        $("#variants_loading").hide();
+        $("#variants_table_container").show();
+        window.variants_template = _.template($('#variant-table-template').html());
+        $('#variants_table_container').html(variants_template({table_variants: table_variants}));
+        $("#variant_table").tablesorter({
+            sortList: [[1,0], [2,0], [10,1]],
+            // Here's where we tell tablesorter to use our new consequence sorter on the 9th column
+            // 2-minute minor on Konrad for having hidden columns
+            headers: {
+                10: {
+                    sorter: 'consequence'
+                }
+            }
+        });
+
+
+            $('#pager').hide();
+
+
+        function get_af_category(d) {
+            if (!d.allele_freq) {
+                return [0, '0'];
+            } else if (d.allele_freq <= 1/1000000){ 
+                return [7, '<1e-6'];
+            } else if (d.allele_freq <= 1/100000) {
+                return [6, '<1e-5'];
+            } else if (d.allele_freq <= 1/10000) {
+                return [5, '1e-4-1e-5'];
+            } else if (d.allele_freq <= 1/1000) {
+                return [4, '1e-3-1e-4'];
+            } else if (d.allele_freq <= 1/100) {
+                return [3, '0.01-0.001'];
+            } else if (d.allele_freq <= 1/20) {
+                return [2, '0.05-0.01'];
+            } else {
+                return [1, '>0.05'];
+            } 
+        }
+
+        var data = window.table_variants;
+
+        var width = 50;
+        var height = 15;
+
+        var x_scale = d3.scale.linear()
+            .domain([0, 7])
+            .range([0, width]);
+
+        var svg;
+        $.each(data, function(i, d) {
+            d3.select('#variant_af_box_' + d.variant_id).attr("data-tooltip", "Shows p-value \n on a discrete " +
+                    "scale: \n <1e-6, <1e-5, \n <1e-4, <0.001, 0.01-0.001, \n 0.05-0.01, >0.05. \n This particular variant is \n " +
+                    get_af_category(d)[1] + ".");
+            svg = d3.select('#variant_af_box_' + d.variant_id)
+                .append("svg")
+                .attr("width", width)
+                .attr("height", height)
+                .append("g");
+
+            for (var j=0; j<8; j++) {
+                svg.append('rect')
+                        .style('stroke', 'steelblue')
+                        .style('fill', 'white')
+                        .attr('x', x_scale(j))
+                        .attr('y', 0)
+                        .attr('height', height)
+                        .attr('width', x_scale(1) - x_scale(0))
+            }
+
+            svg.append('rect')
+                .style('fill', 'steelblue')
+                .attr('x', 0)
+                .attr('y', 0)
+                .attr('width', function() {
+                    return x_scale(get_af_category(d)[0]);
+                })
+                .attr('height', height);
+
+        });
+        update_variants();
+        $("#export_to_csv").on('click', function (event) {
+            var output_name = window.page_name === undefined ? 'export' : window.page_name;
+            var timestamp = date_format(new Date());
+            exportTableToCSV.apply(this, [$('#variant_table'), 'exac_' + output_name + '_' + timestamp + '.csv']);
+        });
+    });
+</script>
+<div id="variants_loading">Loading variants...</div>
+<div id="variants_table_container" style="display: none;"></div>
+<div id="variants_table_empty" style="display: none;">No variants found.</div>
+
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>

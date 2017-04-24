@@ -1,0 +1,75 @@
+{% extends "layout.html" %}
+{% block body %}
+<style>
+input[type=submit] {
+    width: 100%;
+    background-color: #8C1515;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+input[type=submit]:hover {
+    background-color: #8D3C1E;
+}
+</style>
+<head>
+  <script>
+  function myFunction() {
+      var x = document.createElement("INPUT");
+      x.setAttribute("type", "file");
+      document.body.appendChild(x);
+  }
+  </script>
+
+</head>
+
+<div class="container">
+    <div class="row" style="font-size: 16px;">
+    <form method=post enctype=multipart/form-data>
+         <h1> MRP Inference Engine </h1>
+       MRP is a statistical framework for variant association studies that considers correlation, scale, and location of genetic effects across a group of genetic variants, phenotypes, and studies.
+       <hr>
+
+        <label for="gene_text">List genes, one per row:</label>
+        <br>
+        <textarea id="gene_text" Name="gene_text" rows="4" cols="20"></textarea>
+<br>
+
+          <label for="file">Or upload a file of gene names, one per row:</label>
+          <input type="file" id="file">
+
+
+            <label for="function">Select the types of variants MRP should consider:</label>
+          <select id="function", name="function">
+            <option value="['missense_variant','lof_variant']">Missense + LoF</option>
+            <option value="['missense_variant']">Missense</option>
+            <option value="['lof_variant']">LoF</option>
+          </select>
+
+           <br>
+            <label for="functionfdr">Select the false discovery rate (FDR):</label>
+          <select id="functionfdr", name="functionfdr">
+            <option value="[1]">1%</option>
+            <option value="[5]">5%</option>
+            <option value="[10]">10%</option>
+          </select>
+
+
+
+      <p align='center' style="margin-left:19.5em; margin-right:19.5em; padding: 1em 1em 1em 1em;">
+       <input type="submit" value="Run MRP" name="submit_button">
+      </p>
+      <hr>
+      <p>For more information on the statisical methods behind MRP, see Rivas et al. "Bayesian models for high-dimensional rare variant association studies" In progess.</p>
+
+    </form>
+
+
+    </div>
+</div>
+
+{% endblock %}

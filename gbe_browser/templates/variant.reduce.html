@@ -1,0 +1,384 @@
+{% extends "layout.html" %}
+{% block body %}
+    <!-- Render context vars in JS here -->
+    <script type="text/javascript">
+        window.variant = {{ variant|tojson|safe }};
+        window.base_coverage = {{ base_coverage|tojson|safe }};
+        window.any_covered = {{ any_covered|tojson|safe }};
+        window.consequence = {{ consequences|tojson|safe }};
+        window.metrics = {{ metrics|tojson|safe }};
+
+        $(document).ready(function() {
+            draw_region_coverage(window.base_coverage, '-log10pvalue', window.variant.ref);
+            $('.coverage_metric_buttons').change(function () {
+                var v = $(this).attr('id').replace('_covmet_button', '');
+                $('.coverage_subcat_selectors').hide();
+                if (v == 'covered') {
+                    $('#over_x_select_container').show();
+                    v = $('#over_x_select').val(); 
+                } else {
+                    $('#average_select_container').show();
+                    v = $("#average_select").val();
+                }
+                draw_region_coverage(window.base_coverage, v, window.variant.ref);
+            });
+            $('#over_x_select').change(function () {
+                draw_region_coverage(window.base_coverage, $(this).val(), window.variant.ref);
+            });
+            $('#average_select').change(function () {
+                draw_region_coverage(window.base_coverage, $(this).val(), window.variant.ref);
+            });
+        });
+    </script>
+    <style>
+    .d3_graph {
+        font: 10px sans-serif;
+    }
+    .svg-container {
+        display: inline-block;
+        overflow: hidden;
+        padding-bottom: 100%;
+        position: absolute;
+        vertical-align: middle;
+        width: 100%;
+    }
+
+    </style>
+
+
+    <div class="container">
+        <div class="row">
+                <h1><span class="hidden-xs">Variant: </span>{{ variant.chrom }}:{{ variant.pos }} {{ variant.ref }} / {{ variant.alt }}</h1>
+        <hr/>
+{#      Upper display #}
+            <div class="row">
+                    <dl class="dl-horizontal" style="margin-bottom: 0px;">
+                        <dt>
+                            {% if variant.filter != "PASS" %}
+                                <span class="label label-danger">Filter Status</span>
+                            {% else %}
+                                Filter Status
+                            {% endif %}
+                        </dt>
+                        <dd>{{ variant.filter }}</dd>
+                        <dt>dbSNP</dt>
+                        {% if variant.rsid and variant.rsid != "." %}
+                            <dd><a href="http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs={{ variant.rsid }}" target="_blank">{{ variant.rsid }}</a></dd>
+                        {% else %}
+                            <dd>Not found in dbSNP</dd>
+                        {% endif %}
+			<dt>UCSC</dt>
+                        <dd>
+                            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&highlight=hg19.chr{{ variant.chrom }}%3A{{ variant.pos }}-{{ variant.pos + variant.ref|length - 1 }}&position=chr{{ variant.chrom }}%3A{{ variant.pos - 25 }}-{{ variant.pos + variant.ref|length - 1 + 25 }}" target="_blank">
+                                {{ variant.variant_id }}
+                                <i class="fa fa-external-link"></i>
+                            </a>
+                        </dd>
+                        <dt>ExAC</dt>
+                        <dd> 
+<a href="http://exac.broadinstitute.org/variant/{{ variant.variant_id}}" target="_blank">
+                                {{ variant.variant_id }}
+                                <i class="fa fa-external-link"></i>
+				</a>
+			</dd>
+                        <dt>ClinVar</dt>
+                        <dd>
+                            {% if not variant.rsid or variant.rsid == "." %}
+                                <a href="http://www.ncbi.nlm.nih.gov/clinvar?term=({{ variant.chrom }}%5BChromosome%5D)%20AND%20{{ variant.pos }}%5BBase%20Position%20for%20Assembly%20GRCh37%5D" target="_blank"></a>
+                            {% else %}
+                                <a href="http://www.ncbi.nlm.nih.gov/clinvar?term={{ variant.rsid }}%5BVariant%20ID%5D" target="_blank"></a>
+                            {% endif %}
+                                Click to search for variant in Clinvar
+                                <i class="fa fa-external-link"></i>
+
+                        </dd>
+                    </dl>
+
+            <hr/>
+       
+<!--
+{#          Lower display#}
+        <div class="row">
+                    <div class="section_header">Annotations</div>
+                    {% if variant.vep_annotations %}
+                        <p>This variant falls on {{ variant.transcripts|length }} transcripts in {{ variant.genes|length }} genes:</p>
+                        <div class="panel-group" id="annotation_accordion" style="margin-bottom: 0px;">
+                            <div class="row">
+                                <div class="col-md-6">
+                                {% for consequence in ordered_csqs[1:((ordered_csqs|length / 2)|int + 1)] %}
+                                    <h4>{{ consequence|replace('_variant', '')|replace('_', ' ')|replace('utr', 'UTR')|replace('3 prime', "3'")|replace('5 prime', "5'")|replace('nc ', "non-coding ") }}</h4>
+                                    <ul>
+                                        {% for gene in consequences[consequence] %}
+                                            <li>
+                                                <a href="/gene/{{ gene }}">
+                                                {% if consequences[consequence][gene][0].SYMBOL %}
+                                                    {{ consequences[consequence][gene][0].SYMBOL }}
+                                                {% else %}
+                                                    {{ gene }}
+                                                {% endif %}
+                                                </a>
+                                                {% if consequences[consequence][gene]|length > 1 %}
+                                                    <span class="dropdown">
+                                                        <button class="btn btn-default dropdown-toggle" type="button" id="transcript_dropdown" data-toggle="dropdown">
+                                                            Transcripts
+                                                            <span class="caret"></span>
+                                                        </button>
+                                                        <ul class="dropdown-menu" role="menu" aria-labelledby="transcript_dropdown">
+                                                            {% for annotation in consequences[consequence][gene] %}
+                                                                <li role="presentation">
+                                                                    <a role="menuitem" tabindex="-1" href="/transcript/{{ annotation.Feature }}">
+                                                                        {{ annotation.Feature }}
+                                                                        {% if annotation.CANONICAL == 'YES' %}
+                                                                            *
+                                                                        {% endif %}
+                                                                        {% if consequence == 'missense_variant' %}
+                                                                            ({{ annotation.HGVS }})<br/>
+                                                                            &nbsp; &nbsp; &nbsp; Polyphen:
+                                                                            {% set polyphen = annotation.PolyPhen.split('(')[0] %}
+                                                                            {% set pp_label = "bg-success" if polyphen == 'benign' else ("bg-warning" if polyphen == 'possibly_damaging' else "bg-danger") %}
+                                                                            {% set sift = annotation.SIFT.split('(')[0] %}
+                                                                            {% set sift_label = "bg-success" if sift == 'tolerated' else "bg-danger" %}
+                                                                            <span class={{ pp_label }}>{{ polyphen }}</span>; SIFT:
+                                                                            <span class={{ sift_label }}>{{ sift }}</span>
+                                                                        {% elif consequence == 'stop_gained' %}
+                                                                            ({{ annotation.HGVS }})
+                                                                        {% endif %}
+                                                                    </a>
+                                                                </li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </span>
+                                                {% else %}
+                                                    {% set annotation = consequences[consequence][gene][0] %}
+                                                     - <a href="/transcript/{{ annotation.Feature }}">
+                                                        {{ annotation.Feature }}
+                                                        {% if annotation.CANONICAL == 'YES' %}
+                                                            *
+                                                        {% endif %}
+                                                    </a>
+                                                    {% if consequence == 'missense_variant' %}
+                                                        ({{ annotation.HGVS }})<br/>
+                                                        &nbsp; &nbsp; &nbsp; Polyphen:
+                                                        {% set polyphen = annotation.PolyPhen.split('(')[0] %}
+                                                        {% set pp_label = "bg-success" if polyphen == 'benign' else ("bg-warning" if polyphen == 'possibly_damaging' else "bg-danger") %}
+                                                        {% set sift = annotation.SIFT.split('(')[0] %}
+                                                        {% set sift_label = "bg-success" if sift == 'tolerated' else "bg-danger" %}
+                                                        <span class={{ pp_label }}>{{ polyphen }}</span>; SIFT:
+                                                        <span class={{ sift_label }}>{{ sift }}</span>
+                                                    {% elif consequence == 'stop_gained' %}
+                                                        ({{ annotation.HGVS }})
+                                                    {% endif %}
+                                                {% endif %}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endfor %}
+                                </div>
+                                <div class="col-md-6">
+                                {% for consequence in ordered_csqs[((ordered_csqs|length / 2)|int + 1):(ordered_csqs|length)] %}
+                                    <h4>{{ consequence|replace('_variant', '')|replace('_', ' ')|replace('utr', 'UTR')|replace('3 prime', "3'")|replace('5 prime', "5'")|replace('nc ', "non-coding ") }}</h4>
+                                    <ul>
+                                        {% for gene in consequences[consequence] %}
+                                            <li>
+                                                <a href="/gene/{{ gene }}">
+                                                {% if consequences[consequence][gene][0].SYMBOL %}
+                                                    {{ consequences[consequence][gene][0].SYMBOL }}
+                                                {% else %}
+                                                    {{ gene }}
+                                                {% endif %}
+                                                </a>
+                                                {% if consequences[consequence][gene]|length > 1 %}
+                                                    <span class="dropdown">
+                                                        <button class="btn btn-default dropdown-toggle" type="button" id="transcript_dropdown" data-toggle="dropdown">
+                                                            Transcripts
+                                                            <span class="caret"></span>
+                                                        </button>
+                                                        <ul class="dropdown-menu" role="menu" aria-labelledby="transcript_dropdown">
+                                                            {% for annotation in consequences[consequence][gene] %}
+                                                                <li role="presentation">
+                                                                    <a role="menuitem" tabindex="-1" href="/transcript/{{ annotation.Feature }}">
+                                                                        {{ annotation.Feature }}
+                                                                        {% if annotation.CANONICAL == 'YES' %}
+                                                                            *
+                                                                        {% endif %}
+                                                                        {% if consequence == 'missense_variant' %}
+                                                                            ({{ annotation.HGVS }})<br/>
+                                                                            &nbsp; &nbsp; &nbsp; Polyphen:
+                                                                            {% set polyphen = annotation.PolyPhen.split('(')[0] %}
+                                                                            {% set pp_label = "bg-success" if polyphen == 'benign' else ("bg-warning" if polyphen == 'possibly_damaging' else "bg-danger") %}
+                                                                            {% set sift = annotation.SIFT.split('(')[0] %}
+                                                                            {% set sift_label = "bg-success" if sift == 'tolerated' else "bg-danger" %}
+                                                                            <span class={{ pp_label }}>{{ polyphen }}</span>; SIFT:
+                                                                            <span class={{ sift_label }}>{{ sift }}</span>
+                                                                        {% elif consequence == 'stop_gained' %}
+                                                                            ({{ annotation.HGVS }})
+                                                                        {% endif %}
+                                                                    </a>
+                                                                </li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </span>
+                                                {% else %}
+                                                    {% set annotation = consequences[consequence][gene][0] %}
+                                                     - <a href="/transcript/{{ annotation.Feature }}">
+                                                        {{ annotation.Feature }}
+                                                        {% if annotation.CANONICAL == 'YES' %}
+                                                            *
+                                                        {% endif %}
+                                                    </a>
+                                                    {% if consequence == 'missense_variant' %}
+                                                        ({{ annotation.HGVS }})<br/>
+                                                        &nbsp; &nbsp; &nbsp; Polyphen:
+                                                        {% set polyphen = annotation.PolyPhen.split('(')[0] %}
+                                                        {% set pp_label = "bg-success" if polyphen == 'benign' else ("bg-warning" if polyphen == 'possibly_damaging' else "bg-danger") %}
+                                                        {% set sift = annotation.SIFT.split('(')[0] %}
+                                                        {% set sift_label = "bg-success" if sift == 'tolerated' else "bg-danger" %}
+                                                        <span class={{ pp_label }}>{{ polyphen }}</span>; SIFT:
+                                                        <span class={{ sift_label }}>{{ sift }}</span>
+                                                    {% elif consequence == 'stop_gained' %}
+                                                        ({{ annotation.HGVS }})
+                                                    {% endif %}
+                                                {% endif %}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <small><span class="label label-info">Note:</span> This list may not include additional transcripts in the same gene that the variant does not overlap.</small>
+                    {% else %}
+                        No annotations were found for this variant.
+                    {% endif %}
+                </div>
+	    {% if variant.chrom != 'X' %}
+           <div class="section_header">Population Genotype Counts</div>
+		  {% if 1 != -9 %}
+                 <div class="svg-container">
+	          <div class="hidden-xs section_header">Model probabilities</div>
+                        <small class="hidden-xs"><span class="hidden-xs label label-info">Info:</span> Model-based estimate of the relative probabilities of
+4 different models of association (CD-only, UC-only, both-equal contributions, both different 
+effects) assuming prior relative rates similar to that described in <a href="http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3491803/">Jostins, Ripke et al.</a> </small>
+			<p><p>
+		   <style type="text/css">
+		     
+		     .axis path,
+		     .axis line {
+		     fill: none;
+		     stroke: white;
+		     shape-rendering: crispEdges;
+		     }
+  
+		     .axis text {
+		     font-size: 20px;
+		     }
+		     
+		     .bar {
+		     fill: steelblue;
+		     }
+
+		     .bar:hover {
+		     fill: #92c5de;
+		     }
+
+
+		     .d3-tip {
+		     line-height: 1;
+		     font-weight: bold;
+		     padding: 12px;
+		     background: rgba(0, 0, 0, 0.8);
+		     color: #fff;
+		     border-radius: 2px;
+		     }
+
+		   </style>
+		   <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+		   <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+		    <script>
+		      var margin = {top: 20, right: 20, bottom: 60, left: 80}
+		      width = 960 - margin.left - margin.right,
+		      height = 500 - margin.top - margin.bottom;
+		      var labels = ["null", "ibd-similar", "ibd-het", "cd-specific", "uc-specific"];
+		      var x = d3.scale.ordinal()
+                         .domain(labels)
+		         .rangeRoundBands([0, width]);
+		      var y = d3.scale.linear()
+		         .range([height, 0])
+		         .domain([0, 1]);
+		      var xAxis = d3.svg.axis()
+                         .scale(x)
+		         .tickSize(3, 0)
+                         .orient("bottom")
+		         .tickValues(labels);
+		      var yAxis = d3.svg.axis()
+                         .scale(y)
+                         .orient("left")
+                         .ticks(10)
+		         .tickValues([0.0,0.10,0.20,0.30,0.40,0.50,0.60,0.70,0.80,0.90,1.0]);
+		      var tip = d3.tip()
+		      .attr('class', 'd3-tip')
+		      .direction('s')
+		      .html(function(d) {
+		      return "<strong>Posterior probability:</strong> " + d.toPrecision(2) + "</span>";
+		      })
+
+                     var svg = d3.select("body div.svg-container").append("svg")
+                         //.attr("width", width + margin.left + margin.right)
+                         // .attr("height", height + margin.top + margin.bottom)
+                         .attr("preserveAspectRatio", "xMinYMin meet")
+                         .attr("viewBox", "0 0 960 500")
+                         .append("g")
+                         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+		      svg.append("g")
+		          .attr("class", "y axis")
+		          .call(yAxis)
+		      .append("text")
+		          .attr("transform", "rotate(-90)")
+		          .attr("y", 6)
+		          .attr("dy", ".71em")
+		          .style("text-anchor", "end");
+ 		      var w = width;
+		      var h = height;
+		      var barPadding = 1;
+
+		      svg.call(tip);
+
+		      var dataset = [variant.posterior_null, variant.posterior_sim, variant.posterior_het, variant.posterior_cd, variant.posterior_uc];
+		      
+                      svg.selectAll(".bar")
+		         .data(dataset)
+		        .enter()
+                         .append("rect")
+		         .attr("class", "bar")
+		         .attr("x", function(d, i) {
+		               return i * (w / dataset.length);
+		         })
+		         .attr("y", function(d) {
+		               return h - (100 * d * 4);
+		         })
+		         .attr("width", w / dataset.length - barPadding)
+		         .attr("height", function(d) {
+		               return 100 * d * 4;
+		         })
+		         .attr("fill", "steelblue")
+                         .on("mouseover", tip.show)
+		         .on("mouseout", tip.hide)
+		 //        .on("mouseover", function(d) {
+		  //            d3.select(this).style("fill", "#92c5de") 
+		   //       })
+		   //      .on("mouseout",  function(d) {
+		    //        d3.select(this).style("fill", "steelblue"); 
+		     //     });
+		      //adding x axis to the bottom of chart
+		      svg.append("g")
+		      .attr("class", "x axis")
+		      .attr("transform", "translate(" + (margin.left - margin.left) + "," + (height) + ")")
+		      .call(xAxis);
+
+		    </script>
+             </div>
+             {% endif %}
+	    </div> -->
+</div>
+
+{% endblock %}

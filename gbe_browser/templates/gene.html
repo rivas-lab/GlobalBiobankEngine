@@ -1,0 +1,671 @@
+{% extends "layout.html" %}
+{% block body %}
+<style>
+input[type=submit] {
+    width: 100%;
+    background-color: #8C1515;
+    color: white;
+    padding: 8px 20px;
+    margin: 0px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+
+</style>
+    <!-- Render context vars in JS here -->
+    <script type="text/javascript">
+        window.gene = {{ gene|tojson|safe }};
+        window.transcript = {{ transcript|tojson|safe }};
+        window.table_variants = {{ variants_in_gene|tojson|safe }};
+        window.variants_in_transcript = {{ variants_in_transcript|tojson|safe }};
+        window.transcripts_in_gene = {{ transcripts_in_gene|tojson|safe }};
+        window.coverage_stats = {{ coverage_stats|tojson|safe }};
+        window.page_name = window.gene.gene_id;
+    </script>
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-68395741-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+    <script>
+        filtered_variants = _.filter(window.table_variants, function(d) {
+            return d.filter == 'PASS';
+        });
+        $('#number_of_variants').replaceWith(filtered_variants.length);
+        lof_filtered_variants = _.filter(window.table_variants, function(d) {
+            return d.filter == 'PASS' && d.category == 'lof_variant';
+        });
+        $('#number_of_lof_variants').replaceWith(lof_filtered_variants.length);
+    </script>
+
+    <style>
+div.transbox
+{
+  background-color: #ffffff;
+  border: 2px solid gray;
+
+}
+    </style>
+    <script>
+        $(document).ready(function() {
+            $("#variants_loading").hide();
+            $("#variants_table_container").show();
+        });
+    </script>
+    <div class="container-fluid">
+        <div class="col-md-10 col-xs-offset-1 col-md-offset-1">
+	  {% if not gene.di %}
+            <h1>Gene: {{ gene.gene_name }}</h1>
+	   {% endif %}
+	  {% if gene.di %}
+            <h1 style="color:black">Gene: {{ gene.gene_name }}</h1>
+	   {% endif %}
+            <hr/>
+        </div>
+        <div class="row">
+            <div class="col-md-6 col-xs-10 col-xs-offset-1 col-md-offset-0">
+                <dl class="dl-horizontal">
+                    {% if gene.full_gene_name %}
+                        <dt>{{ gene.gene_name }}</dt>
+                        <dd>{{ gene.full_gene_name }}</dd>
+                    {% endif %}
+                    <dt>Number of variants</dt>
+                    <dd><span id="number_of_variants"></span> (Including filtered: {{ variants_in_gene|length }})</dd>
+{#                    <dt>Number of LoF variants</dt>#}
+{#                    <dd><span id="number_of_lof_variants"></span> (Including filtered: {{ lof_variants_in_gene|length }})</dd>#}
+
+{#                    <dt>LoF rate</dt>#}
+{#                    <dd>{{ '%0.4g' % composite_lof_frequency }}</dd>#}
+                    <dt class="hidden-xs">UCSC Browser</dt>
+                    <dd class="hidden-xs">
+                        <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ gene.chrom }}%3A{{ gene.start - 1 }}-{{ gene.stop - 1 }}" target="_blank">
+                            {{ gene.chrom }}:{{ gene.start - 1 }}-{{ gene.stop - 1 }}
+                            <i class="fa fa-external-link"></i>
+                        </a>
+                    </dd>
+                    <dt class="hidden-xs">ExAC</dt>
+                    <dd class="hidden-xs">
+                        <a href="http://exac.broadinstitute.org/gene/{{ gene.gene_id }}" target="_blank">
+                            {{ gene.gene_name }}
+                            <i class="fa fa-external-link"></i>
+                        </a>
+                    </dd>
+                    {% if gene.omim_accession %}
+                        <dt>OMIM</dt>
+                        <dd>
+                            <a href="http://omim.org/entry/{{ gene.omim_accession }}" target="_blank">
+                                {{ gene.gene_name }}
+                                <i class="fa fa-external-link"></i>
+                            </a>
+                        </dd>
+                    {% endif %}
+                    <dt>Other</dt>
+                    <dd>
+                        <div class="dropdown">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="external_ref_dropdown" data-toggle="dropdown">
+                                External References
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu" aria-labelledby="external_ref_dropdown">
+                                <li role="presentation" class="visible-xs-block">
+                                    <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ gene.chrom }}%3A{{ gene.start - 1 }}-{{ gene.stop - 1 }}" target="_blank">
+                                        UCSC Browser
+                                        <i class="fa fa-external-link"></i>
+                                    </a>
+                                </li>
+                                <li role="presentation" class="visible-xs-block">
+                                    <a href="http://www.genecards.org/cgi-bin/carddisp.pl?gene={{ gene.gene_name }}" target="_blank">
+                                        GeneCards
+                                        <i class="fa fa-external-link"></i>
+                                    </a>
+                                </li>
+                                <li role="presentation">
+                                    <a role="menuitem" tabindex="-1" href="http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?g={{ gene.gene_id }}" target="_blank">
+                                        Ensembl <i class="fa fa-external-link"></i>
+                                    </a>
+                                </li>
+                                <li role="presentation">
+                                    <a role="menuitem" tabindex="-1" href="http://en.wikipedia.org/{{ gene.gene_name }}" target="_blank">
+                                        Wikipedia <i class="fa fa-external-link"></i>
+                                    </a>
+                                </li>
+                                <li role="presentation">
+                                    <a role="menuitem" tabindex="-1" href="http://www.ncbi.nlm.nih.gov/pubmed?term={{ gene.gene_name }}" target="_blank">
+                                        PubMed Search <i class="fa fa-external-link"></i>
+                                    </a>
+                                </li>
+                                <li role="presentation">
+                                    <a role="menuitem" tabindex="-1" href="http://www.wikigenes.org/?search={{ gene.gene_name }}" target="_blank">
+                                        Wikigenes <i class="fa fa-external-link"></i>
+                                    </a>
+                                </li>
+                                <li role="presentation">
+                                    <a role="menuitem" tabindex="-1" href="http://www.gtexportal.org/home/gene/{{ gene.gene_name }}" target="_blank">
+                                        GTEx (Expression) <i class="fa fa-external-link"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+			</dd>
+                </dl>
+            </div>
+	    <div class=" col-md-5">
+
+    <form method=post enctype=multipart/form-data>
+        <textarea id="gene_text"  style="display:none;" Name="gene_text" rows="0" cols="0">{{ gene.gene_name }}</textarea>
+
+            <label for="function">Select the types of variants MRP should consider:</label>
+          <select id="function", name="function">
+            <option value="['missense_variant','lof_variant']">Missense + LoF</option>
+            <option value="['missense_variant']">Missense</option>
+            <option value="['lof_variant']">LoF</option>
+          </select>
+ <br>
+            <label for="functionfdr">Select the false discovery rate (FDR):</label>
+          <select id="functionfdr", name="functionfdr">
+            <option value="[1]">1%</option>
+            <option value="[5]">5%</option>
+            <option value="[10]">10%</option>
+          </select>
+	  <p>
+	    
+	    <label for="functionphen">Select the phenotype</label>
+	    <select id="phenotypes", name="phenotypes"/>
+<option value="ICD1498">coffee_intake_frequency</option>
+<option value="ICD1558"> alcohol_intake_frequency</option>
+<option value="ICD20116"> smoking_pack_years</option>
+<option value="ICD20159"> pairs_matching_test</option>
+<option value="ICD20240"> numeric_memory_test</option>
+<option value="ICD21001"> bmi_body_mass_index</option>
+<option value="ICD1065"> hypertension</option>
+<option value="ICD1066"> heart/cardiac_problem</option>
+<option value="ICD1067"> peripheral_vascular_disease</option>
+<option value="ICD1072"> essential_hypertension</option>
+<option value="ICD1073"> gestational_hypertension/pre-eclampsia</option>
+<option value="ICD1074"> angina</option>
+<option value="ICD1075"> heart_attack/myocardial_infarction</option>
+<option value="ICD1076"> heart_failure/pulmonary_odema</option>
+<option value="ICD1077"> heart_arrhythmia</option>
+<option value="ICD1078"> heart_valve_problem/heart_murmur</option>
+<option value="ICD1079"> cardiomyopathy</option>
+<option value="ICD1081"> stroke</option>
+<option value="ICD1082"> transient_ischaemic_attack_(tia)</option>
+<option value="ICD1083"> subdural_haemorrhage/haematoma</option>
+<option value="ICD1086"> subarachnoid_haemorrhage</option>
+<option value="ICD1088"> arterial_embolism</option>
+<option value="ICD1093"> pulmonary_embolism_+/-_dvt</option>
+<option value="ICD1111"> asthma</option>
+<option value="ICD1112"> chronic_obstructive_airways_disease/copd</option>
+<option value="ICD1113"> emphysema/chronic_bronchitis</option>
+<option value="ICD1114"> bronchiectasis</option>
+<option value="ICD1115"> interstitial_lung_disease</option>
+<option value="ICD1117"> other_respiratory_problems</option>
+<option value="ICD1121"> pulmonary_fibrosis</option>
+<option value="ICD1122"> fibrosing_alveolitis/unspecified_alveolitis</option>
+<option value="ICD1123"> sleep_apnoea</option>
+<option value="ICD1124"> respiratory_failure</option>
+<option value="ICD1125"> pleurisy</option>
+<option value="ICD1126"> spontaneous_pneumothorax/recurrent_pneumothorax</option>
+<option value="ICD1134"> oesophageal_disorder</option>
+<option value="ICD1135"> stomach_disorder</option>
+<option value="ICD1136"> liver/biliary/pancreas_problem</option>
+<option value="ICD1137"> other_abdominal_problem</option>
+<option value="ICD1138"> gastro-oesophageal_reflux_(gord)_/_gastric_reflux</option>
+<option value="ICD1139"> oesophagitis/barretts_oesophagus</option>
+<option value="ICD1140"> oesophageal_stricture</option>
+<option value="ICD1141"> oesophageal_varicies</option>
+<option value="ICD1142"> gastric/stomach_ulcers</option>
+<option value="ICD1154"> irritable_bowel_syndrome</option>
+<option value="ICD1155"> hepatitis</option>
+<option value="ICD1156"> infective/viral_hepatitis</option>
+<option value="ICD1158"> liver_failure/cirrhosis</option>
+<option value="ICD1160"> bile_duct_obstruction/ascending_cholangitis</option>
+<option value="ICD1161"> gall_bladder_disease</option>
+<option value="ICD1162"> cholelithiasis/gall_stones</option>
+<option value="ICD1163"> cholecystitis</option>
+<option value="ICD1165"> pancreatitis</option>
+<option value="ICD1190"> peritonitis</option>
+<option value="ICD1192"> renal/kidney_failure</option>
+<option value="ICD1193"> renal_failure_requiring_dialysis</option>
+<option value="ICD1194"> renal_failure_not_requiring_dialysis</option>
+<option value="ICD1196"> urinary_tract_infection/kidney_infection</option>
+<option value="ICD1197"> kidney_stone/ureter_stone/bladder_stone</option>
+<option value="ICD1200"> ureteric_obstruction/hydronephrosis</option>
+<option value="ICD1201"> bladder_problem_(not_cancer)</option>
+<option value="ICD1207"> prostate_problem_(not_cancer)</option>
+<option value="ICD1220"> diabetes</option>
+<option value="ICD1221"> gestational_diabetes</option>
+<option value="ICD1225"> hyperthyroidism/thyrotoxicosis</option>
+<option value="ICD1226"> hypothyroidism/myxoedema</option>
+<option value="ICD1229"> parathyroid_gland_problem_(not_cancer)</option>
+<option value="ICD1232">disorder_of_adrenal_gland</option>
+<option value="ICD1234"> adrenocortical_insufficiency/addison's_disease</option>
+<option value="ICD1235"> hyperaldosteronism/conn's_syndrome</option>
+<option value="ICD1237"> disorder_or_pituitary_gland</option>
+<option value="ICD1239"> cushings_syndrome</option>
+<option value="ICD1242"> eye/eyelid_problem</option>
+<option value="ICD1243"> psychological/psychiatric_problem</option>
+<option value="ICD1244"> infection_of_nervous_system</option>
+<option value="ICD1245"> brain_abscess/intracranial_abscess</option>
+<option value="ICD1246"> encephalitis</option>
+<option value="ICD1247"> meningitis</option>
+<option value="ICD1248"> spinal_abscess</option>
+<option value="ICD1251"> spinal_cord_disorder</option>
+<option value="ICD1252"> paraplegia</option>
+<option value="ICD1255"> peripheral_neuropathy</option>
+<option value="ICD1256"> acute_infective_polyneuritis/guillain-barre_syndrome</option>
+<option value="ICD1259"> motor_neurone_disease</option>
+<option value="ICD1260"> myasthenia_gravis</option>
+<option value="ICD1261"> multiple_sclerosis</option>
+<option value="ICD1262"> parkinsons_disease</option>
+<option value="ICD1264"> epilepsy</option>
+<option value="ICD1265"> migraine</option>
+<option value="ICD1266"> head_injury</option>
+<option value="ICD1267"> spinal_injury</option>
+<option value="ICD1274"> eye_infection</option>
+<option value="ICD1276"> diabetic_eye_disease</option>
+<option value="ICD1277"> glaucoma</option>
+<option value="ICD1278"> cataract</option>
+<option value="ICD1279"> eye_trauma</option>
+<option value="ICD1281"> retinal_detachment</option>
+<option value="ICD1282"> retinal_artery/vein_occlusion</option>
+<option value="ICD1286"> depression</option>
+<option value="ICD1289"> schizophrenia</option>
+<option value="ICD1291"> mania/bipolar_disorder/manic_depression</option>
+<option value="ICD1293"> bone_disorder</option>
+<option value="ICD1295"> joint_disorder</option>
+<option value="ICD1308"> osteomyelitis</option>
+<option value="ICD1309"> osteoporosis</option>
+<option value="ICD1313"> ankylosing_spondylitis</option>
+<option value="ICD1322"> myositis/myopathy</option>
+<option value="ICD1328"> haemophilia</option>
+<option value="ICD1330"> iron_deficiency_anaemia</option>
+<option value="ICD1332"> aplastic_anaemia</option>
+<option value="ICD1339"> sickle_cell_disease</option>
+<option value="ICD1340"> thalassaemia</option>
+<option value="ICD1345"> pemphigoid/pemphigus</option>
+<option value="ICD1350"> polycystic_ovaries/polycystic_ovarian_syndrome</option>
+<option value="ICD1364"> breast_disease_(not_cancer)</option>
+<option value="ICD1367"> breast_cysts</option>
+<option value="ICD1371"> sarcoidosis</option>
+<option value="ICD1372"> vasculitis</option>
+<option value="ICD1373"> connective_tissue_disorder</option>
+<option value="ICD1376"> giant_cell/temporal_arteritis</option>
+<option value="ICD1377"> polymyalgia_rheumatica</option>
+<option value="ICD1378"> wegners_granulmatosis</option>
+<option value="ICD1379"> microscopic_polyarteritis</option>
+<option value="ICD1380"> polyartertis_nodosa</option>
+<option value="ICD1381"> systemic_lupus_erythematosis/sle</option>
+<option value="ICD1382"> sjogren's_syndrome/sicca_syndrome</option>
+<option value="ICD1383"> dermatopolymyositis</option>
+<option value="ICD1384"> scleroderma/systemic_sclerosis</option>
+<option value="ICD1385"> allergy_or_anaphylactic_reaction_to_food</option>
+<option value="ICD1387"> hayfever/allergic_rhinitis</option>
+<option value="ICD1394"> peripheral_nerve_injury</option>
+<option value="ICD1396"> enlarged_prostate</option>
+<option value="ICD1397"> other_demyelinating_disease_(not_multiple_sclerosis)</option>
+<option value="ICD1398"> pneumonia</option>
+<option value="ICD1400"> peptic_ulcer</option>
+<option value="ICD1402"> endometriosis</option>
+<option value="ICD1403"> female_infertility</option>
+<option value="ICD1404"> male_infertility</option>
+<option value="ICD1405"> other_renal/kidney_problem</option>
+<option value="ICD1407"> burns</option>
+<option value="ICD1410"> other_substance_abuse/dependency</option>
+<option value="ICD1411"> lung_abscess</option>
+<option value="ICD1412"> bronchitis</option>
+<option value="ICD1414"> throat_or_larynx_disorder</option>
+<option value="ICD1415"> ear/vestibular_disorder</option>
+<option value="ICD1416"> chronic_sinusitis</option>
+<option value="ICD1417"> nasal_polyps</option>
+<option value="ICD1418"> chronic_laryngitis</option>
+<option value="ICD1419"> vocal_cord_polyp</option>
+<option value="ICD1420"> otosclerosis</option>
+<option value="ICD1421"> meniere's_disease</option>
+<option value="ICD1425"> cerebral_aneurysm</option>
+<option value="ICD1426"> myocarditis</option>
+<option value="ICD1427"> polycystic_kidney</option>
+<option value="ICD1428"> thyroiditis</option>
+<option value="ICD1429"> acromegaly</option>
+<option value="ICD1430"> hypopituitarism</option>
+<option value="ICD1431"> hyperprolactinaemia</option>
+<option value="ICD1432"> carcinoid_syndrome/tumour</option>
+<option value="ICD1433"> cerebral_palsy</option>
+<option value="ICD1434"> other_neurological_problem</option>
+<option value="ICD1435"> optic_neuritis</option>
+<option value="ICD1436"> headaches_(not_migraine)</option>
+<!-- <option value="ICD1437"> myasthenia_gravis</option> Duplicate!-->
+<option value="ICD1438"> polycythaemia_vera</option>
+<option value="ICD1440"> tuberculosis_(tb)</option>
+<option value="ICD1441"> malaria</option>
+<option value="ICD1442"> helicobacter_pylori</option>
+<option value="ICD1443"> schistosomiasis/bilharzia</option>
+<option value="ICD1446"> anaemia</option>
+<option value="ICD1450"> monoclonal_gammopathy/not_myeloma</option>
+<option value="ICD1452"> eczema/dermatitis</option>
+<option value="ICD1453"> psoriasis</option>
+<option value="ICD1454"> blistering/desquamating_skin_disorder</option>
+<option value="ICD1455"> chronic_skin_ulcers</option>
+<option value="ICD1456"> malabsorption/coeliac_disease</option>
+<option value="ICD1457"> duodenal_ulcer</option>
+<option value="ICD1459"> colitis/not_crohns_or_ulcerative_colitis</option>
+<option value="ICD1460"> rectal_or_colon_adenoma/polyps</option>
+<option value="ICD1461"> inflammatory_bowel_disease</option>
+<option value="ICD1462"> crohns_disease</option>
+<option value="ICD1463"> ulcerative_colitis</option>
+<option value="ICD1464"> rheumatoid_arthritis</option>
+<option value="ICD1466"> gout</option>
+<option value="ICD1467"> other_joint_disorder</option>
+<option value="ICD1469"> post-traumatic_stress_disorder</option>
+<option value="ICD1470"> anorexia/bulimia/other_eating_disorder</option>
+<option value="ICD1471"> atrial_fibrillation</option>
+<option value="ICD1472"> emphysema</option>
+<option value="ICD1474"> hiatus_hernia</option>
+<option value="ICD1475"> sclerosing_cholangitis</option>
+<option value="ICD1476"> sciatica</option>
+<option value="ICD1477"> psoriatic_arthropathy</option>
+<option value="ICD1478"> cervical_spondylosis</option>
+<option value="ICD1479"> rheumatic_fever</option>
+<option value="ICD1480"> dermatomyositis</option>
+<option value="ICD1481"> polymyositis</option>
+<option value="ICD1483">atrial_flutter</option>
+<option value="ICD1485"> irregular_heart_beat</option>
+<option value="ICD1486"> sick_sinus_syndrome</option>
+<option value="ICD1487"> svt_/_supraventricular_tachycardia</option>
+<option value="ICD1488"> mitral_valve_prolapse</option>
+<option value="ICD1489"> mitral_stenosis</option>
+<option value="ICD1490"> aortic_stenosis</option>
+<option value="ICD1491"> brain_haemorrhage</option>
+<option value="ICD1492"> aortic_aneurysm</option>
+<option value="ICD1493"> other_venous/lymphatic_disease</option>
+<option value="ICD1494"> varicose_veins</option>
+<option value="ICD1495"> lymphoedema</option>
+<option value="ICD1497"> pneumothorax</option>
+<option value="ICD1498"> empyema</option>
+<option value="ICD1499"> labyrinthitis</option>
+<option value="ICD1500"> vertigo</option>
+<option value="ICD1501"> pyloric_stenosis</option>
+<option value="ICD1502"> appendicitis</option>
+<option value="ICD1504"> anal_fissure</option>
+<option value="ICD1505"> haemorrhoids_/_piles</option>
+<option value="ICD1506"> primary_biliary_cirrhosis</option>
+<option value="ICD1510"> dyspepsia_/_indigestion</option>
+<option value="ICD1511"> abdominal_hernia</option>
+<option value="ICD1512"> umbilical_hernia</option>
+<option value="ICD1513"> inguinal_hernia</option>
+<option value="ICD1514"> cystitis</option>
+<option value="ICD1515"> pyelonephritis</option>
+<option value="ICD1517"> prostatitis</option>
+<option value="ICD1519"> kidney_nephropathy</option>
+<option value="ICD1520"> iga_nephropathy</option>
+<option value="ICD1521"> diabetes_insipidus</option>
+<option value="ICD1523"> trigemminal_neuralgia</option>
+<option value="ICD1524"> spina_bifida</option>
+<option value="ICD1525"> benign_/_essential_tremor</option>
+<option value="ICD1526"> polio_/_poliomyelitis</option>
+<option value="ICD1528"> macular_degeneration</option>
+<option value="ICD1533"> disc_degeneration</option>
+<option value="ICD1534"> back_pain</option>
+<option value="ICD1535"> scoliosis</option>
+<option value="ICD1536"> spinal_stenosis</option>
+<option value="ICD1537"> joint_pain</option>
+<option value="ICD1538"> arthritis_(nos)</option>
+<option value="ICD1541"> carpal_tunnel_syndrome</option>
+<option value="ICD1542"> fibromyalgia</option>
+<option value="ICD1546"> essential_thrombocytosis</option>
+<option value="ICD1548"> acne/acne_vulgaris</option>
+<option value="ICD1549"> lichen_planus</option>
+<option value="ICD1557"> pelvic_inflammatory_disease/_pid</option>
+<option value="ICD1558"> ectopic_pregnancy</option>
+<option value="ICD1560"> breast_fibroadenoma</option>
+<option value="ICD1562"> food_intolerance</option>
+<option value="ICD1563"> urticaria</option>
+<option value="ICD1566"> mrsa_/_methicillin_resistant_staphylococcus_aureus</option>
+<option value="ICD1567"> infectious_mononucleosis_/_glandular_fever_/_epstein_barr_virus_(ebv)</option>
+<option value="ICD1568"> measles_/_morbillivirus</option>
+<option value="ICD1569"> mumps_/_epidemic_parotitis</option>
+<option value="ICD1570"> rubella_/_german_measles</option>
+<option value="ICD1571"> chickenpox</option>
+<option value="ICD1572"> whooping_cough_/_pertussis</option>
+<option value="ICD1574"> diphtheria</option>
+<option value="ICD1575"> herpes_simplex</option>
+<option value="ICD1576"> dengue_fever</option>
+<option value="ICD1577"> typhoid_fever</option>
+<option value="ICD1578"> hepatitis_a</option>
+<option value="ICD1579"> hepatitis_b</option>
+<option value="ICD1580"> hepatitis_c</option>
+<option value="ICD1584"> mitral_valve_disease</option>
+<option value="ICD1586"> aortic_valve_disease</option>
+<option value="ICD1588"> hypertrophic_cardiomyopathy_(hcm_/_hocm)</option>
+<option value="ICD1589"> pericarditis</option>
+<option value="ICD1590"> pericardial_effusion</option>
+<option value="ICD1591">aortic_aneurysm_rupture</option>
+<option value="ICD1592"> aortic_dissection</option>
+<option value="ICD1593"> varicose_ulcer</option>
+<option value="ICD1594"> respiratory_infection</option>
+<option value="ICD1596"> pleural_effusion</option>
+<option value="ICD1597"> tinnitus_/_tiniitis</option>
+<option value="ICD1599"> constipation</option>
+<option value="ICD1600"> bowel_/_intestinal_perforation</option>
+<option value="ICD1602"> bowel_/_intestinal_obstruction</option>
+<option value="ICD1603"> rectal_prolapse</option>
+<option value="ICD1604"> alcoholic_liver_disease_/_alcoholic_cirrhosis</option>
+<option value="ICD1605"> femoral_hernia</option>
+<option value="ICD1606"> incisional_hernia</option>
+<option value="ICD1607"> diabetic_nephropathy</option>
+<option value="ICD1608"> nephritis</option>
+<option value="ICD1611"> hyperparathyroidism</option>
+<option value="ICD1613"> blepharitis_/_eyelid_infection</option>
+<option value="ICD1614"> stress</option>
+<option value="ICD1615"> obsessive_compulsive_disorder_(ocd)</option>
+<option value="ICD1616"> insomnia</option>
+<option value="ICD1620"> bursitis</option>
+<option value="ICD1621"> synovitis</option>
+<option value="ICD1622"> epicondylitis</option>
+<option value="ICD1623"> tennis_elbow_/_lateral_epicondylitis</option>
+<option value="ICD1624"> housemaid's_knee_(prepatellar_bursitis)</option>
+<option value="ICD1625"> cellulitis</option>
+<option value="ICD1626"> fracture_skull_/_head</option>
+<option value="ICD1629"> fracture_face_/_orbit_/_eye_socket</option>
+<option value="ICD1630"> fracture_neck_/_cervical_fracture</option>
+<option value="ICD1631"> fracture_clavicle_/_collar_bone</option>
+<option value="ICD1632"> fracture_shoulder_/_scapula</option>
+<option value="ICD1633"> fracture_upper_arm_/_humerus_/_elbow</option>
+<option value="ICD1634"> fracture_forearm_/_wrist</option>
+<option value="ICD1635"> fracture_radius</option>
+<option value="ICD1636"> fracture_ulna</option>
+<option value="ICD1638"> fracture_hand</option>
+<option value="ICD1639"> fracture_finger</option>
+<option value="ICD1640"> fracture_thumb</option>
+<option value="ICD1644"> fracture_rib</option>
+<option value="ICD1645"> fracture_sternum</option>
+<option value="ICD1647"> fracture_pelvis</option>
+<option value="ICD1648"> fracture_neck_of_femur_/_hip</option>
+<option value="ICD1649"> fracture_shaft_of_femur</option>
+<option value="ICD1650"> fracture_patella_/_knee</option>
+<option value="ICD1651"> fracture_lower_leg_/_ankle</option>
+<option value="ICD1652"> fracture_tibia</option>
+<option value="ICD1653"> fracture_fibula</option>
+<option value="ICD1654"> fracture_foot</option>
+<option value="ICD1655"> fracture_metatarsal</option>
+<option value="ICD1656"> fracture_toe</option>
+<option value="ICD1658"> myelofibrosis</option>
+<option value="ICD1660"> rosacea</option>
+<option value="ICD1661"> vitiligo</option>
+<option value="ICD1666"> benign_breast_lump</option>
+<option value="ICD1667"> alopecia_/_hair_loss</option>
+<option value="ICD1669"> contact_dermatitis</option>
+<option value="ICD1676"> yellow_fever</option>
+<option value="ICD1677"> scarlet_fever_/_scarlatina</option>
+<option value="ICD1678"> chlamydia</option>
+<option value="ICD1679"> undescended_testicle</option>
+<option value="ICD1681"> hydatiform_mole</option>
+<option value="ICD1003">skin_cancer</option>
+<option value="ICD1060">non-melanoma_skin_cancer</option>
+<option value="ICD1002">breast_cancer</option>
+<option value="ICD1037">female_genital_tract_cancer</option>
+<option value="ICD1044">prostate_cancer</option>
+<option value="ICD1020">large_bowel_cancer/colorectal_cancer</option>
+<option value="ICD1038">male_genital_tract_cancer</option>
+<option value="ICD1041">cervical_cancer</option>
+<option value="ICD1022">colon_cancer/sigmoid_cancer</option>
+<option value="ICD1084">respiratory/intrathoracic_cancer</option>
+<option value="ICD1023">rectal_cancer</option>
+<option value="ICD1035">bladder_cancer</option>
+<option value="ICD1001">lung_cancer</option>
+<option value="ICD1040">uterine/endometrial_cancer</option>
+<option value="ICD1039">ovarian_cancer</option>
+<option value="ICD1034">kidney/renal_cell_cancer</option>
+<option value="ICD1045">testicular_cancer</option>
+<option value="ICD1004">cancer_of_lip/mouth/pharynx/oral_cavity</option>
+<option value="ICD1065">thyroid_cancer</option>
+<option value="ICD1017">oesophageal_cancer</option>
+<option value="ICD1018">stomach_cancer</option>
+<option value="ICD1032">brain_cancer_/_primary_malignant_brain_tumour</option>
+<option value="ICD1006">larynx/throat_cancer</option>
+<option value="ICD1026">pancreas_cancer</option>
+<option value="ICD1024">liver/hepatocellular_cancer</option>
+<option value="ICD1019">small_intestine/small_bowel_cancer</option>
+<option value="ICD1011">tongue_cancer</option>
+<option value="ICD1030">eye_and/or_adnexal_cancer</option>
+<option value="ICD1077">mouth_cancer</option>
+<option value="ICD1063">primary_bone_cancer</option>
+<option value="ICD1025">gallbladder/bile_duct_cancer</option>
+<option value="ICD1043">vulval_cancer</option>
+<option value="ICD1005">salivary_gland_cancer</option>
+<option value="ICD1015">parotid_gland_cancer</option>
+<option value="ICD1086">appendix_cancer</option>
+<option value="ICD1046">penis_cancer</option>
+<option value="ICD1010">lip_cancer</option>
+<option value="ICD1033">spinal_cord_or_cranial_nerve_cancer</option>
+<option value="ICD1007">nasal_cavity_cancer</option>
+<option value="ICD1079">oropharynx/oropharyngeal_cancer</option>
+<option value="ICD1031">meningeal_cancer/malignant_meningioma</option>
+<option value="ICD1067">adrenal_cancer</option>
+<option value="ICD1036">other_cancer_of_urinary_tract</option>
+<option value="ICD1029">peripheral_nerve/autonomic_nerve_cancer</option>
+<option value="ICD1042">vaginal_cancer</option>
+<option value="ICD1082">heart/mediastinum_cancer</option>
+<option value="ICD1081">thymus_cancer/malignant_thymoma</option>
+<option value="ICD1012">gum_cancer</option>
+<option value="ICD1008">ear_cancer</option>
+<option value="ICD1087">fallopian_tube_cancer</option>
+<option value="ICD1009">sinus_cancer</option>
+<option value="ICD1080">trachea_cancer</option>
+<option value="ICD1066">parathyroid_cancer</option>
+<option value="ICD1001_FH">Lung_cancer_FH</option>
+<option value="ICD1019_FH">Bowel_cancer_FH</option>
+<option value="ICD1044_FH">Prostate_cancer_FH</option>
+<option value="ICD1002_FH">Breast_cancer_FH</option>
+<option value="ICD1262_FH">Parkinsons_FH</option>
+<option value="ICD1286_FH">Depression_severe_FH</option>
+<option value="ICD1263_FH">Alzheimers_disease_dementia_FH</option>
+<option value="ICD1220_FH">Diabetes_FH</option>
+<option value="ICD1003">skin_cancer</option>
+<option value="ICD1060">non-melanoma_skin_cancer</option>
+<option value="ICD1002">breast_cancer</option>
+<option value="ICD1037">female_genital_tract_cancer</option>
+<option value="ICD1044">prostate_cancer</option>
+<option value="ICD1020">large_bowel_cancer/colorectal_cancer</option>
+<option value="ICD1038">male_genital_tract_cancer</option>
+<option value="ICD1041">cervical_cancer</option>
+<option value="ICD1022">colon_cancer/sigmoid_cancer</option>
+<option value="ICD1084">respiratory_/_intrathoracic_cancer</option>
+<option value="ICD1201">bladder_problem_(not_cancer)</option>
+<option value="ICD1023">rectal_cancer</option>
+<option value="ICD1035">bladder_cancer</option>
+<option value="ICD1001">lung_cancer</option>
+<option value="ICD1040">uterine/endometrial_cancer</option>
+<option value="ICD1039">ovarian_cancer</option>
+<option value="ICD1034">kidney/renal_cell_cancer</option>
+<option value="ICD1045">testicular_cancer</option>
+<option value="ICD1004">cancer_of_lip/mouth/pharynx/oral_cavity</option>
+<option value="ICD1207">prostate_problem_(not_cancer)</option>
+<option value="ICD1065">thyroid_cancer</option>
+<option value="ICD1017">oesophageal_cancer</option>
+<option value="ICD1018">stomach_cancer</option>
+<option value="ICD1032">brain_cancer_/_primary_malignant_brain_tumour</option>
+<option value="ICD1006">larynx/throat_cancer</option>
+<option value="ICD1026">pancreas_cancer</option>
+<option value="ICD1024">liver/hepatocellular_cancer</option>
+<option value="ICD1019">small_intestine/small_bowel_cancer</option>
+<option value="ICD1011">tongue_cancer</option>
+<option value="ICD1030">eye_and/or_adnexal_cancer</option>
+<option value="ICD1364">breast_disease_(not_cancer)</option>
+<option value="ICD1077">mouth_cancer</option>
+<option value="ICD1063">primary_bone_cancer</option>
+<option value="ICD1025">gallbladder/bile_duct_cancer</option>
+<option value="ICD1043">vulval_cancer</option>
+<option value="ICD1229">parathyroid_gland_problem_(not_cancer)</option>
+<option value="ICD1005">salivary_gland_cancer</option>
+<option value="ICD1015">parotid_gland_cancer</option>
+<option value="ICD1086">appendix_cancer</option>
+<option value="ICD1046">penis_cancer</option>
+<option value="ICD1010">lip_cancer</option>
+<option value="ICD1033">spinal_cord_or_cranial_nerve_cancer</option>
+<option value="ICD1007">nasal_cavity_cancer</option>
+<option value="ICD1079">oropharynx_/_oropharyngeal_cancer</option>
+<option value="ICD1031">meningeal_cancer_/_malignant_meningioma</option>
+<option value="ICD1067">adrenal_cancer</option>
+<option value="ICD1036">other_cancer_of_urinary_tract</option>
+<option value="ICD1029">peripheral_nerve/autonomic_nerve_cancer</option>
+<option value="ICD1042">vaginal_cancer</option>
+<option value="ICD1082">heart_/_mediastinum_cancer</option>
+<option value="ICD1081">thymus_cancer_/_malignant_thymoma</option>
+<option value="ICD1012">gum_cancer</option>
+<option value="ICD1008">ear_cancer</option>
+<option value="ICD1087">fallopian_tube_cancer</option>
+<option value="ICD1009">sinus_cancer</option>
+<option value="ICD1080">trachea_cancer</option>
+<option value="ICD1066">parathyroid_cancer</option>
+	      </select>
+             <p>
+
+
+       <input type="submit" value="Run MRP" name="submit_button">
+      </p>
+      <hr>
+      <p>For more information on the statisical methods behind MRP, see Rivas et al. "Bayesian models for high-dimensional rare variant association studies" In progress.</p>
+
+    </form>
+
+            </div>
+          </div>         
+
+        <div class="row">
+            <div class="col-md-10 col-md-offset-1">
+                <h3>Gene summary</h3>
+                <div class="row">
+                    {% with plot_id = gene.gene_name %}
+                        {% include 'transcript_display.html' %}
+                    {% endwith %}
+                </div>
+                <div class="row">
+                    {% if variants_in_gene %}
+                        {% set chrom = variants_in_transcript[0].chrom %}
+                        {% include 'variant_table.html' %}
+                    {% else %}
+                        No variants in this gene.
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+{% endblock %}
+
+
+
+
+
+

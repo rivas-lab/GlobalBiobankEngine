@@ -1,0 +1,579 @@
+{% extends "layout.html" %}
+{% block body %}
+    <head>
+<style>
+.dropbtn1 {
+    background-color: #B3995D;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+
+
+.dropbtn1:hover, .dropbtn:focus {
+    background-color: #B6B1A9;
+}
+
+
+
+
+.button {
+    background-color: #B3995D; /* Green */
+    border: none;
+    color: white;
+    padding: 16px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    -webkit-transition-duration: 0.1s; /* Safari */
+    transition-duration: 0.1s;
+    cursor: pointer;
+}
+
+.button:hover {
+    background-color: #DAD7CB;
+    color: white;
+    text-decoration: none;
+}
+
+
+
+
+#myInput {
+    border-box: box-sizing;
+    background-image: url('searchicon.png');
+    background-position: 14px 12px;
+    background-repeat: no-repeat;
+    font-size: 16px;
+    padding: 14px 20px 12px 45px;
+    border: none;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f6f6f6;
+    min-width: 330px;
+    overflow: auto;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown a:hover {background-color: #ddd}
+
+.show {display:block;}
+
+
+</style>
+</head>
+
+    <script>
+        $('#navbar_form_container').hide();
+    </script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-68395741-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+<script>
+/* When the user clicks on the button,
+toggle between hiding and showing the dropdown content */
+function myFunction() {
+    document.getElementById("myDropdown").classList.toggle("show");
+}
+
+function filterFunction() {
+    var input, filter, ul, li, a, i;
+    input = document.getElementById("myInput");
+    filter = input.value.toUpperCase();
+    div = document.getElementById("myDropdown");
+    a = div.getElementsByTagName("a");
+    for (i = 0; i < a.length; i++) {
+        if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
+            a[i].style.display = "";
+        } else {
+            a[i].style.display = "none";
+        }
+    }
+}
+</script>
+
+
+
+
+    <div class="container">
+        <h1 id="home-title">Global Biobank Engine  <a href="/about" style="color: black;"></a></li></h1>
+        <div class="row">
+            <div class="col-md-12">
+                <div id="home-searchbox">
+                    <form action="/awesome">
+                        <input type="submit" style="display: none;"/>
+                        <input id="home-searchbox-input" name="query" class="form-control input-lg awesomebar" type="text" placeholder="Search for a gene or variant or region or ICD10 code"/>
+                        <input type="submit" style="position: absolute; left: -9999px"/>
+                    </form>
+                    <p class="text-muted">
+                        Examples - Gene: <a href="/awesome?query=F5">F5</a></li>,
+                        Transcript: <a href="/transcript/ENST00000367797">ENST00000367797</a></li>,
+                        Variant: <a href="/variant/1-169519049">1-169519049</a></li>,
+                        RS ID: <a href="/awesome?query=rs6025">rs6025</a></li>,
+                        Region: <a href="/region/16-50727514-50766988">16:50727514-50766988</a></li>
+                        ICD10: <a href="/icd10/ICDK50">ICDK50</a></li>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+
+
+<br>
+
+
+                <div class="row" style="font-size: 16px;">
+	  <div class="col-md-8">
+<h3 align="center">Genetic Association Results</h3>
+        <p><b>Note: </b>This engine presents case-control association results from the UK Biobank hospital in-patient health-related outcomes summary information data (<a href="biobank.ctsu.ox.ac.uk/showcase/field.cgi?id=41202">Data-Field 41202</a>); computational grouping of phenotypes with cancer (<a href="http://biobank.ctsu.ox.ac.uk/crystal/label.cgi?id=100092">Category 100092</a>) registry, death registry data (<a href="http://biobank.ctsu.ox.ac.uk/crystal/label.cgi?id=100093">Category 100093</a>), algorithmically-defined outcomes (<a href="http://biobank.ctsu.ox.ac.uk/crystal/label.cgi?id=42">Category 42</a>), and verbal questionnaire data (<a href="http://biobank.ctsu.ox.ac.uk/crystal/label.cgi?id=100071">Category 100071</a>); and manually curated grouping of phenotypes.</p>
+   <p>
+
+<div class="dropdown" align="center">
+<button onclick="myFunction()" class="button">Browseable phenotypes</button>
+  <div id="myDropdown" class="dropdown-content">
+    <input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()">
+<a class="dropdown-item" href="icd10/ICD1498"> coffee_intake_frequency</a>
+<a class="dropdown-item" href="icd10/ICD1558"> alcohol_intake_frequency</a>
+<a class="dropdown-item" href="icd10/ICD20116"> smoking_pack_years</a>
+<a class="dropdown-item" href="icd10/ICD20159"> pairs_matching_test</a>
+<a class="dropdown-item" href="icd10/ICD20240"> numeric_memory_test</a>
+<a class="dropdown-item" href="icd10/ICD21001"> bmi_body_mass_index</a>
+<a class="dropdown-item" href="icd10/ICD1065"> hypertension</a>
+<a class="dropdown-item" href="icd10/ICD1066"> heart/cardiac_problem</a>
+<a class="dropdown-item" href="icd10/ICD1067"> peripheral_vascular_disease</a>
+<a class="dropdown-item" href="icd10/ICD1072"> essential_hypertension</a>
+<a class="dropdown-item" href="icd10/ICD1073"> gestational_hypertension/pre-eclampsia</a>
+<a class="dropdown-item" href="icd10/ICD1074"> angina</a>
+<a class="dropdown-item" href="icd10/ICD1075"> heart_attack/myocardial_infarction</a>
+<a class="dropdown-item" href="icd10/ICD1076"> heart_failure/pulmonary_odema</a>
+<a class="dropdown-item" href="icd10/ICD1077"> heart_arrhythmia</a>
+<a class="dropdown-item" href="icd10/ICD1078"> heart_valve_problem/heart_murmur</a>
+<a class="dropdown-item" href="icd10/ICD1079"> cardiomyopathy</a>
+<a class="dropdown-item" href="icd10/ICD1081"> stroke</a>
+<a class="dropdown-item" href="icd10/ICD1082"> transient_ischaemic_attack_(tia)</a>
+<a class="dropdown-item" href="icd10/ICD1083"> subdural_haemorrhage/haematoma</a>
+<a class="dropdown-item" href="icd10/ICD1086"> subarachnoid_haemorrhage</a>
+<a class="dropdown-item" href="icd10/ICD1088"> arterial_embolism</a>
+<a class="dropdown-item" href="icd10/ICD1093"> pulmonary_embolism_+/-_dvt</a>
+<a class="dropdown-item" href="icd10/ICD1111"> asthma</a>
+<a class="dropdown-item" href="icd10/ICD1112"> chronic_obstructive_airways_disease/copd</a>
+<a class="dropdown-item" href="icd10/ICD1113"> emphysema/chronic_bronchitis</a>
+<a class="dropdown-item" href="icd10/ICD1114"> bronchiectasis</a>
+<a class="dropdown-item" href="icd10/ICD1115"> interstitial_lung_disease</a>
+<a class="dropdown-item" href="icd10/ICD1117"> other_respiratory_problems</a>
+<a class="dropdown-item" href="icd10/ICD1121"> pulmonary_fibrosis</a>
+<a class="dropdown-item" href="icd10/ICD1122"> fibrosing_alveolitis/unspecified_alveolitis</a>
+<a class="dropdown-item" href="icd10/ICD1123"> sleep_apnoea</a>
+<a class="dropdown-item" href="icd10/ICD1124"> respiratory_failure</a>
+<a class="dropdown-item" href="icd10/ICD1125"> pleurisy</a>
+<a class="dropdown-item" href="icd10/ICD1126"> spontaneous_pneumothorax/recurrent_pneumothorax</a>
+<a class="dropdown-item" href="icd10/ICD1134"> oesophageal_disorder</a>
+<a class="dropdown-item" href="icd10/ICD1135"> stomach_disorder</a>
+<a class="dropdown-item" href="icd10/ICD1136"> liver/biliary/pancreas_problem</a>
+<a class="dropdown-item" href="icd10/ICD1137"> other_abdominal_problem</a>
+<a class="dropdown-item" href="icd10/ICD1138"> gastro-oesophageal_reflux_(gord)_/_gastric_reflux</a>
+<a class="dropdown-item" href="icd10/ICD1139"> oesophagitis/barretts_oesophagus</a>
+<a class="dropdown-item" href="icd10/ICD1140"> oesophageal_stricture</a>
+<a class="dropdown-item" href="icd10/ICD1141"> oesophageal_varicies</a>
+<a class="dropdown-item" href="icd10/ICD1142"> gastric/stomach_ulcers</a>
+<a class="dropdown-item" href="icd10/ICD1154"> irritable_bowel_syndrome</a>
+<a class="dropdown-item" href="icd10/ICD1155"> hepatitis</a>
+<a class="dropdown-item" href="icd10/ICD1156"> infective/viral_hepatitis</a>
+<a class="dropdown-item" href="icd10/ICD1158"> liver_failure/cirrhosis</a>
+<a class="dropdown-item" href="icd10/ICD1160"> bile_duct_obstruction/ascending_cholangitis</a>
+<a class="dropdown-item" href="icd10/ICD1161"> gall_bladder_disease</a>
+<a class="dropdown-item" href="icd10/ICD1162"> cholelithiasis/gall_stones</a>
+<a class="dropdown-item" href="icd10/ICD1163"> cholecystitis</a>
+<a class="dropdown-item" href="icd10/ICD1165"> pancreatitis</a>
+<a class="dropdown-item" href="icd10/ICD1190"> peritonitis</a>
+<a class="dropdown-item" href="icd10/ICD1192"> renal/kidney_failure</a>
+<a class="dropdown-item" href="icd10/ICD1193"> renal_failure_requiring_dialysis</a>
+<a class="dropdown-item" href="icd10/ICD1194"> renal_failure_not_requiring_dialysis</a>
+<a class="dropdown-item" href="icd10/ICD1196"> urinary_tract_infection/kidney_infection</a>
+<a class="dropdown-item" href="icd10/ICD1197"> kidney_stone/ureter_stone/bladder_stone</a>
+<a class="dropdown-item" href="icd10/ICD1200"> ureteric_obstruction/hydronephrosis</a>
+<a class="dropdown-item" href="icd10/ICD1201"> bladder_problem_(not_cancer)</a>
+<a class="dropdown-item" href="icd10/ICD1207"> prostate_problem_(not_cancer)</a>
+<a class="dropdown-item" href="icd10/ICD1220"> diabetes</a>
+<a class="dropdown-item" href="icd10/ICD1221"> gestational_diabetes</a>
+<a class="dropdown-item" href="icd10/ICD1225"> hyperthyroidism/thyrotoxicosis</a>
+<a class="dropdown-item" href="icd10/ICD1226"> hypothyroidism/myxoedema</a>
+<a class="dropdown-item" href="icd10/ICD1229"> parathyroid_gland_problem_(not_cancer)</a>
+<a class="dropdown-item" href="icd10/ICD1232">disorder_of_adrenal_gland</a>
+<a class="dropdown-item" href="icd10/ICD1234"> adrenocortical_insufficiency/addison's_disease</a>
+<a class="dropdown-item" href="icd10/ICD1235"> hyperaldosteronism/conn's_syndrome</a>
+<a class="dropdown-item" href="icd10/ICD1237"> disorder_or_pituitary_gland</a>
+<a class="dropdown-item" href="icd10/ICD1239"> cushings_syndrome</a>
+<a class="dropdown-item" href="icd10/ICD1242"> eye/eyelid_problem</a>
+<a class="dropdown-item" href="icd10/ICD1243"> psychological/psychiatric_problem</a>
+<a class="dropdown-item" href="icd10/ICD1244"> infection_of_nervous_system</a>
+<a class="dropdown-item" href="icd10/ICD1245"> brain_abscess/intracranial_abscess</a>
+<a class="dropdown-item" href="icd10/ICD1246"> encephalitis</a>
+<a class="dropdown-item" href="icd10/ICD1247"> meningitis</a>
+<a class="dropdown-item" href="icd10/ICD1248"> spinal_abscess</a>
+<a class="dropdown-item" href="icd10/ICD1251"> spinal_cord_disorder</a>
+<a class="dropdown-item" href="icd10/ICD1252"> paraplegia</a>
+<a class="dropdown-item" href="icd10/ICD1255"> peripheral_neuropathy</a>
+<a class="dropdown-item" href="icd10/ICD1256"> acute_infective_polyneuritis/guillain-barre_syndrome</a>
+<a class="dropdown-item" href="icd10/ICD1259"> motor_neurone_disease</a>
+<a class="dropdown-item" href="icd10/ICD1260"> myasthenia_gravis</a>
+<a class="dropdown-item" href="icd10/ICD1261"> multiple_sclerosis</a>
+<a class="dropdown-item" href="icd10/ICD1262"> parkinsons_disease</a>
+<a class="dropdown-item" href="icd10/ICD1264"> epilepsy</a>
+<a class="dropdown-item" href="icd10/ICD1265"> migraine</a>
+<a class="dropdown-item" href="icd10/ICD1266"> head_injury</a>
+<a class="dropdown-item" href="icd10/ICD1267"> spinal_injury</a>
+<a class="dropdown-item" href="icd10/ICD1274"> eye_infection</a>
+<a class="dropdown-item" href="icd10/ICD1276"> diabetic_eye_disease</a>
+<a class="dropdown-item" href="icd10/ICD1277"> glaucoma</a>
+<a class="dropdown-item" href="icd10/ICD1278"> cataract</a>
+<a class="dropdown-item" href="icd10/ICD1279"> eye_trauma</a>
+<a class="dropdown-item" href="icd10/ICD1281"> retinal_detachment</a>
+<a class="dropdown-item" href="icd10/ICD1282"> retinal_artery/vein_occlusion</a>
+<a class="dropdown-item" href="icd10/ICD1286"> depression</a>
+<a class="dropdown-item" href="icd10/ICD1289"> schizophrenia</a>
+<a class="dropdown-item" href="icd10/ICD1291"> mania/bipolar_disorder/manic_depression</a>
+<a class="dropdown-item" href="icd10/ICD1293"> bone_disorder</a>
+<a class="dropdown-item" href="icd10/ICD1295"> joint_disorder</a>
+<a class="dropdown-item" href="icd10/ICD1308"> osteomyelitis</a>
+<a class="dropdown-item" href="icd10/ICD1309"> osteoporosis</a>
+<a class="dropdown-item" href="icd10/ICD1313"> ankylosing_spondylitis</a>
+<a class="dropdown-item" href="icd10/ICD1322"> myositis/myopathy</a>
+<a class="dropdown-item" href="icd10/ICD1328"> haemophilia</a>
+<a class="dropdown-item" href="icd10/ICD1330"> iron_deficiency_anaemia</a>
+<a class="dropdown-item" href="icd10/ICD1332"> aplastic_anaemia</a>
+<a class="dropdown-item" href="icd10/ICD1339"> sickle_cell_disease</a>
+<a class="dropdown-item" href="icd10/ICD1340"> thalassaemia</a>
+<a class="dropdown-item" href="icd10/ICD1345"> pemphigoid/pemphigus</a>
+<a class="dropdown-item" href="icd10/ICD1350"> polycystic_ovaries/polycystic_ovarian_syndrome</a>
+<a class="dropdown-item" href="icd10/ICD1364"> breast_disease_(not_cancer)</a>
+<a class="dropdown-item" href="icd10/ICD1367"> breast_cysts</a>
+<a class="dropdown-item" href="icd10/ICD1371"> sarcoidosis</a>
+<a class="dropdown-item" href="icd10/ICD1372"> vasculitis</a>
+<a class="dropdown-item" href="icd10/ICD1373"> connective_tissue_disorder</a>
+<a class="dropdown-item" href="icd10/ICD1376"> giant_cell/temporal_arteritis</a>
+<a class="dropdown-item" href="icd10/ICD1377"> polymyalgia_rheumatica</a>
+<a class="dropdown-item" href="icd10/ICD1378"> wegners_granulmatosis</a>
+<a class="dropdown-item" href="icd10/ICD1379"> microscopic_polyarteritis</a>
+<a class="dropdown-item" href="icd10/ICD1380"> polyartertis_nodosa</a>
+<a class="dropdown-item" href="icd10/ICD1381"> systemic_lupus_erythematosis/sle</a>
+<a class="dropdown-item" href="icd10/ICD1382"> sjogren's_syndrome/sicca_syndrome</a>
+<a class="dropdown-item" href="icd10/ICD1383"> dermatopolymyositis</a>
+<a class="dropdown-item" href="icd10/ICD1384"> scleroderma/systemic_sclerosis</a>
+<a class="dropdown-item" href="icd10/ICD1385"> allergy_or_anaphylactic_reaction_to_food</a>
+<a class="dropdown-item" href="icd10/ICD1387"> hayfever/allergic_rhinitis</a>
+<a class="dropdown-item" href="icd10/ICD1394"> peripheral_nerve_injury</a>
+<a class="dropdown-item" href="icd10/ICD1396"> enlarged_prostate</a>
+<a class="dropdown-item" href="icd10/ICD1397"> other_demyelinating_disease_(not_multiple_sclerosis)</a>
+<a class="dropdown-item" href="icd10/ICD1398"> pneumonia</a>
+<a class="dropdown-item" href="icd10/ICD1400"> peptic_ulcer</a>
+<a class="dropdown-item" href="icd10/ICD1402"> endometriosis</a>
+<a class="dropdown-item" href="icd10/ICD1403"> female_infertility</a>
+<a class="dropdown-item" href="icd10/ICD1404"> male_infertility</a>
+<a class="dropdown-item" href="icd10/ICD1405"> other_renal/kidney_problem</a>
+<a class="dropdown-item" href="icd10/ICD1407"> burns</a>
+<a class="dropdown-item" href="icd10/ICD1410"> other_substance_abuse/dependency</a>
+<a class="dropdown-item" href="icd10/ICD1411"> lung_abscess</a>
+<a class="dropdown-item" href="icd10/ICD1412"> bronchitis</a>
+<a class="dropdown-item" href="icd10/ICD1414"> throat_or_larynx_disorder</a>
+<a class="dropdown-item" href="icd10/ICD1415"> ear/vestibular_disorder</a>
+<a class="dropdown-item" href="icd10/ICD1416"> chronic_sinusitis</a>
+<a class="dropdown-item" href="icd10/ICD1417"> nasal_polyps</a>
+<a class="dropdown-item" href="icd10/ICD1418"> chronic_laryngitis</a>
+<a class="dropdown-item" href="icd10/ICD1419"> vocal_cord_polyp</a>
+<a class="dropdown-item" href="icd10/ICD1420"> otosclerosis</a>
+<a class="dropdown-item" href="icd10/ICD1421"> meniere's_disease</a>
+<a class="dropdown-item" href="icd10/ICD1425"> cerebral_aneurysm</a>
+<a class="dropdown-item" href="icd10/ICD1426"> myocarditis</a>
+<a class="dropdown-item" href="icd10/ICD1427"> polycystic_kidney</a>
+<a class="dropdown-item" href="icd10/ICD1428"> thyroiditis</a>
+<a class="dropdown-item" href="icd10/ICD1429"> acromegaly</a>
+<a class="dropdown-item" href="icd10/ICD1430"> hypopituitarism</a>
+<a class="dropdown-item" href="icd10/ICD1431"> hyperprolactinaemia</a>
+<a class="dropdown-item" href="icd10/ICD1432"> carcinoid_syndrome/tumour</a>
+<a class="dropdown-item" href="icd10/ICD1433"> cerebral_palsy</a>
+<a class="dropdown-item" href="icd10/ICD1434"> other_neurological_problem</a>
+<a class="dropdown-item" href="icd10/ICD1435"> optic_neuritis</a>
+<a class="dropdown-item" href="icd10/ICD1436"> headaches_(not_migraine)</a>
+<!-- <a class="dropdown-item" href="icd10/ICD1437"> myasthenia_gravis</a> Duplicate!-->
+<a class="dropdown-item" href="icd10/ICD1438"> polycythaemia_vera</a>
+<a class="dropdown-item" href="icd10/ICD1440"> tuberculosis_(tb)</a>
+<a class="dropdown-item" href="icd10/ICD1441"> malaria</a>
+<a class="dropdown-item" href="icd10/ICD1442"> helicobacter_pylori</a>
+<a class="dropdown-item" href="icd10/ICD1443"> schistosomiasis/bilharzia</a>
+<a class="dropdown-item" href="icd10/ICD1446"> anaemia</a>
+<a class="dropdown-item" href="icd10/ICD1450"> monoclonal_gammopathy/not_myeloma</a>
+<a class="dropdown-item" href="icd10/ICD1452"> eczema/dermatitis</a>
+<a class="dropdown-item" href="icd10/ICD1453"> psoriasis</a>
+<a class="dropdown-item" href="icd10/ICD1454"> blistering/desquamating_skin_disorder</a>
+<a class="dropdown-item" href="icd10/ICD1455"> chronic_skin_ulcers</a>
+<a class="dropdown-item" href="icd10/ICD1456"> malabsorption/coeliac_disease</a>
+<a class="dropdown-item" href="icd10/ICD1457"> duodenal_ulcer</a>
+<a class="dropdown-item" href="icd10/ICD1459"> colitis/not_crohns_or_ulcerative_colitis</a>
+<a class="dropdown-item" href="icd10/ICD1460"> rectal_or_colon_adenoma/polyps</a>
+<a class="dropdown-item" href="icd10/ICD1461"> inflammatory_bowel_disease</a>
+<a class="dropdown-item" href="icd10/ICD1462"> crohns_disease</a>
+<a class="dropdown-item" href="icd10/ICD1463"> ulcerative_colitis</a>
+<a class="dropdown-item" href="icd10/ICD1464"> rheumatoid_arthritis</a>
+<a class="dropdown-item" href="icd10/ICD1466"> gout</a>
+<a class="dropdown-item" href="icd10/ICD1467"> other_joint_disorder</a>
+<a class="dropdown-item" href="icd10/ICD1469"> post-traumatic_stress_disorder</a>
+<a class="dropdown-item" href="icd10/ICD1470"> anorexia/bulimia/other_eating_disorder</a>
+<a class="dropdown-item" href="icd10/ICD1471"> atrial_fibrillation</a>
+<a class="dropdown-item" href="icd10/ICD1472"> emphysema</a>
+<a class="dropdown-item" href="icd10/ICD1474"> hiatus_hernia</a>
+<a class="dropdown-item" href="icd10/ICD1475"> sclerosing_cholangitis</a>
+<a class="dropdown-item" href="icd10/ICD1476"> sciatica</a>
+<a class="dropdown-item" href="icd10/ICD1477"> psoriatic_arthropathy</a>
+<a class="dropdown-item" href="icd10/ICD1478"> cervical_spondylosis</a>
+<a class="dropdown-item" href="icd10/ICD1479"> rheumatic_fever</a>
+<a class="dropdown-item" href="icd10/ICD1480"> dermatomyositis</a>
+<a class="dropdown-item" href="icd10/ICD1481"> polymyositis</a>
+<a class="dropdown-item" href="icd10/ICD1483">atrial_flutter</a>
+<a class="dropdown-item" href="icd10/ICD1485"> irregular_heart_beat</a>
+<a class="dropdown-item" href="icd10/ICD1486"> sick_sinus_syndrome</a>
+<a class="dropdown-item" href="icd10/ICD1487"> svt_/_supraventricular_tachycardia</a>
+<a class="dropdown-item" href="icd10/ICD1488"> mitral_valve_prolapse</a>
+<a class="dropdown-item" href="icd10/ICD1489"> mitral_stenosis</a>
+<a class="dropdown-item" href="icd10/ICD1490"> aortic_stenosis</a>
+<a class="dropdown-item" href="icd10/ICD1491"> brain_haemorrhage</a>
+<a class="dropdown-item" href="icd10/ICD1492"> aortic_aneurysm</a>
+<a class="dropdown-item" href="icd10/ICD1493"> other_venous/lymphatic_disease</a>
+<a class="dropdown-item" href="icd10/ICD1494"> varicose_veins</a>
+<a class="dropdown-item" href="icd10/ICD1495"> lymphoedema</a>
+<a class="dropdown-item" href="icd10/ICD1497"> pneumothorax</a>
+<a class="dropdown-item" href="icd10/ICD1498"> empyema</a>
+<a class="dropdown-item" href="icd10/ICD1499"> labyrinthitis</a>
+<a class="dropdown-item" href="icd10/ICD1500"> vertigo</a>
+<a class="dropdown-item" href="icd10/ICD1501"> pyloric_stenosis</a>
+<a class="dropdown-item" href="icd10/ICD1502"> appendicitis</a>
+<a class="dropdown-item" href="icd10/ICD1504"> anal_fissure</a>
+<a class="dropdown-item" href="icd10/ICD1505"> haemorrhoids_/_piles</a>
+<a class="dropdown-item" href="icd10/ICD1506"> primary_biliary_cirrhosis</a>
+<a class="dropdown-item" href="icd10/ICD1510"> dyspepsia_/_indigestion</a>
+<a class="dropdown-item" href="icd10/ICD1511"> abdominal_hernia</a>
+<a class="dropdown-item" href="icd10/ICD1512"> umbilical_hernia</a>
+<a class="dropdown-item" href="icd10/ICD1513"> inguinal_hernia</a>
+<a class="dropdown-item" href="icd10/ICD1514"> cystitis</a>
+<a class="dropdown-item" href="icd10/ICD1515"> pyelonephritis</a>
+<a class="dropdown-item" href="icd10/ICD1517"> prostatitis</a>
+<a class="dropdown-item" href="icd10/ICD1519"> kidney_nephropathy</a>
+<a class="dropdown-item" href="icd10/ICD1520"> iga_nephropathy</a>
+<a class="dropdown-item" href="icd10/ICD1521"> diabetes_insipidus</a>
+<a class="dropdown-item" href="icd10/ICD1523"> trigemminal_neuralgia</a>
+<a class="dropdown-item" href="icd10/ICD1524"> spina_bifida</a>
+<a class="dropdown-item" href="icd10/ICD1525"> benign_/_essential_tremor</a>
+<a class="dropdown-item" href="icd10/ICD1526"> polio_/_poliomyelitis</a>
+<a class="dropdown-item" href="icd10/ICD1528"> macular_degeneration</a>
+<a class="dropdown-item" href="icd10/ICD1533"> disc_degeneration</a>
+<a class="dropdown-item" href="icd10/ICD1534"> back_pain</a>
+<a class="dropdown-item" href="icd10/ICD1535"> scoliosis</a>
+<a class="dropdown-item" href="icd10/ICD1536"> spinal_stenosis</a>
+<a class="dropdown-item" href="icd10/ICD1537"> joint_pain</a>
+<a class="dropdown-item" href="icd10/ICD1538"> arthritis_(nos)</a>
+<a class="dropdown-item" href="icd10/ICD1541"> carpal_tunnel_syndrome</a>
+<a class="dropdown-item" href="icd10/ICD1542"> fibromyalgia</a>
+<a class="dropdown-item" href="icd10/ICD1546"> essential_thrombocytosis</a>
+<a class="dropdown-item" href="icd10/ICD1548"> acne/acne_vulgaris</a>
+<a class="dropdown-item" href="icd10/ICD1549"> lichen_planus</a>
+<a class="dropdown-item" href="icd10/ICD1557"> pelvic_inflammatory_disease/_pid</a>
+<a class="dropdown-item" href="icd10/ICD1558"> ectopic_pregnancy</a>
+<a class="dropdown-item" href="icd10/ICD1560"> breast_fibroadenoma</a>
+<a class="dropdown-item" href="icd10/ICD1562"> food_intolerance</a>
+<a class="dropdown-item" href="icd10/ICD1563"> urticaria</a>
+<a class="dropdown-item" href="icd10/ICD1566"> mrsa_/_methicillin_resistant_staphylococcus_aureus</a>
+<a class="dropdown-item" href="icd10/ICD1567"> infectious_mononucleosis_/_glandular_fever_/_epstein_barr_virus_(ebv)</a>
+<a class="dropdown-item" href="icd10/ICD1568"> measles_/_morbillivirus</a>
+<a class="dropdown-item" href="icd10/ICD1569"> mumps_/_epidemic_parotitis</a>
+<a class="dropdown-item" href="icd10/ICD1570"> rubella_/_german_measles</a>
+<a class="dropdown-item" href="icd10/ICD1571"> chickenpox</a>
+<a class="dropdown-item" href="icd10/ICD1572"> whooping_cough_/_pertussis</a>
+<a class="dropdown-item" href="icd10/ICD1574"> diphtheria</a>
+<a class="dropdown-item" href="icd10/ICD1575"> herpes_simplex</a>
+<a class="dropdown-item" href="icd10/ICD1576"> dengue_fever</a>
+<a class="dropdown-item" href="icd10/ICD1577"> typhoid_fever</a>
+<a class="dropdown-item" href="icd10/ICD1578"> hepatitis_a</a>
+<a class="dropdown-item" href="icd10/ICD1579"> hepatitis_b</a>
+<a class="dropdown-item" href="icd10/ICD1580"> hepatitis_c</a>
+<a class="dropdown-item" href="icd10/ICD1584"> mitral_valve_disease</a>
+<a class="dropdown-item" href="icd10/ICD1586"> aortic_valve_disease</a>
+<a class="dropdown-item" href="icd10/ICD1588"> hypertrophic_cardiomyopathy_(hcm_/_hocm)</a>
+<a class="dropdown-item" href="icd10/ICD1589"> pericarditis</a>
+<a class="dropdown-item" href="icd10/ICD1590"> pericardial_effusion</a>
+<a class="dropdown-item" href="icd10/ICD1591">aortic_aneurysm_rupture</a>
+<a class="dropdown-item" href="icd10/ICD1592"> aortic_dissection</a>
+<a class="dropdown-item" href="icd10/ICD1593"> varicose_ulcer</a>
+<a class="dropdown-item" href="icd10/ICD1594"> respiratory_infection</a>
+<a class="dropdown-item" href="icd10/ICD1596"> pleural_effusion</a>
+<a class="dropdown-item" href="icd10/ICD1597"> tinnitus_/_tiniitis</a>
+<a class="dropdown-item" href="icd10/ICD1599"> constipation</a>
+<a class="dropdown-item" href="icd10/ICD1600"> bowel_/_intestinal_perforation</a>
+<a class="dropdown-item" href="icd10/ICD1602"> bowel_/_intestinal_obstruction</a>
+<a class="dropdown-item" href="icd10/ICD1603"> rectal_prolapse</a>
+<a class="dropdown-item" href="icd10/ICD1604"> alcoholic_liver_disease_/_alcoholic_cirrhosis</a>
+<a class="dropdown-item" href="icd10/ICD1605"> femoral_hernia</a>
+<a class="dropdown-item" href="icd10/ICD1606"> incisional_hernia</a>
+<a class="dropdown-item" href="icd10/ICD1607"> diabetic_nephropathy</a>
+<a class="dropdown-item" href="icd10/ICD1608"> nephritis</a>
+<a class="dropdown-item" href="icd10/ICD1611"> hyperparathyroidism</a>
+<a class="dropdown-item" href="icd10/ICD1613"> blepharitis_/_eyelid_infection</a>
+<a class="dropdown-item" href="icd10/ICD1614"> stress</a>
+<a class="dropdown-item" href="icd10/ICD1615"> obsessive_compulsive_disorder_(ocd)</a>
+<a class="dropdown-item" href="icd10/ICD1616"> insomnia</a>
+<a class="dropdown-item" href="icd10/ICD1620"> bursitis</a>
+<a class="dropdown-item" href="icd10/ICD1621"> synovitis</a>
+<a class="dropdown-item" href="icd10/ICD1622"> epicondylitis</a>
+<a class="dropdown-item" href="icd10/ICD1623"> tennis_elbow_/_lateral_epicondylitis</a>
+<a class="dropdown-item" href="icd10/ICD1624"> housemaid's_knee_(prepatellar_bursitis)</a>
+<a class="dropdown-item" href="icd10/ICD1625"> cellulitis</a>
+<a class="dropdown-item" href="icd10/ICD1626"> fracture_skull_/_head</a>
+<a class="dropdown-item" href="icd10/ICD1629"> fracture_face_/_orbit_/_eye_socket</a>
+<a class="dropdown-item" href="icd10/ICD1630"> fracture_neck_/_cervical_fracture</a>
+<a class="dropdown-item" href="icd10/ICD1631"> fracture_clavicle_/_collar_bone</a>
+<a class="dropdown-item" href="icd10/ICD1632"> fracture_shoulder_/_scapula</a>
+<a class="dropdown-item" href="icd10/ICD1633"> fracture_upper_arm_/_humerus_/_elbow</a>
+<a class="dropdown-item" href="icd10/ICD1634"> fracture_forearm_/_wrist</a>
+<a class="dropdown-item" href="icd10/ICD1635"> fracture_radius</a>
+<a class="dropdown-item" href="icd10/ICD1636"> fracture_ulna</a>
+<a class="dropdown-item" href="icd10/ICD1638"> fracture_hand</a>
+<a class="dropdown-item" href="icd10/ICD1639"> fracture_finger</a>
+<a class="dropdown-item" href="icd10/ICD1640"> fracture_thumb</a>
+<a class="dropdown-item" href="icd10/ICD1644"> fracture_rib</a>
+<a class="dropdown-item" href="icd10/ICD1645"> fracture_sternum</a>
+<a class="dropdown-item" href="icd10/ICD1647"> fracture_pelvis</a>
+<a class="dropdown-item" href="icd10/ICD1648"> fracture_neck_of_femur_/_hip</a>
+<a class="dropdown-item" href="icd10/ICD1649"> fracture_shaft_of_femur</a>
+<a class="dropdown-item" href="icd10/ICD1650"> fracture_patella_/_knee</a>
+<a class="dropdown-item" href="icd10/ICD1651"> fracture_lower_leg_/_ankle</a>
+<a class="dropdown-item" href="icd10/ICD1652"> fracture_tibia</a>
+<a class="dropdown-item" href="icd10/ICD1653"> fracture_fibula</a>
+<a class="dropdown-item" href="icd10/ICD1654"> fracture_foot</a>
+<a class="dropdown-item" href="icd10/ICD1655"> fracture_metatarsal</a>
+<a class="dropdown-item" href="icd10/ICD1656"> fracture_toe</a>
+<a class="dropdown-item" href="icd10/ICD1658"> myelofibrosis</a>
+<a class="dropdown-item" href="icd10/ICD1660"> rosacea</a>
+<a class="dropdown-item" href="icd10/ICD1661"> vitiligo</a>
+<a class="dropdown-item" href="icd10/ICD1666"> benign_breast_lump</a>
+<a class="dropdown-item" href="icd10/ICD1667"> alopecia_/_hair_loss</a>
+<a class="dropdown-item" href="icd10/ICD1669"> contact_dermatitis</a>
+<a class="dropdown-item" href="icd10/ICD1676"> yellow_fever</a>
+<a class="dropdown-item" href="icd10/ICD1677"> scarlet_fever_/_scarlatina</a>
+<a class="dropdown-item" href="icd10/ICD1678"> chlamydia</a>
+<a class="dropdown-item" href="icd10/ICD1679"> undescended_testicle</a>
+<a class="dropdown-item" href="icd10/ICD1681"> hydatiform_mole</a>
+<a class="dropdown-item"href="icd10/ICD1003">skin_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1060">non-melanoma_skin_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1002">breast_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1037">female_genital_tract_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1044">prostate_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1020">large_bowel_cancer/colorectal_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1038">male_genital_tract_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1041">cervical_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1022">colon_cancer/sigmoid_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1084">respiratory/intrathoracic_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1023">rectal_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1035">bladder_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1001">lung_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1040">uterine/endometrial_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1039">ovarian_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1034">kidney/renal_cell_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1045">testicular_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1004">cancer_of_lip/mouth/pharynx/oral_cavity</a>
+<a class="dropdown-item"href="icd10/ICD1065">thyroid_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1017">oesophageal_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1018">stomach_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1032">brain_cancer_/_primary_malignant_brain_tumour</a>
+<a class="dropdown-item"href="icd10/ICD1006">larynx/throat_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1026">pancreas_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1024">liver/hepatocellular_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1019">small_intestine/small_bowel_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1011">tongue_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1030">eye_and/or_adnexal_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1077">mouth_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1063">primary_bone_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1025">gallbladder/bile_duct_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1043">vulval_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1005">salivary_gland_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1015">parotid_gland_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1086">appendix_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1046">penis_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1010">lip_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1033">spinal_cord_or_cranial_nerve_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1007">nasal_cavity_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1079">oropharynx/oropharyngeal_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1031">meningeal_cancer/malignant_meningioma</a>
+<a class="dropdown-item"href="icd10/ICD1067">adrenal_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1036">other_cancer_of_urinary_tract</a>
+<a class="dropdown-item"href="icd10/ICD1029">peripheral_nerve/autonomic_nerve_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1042">vaginal_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1082">heart/mediastinum_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1081">thymus_cancer/malignant_thymoma</a>
+<a class="dropdown-item"href="icd10/ICD1012">gum_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1008">ear_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1087">fallopian_tube_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1009">sinus_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1080">trachea_cancer</a>
+<a class="dropdown-item"href="icd10/ICD1066">parathyroid_cancer</a>
+  </div>
+
+                <h3 align="center"> <a href="/about" style="color: black;"></a></li>MRP inference engine</h3>
+<p>
+To perform aggregate analysis of variants, genes, and multiple phenotypes we recommend the MRP inference engine.
+   <p>
+<br>
+  <a href="/runMRP" type="button", class="button" align="center">Upload a gene list and run the MRP inference engine</a>
+</div>
+<br>
+
+  </div>
+
+              <div class="col-md-4">
+                <h3 align="center">Recent News</h3>
+		<h4>April 31, 2017</h4> - Public release of Global Biobank Engine!
+                <h4>January 1, 2017</h4> - Internal release.
+            </div>
+
+
+</div>
+
+<br>
+
+<footer>
+    <small>This research has been conducted using the UK Biobank Resource</small>
+</footer>
+
+</div>
+
+
+
+{% endblock %}
+</div>

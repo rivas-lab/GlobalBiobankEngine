@@ -1,0 +1,503 @@
+{% extends "layout.html" %}
+{% block body %}
+    <!-- Render context vars in JS here -->
+    <script type="text/javascript">
+        window.variant = {{ variant|tojson|safe }};
+        window.icdstats = {{ icdstats|tojson|safe }};
+        window.consequence = {{ consequences|tojson|safe }};
+        window.ordered_csqs = {{ ordered_csqs|tojson|safe }};
+  
+        $(document).ready(function() {
+            draw_region_coverage(window.icdstats, 'l10pvalue', window.variant.ref);
+            $('.coverage_metric_buttons').change(function () {
+                var v = $(this).attr('id').replace('_covmet_button', '');
+                $('.coverage_subcat_selectors').hide();
+                if (v == 'covered') {
+                    $('#over_x_select_container').show();
+                    v = $('#over_x_select').val(); 
+                } else {
+                    $('#average_select_container').show();
+                    v = $("#average_select").val();
+                }
+                draw_region_coverage(window.base_coverage, v, window.variant.ref);
+            });
+
+        });
+    </script>
+       <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+		   <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+		    <script src="http://dimplejs.org/dist/dimple.v2.0.0.js"></script>
+
+    <style>
+    .d3_graph {
+        font: 24px sans-serif;
+    }
+    .svg-container {
+        display: inline-block;
+        overflow: hidden;
+        padding-bottom: 100%;
+        position: absolute;
+        vertical-align: middle;
+        width: 100%;
+        height: 100%;
+    }
+
+    </style>
+   
+    <div class="container">
+        <div class="row">
+
+                <h1><span class="hidden-xs">Variant: </span>{{ variant.chrom }}:{{ variant.pos }} {{ variant.ref }} / {{ variant.alt }}</h1>
+            {% if variant.orig_alt_alleles|length > 1 %}
+                <h5><span class="label label-info">Note:</span> This variant is multiallelic! The other alt alleles are:</h5>
+                <ul>
+                    {% for allele in variant.orig_alt_alleles %}
+                        {% if allele != variant.variant_id %}
+                            <li>
+                                <a href="/variant/{{ allele }}">{{ allele }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        <hr/>
+        <div class="col-md-6">
+     <dl class="dl-horizontal" style="margin-bottom: 0px;">
+                        <dt>dbSNP</dt>
+                        {% if variant.rsid and variant.rsid != "." %}
+                            <dd><a href="http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs={{ variant.rsid }}" target="_blank">{{ variant.rsid }}</a></dd>
+                        {% else %}
+                            <dd>Not found in dbSNP</dd>
+                        {% endif %}
+                           <dt>UCSC</dt>
+                        <dd>
+                            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&highlight=hg19.chr{{ variant.chrom }}%3A{{ variant.pos }}-{{ variant.pos + variant.ref|length - 1 }}&position=chr{{ variant.chrom }}%3A{{ variant.pos - 25 }}-{{ variant.pos + variant.ref|length - 1 + 25 }}" target="_blank">
+                                {{ variant.variant_id }}
+                                <i class="fa fa-external-link"></i>
+                            </a>
+                        </dd>
+                        <dt>ExAC</dt>
+                        
+                        <dd> 
+<a href="http://exac.broadinstitute.org/variant/{{ variant.variant_id}}" target="_blank">
+                                {{ variant.variant_id }}
+                                <i class="fa fa-external-link"></i>
+				</a>
+			</dd>
+			<dt>IBD</dt>
+			  <dd> 
+<a href="http://ibd.broadinstitute.org/variant/{{ variant.variant_id}}" target="_blank">
+                                {{ variant.variant_id }}
+                                <i class="fa fa-external-link"></i>
+				</a>
+			</dd>
+			  <dt>Intensity</dt>
+                        <dd> 
+
+			</dd>
+                        <dt>ClinVar</dt>
+                        <dd>
+                            {% if not variant.rsid or variant.rsid == "." %}
+                                <a href="http://www.ncbi.nlm.nih.gov/clinvar?term=({{ variant.chrom }}%5BChromosome%5D)%20AND%20{{ variant.pos }}%5BBase%20Position%20for%20Assembly%20GRCh37%5D" target="_blank">
+                            {% else %}
+                                <a href="http://www.ncbi.nlm.nih.gov/clinvar?term={{ variant.rsid }}%5BVariant%20ID%5D" target="_blank">
+                            {% endif %}
+                                Click to search for variant in Clinvar
+                                <i class="fa fa-external-link"></i>
+                            </a>
+                        </dd>
+                    </dl>
+                    </div>
+                    <div class="col-md-6">
+                    <div id="annotation_container">
+                {% if variant.variant_id %}
+                    <div class="section_header">Annotations</div>
+                    {% if variant.vep_annotations %}
+                        <p>This variant falls on {{ variant.transcripts|length }} transcripts in {{ variant.genes|length }} genes:</p>
+                        <div class="panel-group" id="annotation_accordion" style="margin-bottom: 0px;">
+                            <div class="row">
+                                <div class="col-md-6">
+                                {% for consequence in ordered_csqs[1:((ordered_csqs|length / 2)|int + 1)] %}
+                                    <h4>{{ consequence|replace('_variant', '')|replace('_', ' ')|replace('utr', 'UTR')|replace('3 prime', "3'")|replace('5 prime', "5'")|replace('nc ', "non-coding ") }}</h4>
+                                    <ul>
+                                        {% for gene in consequences[consequence] %}
+                                            <li>
+                                                <a href="/gene/{{ gene }}">
+                                                {% if consequences[consequence][gene][0].SYMBOL %}
+                                                    {{ consequences[consequence][gene][0].SYMBOL }}
+                                                {% else %}
+                                                    {{ gene }}
+                                                {% endif %}
+                                                </a>
+                                                {% if consequences[consequence][gene]|length > 1 %}
+                                                    <span class="dropdown">
+                                                        <button class="btn btn-default dropdown-toggle" type="button" id="transcript_dropdown" data-toggle="dropdown">
+                                                            Transcripts
+                                                            <span class="caret"></span>
+                                                        </button>
+                                                        <ul class="dropdown-menu" role="menu" aria-labelledby="transcript_dropdown">
+                                                            {% for annotation in consequences[consequence][gene] %}
+                                                                <li role="presentation">
+                                                                    <a role="menuitem" tabindex="-1" href="/transcript/{{ annotation.Feature }}">
+                                                                        {{ annotation.Feature }}
+                                                                        {% if annotation.CANONICAL == 'YES' %}
+                                                                            *
+                                                                        {% endif %}
+                                                                        {% if consequence == 'missense_variant' %}
+                                                                            ({{ annotation.HGVS }})<br/>
+                                                                            &nbsp; &nbsp; &nbsp; Polyphen:
+                                                                            {% set polyphen = annotation.PolyPhen.split('(')[0] %}
+                                                                            {% set pp_label = "bg-success" if polyphen == 'benign' else ("bg-warning" if polyphen == 'possibly_damaging' else "bg-danger") %}
+                                                                            {% set sift = annotation.SIFT.split('(')[0] %}
+                                                                            {% set sift_label = "bg-success" if sift == 'tolerated' else "bg-danger" %}
+                                                                            <span class={{ pp_label }}>{{ polyphen }}</span>; SIFT:
+                                                                            <span class={{ sift_label }}>{{ sift }}</span>
+                                                                        {% elif consequence == 'stop_gained' %}
+                                                                            ({{ annotation.HGVS }})
+                                                                        {% endif %}
+                                                                    </a>
+                                                                </li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </span>
+                                                {% else %}
+                                                    {% set annotation = consequences[consequence][gene][0] %}
+                                                     - <a href="/transcript/{{ annotation.Feature }}">
+                                                        {{ annotation.Feature }}
+                                                        {% if annotation.CANONICAL == 'YES' %}
+                                                            *
+                                                        {% endif %}
+                                                    </a>
+                                                    {% if consequence == 'missense_variant' %}
+                                                        ({{ annotation.HGVS }})<br/>
+                                                        &nbsp; &nbsp; &nbsp; Polyphen:
+                                                        {% set polyphen = annotation.PolyPhen.split('(')[0] %}
+                                                        {% set pp_label = "bg-success" if polyphen == 'benign' else ("bg-warning" if polyphen == 'possibly_damaging' else "bg-danger") %}
+                                                        {% set sift = annotation.SIFT.split('(')[0] %}
+                                                        {% set sift_label = "bg-success" if sift == 'tolerated' else "bg-danger" %}
+                                                        <span class={{ pp_label }}>{{ polyphen }}</span>; SIFT:
+                                                        <span class={{ sift_label }}>{{ sift }}</span>
+                                                    {% elif consequence == 'stop_gained' %}
+                                                        ({{ annotation.HGVS }})
+                                                    {% endif %}
+                                                {% endif %}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endfor %}
+                                </div>
+                                <div class="col-md-6">
+                                {% for consequence in ordered_csqs[((ordered_csqs|length / 2)|int + 1):(ordered_csqs|length)] %}
+                                    <h4>{{ consequence|replace('_variant', '')|replace('_', ' ')|replace('utr', 'UTR')|replace('3 prime', "3'")|replace('5 prime', "5'")|replace('nc ', "non-coding ") }}</h4>
+                                    <ul>
+                                        {% for gene in consequences[consequence] %}
+                                            <li>
+                                                <a href="/gene/{{ gene }}">
+                                                {% if consequences[consequence][gene][0].SYMBOL %}
+                                                    {{ consequences[consequence][gene][0].SYMBOL }}
+                                                {% else %}
+                                                    {{ gene }}
+                                                {% endif %}
+                                                </a>
+                                                {% if consequences[consequence][gene]|length > 1 %}
+                                                    <span class="dropdown">
+                                                        <button class="btn btn-default dropdown-toggle" type="button" id="transcript_dropdown" data-toggle="dropdown">
+                                                            Transcripts
+                                                            <span class="caret"></span>
+                                                        </button>
+                                                        <ul class="dropdown-menu" role="menu" aria-labelledby="transcript_dropdown">
+                                                            {% for annotation in consequences[consequence][gene] %}
+                                                                <li role="presentation">
+                                                                    <a role="menuitem" tabindex="-1" href="/transcript/{{ annotation.Feature }}">
+                                                                        {{ annotation.Feature }}
+                                                                        {% if annotation.CANONICAL == 'YES' %}
+                                                                            *
+                                                                        {% endif %}
+                                                                        {% if consequence == 'missense_variant' %}
+                                                                            ({{ annotation.HGVS }})<br/>
+                                                                            &nbsp; &nbsp; &nbsp; Polyphen:
+                                                                            {% set polyphen = annotation.PolyPhen.split('(')[0] %}
+                                                                            {% set pp_label = "bg-success" if polyphen == 'benign' else ("bg-warning" if polyphen == 'possibly_damaging' else "bg-danger") %}
+                                                                            {% set sift = annotation.SIFT.split('(')[0] %}
+                                                                            {% set sift_label = "bg-success" if sift == 'tolerated' else "bg-danger" %}
+                                                                            <span class={{ pp_label }}>{{ polyphen }}</span>; SIFT:
+                                                                            <span class={{ sift_label }}>{{ sift }}</span>
+                                                                        {% elif consequence == 'stop_gained' %}
+                                                                            ({{ annotation.HGVS }})
+                                                                        {% endif %}
+                                                                    </a>
+                                                                </li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </span>
+                                                {% else %}
+                                                    {% set annotation = consequences[consequence][gene][0] %}
+                                                     - <a href="/transcript/{{ annotation.Feature }}">
+                                                        {{ annotation.Feature }}
+                                                        {% if annotation.CANONICAL == 'YES' %}
+                                                            *
+                                                        {% endif %}
+                                                    </a>
+                                                    {% if consequence == 'missense_variant' %}
+                                                        ({{ annotation.HGVS }})<br/>
+                                                        &nbsp; &nbsp; &nbsp; Polyphen:
+                                                        {% set polyphen = annotation.PolyPhen.split('(')[0] %}
+                                                        {% set pp_label = "bg-success" if polyphen == 'benign' else ("bg-warning" if polyphen == 'possibly_damaging' else "bg-danger") %}
+                                                        {% set sift = annotation.SIFT.split('(')[0] %}
+                                                        {% set sift_label = "bg-success" if sift == 'tolerated' else "bg-danger" %}
+                                                        <span class={{ pp_label }}>{{ polyphen }}</span>; SIFT:
+                                                        <span class={{ sift_label }}>{{ sift }}</span>
+                                                    {% elif consequence == 'stop_gained' %}
+                                                        ({{ annotation.HGVS }})
+                                                    {% endif %}
+                                                {% endif %}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                                            {% else %}
+                        No annotations were found for this variant.
+                    {% endif %}
+                {% else %}
+                    <h3>This variant is not found in ExAC.</h3>
+                {% endif %}
+                </div>
+             </div>   
+         </div>
+         <hr />
+         </div>
+            
+        
+                <div id="ratioChartContainer", style="height: 80%">
+	   
+		    <script>
+
+	// Set ICD 10 chapter dictionary
+	icd10_chapters = {
+	       A: "Certain infectious and parasitic diseases",
+	       B: "Certain infectious and parasitic diseases",
+	       C: "Neoplasms",
+	       D: "Diseases of the blood and blood-forming organs and certain disorders involving the immune mechanism",
+	       E: "Endocrine, nutritional and metabolic diseases",
+	       F: "Mental, Behavioral and Neurodevelopmental disorders",
+	       G: "Diseases of the nervous system",
+	       H: "Diseases of the eye and adnexa; Diseases of the ear and mastoid process",
+	       I: "Diseases of the circulatory system",
+	       J: "Diseases of the respiratory system",
+	       K: "Diseases of the digestive system",
+	       L: "Diseases of the skin and subcutaneous tissue",
+	       M: "Diseases of the musculoskeletal system and connective tissue",
+	       N: "Diseases of the genitourinary system",
+	       O: "Pregnancy, childbirth and the puerperium",
+	       P: "Certain conditions originating in the perinatal period",
+	       Q: "Congenital malformations, deformations and chromosomal abnormalities",
+	       R: "Symptoms, signs and abnormal clinical and laboratory findings, not elsewhere classified",
+	       S: "Injury, poisoning and certain other consequences of external causes",
+	       V: "External causes of morbidity",
+	       Z: "Factors influencing health status and contact with health services"
+	};
+
+ 	d3.select("html")
+ 	      .style("height", "100%")
+ 	      .style("overflow", "hidden");
+ 	  d3.select("body")
+ 	      .style("height", "100%")
+ 	      .style("overflow", "hidden");
+          	
+ 	  // Set up a standard chart
+ 	  // Add a method to draw the chart on resize of the window
+ 	  window.onresize = function () {
+ 	      // As of 1.1.0 the second parameter here allows you to draw
+ 	      // without reprocessing data.  This saves a lot on performance
+ 	      // when you know the data won't have changed.
+ 	      
+ 	      myChart.draw(0, true);
+ 	      x.titleShape.text("Phenotype coding");
+ 	      y.titleShape.text("-log10(P-value)");
+ 	      myLegend.shapes.selectAll("text").style("font-size", "12px");
+ 	      myLegend.shapes.selectAll("text").style("font-family", "Helvetica Neue");
+ 	      x.shapes.selectAll("text").style("font-size", "12px");
+ 	      x.shapes.selectAll("text").style("font-family", "Helvetica Neue");
+ 	      y.shapes.selectAll("text").style("font-size", "12px");
+ 	      y.shapes.selectAll("text").style("font-family", "Helvetica Neue");
+ 	      x.titleShape.style("font-size", "14px");
+ 	      x.titleShape.style("font-family", "Helvetica Neue");
+ 	      y.titleShape.style("font-size", "14px");
+ 	      y.titleShape.style("font-family", "Helvetica Neue");
+ 	      x.shapes.selectAll("text")
+		  	.style("cursor", "pointer")
+			.filter(function(d){ return typeof(d) == "string"; })
+    		.on("click", function(d){
+    	   		document.location.href = "http://www.icd10data.com/ICD10CM/Codes/" + d;
+    		})
+    };
+    var svg = dimple.newSvg("#ratioChartContainer", "100%", "68%");
+    var data = window.icdstats; 
+
+	var myChart = new dimple.chart(svg, data);
+	
+	var x, y, z, s, myLegend; 
+	x = myChart.addCategoryAxis("x", "ICD10");
+	x.showGridlines = true;
+	
+	x.addGroupOrderRule("l10pval",true);
+	y = myChart.addMeasureAxis("y","l10pval");
+	
+	z = myChart.addMeasureAxis("z", "l10pval");
+	z.overrideMin = 0;
+	z.overrideMax = 10;
+	 
+	var s = myChart.addSeries(["Name","Case","pvalue","OR","L95OR","U95OR","Chapter"], dimple.plot.bubble);
+	
+	// Size the bubbles by volume
+	s.addOrderRule("Chapter");
+	// Control bubble sizes by setting the max and min values
+	 s.lineWeight = 4;
+	s.lineMarkers = true;
+	
+	myLegend = myChart.addLegend("40%", "5%", "50%","20%", "right");
+
+	myChart.series[0].getTooltipText = 
+	function (e) {
+         var rows = [];
+         // Add the series categories
+         if (this.categoryFields !== null && this.categoryFields !== undefined && this.categoryFields.length > 0) {
+         	this.categoryFields.forEach(function (c, i) {
+         		if (c !== null && c !== undefined && e.aggField[i] !== null && e.aggField[i] !== undefined) {
+		 			 // If the category name and value match don't display the category name
+		 			 rows.push(c + (e.aggField[i] !== c ? ': ' + e.aggField[i] : ''));
+		 		}
+	 		}, this);
+		}
+
+		if (this.x) {
+		    this.x._getTooltipText(rows, e);
+		}
+		if (this.y) {
+		    this.y._getTooltipText(rows, e);
+		}
+		if (this.z) {
+		//    this.z._getTooltipText(rows, e);
+		}
+		if (this.c) {
+		//    this.c._getTooltipText(rows, e);
+		}	
+		//debugger;
+		//as an example of something custom
+		// rows.push('something custom here	
+		// Get distinct text rows to deal with cases where 2 axes have the same dimensionality
+		return rows; //rows.filter(function (elem, pos) { return rows.indexOf(elem) === pos; });
+	}    
+ 
+
+	myChart.draw();
+	
+	x.titleShape.text("Phenotype coding");
+	y.titleShape.text("-log10(P-value)");
+	myLegend.shapes.selectAll("text").style("font-size", "12px");
+	myLegend.shapes.selectAll("text").style("font-family", "Helvetica Neue");
+	x.shapes.selectAll("text").style("font-size", "12px");
+	x.shapes.selectAll("text").style("font-family", "Helvetica Neue");
+	y.shapes.selectAll("text").style("font-size", "12px");
+	y.shapes.selectAll("text").style("font-family", "Helvetica Neue");
+	x.titleShape.style("font-size", "14px");
+	x.titleShape.style("font-family", "Helvetica Neue");
+	y.titleShape.style("font-size", "14px");
+	y.titleShape.style("font-family", "Helvetica Neue");
+	x.shapes.selectAll("text")
+	.style("cursor", "pointer")
+	.filter(function(d){ return typeof(d) == "string"; })
+    .on("click", function(d){
+       	document.location.href = "http://www.icd10data.com/ICD10CM/Codes/" + d;
+    })
+
+    // Define tooltip
+    var tooltip = d3.select("body")
+	    .append("div")
+	    .style("position", "absolute")
+	    .style("z-index", "3")
+	    .style("visibility", "hidden")
+	    .attr("font-size","x-small")
+	    .attr('text-anchor', 'middle')
+	    //.style("opactiy", "0.8")
+	    .style("background", "#E3EAF0")
+	    .style("border-radius", "8px")
+	    .style("border", "#C6D6E1")
+	    //.style("
+	    .style("padding", "4px")
+	    .text("Click to toggle");
+
+
+	// This is a critical step.  By doing this we orphan the legend. This
+	// means it will not respond to graph updates.  Without this the legend
+	// will redraw when the chart refreshes removing the unchecked item and
+	// also dropping the events we define below.
+	myChart.legends = [];
+
+	// Get a unique list of Owner values to use when filtering
+	var filterValues = dimple.getUniqueValues(data, "Chapter");
+	// Get all the rectangles from our now orphaned legend
+	myLegend.shapes.selectAll("rect")
+	  // Add a click event to each rectangle
+	  // e object contents: key fill stroke opacity series aggField
+	  // Add dictionary with icd10 chapter descriptions for hover over
+	  .on("mouseover", function(e){return tooltip.style("visibility", "visible")
+	        .html("Click to toggle" + "<br/>" + "Chapter: " + e.aggField.slice(-1)[0] + "<br/>" + icd10_chapters[e.aggField.slice(-1)[0]]);})	
+	  .on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
+	  .on("mouseout", function(){return tooltip.style("visibility", "hidden");})
+	  .on("click", function (e) {
+	    // This indicates whether the item is already visible or not
+	    var hide = false;
+	    var newFilters = [];
+	    // If the filters contain the clicked shape hide it
+	    filterValues.forEach(function (f) {
+	      if (f === e.aggField.slice(-1)[0]) {
+	        hide = true;
+	      } else {
+	        newFilters.push(f);
+	      }
+	    });
+	    // Hide the shape or show it
+	    if (hide) {
+	      d3.select(this).style("opacity", 0.2);
+	    } else {
+	      newFilters.push(e.aggField.slice(-1)[0]);
+	      d3.select(this).style("opacity", 0.8);
+	    }
+	    // Update the filters
+	    filterValues = newFilters;
+	    // Filter the data
+	    myChart.data = dimple.filterData(data, "Chapter", filterValues);
+	    // Passing a duration parameter makes the chart animate. Without
+	    // it there is no transition
+	    myChart.draw(800);
+
+	x.titleShape.text("Phenotype coding");
+	y.titleShape.text("-log10(P-value)");
+	myLegend.shapes.selectAll("text").style("font-size", "12px");
+	myLegend.shapes.selectAll("text").style("font-family", "Helvetica Neue");
+	x.shapes.selectAll("text").style("font-size", "12px");
+	x.shapes.selectAll("text").style("font-family", "Helvetica Neue");
+	y.shapes.selectAll("text").style("font-size", "12px");
+	y.shapes.selectAll("text").style("font-family", "Helvetica Neue");
+	x.titleShape.style("font-size", "14px");
+	x.titleShape.style("font-family", "Helvetica Neue");
+	y.titleShape.style("font-size", "14px");
+	y.titleShape.style("font-family", "Helvetica Neue");
+	x.shapes.selectAll("text")
+		.style("cursor", "pointer")
+		.filter(function(d){ return typeof(d) == "string"; })
+	    .on("click", function(d){
+	       	document.location.href = "http://www.icd10data.com/ICD10CM/Codes/" + d;
+	    })
+	});
+
+</script>
+		     
+  
+            </div>
+            
+{% endblock %}

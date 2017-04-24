@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+{% block body %}
+    <!-- Render context vars in JS here -->
+    <script type="text/javascript">
+        window.affy = {{ affy|tojson|safe }};
+    </script>
+      		    
+
+    <style>
+                        h3{background-color:#826aa5;color:#fff;padding:3px;}
+                        h3 span{float:right;font-size:28px;font-weight:normal;padding:1px;}
+                        h3 span a{color:#fff;text-decoration:none;}
+
+                </style>
+    </style>
+   
+    <div class="container">
+        <div class="row">
+	<h1><span class="hidden-xs">Variant: <a href="/variant/{{ variant.chrom }}-{{ variant.pos }}">{{ variant.chrom }}:{{ variant.pos }}</a></span></h1>
+  <hr/>
+  </div>
+     
+        <dl class="dl-horizontal" style="margin-bottom: 0px;">
+        <dt>Affy ID:</dt>
+            				<dd>{{ affy }} </dd> 
+            				</dl>
+            				
+  </div>
+  <div style="display: flex; justify-content: center;">
+     
+            				
+     <img src="/static/images/png/{{affy}}.All.png" height=40% width=40% align="middle"> </img>
+
+
+                
+    </div>     
+         
+    
+     
+{% endblock %}

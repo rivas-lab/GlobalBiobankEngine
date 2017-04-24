@@ -1,0 +1,249 @@
+/* -- Layout -- */
+
+
+circle {
+  -webkit-transition: fill-opacity 250ms linear;
+}
+
+.selecting circle {
+  fill-opacity: .2;
+}
+
+.selecting circle.selected {
+  stroke: #f00;
+}
+
+
+.brush .extent {
+  stroke: #fff;
+  fill-opacity: .125;
+  shape-rendering: crispEdges;
+}
+
+
+.axisldcolour path, .axisldcolour line {
+    fill: none;
+    stroke: gray;
+    shape-rendering: crispEdges;
+}
+	
+.axisldcolour text {
+    color: grey;
+    font-family: sans-serif;
+    font-size: 10px;
+}
+
+.manaxis path, .manaxis line,
+.manlabel path, .manlabel line,
+.xmattext path, .xmattext line,
+.xmataxis path, .xmataxis line, 
+.ymataxis path, .ymataxis line, 
+.axis path, .axis line {
+	fill: none;	
+	stroke: black;
+	/*stroke-width: 2px;*/
+	shape-rendering: crispEdges;
+	}
+
+.xmataxis2 path, .xmataxis2 line,
+.xmataxis path, .xmataxis line, 
+.ymataxis path, .ymataxis line{
+	fill: none;	
+	stroke: black;
+	stroke-width: 2px;
+	shape-rendering: crispEdges;
+	}
+
+
+
+.axis text {
+  font: 10px sans-serif;
+ 
+}
+
+.x text {
+    font-size: 10px;
+}
+
+
+
+
+.ds.bar {
+    fill: steelblue;
+}
+
+.search_snps value{
+    color: blue;
+    fill-opacity: .5;
+}
+
+
+.bar_matrix{
+    fill: blue;
+    fill-opacity: 1;
+}
+
+
+.x.axis path {
+    display: none;
+}
+
+.xt.axis path {
+    display: none;
+}
+
+.xt text{
+    fill-opacity: 0.2;
+}
+
+.xt line{
+    display: none;
+}
+
+.xt_min text{
+    font-size: 0.55em;
+    fill-opacity: 1;
+}
+
+#containergenome {
+    width:100%;
+    margin:5%;
+    height:100%;
+}
+
+
+
+
+#scalecolor_matrix1 {
+	position:fixed;	
+	top:725px;
+	left:300px;		
+    /*float:left;
+    width:800px;*/
+}
+
+#scalecolor_matrix2 {
+	position:fixed;	
+	top:780px;
+	left:300px;		
+    /*float:left;
+    width:800px;*/
+}
+
+#scalecolor1_dropbox {
+	position:fixed;	
+	top:730px;
+	
+	left:160px;		
+    /*float:left;top:985.5px;
+    width:800px;*/
+}
+
+#scalecolor2_dropbox {
+	position:fixed;	
+	top:785px;
+	left:160px;		
+    /*float:left;top:1062.5px;
+    width:800px;*/
+}
+
+#up {
+	position:fixed;	
+	top:715px;
+	left:50px;		
+    /*float:left;top:980px;
+    width:800px;*/
+}
+
+
+
+#butr{
+	position:fixed;
+	top:3px;
+}
+
+#butz{
+	position:fixed;
+	left:60px;
+	top:3px;
+}
+#butpl{
+	position:fixed;
+	left:110px;
+	top:3px;
+} 
+#butrl{
+	position:fixed;
+	left:160px;
+	top:3px;
+} 
+
+#textzoom{
+	position:fixed;
+	left:250px;
+	top:3px;
+}
+
+#scale_bar {
+	
+	position:fixed;
+	
+	top:670px;
+	left:200px;		
+    /*float:left;
+    width:800px;*/
+}
+#scale_bar_c {
+	
+	position:fixed;
+	
+	top:850px;
+	left:200px;		
+    /*float:left;
+    width:800px;*/
+}
+
+#degree_scale_bar{
+	
+	position:fixed;
+	
+	top:720px;
+	left:430px;		
+    font-size: 1.1em;
+}
+#ec_scale_bar_c{
+	
+	position:fixed;
+	
+	top:900px;
+	left:350px;		
+    font-size: 1.1em;
+}
+#load_data{
+	
+	position:fixed;
+	
+	top:400px;
+	left:200px;		
+    font-size: 4.1em;
+}
+
+
+/*
+#two_weight_value{
+		
+	top:20px;
+	left:1205px;
+	    
+}
+
+#brush_weight {
+	
+	top:42px;
+	left:1200px;
+	    
+}
+*/
+
+
+
