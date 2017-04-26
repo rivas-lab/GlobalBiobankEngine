@@ -1,3 +1,4 @@
+
 from __future__ import division
 import sys
 sys.stderr.write("starting gbe.py")
@@ -14,6 +15,7 @@ import models
 import numpy
 import numpy.matlib
 from targeted import mrpmm
+from graph import graph
 from utils import *
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash, jsonify
 from flask_compress import Compress
@@ -34,7 +36,6 @@ from flask_wtf import Form
 from wtforms import StringField, BooleanField
 from wtforms.validators import DataRequired
 logging.basicConfig(stream=sys.stderr)
-
 
 
 ADMINISTRATORS = (
@@ -725,17 +726,17 @@ def create_cache():
     """
     # create autocomplete_entries.txt
     autocomplete_strings = []
-    #print >> sys.stderr, "Getting gene names..."
+    print >> sys.stderr, "Getting gene names..."
     for gene in get_db().genes.find():
         autocomplete_strings.append(gene['gene_name'])
         if 'other_names' in gene:
             autocomplete_strings.extend(gene['other_names'])
-    #print >> sys.stderr, "Done! Writing..."
+    print >> sys.stderr, "Done! Writing..."
     f = open(os.path.join(os.path.dirname(__file__), 'autocomplete_strings.txt'), 'w')
     for s in sorted(autocomplete_strings):
         f.write(s+'\n')
     f.close()
-    #print >> sys.stderr, "Done! Getting largest genes..."
+    print >> sys.stderr, "Done! Getting largest genes..."
 
     # create static gene pages for genes in
     if not os.path.exists(GENE_CACHE_DIR):
@@ -751,7 +752,7 @@ def create_cache():
         f = open(os.path.join(GENE_CACHE_DIR, '{}.html'.format(gene_id)), 'w')
         f.write(page_content)
         f.close()
-    #print >> sys.stderr, "Done!"
+    print >> sys.stderr, "Done!"
 
 
 def precalculate_metrics():
@@ -1048,11 +1049,9 @@ def icd_page(icd_str):
 
         print('Rendering ICD10: %s' % icdlabel)
 
-        # Bug!  Some icd codes aren't returning info
-        # in my version of the browser ICD1111 works but not ICDK50.  Removing case counts for now.
         if len(icd_info) == 0:
             icd_info.append({'Case': 'NA', 'Name': 'NA', 'icd': icdlabel})
-        print(icd_info)
+
 
 
         return render_template(
@@ -1075,17 +1074,20 @@ def get_icd_variant_table(icd, p):
         significant_variant_ids[v['xpos']] = {}
         significant_variant_ids[v['xpos']]['pvalue'] = v['stats'][0]['pvalue']
         significant_variant_ids[v['xpos']]['or'] = v['stats'][0]['or']
-    #print(significant_variant_ids.keys())
     variants = lookups.get_variants_by_id(db, significant_variant_ids.keys())
     for v in variants:
         genes = []
+        symbols = []
         for a in v['vep_annotations']:
-            if not  a['SYMBOL'] in genes:
-                genes.append(a['SYMBOL'])
+            if not a['Gene'] in genes:
+                genes.append(a['Gene'])
+                symbols.append(a['SYMBOL'])
+
+
         v['gene_name'] = ",".join(genes[0:3])
+        v['gene_symbol'] = ",".join(symbols[0:3])
         v['this_icd'] = icd
         v['this_pvalue'] = significant_variant_ids[v['xpos']]['pvalue']
-        print(v['this_pvalue'])
         v['this_or'] = significant_variant_ids[v['xpos']]['or']
     return variants
 
@@ -1114,33 +1116,40 @@ def gene_page(gene_id):
         return open(os.path.join(GENE_CACHE_DIR, '{}.html'.format(gene_id))).read()
     else:
         if request.method == 'POST':
-            genes = []
-            missense = lof = False
-            function = request.form['function']
-            functionfdr = request.form['functionfdr']
-            functionphen = request.form['phenotypes']
-            functionfdr = str(functionfdr)
-            fdr = functionfdr.strip('[')
-            fdr = fdr.strip(']')
-            if "missense_variant" in function:
-                missense = True
-            if "lof_variant" in function:
-                lof = True
-            if request.form['gene_text']:
-                text = request.form['gene_text']
-                genes = text.split("\n")
+            print(dir(request))
+            print(request.form.keys())
+            if 'submit_mrp' in request.form.keys():
+                genes = []
+                missense = lof = False
+                function = request.form['function']
+                functionfdr = request.form['functionfdr']
+                functionphen = request.form['phenotypes']
+                functionfdr = str(functionfdr)
+                fdr = functionfdr.strip('[')
+                fdr = fdr.strip(']')
+                if "missense_variant" in function:
+                    missense = True
+                if "lof_variant" in function:
+                    lof = True
+                if request.form['gene_text']:
+                    text = request.form['gene_text']
+                    genes = text.split("\n")
         # Remove any empty rows from genes
-            for i in range(len(genes)):
-                genes[i] = genes[i].rstrip()
-                if len(genes[i]) == 0:
-                    genes.pop(i)
-            print(genes)
-            phenidarr = []
-            phenidarr.append(functionphen)
-            # Run MRP function
-            [key,lbf,clusterval, genedat] = run_mrp(lof=lof, missense=missense, genes=genes, fdr=fdr, phenidarr=phenidarr)
-            # Send results of MRP function to mrp page
-            return redirect('/mrp/%s' % key)
+                for i in range(len(genes)):
+                    genes[i] = genes[i].rstrip()
+                    if len(genes[i]) == 0:
+                        genes.pop(i)
+                print(genes)
+                phenidarr = []
+                phenidarr.append(functionphen)
+                # Run MRP function
+                [key,lbf,clusterval, genedat] = run_mrp(lof=lof, missense=missense, genes=genes, fdr=fdr, phenidarr=phenidarr)
+                 # Send results of MRP function to mrp page
+                return redirect('/mrp/%s' % key)
+            if 'submit_graph' in request.form.keys():
+                key = str(random.getrandbits(128))
+                graph(key)
+                return redirect('/graph/%s' % key)
         return get_gene_page_content(gene_id)
 
 
@@ -1245,7 +1254,7 @@ def get_gene_page_content(gene_id):
             print(gene_id)
             variants_in_gene = lookups.get_variants_in_gene(db, gene_id)
             transcripts_in_gene = lookups.get_transcripts_in_gene(db, gene_id)
-            print(variants_in_gene)
+            #print(variants_in_gene)
             # Get some canonical transcript and corresponding info
             transcript_id = gene['canonical_transcript']
             transcript = lookups.get_transcript(db, transcript_id)
@@ -1256,6 +1265,18 @@ def get_gene_page_content(gene_id):
 
             print("\n\n\n\nVariants in gene")
             print(variants_in_gene[0])
+
+            # Add minicd info
+            for i in range(0,len(variants_in_gene)):
+                variants_in_gene[i]["minicd_info"] = "info_not_found"
+                icd_code = variants_in_gene[i]["minicd"]
+                icd10info = lookups.get_icd_info(db, icd_code)
+
+                if len(icd10info) > 0:
+
+
+                    if "Name" in icd10info[0].keys():
+                        variants_in_gene[i]["minicd_info"] = icd10info[0]["Name"]
 
             #print ("Transcripts in gene")
             #print(transcripts_in_gene)
@@ -1471,7 +1492,7 @@ http://omim.org/entry/%(omim_accession)s''' % gene
         return "Search types other than gene transcript not yet supported"
 
 @app.route('/graph/<key>')
-def graph(key):
+def graphpage(key):
     if not check_credentials():
         return redirect(url_for('login'))
     db = get_db()

@@ -1,4 +1,4 @@
-from flask_script import Manager
+from flask.ext.script import Manager
 from gbe import app
 import gbe
 
@@ -7,7 +7,7 @@ manager = Manager(app)
 
 @manager.command
 def hello():
-    print("hello")
+    print "hello"
 
 
 @manager.command

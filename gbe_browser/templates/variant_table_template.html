@@ -73,9 +73,12 @@ P-value</th>
 
                 <% } %>    
             </td>
-            <td> 
-	            <%= variant.minicd %>
-            </td>
+            <!-- ICD CODE -->
+
+	          <!--   <%= variant.minicd %> -->
+                <td class='tooltip-table-header' data-tooltip=<%= variant.minicd_info %>><%= variant.minicd %></td>
+
+
               <td> 
                 <% if (variant.minor != -9) { %>
 		 <% if (variant.minor == 0) { %>

@@ -22,6 +22,7 @@ def get_variant_icd(db, xpos):
 def get_gene_by_name(db, gene_name):
     # try gene_name field first
     gene = db.genes.find_one({'gene_name': gene_name}, fields={'_id': False})
+
     if gene:
         return gene
     # if not, try gene['other_names']
@@ -191,7 +192,7 @@ def get_awesomebar_result(db, query):
 
     """
     query = query.strip()
-    print('Query: %s' % query)
+    print 'Query: %s' % query
     if query.upper() in UNSUPPORTED_QUERIES:
         return 'error', query
 

@@ -103,9 +103,9 @@ def get_proper_hgvs(csq):
         try:
             amino_acids = ''.join([protein_letters_1to3[x] for x in csq['Amino_acids']])
             return "p." + amino_acids + csq['Protein_position'] + amino_acids
-        except Exception as e:
+        except Exception, e:
             return "p.X0X"
-            print('Could not create HGVS for: %s' % csq)
+            print 'Could not create HGVS for: %s' % csq
     return csq['HGVSp'].split(':')[-1]
 
 # Note that this is the current as of v77 with 2 included for backwards compatibility (VEP <= 75)
