@@ -14,5 +14,4 @@ flask_errormail
 flask_wtf
 scipy
 rpy2
-rpy2.objects
 rstan
