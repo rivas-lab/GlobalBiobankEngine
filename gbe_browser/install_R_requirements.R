@@ -15,6 +15,8 @@ if(!require(sna)) {
   install.packages("sna")
 }
 if(!require(RColorBrewer)) {
-  install.packages("sna")
+  install.packages("RColorBrewer")
 }
-
+if(!require(rstan)) {
+  install.packages("rstan")
+}
