@@ -1,15 +1,20 @@
 source('/home/scidb/GlobalBiobankEngine/scidb/database_load.R')
 connect()
 
+#Get a sense of what data is loaded
+as.R(DB$project(DB$list(), name)) #This is the more user-friendly form DB$ will auto-complete. DB is set in connect()
+iquery(DB, "project(list(), name)", return=T) #Same thing
 
+as.R(DB$summarize(ICD)) #stats: count size and chunks
+as.R(DB$limit(ICD, 10)) #a selection of 10 entries
+as.R(DB$summarize(VARIANT)) #do it with another array
+as.R(DB$limit(VARIANT, 10)) #a selection of 10 entries
 
-
-
-
-#get_icd(1, 795222);                                        0.1s
-#get_icd(1, 795222, icd_string='1387');                     0.2s
-#get_icd(1, start=795222, end=1795222);                     0.37s
-#get_icd(1, start=795222, end=1795222, icd_string='1387');  0.37s
+#ICD lookup
+#get_icd(1, 795222);                                        #position
+#get_icd(1, 795222, icd_string='1126');                     #position, pheno
+#get_icd(1, start=795222, end=1795222);                     #range
+#get_icd(1, start=795222, end=1795222, icd_string='1126');  #range, pheno
 get_icd = function(chrom, start, end, icd_string)
 {
   if(missing(end))
@@ -37,7 +42,7 @@ get_icd = function(chrom, start, end, icd_string)
           filter(ICD_INDEX, icd='%s'),
           ICD.icd_id, ICD_INDEX.icd_id
          ),
-         affyid, or_val, se, pvalue
+         affyid, or_val, se, pvalue, lor, log10pvalue, l95or, u95or
        )",
        chrom,start, chrom, end, icd_string
      ),
@@ -47,8 +52,9 @@ get_icd = function(chrom, start, end, icd_string)
   }
 }
 
-#get_variant(1,889238) : 0.12s
-#x= get_variant(1,889238, 1889238) : 0.16s
+#Variant lookup
+#get_variant(1,889238) 
+#x= get_variant(1,889238, 890238) #careful - printing a lot of these can cause trouble for rstudio
 get_variant = function(chrom, start, end)
 {
   if(missing(end))
@@ -65,6 +71,7 @@ get_variant = function(chrom, start, end)
   )
 }
 
+## ## Some prototypes of Manny's query below:
 challenge_query = function()
 {
   t1=proc.time();
