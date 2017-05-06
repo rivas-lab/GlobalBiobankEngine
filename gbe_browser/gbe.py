@@ -86,7 +86,7 @@ EXON_PADDING = 50
 # Load default config and override config from an environment variable
 #test
 app.config.update(dict(
-    DB_HOST='localhost',
+    DB_HOST='mongodb',
     DB_PORT=27017, 
     DB_NAME='gbe', 
     DEBUG=True,
@@ -1664,5 +1664,5 @@ def apply_caching(response):
     return response
 
 if __name__ == "__main__":
-    app.run(host = "127.0.0.1", port = 5000)
+    app.run(host="0.0.0.0", port=5000)
 
