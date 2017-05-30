@@ -19,7 +19,7 @@
             <th class='tooltip-table-header' data-tooltip="First 3 associated gene symbols, comma separated">Gene symbol</th>
             <th class="tooltip-table-header" data-tooltip="HGVS annotation (protein change, where defined, or transcript change for splice variants, otherwise empty)">Consequence</th>
             <th class="tooltip-table-header" data-tooltip="Variant Effect Predictor (VEP) &#xa; annotation using Gencode 75.&#xa; Worst across all transcripts of this gene.">Annotation</th>
-            <th class="tooltip-table-header" data-tooltip="">ENCODE Annotation</th>
+    <!--        <th class="tooltip-table-header" data-tooltip="">ENCODE Annotation</th> -->
             <th class="tooltip-table-header" data-tooltip="ExAC NFE alternate allele frequency &#xa;">
                 ExAC NFE AF</th>
             <th class="tooltip-table-header" data-tooltip="Odds ratio corresponding to min(p-value)">Odds Ratio</th>
@@ -84,7 +84,7 @@ P-value</th>
                 <% } %>
             </b> </td>
             <!-- ENCODE ANNOTATION -->
-            <td></td>
+<!--            <td></td> -->
             <!-- EXAC AF -->
             <td>
                 <% if (variant.exac_nfe != -9) { %>

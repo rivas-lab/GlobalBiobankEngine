@@ -139,9 +139,34 @@ def get_icd_from_file(icdstats_file, filename):
             continue
         if float(fields[11]) == 0:
             continue
+        if float(fields[9]) >= .5:
+            continue
+        fileidname = os.path.basename(filename[0]).split('.')
+        if 'brainmri' in fileidname:
+            prefix = 'BRMRI'
+            intadd = 10
+        elif 'additionalimaging' in fileidname:
+            prefix = 'ADD'
+            intadd = 20
+        elif 'initialdata' in fileidname:
+            prefix = 'INI'
+            intadd = 30
+        else:
+            if len(fileidname[1].split('_FH2')) > 1:
+                prefix = 'FH'
+                intadd = 40
+            elif len(fileidname[1].split('RH')) > 1:
+                prefix = 'RH'
+                intadd = 50
+            elif len(fileidname[1].split('cancer')) > 1:
+                prefix = 'cancer'
+                intadd = 60
+            elif len(fileidname[1].split('HC')) > 1:
+                prefix = 'HC'
+                intadd = 70
         d = {
-              'icdind' : int(str(get_xpos(fields[0], int(fields[1]))) + os.path.basename(filename[0]).split('.')[1].split('_')[0].strip()[1:]),
-              'icd' : 'ICD' + os.path.basename(filename[0]).split('.')[1],
+              'icdind' : int(str(get_xpos(fields[0], int(fields[1]))) + str(intadd) + os.path.basename(filename[0]).split('.')[1].split('_')[0].strip()[1:].strip('RH').strip('FH').strip('cancer').strip('HC').split('_FH2')[0]),
+              'icd' : prefix + os.path.basename(filename[0]).split('.')[1].strip('RH').strip('FH').strip('cancer').strip('HC').split('_FH2')[0],
                 'xpos': get_xpos(fields[0], int(fields[1])),
               'affyid' : fields[2],
             'pos': int(fields[1]),
@@ -191,11 +216,15 @@ def get_qt_from_file(qtstats_file, filename):
         if line.startswith('#'):
             continue
         fields = line.strip('\n').split()
-        if fields[4] != "ADD":
+        if fields[5] != "ADD":
             continue
-        if fields[1] in fltdict:
+        #CHROM POS ID REF ALT1 TEST OBS_CT BETA SE T_STAT P
+        if fields[2] in fltdict:
             continue
-        if fields[8] == "NA":
+        if fields[10] == "NA":
+            continue
+        se = float(fields[8])
+        if se >= .5:
             continue
         icdn = os.path.basename(filename[0]).split('.')[1]
         icdcnt = {'1498' : 128300,
@@ -204,22 +233,43 @@ def get_qt_from_file(qtstats_file, filename):
                   '20159' :  32763,
                   '20240' : 30775,
                   '21001' :  137200}
-        if int(fields[5])/icdcnt[icdn] < .9:
-            continue
+        fileidname = os.path.basename(filename[0]).split('.')
+        if 'brainmri' in fileidname:
+            prefix = 'BRMRI'
+            intadd = 10
+        elif 'additionalimaging' in fileidname:
+            prefix = 'ADD'
+            intadd = 20
+        elif 'initialdata' in fileidname:
+            prefix = 'INI'
+            intadd = 30
+        else:
+            if len(fileidname.split('_FH2')) > 1:
+                prefix = 'FH'
+                intadd = 40
+            elif len(fileidname.split('RH')) > 1:
+                prefix = 'RH'
+                intadd = 50
+            elif len(fileidname.split('cancer')) > 1:
+                prefix = 'cancer'
+                intadd = 60
+            elif len(fileidname.split('HC')) > 1:
+                prefix = 'HC'
+                intadd = 70
         d = {
-              'icdind' : int(str(get_xpos(fields[0], int(fields[2]))) + os.path.basename(filename[0]).split('.')[1].split('_')[0].strip()[1:]),
-              'icd' : 'ICD' + os.path.basename(filename[0]).split('.')[1],
-                'xpos': get_xpos(fields[0], int(fields[2])),
+              'icdind' : int(str(get_xpos(fields[0], int(fields[1]))) + str(intadd) + os.path.basename(filename[0]).split('.')[1].split('_')[0].strip()[1:].strip('RH').strip('FH').strip('cancer').strip('HC').split('_FH2')[0]),
+              'icd' : prefix + os.path.basename(filename[0]).split('.')[1].strip('RH').strip('FH').strip('cancer').strip('HC').split('_FH2')[0],
+                'xpos': get_xpos(fields[0], int(fields[1])),
               'affyid' : fields[1],
-            'pos': int(fields[2]),
+            'pos': int(fields[1]),
               'chrom' : fields[0],
              'stats' : []
         }
         d1 = {}
-        d1['or'] = float(fields[6])
-        d1['se'] = float(fields[6])/float(fields[7])
-        d1['pvalue'] = float(fields[8])
-        d1['lor'] = float(fields[6])
+        d1['or'] = float(fields[7])
+        d1['se'] = float(fields[8])
+        d1['pvalue'] = float(fields[10])
+        d1['lor'] = float(fields[7])
         d1['log10pvalue'] = -float(numpy.log(d1['pvalue'])/numpy.log(10))
         d1['l95or'] = d1['lor'] - 1.96*d1['se']
         d1['u95or'] = d1['lor'] + 1.96*d1['se']
@@ -238,8 +288,8 @@ def get_icd_info_from_file(icdinfo_file):
         if line.startswith('#'):
             continue
         fields = line.rstrip().split('\t')
-        name = fields[2].split()[1:]
-        name = ' '.join(name)
+        name = fields[2]
+        print(name)
         d = {
               'icd' : fields[0],
               'Name' : name.split('[')[0],
@@ -298,6 +348,7 @@ def get_variants_from_sites_vcf(sites_vcf):
                 variant['site_quality'] = fields[5]
                 variant['filter'] = fields[6]
                 variant['vep_annotations'] = vep_annotations
+
                 variant['minicd'] = info_field['minicd']
                 variant['minpval'] = float(info_field['minpval'])
                 variant['minor'] = float(info_field['minor'])

@@ -22,9 +22,10 @@ import sklearn
 import sklearn.covariance
 # Set up basic logging
 logger = logging.getLogger('Log')
-from scipy import stats
+from scipy import stats 
 from scipy.stats import multivariate_normal
 import random
+from profilehooks import profile
 
 def is_pos_def(x):
     i = 0
@@ -35,8 +36,10 @@ def is_pos_def(x):
        return False
 
 # return BIC -2*log(p(Data | theta that maximizes C, Mc)) + vc log(n) : vc is the number of parameters (K+J)*(C-1), K is the number of phenotypes, J is the number of genes, C is the number of clusters
+@profile
 def mrpmm(betas,ses,vymat,annotvec,genevec,protvec,chroffvec,clusters,fout,Rphen,Rpheninv,phenidarr, Rphenuse=True, fdr=.05, niter=1000,burn=100,thinning=1,verbose=True, outpath='/Users/mrivas/'):
     print("Running MCMC algorithm...")
+    print(sys.flags.optimize)
     epsilon = .0000000000000001
     storephensvar = []
     S = vymat
@@ -136,7 +139,7 @@ def mrpmm(betas,ses,vymat,annotvec,genevec,protvec,chroffvec,clusters,fout,Rphen
     # Iterations MCMC samplers
     for iter in range(1,niter+1):
         gamma = 1
-        if iter % 100 == 0:
+        if iter % 500 == 0:
             print(iter)
         ## a) Update \pi_0 : Proposal centered around the current value, Set gamma to 1 , how to set gamma?
         ## mhstep1
@@ -186,7 +189,7 @@ def mrpmm(betas,ses,vymat,annotvec,genevec,protvec,chroffvec,clusters,fout,Rphen
             paramvecshared = alpha[iter-1,0]*pc[iter,0,:]
             for geneiter in range(0,len(genevec)):
                 if genevec[geneiter] == genemap[geneidx]:
-                    paramvecshared[deltam[iter-1,geneiter]] += 1
+                    paramvecshared[int(deltam[iter-1,geneiter])] += 1
             pcj[iter,geneidx,:] = np.random.dirichlet(paramvecshared)
         # c) Update delta_jm
         xk = numpy.arange(0,C)
@@ -271,12 +274,13 @@ def mrpmm(betas,ses,vymat,annotvec,genevec,protvec,chroffvec,clusters,fout,Rphen
                     dtmp = numpy.matlib.eye(len(atmp))
                     np.fill_diagonal(dtmp,atmp)
                     Vjm = dtmp*S*dtmp + np.matlib.eye(S.shape[0])*.000001
-                    cidx = deltam[iter,varidx]
+                    cidx = int(deltam[iter,varidx])
+                   # print(cidx,iter,varidx)
                     lnum2 += multivariate_normal.logpdf(betas[varidx,:],scaleprop*bc[iter,cidx,:],Vjm)
                     ldenom2 += multivariate_normal.logpdf(betas[varidx,:],np.sqrt(scales[iter-1,annotidx])*bc[iter,cidx,:],Vjm)
             ## Metropolis-Hastings step
-            if iter % 100 == 0:
-                print(probnum1,probdenom1,lnum2,ldenom2)
+   #         if iter % 100 == 0:
+   #             print(probnum1,probdenom1,lnum2,ldenom2)
             if np.log(np.random.uniform(0,1,size = 1)[0]) < min(0, (lnum2 + probnum1) - (probdenom1 + ldenom2)):
                 acceptmh2[annotidx] += 1
                 scales[iter,annotidx] = np.power(scaleprop,2)
@@ -352,10 +356,10 @@ def mrpmm(betas,ses,vymat,annotvec,genevec,protvec,chroffvec,clusters,fout,Rphen
             print(varfdridsort[i], file = fdrout)
     fdrout.close()
     rejectionrate = rejectmh1_postburnin/(acceptmh1_postburnin + rejectmh1_postburnin)
-    print(rejectmh1_postburnin,acceptmh1_postburnin)
+  #  print(rejectmh1_postburnin,acceptmh1_postburnin)
     logger.info(("Your acceptance rate is %2.2f")  % ( rejectmh1_postburnin/(acceptmh1_postburnin + rejectmh1_postburnin)))
-    print(rejectmh2_postburnin,acceptmh2_postburnin)
-    print(rejectmh3_postburnin,acceptmh3_postburnin)
+  #  print(rejectmh2_postburnin,acceptmh2_postburnin)
+  #  print(rejectmh3_postburnin,acceptmh3_postburnin)
     genedatm50 = {}
     genedatl95 = {}
     genedatu95 = {}
@@ -390,19 +394,19 @@ def mrpmm(betas,ses,vymat,annotvec,genevec,protvec,chroffvec,clusters,fout,Rphen
             print('\n',end='',file=tmpbc)
         tmpbc.close()
         pc[0,0,:]
-        print('geneset', np.mean(pcj[burn+1:niter+1:thinning,:],axis=0))
+    #    print('geneset', np.mean(pcj[burn+1:niter+1:thinning,:],axis=0))
         # initialize pcj (proportions for each gene j)
         genesdict = {}
         for geneidx in range(0,genenum):
             genesdict[genemap[geneidx]] = genemap[geneidx]
-            genedatm50[genemap[geneidx]] = np.mean(pcj[burn+1:niter+1:thinning,geneidx,:],axis=0)
+            genedatm50[genemap[geneidx]] = np.percentile(pcj[burn+1:niter+1:thinning,geneidx,:],50, axis=0)
             genedatl95[genemap[geneidx]] = np.percentile(pcj[burn+1:niter+1:thinning,geneidx,:], 2.5, axis=0)
             genedatu95[genemap[geneidx]] = np.percentile(pcj[burn+1:niter+1:thinning,geneidx,:], 97.5, axis=0)
     alphaout = open(outpath + str(fout) + '.mcmc.alpha','w+')
     mean = numpy.mean(alpha[burn+1:niter+1:thinning,0],axis = 0)
     l95ci = numpy.percentile(alpha[burn+1:niter+1:thinning,0],2.5, axis = 0)
     u95ci = numpy.percentile(alpha[burn+1:niter+1:thinning,0],97.5, axis = 0)
-    print(mean)
+   # print(mean)
     print(("%2.2f\t%2.2f\t%2.2f") % (mean,l95ci,u95ci), file = alphaout)
     alphaout.close()
     maxllkiter = np.max(maxloglkiter[burn+1:niter:thinning,0])

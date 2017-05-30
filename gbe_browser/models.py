@@ -56,7 +56,7 @@ class QueryGenome(object):
         Betas: A mxn numpy array containing log odd ratios for each variant and each ICD 10 code.  m=varaints, n=ICD codes
         Standard errors: A mxn numpy array containing standard errors for each variant and each ICD 10 code.
         Annotations: A list of variant annotations (variant consequence and category)
-        Protein annotations: HGVSc values for each variant
+        Protein annotations: HGVSp values for each variant
         Key: chr-position-ref-alt
         Gene: A list of gene names associated with each variant
     """
@@ -119,7 +119,7 @@ class QueryGenome(object):
                     if icd_count == 0:
                         variant_ids.append(str(g.variants[v].variant_id))
                         annotations.append(str(g.variants[v].annotations()))
-                        protein_annotations.append(str(g.variants[v].hgvsc))
+                        protein_annotations.append(str(g.variants[v].hgvsp))
                         gene_return.append(g.name)
                         rsids.append(g.variants[v].rsid)
                         alts.append(g.variants[v].alt)
@@ -284,7 +284,7 @@ class Variant(object):
         self.allele_freq = None
         self.xpos = None
         #self.vep_annotations = None
-        self.hgvsc = []
+        self.hgvsp = []
         self.lof_info = []
         self.lof_filter = []
         self.parse_response(variant)
@@ -309,7 +309,7 @@ class Variant(object):
         if 'vep_annotations' in v:
             #self.vep_annotations = v['vep_annotations']
             for a in v['vep_annotations']:
-                self.hgvsc.append(a['HGVSc'])
+                self.hgvsp.append(a['HGVSp'])
                 if len(a['LoF_info']) > 0:
                     self.lof_info.append(a['LoF_info'])
                 if len(a['LoF_filter']) > 0:

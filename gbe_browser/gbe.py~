@@ -1831,7 +1831,6 @@ def check_credentials():
             return redirect(url_for('login_page'))
         return False
 
-
 #@basic_auth.required
 @app.after_request
 def apply_caching(response):

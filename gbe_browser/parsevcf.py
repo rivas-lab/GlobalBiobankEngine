@@ -19,10 +19,26 @@ resd = {}
 
 affydict = {}
 
-for file in glob.glob('../gbe_data/icdassoc/hybrid/*hybrid.gz'):
-    print(file)
+for file in glob.glob('../gbe_data/icdassoc/hybrid/*hybrid.rewrite.gz'):
     fr = gzip.open(file,'rb')
-    icd = os.path.basename(file).split('.')[1]
+    print(file)
+    fileidname = os.path.basename(file).split('.')
+    if 'brainmri' in fileidname:
+        prefix = 'BRMRI'
+    elif 'additionalimaging' in fileidname:
+        prefix = 'ADD'
+    elif 'initialdata' in fileidname:
+        prefix = 'INI'
+    else:
+        if len(fileidname[1].split('_FH2')) > 1:
+            prefix = 'FH'
+        elif len(fileidname[1].split('RH')) > 1:
+            prefix = 'RH'
+        elif len(fileidname[1].split('cancer')) > 1:
+            prefix = 'cancer'
+        elif len(fileidname[1].split('HC')) > 1:
+            prefix = 'HC'
+    icd = prefix + os.path.basename(file).split('.')[1].strip('RH').strip('FH').strip('cancer').strip('HC').split('_FH2')[0]
     for line in fr:
         if line[0] == "#":
             continue
@@ -46,7 +62,7 @@ for file in glob.glob('../gbe_data/icdassoc/hybrid/*hybrid.gz'):
         l10pval = -np.log(pval)/np.log(10)
         oddsratio = float(line[8])
         ser = float(line[9])
-        if ser >= 1:
+        if ser >= .5:
             continue
         l95or = np.exp(np.log(oddsratio) - 1.96*ser) 
         l95or  = '{0:.2f}'.format(float(l95or))
@@ -55,10 +71,11 @@ for file in glob.glob('../gbe_data/icdassoc/hybrid/*hybrid.gz'):
         oddsratio  = '{0:.2f}'.format(float(oddsratio))
         l10pval  = '{0:.2f}'.format(float(l10pval))
         if (affyid,'pval') in chrst:
-            chrst[affyid,'pval'].append(pval) 
-            chrst[affyid,'oddsr'].append(oddsratio) 
-            chrst[affyid,'l10pval'].append(l10pval) 
-            chrst[affyid,'icd'].append(icd) 
+            if pval <= .01:
+                chrst[affyid,'pval'].append(pval) 
+                chrst[affyid,'oddsr'].append(oddsratio) 
+                chrst[affyid,'l10pval'].append(l10pval) 
+                chrst[affyid,'icd'].append(icd) 
         else:
             chrst[affyid,'pval'] = [pval] 
             chrst[affyid,'oddsr'] = [oddsratio] 
@@ -67,42 +84,57 @@ for file in glob.glob('../gbe_data/icdassoc/hybrid/*hybrid.gz'):
     fr.close()
         
 
-for file in glob.glob('../gbe_data/icdassoc/hybrid/*linear.gz'):
+for file in glob.glob('../gbe_data/icdassoc/hybrid/*linear.rewrite.gz'):
     fr = gzip.open(file,'rb')
-    print(file)
-    icd = os.path.basename(file).split('.')[1]
+    fileidname = os.path.basename(file).split('.')
+    if 'brainmri' in fileidname:
+        prefix = 'BRMRI'
+    elif 'additionalimaging' in fileidname:
+        prefix = 'ADD'
+    elif 'initialdata' in fileidname:
+        prefix = 'INI'
+    else:
+        if len(fileidname[1].split('_FH2')) > 1:
+            prefix = 'FH'
+        elif len(fileidname[1].split('RH')) > 1:
+            prefix = 'RH'
+        elif len(fileidname[1].split('cancer')) > 1:
+            prefix = 'cancer'
+        elif len(fileidname[1].split('HC')) > 1:
+            prefix = 'HC'
+    icd = prefix + os.path.basename(file).split('.')[1].strip('RH').strip('FH').strip('cancer').strip('HC').split('_FH2')[0]
     for line in fr:
         if line[0] == "#":
             continue
         line = line.rstrip()
         line = line.split()
         chrom = line[0]
-        pos = line[2] 
-        affyid = line[1]
-        if line[4] != "ADD":
+        pos = line[1] 
+        affyid = line[2]
+        if line[5] != "ADD":
             continue
-        if line[6] == "NA":
+        if line[7] == "NA":
             continue
-        beta = float(line[6])
-        stat = float(line[7])
-        ser = beta/stat
-        if ser >= 1:
+        beta = float(line[7])
+        ser = float(line[8])
+        if ser >= .5:
             continue
         l95beta = beta - 1.96*ser
         u95beta = beta + 1.96*ser 
         u95beta = '{0:.2f}'.format(float(u95beta))
         l95beta = '{0:.2f}'.format(float(l95beta))
         beta  = '{0:.2f}'.format(float(beta))
-        pval = float(line[8])
+        pval = float(line[10])
         l10pval = -np.log(pval)/np.log(10)
         oddsratio = beta
         l95or = l95beta
         u95or = u95beta
         if (affyid,'pval') in chrst:
-            chrst[affyid,'pval'].append(pval) 
-            chrst[affyid,'oddsr'].append(oddsratio) 
-            chrst[affyid,'l10pval'].append(l10pval) 
-            chrst[affyid,'icd'].append(icd) 
+            if pval <= .01:
+                chrst[affyid,'pval'].append(pval) 
+                chrst[affyid,'oddsr'].append(oddsratio) 
+                chrst[affyid,'l10pval'].append(l10pval) 
+                chrst[affyid,'icd'].append(icd) 
         else:
             chrst[affyid,'pval'] = [pval] 
             chrst[affyid,'oddsr'] = [oddsratio] 

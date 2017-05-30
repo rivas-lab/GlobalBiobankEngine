@@ -98,11 +98,14 @@ body {
 <!-- <h1>Cluster Assignment Probabilities</h1> -->
 <div class="svg-container">
 <h1>Summary</h1>
-<h3>Aggregate</h3>
-<p class="bg-success" style="font-size:24px">For the analysis you explored the log10 Bayes Factor for non-zero effect cluster is {{ log10_bf }}. After applying the mixture model to the data we have evidence of {{cluster_num}} cluster(s). </p>
-<h3>Variants</h3>
-<p class="bg-success" style="font-size:24px">At false discovery rate (FDR) of {{fdr}} we have {% for fdr_var in fdr_data %}<a href="../variant/{{ fdr_var.split('-')[0] + '-' + fdr_var.split('-')[1] }}">{{ fdr_var }}, </a>{% endfor %}.
-<p>
+ <div class="panel panel-primary">
+      <div class="panel-heading">Aggregate</div>
+      <div class="panel-body">For the analysis you explored the log10 Bayes Factor for non-zero effect cluster is {{ log10_bf }}. After applying the mixture model to the data we have evidence of {{cluster_num}} cluster(s). </p></div>
+    </div>
+ <div class="panel panel-primary">
+      <div class="panel-heading">Variants</div>
+ <div class="panel-body">At false discovery rate (FDR) of {{fdr}} we have {% for fdr_var in fdr_data %}<a href="../variant/{{ fdr_var.split('-')[0] + '-' + fdr_var.split('-')[1] }}">{{ fdr_var }}, </a>{% endfor %}.</div>
+</div>
 
 <script>
 
@@ -332,8 +335,12 @@ gene_data.forEach(function(data){
 
   	  {% if num_figs %}
 <!--- <h1> Cluster Effect Size Estimates </h1> -->
-    <h2> Log10 Bayes Factor : {{ log10_bf }}</h2>
-    <h2> Clusters : {{ cluster_num }}</h2>
+<div class="panel panel-info">
+      <div class="panel-heading">Model summary</div>
+      <div class="panel-body"> Log10 Bayes Factor : {{ log10_bf }}</div>
+      <div class="panel-body">Clusters : {{ cluster_num }}</div>
+    </div>
+
   {% for n in num_figs %}
     <h2> Cluster {{ n[0] }} </h2> 
       <div id="cluster_{{ n[0] }}"></div>
@@ -474,7 +481,7 @@ function columnChart() {
     .filter(function(d){ return typeof(d) == "string"; })
     .style("cursor", "pointer")
     .on("click", function(d){
-        document.location.href = "../icd10/" + d;
+        document.location.href = "../coding/" + d;
     });
 
 
