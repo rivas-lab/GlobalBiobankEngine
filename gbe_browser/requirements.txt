@@ -15,3 +15,4 @@ flask_wtf
 scipy
 rpy2
 #rstan
+profilehooks
