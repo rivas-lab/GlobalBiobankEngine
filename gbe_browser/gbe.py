@@ -46,7 +46,7 @@ def mrp(*args):
     pass
 
 ADMINISTRATORS = (
-    'ukbb.browsers.errors@gmail.com',
+    'gbe.help@gmail.com',
 )
 
 app = Flask(__name__)
