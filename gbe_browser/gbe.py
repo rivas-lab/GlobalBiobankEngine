@@ -1186,6 +1186,34 @@ def icd_page(icd_str):
         abort(404)
 
 
+@app.route('/target/1')
+def target_page():
+    if not check_credentials():
+        return redirect(url_for('login'))
+    db = get_db()
+    try:
+        passing = False
+        cutoff = None
+        for p in [.001]:
+            vars = lookups.get_significant_or(db, p, 0)
+            print(vars)
+            if len(vars) < 100000:
+                passing = True
+            if passing:
+                cutoff = p
+                break
+        variants = get_prot_variant_table(0,cutoff)
+        return render_template(
+            'target.html',
+            variants_in_gene = variants,
+            cutoff=cutoff
+            )
+    except Exception as e:
+        print('Failed on protective scan Error=', traceback.format_exc())
+        abort(404)
+
+
+
 def get_icd_variant_table(icd, p):
     db = get_db()
     significant_variant_ids = {}
@@ -1210,6 +1238,32 @@ def get_icd_variant_table(icd, p):
         v['this_pvalue'] = significant_variant_ids[v['xpos']]['pvalue']
         v['this_or'] = significant_variant_ids[v['xpos']]['or']
     return variants
+
+
+def get_prot_variant_table(lor, p):
+    db = get_db()
+    significant_variant_ids = {}
+    significant_variants = lookups.get_significant_or(db,p, lor)
+    for v in significant_variants:
+        significant_variant_ids[v['xpos']] = {}
+        significant_variant_ids[v['xpos']]['pvalue'] = v['stats'][0]['pvalue']
+        significant_variant_ids[v['xpos']]['or'] = v['stats'][0]['or']
+    variants = lookups.get_variants_by_id(db, significant_variant_ids.keys())
+    for v in variants:
+        genes = []
+        symbols = []
+        for a in v['vep_annotations']:
+            if not a['Gene'] in genes:
+                genes.append(a['Gene'])
+                symbols.append(a['SYMBOL'])
+
+
+        v['gene_name'] = ",".join(genes[0:3])
+        v['gene_symbol'] = ",".join(symbols[0:3])
+        v['this_pvalue'] = significant_variant_ids[v['xpos']]['pvalue']
+        v['this_or'] = significant_variant_ids[v['xpos']]['or']
+    return variants
+
 
 
 @app.route('/intensity/<affy_str>')

@@ -389,6 +389,11 @@ def get_variants_by_id(db, variant_ids):
 def get_icd_significant(db, icd_id, cutoff=0.01):
     return list(db.icd.find({'icd': icd_id, 'stats.pvalue': {"$lt": cutoff}}, fields={'_id': False}))
 
+def get_significant_or(db, cutoff=0.01, lor=0):
+    cutoff = float(cutoff)
+    lor = float(lor)
+    return list(db.icd.find({ 'stats.lor': {"$lt": lor}, 'stats.pvalue': {"$lt": cutoff}}, fields={'_id': False}))
+
 
 def get_exons_in_transcript(db, transcript_id):
     # return sorted(

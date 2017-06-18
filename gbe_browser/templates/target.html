@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% block body %}
+    <!-- Render context vars in JS here -->
+    <script type="text/javascript">
+        window.table_variants = {{ variants_in_gene|tojson|safe }};
+    </script>
+      		    
+
+    <script>
+        filtered_variants = _.filter(window.table_variants, function(d) {
+            return d.filter == 'PASS';
+        });
+        $('#number_of_variants').replaceWith(filtered_variants.length);
+        lof_filtered_variants = _.filter(window.table_variants, function(d) {
+            return d.filter == 'PASS' && d.category == 'lof_variant';
+        });$('#number_of_lof_variants').replaceWith(lof_filtered_variants.length);
+    </script>
+
+    <style>
+                        h3{background-color:#826aa5;color:#fff;padding:3px;}
+                        h3 span{float:right;font-size:28px;font-weight:normal;padding:1px;}
+                        h3 span a{color:#fff;text-decoration:none;}
+
+                </style>
+
+   
+    <div class="container">
+        <div class="row">
+            {% if variants_in_gene %}
+                {% set chrom = variants_in_gene[0].chrom %}
+                {% include 'variant_table_icd.html' %}
+            {% else %}
+                No significantly associated variants.
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}
