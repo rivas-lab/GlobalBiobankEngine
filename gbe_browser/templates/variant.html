@@ -2,7 +2,7 @@
 {% block body %}
     <!-- Render context vars in JS here -->
  <script type="text/javascript" src="{{ url_for('static', filename='d3.tip.v0.6.3.js') }}"></script>
- <script type="text/javascript" src="{{ url_for('static', filename='d3.v3.min.js') }}"></script>
+<script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
  <script type="text/javascript" src="{{ url_for('static', filename='dimple.v2.3.0.js') }}"></script>
     <script type="text/javascript">
         window.variant = {{ variant|tojson|safe }};
