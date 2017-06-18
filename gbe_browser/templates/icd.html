@@ -32,15 +32,14 @@
 
 <!--            <h1><span class="hidden-xs">Phenotype code: <a href="http://www.icd10data.com/ICD10CM/Codes/{{ icd[0].icd.replace('ICD','') }}" target="_blank">{{ icd[0].icd.replace('ICD','') }}</a></span></h1> -->
 
-            <h1><span class="hidden-xs">Phenotype code: {{ icd[0].icd.replace('ICD','') }}</span></h1>
+            <h1><span class="hidden-xs">Code Phenotype: {{icd_info[0].Name}}</span></h1>
   
         <hr/>
      <dl class="dl-horizontal" style="margin-bottom: 0px;">
-                        <dt>Code Description:</dt> 
+                        <dt>Code:</dt> 
                         <dt>Case Count:</dt> 
                                          
-                        <dd>{{ icd_info[0].Name }} 
-                                             </dd>
+                        <dd>{{ icd[0].icd.replace('ICD','') }}</dd>
                                              <dd>{{ icd_info[0].Case }} 
                                              </dd>
 
