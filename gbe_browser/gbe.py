@@ -1039,14 +1039,14 @@ def awesome():
         return redirect('/gene/{}'.format(identifier))
     elif datatype == 'transcript':
         return redirect('/transcript/{}'.format(identifier))
+    elif datatype == 'dbsnp_variant_set':
+        return redirect('/dbsnp/{}'.format(identifier))
     elif datatype == 'variant':
         return redirect('/variant/{}'.format(identifier))
     elif datatype == 'icd10':
         return redirect('/coding/{}'.format(identifier))
     elif datatype == 'region':
         return redirect('/region/{}'.format(identifier))
-    elif datatype == 'dbsnp_variant_set':
-        return redirect('/dbsnp/{}'.format(identifier))
     elif datatype == 'error':
         return redirect('/error/{}'.format(identifier))
     elif datatype == 'not_found':
