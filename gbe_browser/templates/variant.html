@@ -70,7 +70,7 @@
                         {% else %}
                             <dd>Not found in dbSNP</dd>
                         {% endif %}
-                        <dt>EMBL-EBI GWAS catalog</dt>
+                        <dt>EMBL-EBI GWAS</dt>
                         {% if variant.rsid and variant.rsid != "." %}
                             <dd><a href="https://www.ebi.ac.uk/gwas/search?query={{ variant.rsid}}"target="_blank">{{ variant.rsid }}</a></dd>
                         {% else %}
