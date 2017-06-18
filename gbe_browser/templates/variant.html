@@ -69,7 +69,7 @@
                             <dd><a href="http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs={{ variant.rsid }}" target="_blank">{{ variant.rsid }}</a></dd>
                         {% else %}
                             <dd>Not found in dbSNP</dd>
-     <dl class="dl-horizontal" style="margin-bottom: 0px;">
+                        {% endif %}
                         <dt>PhenoScanner</dt>
                         {% if variant.rsid and variant.rsid != "." %}
                             <dd><a href="http://www.phenoscanner.medschl.cam.ac.uk/results?rsid={{ variant.rsid}}&catalogue=&pval=1&proxies=&r2=0.6" target="_blank">{{ variant.rsid }}</a></dd>
