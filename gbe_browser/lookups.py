@@ -200,7 +200,9 @@ def get_awesomebar_result(db, query):
     variant = get_variants_by_rsid(db, query.lower())
     if variant:
         if len(variant) == 1:
-            return 'variant', variant[0]['variant_id']
+            variantid = variant[0]['variant_id']
+            variantid = variantid.split('-')[0] + '-' + variantid.split('-')[1]
+            return 'variant', variantid
         else:
             return 'dbsnp_variant_set', variant[0]['rsid']
     variant = get_variants_from_dbsnp(db, query.lower())
