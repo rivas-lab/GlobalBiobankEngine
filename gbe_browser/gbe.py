@@ -1197,7 +1197,7 @@ def target_page():
         for p in [.001]:
             vars = lookups.get_significant_or(db, p, 0)
             print(vars)
-            if len(vars) < 100000:
+            if len(vars) < 10000000000:
                 passing = True
             if passing:
                 cutoff = p
