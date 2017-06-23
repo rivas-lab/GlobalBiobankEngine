@@ -130,7 +130,7 @@ th.allele_frequency_column {
 /* Position tooltip above the element */
 [data-tooltip]:before {
     position: absolute;
-    white-space: pre;
+    white-space: pre-line;
     bottom: 150%;
     left: 50%;
     margin-bottom: 5px;
