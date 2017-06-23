@@ -1128,6 +1128,8 @@ def variant_icd_page(variant_str):
                 se =  format(float(item['stats'][0]['se']), '.4g') 
                 if float(item['l10pval']) <= 1 or float(se) >= .5:
                     indexes.append(idx)
+                if int(item['Case']) <= 200:
+                    indexes.append(idx)
         for index in sorted(indexes, reverse=True):
             del icdstats[index]
         print('Rendering variant: %s' % variant_str)
