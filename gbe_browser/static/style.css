@@ -54,7 +54,7 @@
 }
 
 .dl-horizontal dt {
-    white-space: normal;
+    white-space: pre-line;
 }
 
 .tt-query {
@@ -115,6 +115,7 @@ th.allele_frequency_column {
     position: relative;
     z-index: 2;
     cursor: pointer;
+    white-space: pre-line;
 }
 
 /* Hide the tooltip content by default */
