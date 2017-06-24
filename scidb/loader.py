@@ -15,11 +15,11 @@ def load_qc_filters():
     for rec in config.QC_FILTER_FILES:
         with open(rec['filename']) as fp:
             lines = fp.readlines()
-            skip = rec.get('header', None)
+            skip = rec.get('header', 0)
             qc_filters.extend(
                 l.strip().split()[0] for l in lines[:-skip if skip else None])
             logger.info('QC:file:%s lines:%d skip:%d',
-                        rec['filename'], len(lines), skip if skip else 0)
+                        rec['filename'], len(lines), skip)
 
     # TODO fix when upload_data=list() implemented
     db.input(upload_data=numpy.array(qc_filters)).store('qc_filter')
