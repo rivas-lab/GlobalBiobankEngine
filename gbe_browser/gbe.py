@@ -1158,7 +1158,7 @@ def icd_page(icd_str):
         cutoff = None
         icd = None
 
-        for p in [.00001]:
+        for p in [.001, .0001, .00001]:
             icd = lookups.get_icd_significant(db, str(icd_str), p)
            # print(icd_str,icd)
             if len(icd) < 100000:
