@@ -72,6 +72,7 @@ def load_icd():
 
             logger.info('Query:starting...')
             db.iquery(query)
+            remove_versions(config.ICD_ARRAY)
             logger.info('Query:done')
 
             logger.info('Pipes:return code:%s',
@@ -115,6 +116,11 @@ def remove_arrays():
 def remove_fifo(fifo_name):
     os.remove(fifo_name)
     os.rmdir(os.path.dirname(fifo_name))
+
+
+def remove_versions(name):
+    db.remove_versions(name,
+                       db.versions(name)[:]['version_id'].max())
 
 
 if __name__ == '__main__':
