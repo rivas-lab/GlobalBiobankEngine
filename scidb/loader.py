@@ -1,12 +1,13 @@
 import config
 import glob
-import itertools
 import logging
 import numpy
 import os
 import scidbpy
 import subprocess
 import tempfile
+
+from future.moves.itertools import zip_longest
 
 
 logging.basicConfig(level=logging.INFO)
@@ -43,7 +44,7 @@ def load_icd():
         file_iter = [glob.iglob(config.ICD_GLOB)] * config.SCIDB_INSTANCE_NUM
         instances = [str(i) for i in range(config.SCIDB_INSTANCE_NUM)]
 
-        for file_names in itertools.zip_longest(*file_iter):
+        for file_names in zip_longest(*file_iter):
 
             # Last chunk might have None, strip them out
             if None in file_names:
