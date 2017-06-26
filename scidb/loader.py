@@ -16,7 +16,7 @@ from future.moves.itertools import zip_longest
 
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__file__)
 
 
 class Loader:
