@@ -1,4 +1,5 @@
-import os.path
+import os
+import scidbpy
 
 
 SCIDB_INSTANCE_NUM = 8
@@ -39,10 +40,10 @@ ICD_SCHEMA = """
    log10pvalue: double,
    l95or:       double,
    u95or:       double>
-  [icd_id    = 0:*,20,0,
-   chrom     = 1:25,1,0,
-   pos       = 0:*,10000000,0,
-   synthetic = 0:999,1000,0]"""
+  [icd_id    = 0:*:20:0;
+   chrom     = 1:25:1:0;
+   pos       = 0:*:10000000:0;
+   synthetic = 0:999:1000:0]"""
 ICD_QUERY = """
   insert(
     redimension(
@@ -110,3 +111,13 @@ QT_QUERY = """
                          + 1.96 * dcast(a8, double(null)))),
       {icd}),
     {icd})"""
+ICD_LOOKUP_QUERY="""
+  filter(
+    cross_join(
+      icd,
+      filter(icd_index, icd = '{icd_id}'),
+      icd.icd_id,
+      icd_index.icd_id),
+    pvalue < {cutoff})"""
+ICD_LOOKUP_SCHEMA=scidbpy.schema.Schema.fromstring(
+    ICD_SCHEMA.replace('>', ',icd:string>'))
