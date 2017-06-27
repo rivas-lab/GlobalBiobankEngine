@@ -1,5 +1,6 @@
 import config
 import glob
+import itertools
 import logging
 import numpy
 import os
@@ -15,7 +16,7 @@ except ImportError:
 from future.moves.itertools import zip_longest
 
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, format='%(funcName)s:%(message)s')
 logger = logging.getLogger(__file__)
 
 
@@ -47,7 +48,9 @@ class Loader:
 
     def load_icd_map(self):
         icd_lst = list(set(Loader.get_icd(fn)
-                           for fn in glob.iglob(config.ICD_GLOB)))
+                           for fn in itertools.chain(
+                                   glob.iglob(config.ICD_GLOB),
+                                   glob.iglob(config.QT_GLOB))))
         self.icd_id_map = dict(zip(icd_lst, range(len(icd_lst))))
         self.db.input(config.ICD_INDEX_SCHEMA,
                       upload_data=numpy.array(icd_lst)).store(
@@ -79,6 +82,45 @@ class Loader:
                                                        self.fifo_names)]
 
             query = config.ICD_QUERY.format(
+                icd=config.ICD_ARRAY,
+                qc=config.QC_ARRAY,
+                paths=';'.join(self.fifo_names[:len(file_names)]),
+                instances=';'.join(self.instances[:len(file_names)]),
+                icd_id_cond=icd_id_cond)
+
+            logger.info('Query:starting...')
+            self.db.iquery(query)
+            self.remove_versions(config.ICD_ARRAY)
+            logger.info('Query:done')
+
+            logger.info('Pipes:return code:%s',
+                        ','.join(str(pipe.poll()) for pipe in pipes))
+
+    def load_qt(self):
+        file_iter = [glob.iglob(config.QT_GLOB)] * config.SCIDB_INSTANCE_NUM
+
+        for file_names in zip_longest(*file_iter):
+
+            # Last chunk might have None, strip them out
+            if None in file_names:
+                file_names = [file_name
+                              for file_name in file_names if file_name]
+
+            # Map filenames to icd_id based on src_instance_id
+            icd_id_cond = 'null'
+            for (inst, file_name) in zip(range(len(file_names)), file_names):
+                icd_id = self.icd_id_map[Loader.get_icd(file_name)]
+                icd_id_cond = ('iif(src_instance_id = {inst}, ' +
+                               '{icd_id}, {prev})').format(
+                                   inst=inst, icd_id=icd_id, prev=icd_id_cond)
+
+            # Make pipes
+            logger.info('Pipes:starting %d...', len(file_names))
+            pipes = [Loader.make_pipe(file_name, fifo_name)
+                     for (file_name, fifo_name) in zip(file_names,
+                                                       self.fifo_names)]
+
+            query = config.QT_QUERY.format(
                 icd=config.ICD_ARRAY,
                 qc=config.QC_ARRAY,
                 paths=';'.join(self.fifo_names[:len(file_names)]),
@@ -149,3 +191,4 @@ if __name__ == '__main__':
     loader.load_qc()
     loader.load_icd_map()
     loader.load_icd()
+    loader.load_qt()

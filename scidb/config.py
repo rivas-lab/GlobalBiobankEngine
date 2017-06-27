@@ -21,7 +21,10 @@ QC_ARRAY = 'qc'
 # -- -
 # -- - ICD - --
 # -- -
-ICD_GLOB = os.path.join(GBE_DATA_PATH, 'icdassoc', 'hybrid', 'c*.hybrid.gz')
+ICD_GLOB = os.path.join(
+    GBE_DATA_PATH, 'icdassoc', 'hybrid', 'c*.hybrid.rewrite.gz')
+QT_GLOB = os.path.join(
+    GBE_DATA_PATH, 'icdassoc', 'hybrid', 'c*.linear.rewrite.gz')
 
 ICD_INDEX_ARRAY = 'icd_index'
 ICD_INDEX_SCHEMA = "<icd:string>[icd_id]"
@@ -67,10 +70,43 @@ ICD_QUERY = """
         se,          dcast(a9,  double(null)),
         pvalue,      dcast(a11, double(null)),
         lor,         log(dcast(a8, double(null))),
-        log10pvalue, log10(dcast(a11, double(null))) * -1,
-        l95or,       exp(log(dcast(a8, double(null))) -
-                         1.96 * dcast(a9, double(null))),
-        u95or,       exp(log(dcast(a8, double(null))) +
-                         1.96 * dcast(a9, double(null)))),
+        log10pvalue, -log10(dcast(a11, double(null))),
+        l95or,       exp(log(dcast(a8, double(null)))
+                         - 1.96 * dcast(a9, double(null))),
+        u95or,       exp(log(dcast(a8, double(null)))
+                         + 1.96 * dcast(a9, double(null)))),
+      {icd}),
+    {icd})"""
+QT_QUERY = """
+  insert(
+    redimension(
+      apply(
+        filter(
+          index_lookup(
+            aio_input(
+              'paths={paths}',
+              'instances={instances}',
+              'num_attributes=12') as INPUT,
+            {qc},
+            INPUT.a2,
+            is_in_filter),
+          substr(a0, 0, 1) <> '#' and
+          a5 = 'ADD' and
+          is_in_filter is null and
+          dcast(a8, double(null)) < .5 and
+          a10 <> 'NA'),
+        icd_id,      {icd_id_cond},
+        chrom,       int64(a0),
+        pos,         int64(a1),
+        affyid,      a1,
+        or_val,      dcast(a7,  double(null)),
+        se,          dcast(a8,  double(null)),
+        pvalue,      dcast(a10, double(null)),
+        lor,         dcast(a7, double(null)),
+        log10pvalue, -log10(dcast(a10, double(null))),
+        l95or,       exp(log(dcast(a7, double(null)))
+                         - 1.96 * dcast(a8, double(null))),
+        u95or,       exp(log(dcast(a7, double(null)))
+                         + 1.96 * dcast(a8, double(null)))),
       {icd}),
     {icd})"""
