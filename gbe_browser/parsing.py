@@ -174,8 +174,8 @@ def get_icd_from_file(icdstats_file, filename):
              'stats' : []
         }
         d1 = {}
-        d1['or'] = fields[8]
-        d1['se'] = fields[9]
+        d1['or'] = float(fields[8])
+        d1['se'] = float(fields[9])
         d1['pvalue'] = float(fields[11])
         d1['lor'] = numpy.log(float(fields[8]))
         d1['log10pvalue'] = -float(numpy.log(float(fields[11]))/numpy.log(10))
