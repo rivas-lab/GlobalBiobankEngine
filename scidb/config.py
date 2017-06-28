@@ -40,10 +40,10 @@ ICD_SCHEMA = """
    log10pvalue: double,
    l95or:       double,
    u95or:       double>
-  [icd_id    = 0:*:20:0;
-   chrom     = 1:25:1:0;
-   pos       = 0:*:10000000:0;
-   synthetic = 0:999:1000:0]"""
+  [icd_id    = 0:*:0:20;
+   chrom     = 1:25:0:1;
+   pos       = 0:*:0:10000000;
+   synthetic = 0:999:0:1000]"""
 ICD_QUERY = """
   insert(
     redimension(
