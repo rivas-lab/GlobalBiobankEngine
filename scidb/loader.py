@@ -1,4 +1,3 @@
-import config
 import glob
 import itertools
 import logging
@@ -14,6 +13,9 @@ except ImportError:
     from backports.weakref import finalize
 
 from future.moves.itertools import zip_longest
+
+
+import config
 
 
 logging.basicConfig(level=logging.INFO, format='%(funcName)s:%(message)s')
@@ -81,7 +83,7 @@ class Loader:
                      for (file_name, fifo_name) in zip(file_names,
                                                        self.fifo_names)]
 
-            query = config.ICD_QUERY.format(
+            query = config.ICD_LOAD_QUERY.format(
                 icd=config.ICD_ARRAY,
                 qc=config.QC_ARRAY,
                 paths=';'.join(self.fifo_names[:len(file_names)]),
@@ -120,7 +122,7 @@ class Loader:
                      for (file_name, fifo_name) in zip(file_names,
                                                        self.fifo_names)]
 
-            query = config.QT_QUERY.format(
+            query = config.QT_LOAD_QUERY.format(
                 icd=config.ICD_ARRAY,
                 qc=config.QC_ARRAY,
                 paths=';'.join(self.fifo_names[:len(file_names)]),
@@ -135,12 +137,21 @@ class Loader:
             logger.info('Pipes:return code:%s',
                         ','.join(str(pipe.poll()) for pipe in pipes))
 
+    def load_icd_info(self):
+        self.db.create_array(config.ICD_INFO_ARRAY, config.ICD_INFO_SCHEMA)
+        self.db.iquery(config.ICD_INFO_LOAD_QUERY.format(
+            path=config.ICD_INFO_FILE,
+            icd_info=config.ICD_INFO_ARRAY,
+            icd_index=config.ICD_INDEX_ARRAY))
+        logger.info('Array:%s', config.ICD_INFO_ARRAY)
+
     def remove_arrays(self):
         if not Loader.confirm('Remove and recreate arrays'):
             return
         for array in (config.QC_ARRAY,
                       config.ICD_INDEX_ARRAY,
-                      config.ICD_ARRAY):
+                      config.ICD_ARRAY,
+                      config.ICD_INFO_ARRAY):
             try:
                 self.db.remove(array)
             except:
@@ -202,3 +213,4 @@ if __name__ == '__main__':
     loader.load_icd_map()
     loader.load_icd()
     loader.load_qt()
+    loader.load_icd_info()

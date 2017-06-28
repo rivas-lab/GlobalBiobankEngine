@@ -27,8 +27,11 @@ ICD_GLOB = os.path.join(
 QT_GLOB = os.path.join(
     GBE_DATA_PATH, 'icdassoc', 'hybrid', 'c*.linear.rewrite.gz')
 
+ICD_INFO_FILE = os.path.join(GBE_DATA_PATH, 'icdstats', 'icdinfo.txt')
+
+
 ICD_INDEX_ARRAY = 'icd_index'
-ICD_INDEX_SCHEMA = "<icd:string>[icd_id]"
+ICD_INDEX_SCHEMA = '<icd:string>[icd_id]'
 
 ICD_ARRAY = 'icd'
 ICD_SCHEMA = """
@@ -44,7 +47,11 @@ ICD_SCHEMA = """
    chrom     = 1:25:0:1;
    pos       = 0:*:0:10000000;
    synthetic = 0:999:0:1000]"""
-ICD_QUERY = """
+
+ICD_INFO_ARRAY = 'icd_info'
+ICD_INFO_SCHEMA = '<case:int64, icd_name:string>[icd_id=0:*:0:1000000]'
+
+ICD_LOAD_QUERY = """
   insert(
     redimension(
       apply(
@@ -78,7 +85,8 @@ ICD_QUERY = """
                          + 1.96 * dcast(a9, double(null)))),
       {icd}),
     {icd})"""
-QT_QUERY = """
+
+QT_LOAD_QUERY = """
   insert(
     redimension(
       apply(
@@ -111,6 +119,22 @@ QT_QUERY = """
                          + 1.96 * dcast(a8, double(null)))),
       {icd}),
     {icd})"""
+
+ICD_INFO_LOAD_QUERY = """
+  insert(
+    redimension(
+      apply(
+        index_lookup(
+          aio_input('{path}', 'num_attributes=6'),
+          {icd_index},
+          a0,
+          icd_id),
+        case,     dcast(a1, int64(null)),
+        icd_name, a2),
+      {icd_info}, false),
+    {icd_info})"""
+
+
 ICD_LOOKUP_QUERY="""
   filter(
     cross_join(
@@ -119,5 +143,16 @@ ICD_LOOKUP_QUERY="""
       icd.icd_id,
       icd_index.icd_id),
     pvalue < {cutoff})"""
+
 ICD_LOOKUP_SCHEMA=scidbpy.schema.Schema.fromstring(
     ICD_SCHEMA.replace('>', ',icd:string>'))
+
+ICD_INFO_LOOKUP_QUERY="""
+  cross_join(
+    icd_info,
+    filter(icd_index, icd = '{icd_id}'),
+    icd_info.icd_id,
+    icd_index.icd_id)"""
+
+ICD_INFO_LOOKUP_SCHEMA=scidbpy.schema.Schema.fromstring(
+    ICD_INFO_SCHEMA.replace('>', ',icd:string>'))
