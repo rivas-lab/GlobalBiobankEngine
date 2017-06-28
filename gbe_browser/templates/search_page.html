@@ -259,6 +259,29 @@ function filterFunction7() {
         }
     }
 }
+
+
+
+
+
+function myFunction8() {
+    document.getElementById("myDropdown8").classList.toggle("show");
+}
+
+function filterFunction8() {
+    var input, filter, ul, li, a, i;
+    input = document.getElementById("myInput8");
+    filter = input.value.toUpperCase();
+    div = document.getElementById("myDropdown8");
+    a = div.getElementsByTagName("a");
+    for (i = 0; i < a.length; i++) {
+        if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
+            a[i].style.display = "";
+        } else {
+            a[i].style.display = "none";
+        }
+    }
+}
 </script>
 
 
@@ -753,6 +776,311 @@ function filterFunction7() {
 </div>
 </div>
 
+
+
+<div class="btn-group" role="group">
+<div class="dropdown" align="center">
+<button onclick="myFunction8()" class="button">Medications</button>
+  <div id="myDropdown8" class="dropdown-content">
+    <input type="text" placeholder="Search.." id="myInput8" onkeyup="filterFunction8()">
+<a class="dropdown-item" href="coding/MED2038460150">paracetamol (21364)</a>
+<a class="dropdown-item" href="coding/MED1140868226">aspirin (16007)</a>
+<a class="dropdown-item" href="coding/MED1140871310">ibuprofen (14234)</a>
+<a class="dropdown-item" href="coding/MED1140861958">simvastatin (13918)</a>
+<a class="dropdown-item" href="coding/MED1141188442">glucosamine_product (7710)</a>
+<a class="dropdown-item" href="coding/MED1140865634">omeprazole (7100)</a>
+<a class="dropdown-item" href="coding/MED1140909674">cod_liver_oil_capsule (6786)</a>
+<a class="dropdown-item" href="coding/MED1141194794">bendroflumethiazide (6606)</a>
+<a class="dropdown-item" href="coding/MED1140860806">ramipril (5708)</a>
+<a class="dropdown-item" href="coding/MED1140879802">amlodipine (4958)</a>
+<a class="dropdown-item" href="coding/MED1141191044">levothyroxine_sodium (4738)</a>
+<a class="dropdown-item" href="coding/MED1140866738">atenolol (4596)</a>
+<a class="dropdown-item" href="coding/MED1193">omega-3/fish_oil_supplement (4486)</a>
+<a class="dropdown-item" href="coding/MED1140864752">lansoprazole (4278)</a>
+<a class="dropdown-item" href="coding/MED1140861998">ventolin_100micrograms_inhaler (3795)</a>
+<a class="dropdown-item" href="coding/MED1141146234">atorvastatin (3791)</a>
+<a class="dropdown-item" href="coding/MED1140852976">multivitamins (3646)</a>
+<a class="dropdown-item" href="coding/MED1140860696">lisinopril (3328)</a>
+<a class="dropdown-item" href="coding/MED1140884600">metformin (3180)</a>
+<a class="dropdown-item" href="coding/MED1140923346">co-codamol (2902)</a>
+<a class="dropdown-item" href="coding/MED1140884488">diclofenac (2394)</a>
+<a class="dropdown-item" href="coding/MED1140879616">amitriptyline (2287)</a>
+<a class="dropdown-item" href="coding/MED1140921600">citalopram (2080)</a>
+<a class="dropdown-item" href="coding/MED1140879406">ranitidine (1886)</a>
+<a class="dropdown-item" href="coding/MED1140879760">bisoprolol (1829)</a>
+<a class="dropdown-item" href="coding/MED1140916682">evening_primrose_oil (1808)</a>
+<a class="dropdown-item" href="coding/MED1140888560">perindopril (1739)</a>
+<a class="dropdown-item" href="coding/MED1140876592">multivitamin+mineral_preparations (1661)</a>
+<a class="dropdown-item" href="coding/MED1140911732">garlic_product (1600)</a>
+<a class="dropdown-item" href="coding/MED1141176832">seretide_50_evohaler (1576)</a>
+<a class="dropdown-item" href="coding/MED1140881856">salbutamol (1560)</a>
+<a class="dropdown-item" href="coding/MED1140909726">vitamin_c_product (1468)</a>
+<a class="dropdown-item" href="coding/MED1187">chondroitin_product (1444)</a>
+<a class="dropdown-item" href="coding/MED1140879540">fluoxetine (1413)</a>
+<a class="dropdown-item" href="coding/MED1140864992">tramadol (1363)</a>
+<a class="dropdown-item" href="coding/MED1140875408">allopurinol (1354)</a>
+<a class="dropdown-item" href="coding/MED1140883504">cetirizine (1338)</a>
+<a class="dropdown-item" href="coding/MED1140879778">doxazosin (1329)</a>
+<a class="dropdown-item" href="coding/MED1141156836">candesartan_cilexetil (1327)</a>
+<a class="dropdown-item" href="coding/MED1140922174">alendronate_sodium (1321)</a>
+<a class="dropdown-item" href="coding/MED1140884516">thyroxine_product (1261)</a>
+<a class="dropdown-item" href="coding/MED1140888266">warfarin (1243)</a>
+<a class="dropdown-item" href="coding/MED1140883066">insulin_product (1237)</a>
+<a class="dropdown-item" href="coding/MED1140909786">beclometasone (1163)</a>
+<a class="dropdown-item" href="coding/MED1140926934">tamsulosin (1137)</a>
+<a class="dropdown-item" href="coding/MED1140871050">calcichew_d3_tablet (1119)</a>
+<a class="dropdown-item" href="coding/MED1140916356">losartan (1096)</a>
+<a class="dropdown-item" href="coding/MED1140874744">gliclazide (1081)</a>
+<a class="dropdown-item" href="coding/MED1140888646">felodipine (1060)</a>
+<a class="dropdown-item" href="coding/MED1140870422">folic_acid_product (1018)</a>
+<a class="dropdown-item" href="coding/MED1140909708">furosemide (958)</a>
+<a class="dropdown-item" href="coding/MED1140888552">enalapril (905)</a>
+<a class="dropdown-item" href="coding/MED1141152998">irbesartan (895)</a>
+<a class="dropdown-item" href="coding/MED1141146138">lipitor_10mg_tablet (872)</a>
+<a class="dropdown-item" href="coding/MED1141174520">symbicort_100/6_turbohaler (855)</a>
+<a class="dropdown-item" href="coding/MED1140862772">loratadine (852)</a>
+<a class="dropdown-item" href="coding/MED1141164828">adcal-d3_1.5g/10micrograms_chewable_tablet (840)</a>
+<a class="dropdown-item" href="coding/MED1140871024">vitamin_b_compound_tablet (833)</a>
+<a class="dropdown-item" href="coding/MED1140871462">naproxen (812)</a>
+<a class="dropdown-item" href="coding/MED1140874420">quinine (809)</a>
+<a class="dropdown-item" href="coding/MED1140926606">salbutamol_100micrograms_spacehaler (798)</a>
+<a class="dropdown-item" href="coding/MED1141168318">clopidogrel (792)</a>
+<a class="dropdown-item" href="coding/MED1140888538">zinc_product (791)</a>
+<a class="dropdown-item" href="coding/MED1140923350">co-dydramol (790)</a>
+<a class="dropdown-item" href="coding/MED1140876136">beconase_50micrograms_nasal_spray (775)</a>
+<a class="dropdown-item" href="coding/MED1140862382">becotide_50_inhaler (755)</a>
+<a class="dropdown-item" href="coding/MED1141192410">rosuvastatin (753)</a>
+<a class="dropdown-item" href="coding/MED1140861806">aspirin_75mg_tablet (748)</a>
+<a class="dropdown-item" href="coding/MED1140879842">propranolol (747)</a>
+<a class="dropdown-item" href="coding/MED1141192736">ezetimibe (724)</a>
+<a class="dropdown-item" href="coding/MED1140874930">prednisolone (694)</a>
+<a class="dropdown-item" href="coding/MED1140870788">calcium_salts (666)</a>
+<a class="dropdown-item" href="coding/MED1140911734">ginkgo_forte_tablet (651)</a>
+<a class="dropdown-item" href="coding/MED1140869848">methotrexate (651)</a>
+<a class="dropdown-item" href="coding/MED1140865354">gaviscon_liquid (637)</a>
+<a class="dropdown-item" href="coding/MED1140884444">codeine (630)</a>
+<a class="dropdown-item" href="coding/MED1140888648">pravastatin (627)</a>
+<a class="dropdown-item" href="coding/MED1140866122">bendrofluazide (614)</a>
+<a class="dropdown-item" href="coding/MED1140872228">gabapentin (586)</a>
+<a class="dropdown-item" href="coding/MED1140879428">mebeverine (578)</a>
+<a class="dropdown-item" href="coding/MED1140870390">ferrous_sulphate (574)</a>
+<a class="dropdown-item" href="coding/MED1141150944">nasonex_0.05%_aqueous_nasal_spray (566)</a>
+<a class="dropdown-item" href="coding/MED1140867878">sertraline (548)</a>
+<a class="dropdown-item" href="coding/MED1140888098">fluticasone (545)</a>
+<a class="dropdown-item" href="coding/MED1140852948">calcium+vitamin_d_500units_tablet (531)</a>
+<a class="dropdown-item" href="coding/MED1141145660">valsartan (511)</a>
+<a class="dropdown-item" href="coding/MED1141167594">qvar_50_inhaler (504)</a>
+<a class="dropdown-item" href="coding/MED1140916282">venlafaxine (490)</a>
+<a class="dropdown-item" href="coding/MED1140884654">beclomethasone (487)</a>
+<a class="dropdown-item" href="coding/MED1140876076">flixonase_50micrograms_aqueous_nasal_spray (463)</a>
+<a class="dropdown-item" href="coding/MED1140868408">premarin_625micrograms_tablet (459)</a>
+<a class="dropdown-item" href="coding/MED1140863144">zopiclone (442)</a>
+<a class="dropdown-item" href="coding/MED1140871112">vitamin_e_product (429)</a>
+<a class="dropdown-item" href="coding/MED1140884464">dihydrocodeine (424)</a>
+<a class="dropdown-item" href="coding/MED1199">food_supplement/plant/herbal_extract (420)</a>
+<a class="dropdown-item" href="coding/MED1189">co-enzyme_q10/ubiquinone/bio-quinone/coenzyme_q10 (407)</a>
+<a class="dropdown-item" href="coding/MED1140910766">nicorandil (407)</a>
+<a class="dropdown-item" href="coding/MED1140882694">betnovate_cream (405)</a>
+<a class="dropdown-item" href="coding/MED1140879464">loperamide (402)</a>
+<a class="dropdown-item" href="coding/MED1140867888">paroxetine (402)</a>
+<a class="dropdown-item" href="coding/MED1140860954">isosorbide_mononitrate (402)</a>
+<a class="dropdown-item" href="coding/MED1141182628">tiotropium (400)</a>
+<a class="dropdown-item" href="coding/MED1140866078">indapamide (398)</a>
+<a class="dropdown-item" href="coding/MED1141177526">esomeprazole (395)</a>
+<a class="dropdown-item" href="coding/MED1141146428">fexofenadine (394)</a>
+<a class="dropdown-item" href="coding/MED1140868550">finasteride (393)</a>
+<a class="dropdown-item" href="coding/MED1140860834">glyceryl_trinitrate (392)</a>
+<a class="dropdown-item" href="coding/MED1140909806">dosulepin (390)</a>
+<a class="dropdown-item" href="coding/MED1140862086">salamol_100micrograms_inhaler (387)</a>
+<a class="dropdown-item" href="coding/MED1140862476">beclazone_50_inhaler (385)</a>
+<a class="dropdown-item" href="coding/MED1140862148">serevent_25mcg_inhaler (385)</a>
+<a class="dropdown-item" href="coding/MED1140870570">vitamin_b12_preparation (379)</a>
+<a class="dropdown-item" href="coding/MED1140883748">selenium_product (371)</a>
+<a class="dropdown-item" href="coding/MED1140870954">vitamin_d_product (368)</a>
+<a class="dropdown-item" href="coding/MED1141146198">xalatan_0.005%_eye_drops (366)</a>
+<a class="dropdown-item" href="coding/MED1140926732">meloxicam (355)</a>
+<a class="dropdown-item" href="coding/MED1140925800">movicol_oral_powder (351)</a>
+<a class="dropdown-item" href="coding/MED1140888386">iron_product (346)</a>
+<a class="dropdown-item" href="coding/MED1141171948">adcal_600mg_chewable_tablet (344)</a>
+<a class="dropdown-item" href="coding/MED1140888688">betahistine (343)</a>
+<a class="dropdown-item" href="coding/MED1140870164">tamoxifen (343)</a>
+<a class="dropdown-item" href="coding/MED1141152732">mirtazapine (340)</a>
+<a class="dropdown-item" href="coding/MED1140873548">oxytetracycline (340)</a>
+<a class="dropdown-item" href="coding/MED1140863152">diazepam (334)</a>
+<a class="dropdown-item" href="coding/MED1140862144">salmeterol (322)</a>
+<a class="dropdown-item" href="coding/MED2038459814">digoxin (318)</a>
+<a class="dropdown-item" href="coding/MED1140862168">bricanyl_250mcg_inhaler (308)</a>
+<a class="dropdown-item" href="coding/MED1140874852">thyroxine_sodium (304)</a>
+<a class="dropdown-item" href="coding/MED1195">vitamin_c_product (303)</a>
+<a class="dropdown-item" href="coding/MED1140865800">lactulose_product (296)</a>
+<a class="dropdown-item" href="coding/MED1140851812">gtn_400micrograms_spray (294)</a>
+<a class="dropdown-item" href="coding/MED1140884412">sumatriptan (286)</a>
+<a class="dropdown-item" href="coding/MED1141153026">lercanidipine (285)</a>
+<a class="dropdown-item" href="coding/MED1140868472">vagifem_25mcg_pessary (285)</a>
+<a class="dropdown-item" href="coding/MED1141200004">pregabalin (277)</a>
+<a class="dropdown-item" href="coding/MED1140883568">oxybutynin (273)</a>
+<a class="dropdown-item" href="coding/MED1140865010">viscotears_liquid_eye_gel (272)</a>
+<a class="dropdown-item" href="coding/MED1140862572">budesonide (270)</a>
+<a class="dropdown-item" href="coding/MED1141182800">cerazette_75micrograms_tablet (269)</a>
+<a class="dropdown-item" href="coding/MED1141156644">elleste_duet_conti_tablet (266)</a>
+<a class="dropdown-item" href="coding/MED1141171646">pioglitazone (265)</a>
+<a class="dropdown-item" href="coding/MED1140872072">tegretol_100mg_tablet (262)</a>
+<a class="dropdown-item" href="coding/MED1140879774">alfuzosin (260)</a>
+<a class="dropdown-item" href="coding/MED1140861088">nifedipine (259)</a>
+<a class="dropdown-item" href="coding/MED1141145812">minerals_-_magnesium (254)</a>
+<a class="dropdown-item" href="coding/MED1141168936">sildenafil (252)</a>
+<a class="dropdown-item" href="coding/MED1141164086">salmeterol+fluticasone_propionate (250)</a>
+<a class="dropdown-item" href="coding/MED1140869930">azathioprine (250)</a>
+<a class="dropdown-item" href="coding/MED1141182632">spiriva_18micrograms_inhalation_capsule (248)</a>
+<a class="dropdown-item" href="coding/MED1197">evening_primrose_oil_product (247)</a>
+<a class="dropdown-item" href="coding/MED1140879430">domperidone (247)</a>
+<a class="dropdown-item" href="coding/MED1140861090">adalat_5mg_capsule (247)</a>
+<a class="dropdown-item" href="coding/MED1140888172">mometasone (245)</a>
+<a class="dropdown-item" href="coding/MED1140879806">diltiazem (244)</a>
+<a class="dropdown-item" href="coding/MED1141146188">latanoprost (238)</a>
+<a class="dropdown-item" href="coding/MED1140870856">calcichew_1.25g_chewable_tablet (238)</a>
+<a class="dropdown-item" href="coding/MED1141192740">ezetrol_10mg_tablet (236)</a>
+<a class="dropdown-item" href="coding/MED1141157126">montelukast_product (236)</a>
+<a class="dropdown-item" href="coding/MED1141168326">kliovance_1mg/0.5mg_tablet (232)</a>
+<a class="dropdown-item" href="coding/MED1140927328">terbinafine (232)</a>
+<a class="dropdown-item" href="coding/MED1140922804">premique_0.625mg/5mg_tablet (232)</a>
+<a class="dropdown-item" href="coding/MED1140879818">metoprolol (230)</a>
+<a class="dropdown-item" href="coding/MED1140861128">tildiem_60mg_m/r_tablet (229)</a>
+<a class="dropdown-item" href="coding/MED1141192916">rino_clenil_50micrograms_nasal_spray (228)</a>
+<a class="dropdown-item" href="coding/MED1140863202">temazepam (225)</a>
+<a class="dropdown-item" href="coding/MED1141180036">fybogel_orange_s/f_granules (224)</a>
+<a class="dropdown-item" href="coding/MED1141162764">tolterodine_l-tartrate (221)</a>
+<a class="dropdown-item" href="coding/MED1140866236">spironolactone (220)</a>
+<a class="dropdown-item" href="coding/MED1201">st_john's_wort/hypericum_[ctsu] (217)</a>
+<a class="dropdown-item" href="coding/MED1141175684">risedronate_sodium (217)</a>
+<a class="dropdown-item" href="coding/MED1140929012">pantoprazole (215)</a>
+<a class="dropdown-item" href="coding/MED1140864286">flixotide_25micrograms_inhaler (214)</a>
+<a class="dropdown-item" href="coding/MED1140923670">gtn_-_glyceryl_trinitrate (211)</a>
+<a class="dropdown-item" href="coding/MED1140866116">frusemide (211)</a>
+<a class="dropdown-item" href="coding/MED1140874896">hydrocortisone (210)</a>
+<a class="dropdown-item" href="coding/MED1141181700">estradiol_product (209)</a>
+<a class="dropdown-item" href="coding/MED1141157486">salbutamol_product (208)</a>
+<a class="dropdown-item" href="coding/MED1140865716">senna (208)</a>
+<a class="dropdown-item" href="coding/MED1140861778">dipyridamole (208)</a>
+<a class="dropdown-item" href="coding/MED1140888510">verapamil (206)</a>
+<a class="dropdown-item" href="coding/MED1140879854">sotalol (204)</a>
+<a class="dropdown-item" href="coding/MED1141177532">nexium_20mg_tablet (203)</a>
+<a class="dropdown-item" href="coding/MED1140923852">elleste-solo_1mg_tablet (203)</a>
+<a class="dropdown-item" href="coding/MED1140862574">pulmicort_ls_50micrograms_inhaler (201)</a>
+<a class="dropdown-item" href="coding/MED1140868482">tibolone (198)</a>
+<a class="dropdown-item" href="coding/MED1140909702">sulfasalazine (196)</a>
+<a class="dropdown-item" href="coding/MED1141200322">solifenacin (195)</a>
+<a class="dropdown-item" href="coding/MED1140878226">diprobase_cream (192)</a>
+<a class="dropdown-item" href="coding/MED1141177600">rosiglitazone (191)</a>
+<a class="dropdown-item" href="coding/MED1140879792">terbutaline (191)</a>
+<a class="dropdown-item" href="coding/MED1141168584">rabeprazole_sodium (189)</a>
+<a class="dropdown-item" href="coding/MED1141146606">calcium_carbonate+cholecalciferol_1.25g/200iu_tablet (189)</a>
+<a class="dropdown-item" href="coding/MED1141180212">escitalopram (188)</a>
+<a class="dropdown-item" href="coding/MED1140874790">betamethasone (187)</a>
+<a class="dropdown-item" href="coding/MED1140916790">evorel_25_patch (184)</a>
+<a class="dropdown-item" href="coding/MED1140926592">estraderm_mx_25_patch (183)</a>
+<a class="dropdown-item" href="coding/MED1140862628">piriton_4mg_tablet (183)</a>
+<a class="dropdown-item" href="coding/MED1140911730">flax_oil_tablet (182)</a>
+<a class="dropdown-item" href="coding/MED1140888570">flecainide (182)</a>
+<a class="dropdown-item" href="coding/MED1140883548">ipratropium (182)</a>
+<a class="dropdown-item" href="coding/MED1140875990">hypromellose (182)</a>
+<a class="dropdown-item" href="coding/MED1140871266">arthrotec_tablet (182)</a>
+<a class="dropdown-item" href="coding/MED1141162824">detrusitol_1mg_tablet (179)</a>
+<a class="dropdown-item" href="coding/MED1141166006">telmisartan (178)</a>
+<a class="dropdown-item" href="coding/MED1140911736">ginseng_product (178)</a>
+<a class="dropdown-item" href="coding/MED1140872200">epilim_100mg_crushable_tablet (178)</a>
+<a class="dropdown-item" href="coding/MED2038459704">carbamazepine (177)</a>
+<a class="dropdown-item" href="coding/MED1140921814">mirena_52mg_intrauterine_system (177)</a>
+<a class="dropdown-item" href="coding/MED1140911658">imigran_50mg_tablet (177)</a>
+<a class="dropdown-item" href="coding/MED1140865350">fybogel_mebeverine_sachet (176)</a>
+<a class="dropdown-item" href="coding/MED1140921822">mirena_20mcg/24hrs_intrauterine_system (174)</a>
+<a class="dropdown-item" href="coding/MED1140882782">dermovate_cream (174)</a>
+<a class="dropdown-item" href="coding/MED1140861954">fenofibrate (174)</a>
+<a class="dropdown-item" href="coding/MED1141187810">tadalafil (173)</a>
+<a class="dropdown-item" href="coding/MED1140888366">thiamine_preparation (173)</a>
+<a class="dropdown-item" href="coding/MED1140923022">arimidex_1mg_tablet (172)</a>
+<a class="dropdown-item" href="coding/MED1140881472">lacri-lube_eye_ointment (172)</a>
+<a class="dropdown-item" href="coding/MED1140868170">prochlorperazine (172)</a>
+<a class="dropdown-item" href="coding/MED1140911680">starflower_oil (171)</a>
+<a class="dropdown-item" href="coding/MED1140865578">mesalazine (171)</a>
+<a class="dropdown-item" href="coding/MED1140867876">prozac_20mg_capsule (169)</a>
+<a class="dropdown-item" href="coding/MED1141188146">simvador_10mg_tablet (168)</a>
+<a class="dropdown-item" href="coding/MED1140857636">prempak_0.625_tablet (168)</a>
+<a class="dropdown-item" href="coding/MED1140922562">femoston_1/10_tablet (167)</a>
+<a class="dropdown-item" href="coding/MED1140884308">hydroxychloroquine (167)</a>
+<a class="dropdown-item" href="coding/MED1141172924">desloratadine (164)</a>
+<a class="dropdown-item" href="coding/MED1140923336">co-tenidone (164)</a>
+<a class="dropdown-item" href="coding/MED1140882236">seroxat_20mg_tablet (164)</a>
+<a class="dropdown-item" href="coding/MED1140883664">pizotifen (160)</a>
+<a class="dropdown-item" href="coding/MED1140865580">asacol_400mg_e/c_tablet (157)</a>
+<a class="dropdown-item" href="coding/MED1140862236">atrovent_20micrograms_inhaler (156)</a>
+<a class="dropdown-item" href="coding/MED1140882946">livial_2.5mg_tablet (150)</a>
+<a class="dropdown-item" href="coding/MED1141181868">omacor_1g_capsule (148)</a>
+<a class="dropdown-item" href="coding/MED1140911682">selenium_ace_tablet (147)</a>
+<a class="dropdown-item" href="coding/MED1140883468">clonidine (146)</a>
+<a class="dropdown-item" href="coding/MED1140861832">tranexamic_acid (145)</a>
+<a class="dropdown-item" href="coding/MED1140879634">trazodone (144)</a>
+<a class="dropdown-item" href="coding/MED1140869180">microgynon_30_tablet (144)</a>
+<a class="dropdown-item" href="coding/MED1140871168">voltarol_25mg_e/c_tablet (141)</a>
+<a class="dropdown-item" href="coding/MED1141167334">colofac-100_tablet (139)</a>
+<a class="dropdown-item" href="coding/MED1140869276">micronor_tablet (139)</a>
+<a class="dropdown-item" href="coding/MED1141179992">dovobet_ointment (138)</a>
+<a class="dropdown-item" href="coding/MED1140872290">lamotrigine (138)</a>
+<a class="dropdown-item" href="coding/MED1140868372">climaval_1mg_tablet (138)</a>
+<a class="dropdown-item" href="coding/MED1141171152">cardicor_1.25mg_tablet (136)</a>
+<a class="dropdown-item" href="coding/MED1140921828">dicloflex_25mg_e/c_tablet (136)</a>
+<a class="dropdown-item" href="coding/MED1140879494">metoclopramide (135)</a>
+<a class="dropdown-item" href="coding/MED1140928916">olanzapine (134)</a>
+<a class="dropdown-item" href="coding/MED1140875420">baclofen (131)</a>
+<a class="dropdown-item" href="coding/MED1140860840">nitrolingual_400micrograms_spray (131)</a>
+<a class="dropdown-item" href="coding/MED1141168554">migraleve_tablet (129)</a>
+<a class="dropdown-item" href="coding/MED1141168680">orlistat (128)</a>
+<a class="dropdown-item" href="coding/MED1141172928">neoclarityn_5mg_tablet (127)</a>
+<a class="dropdown-item" href="coding/MED1205">saw_palmetto_product (125)</a>
+<a class="dropdown-item" href="coding/MED1141176570">fosamax_5mg_tablet (125)</a>
+<a class="dropdown-item" href="coding/MED1140909874">vitamin_b6_preparation (125)</a>
+<a class="dropdown-item" href="coding/MED1140882800">eumovate_cream (125)</a>
+<a class="dropdown-item" href="coding/MED1141179974">cozaar_25mg_tablet (124)</a>
+<a class="dropdown-item" href="coding/MED1141151718">evorel_conti_patch (124)</a>
+<a class="dropdown-item" href="coding/MED1141190158">cipralex_5mg_tablet (123)</a>
+<a class="dropdown-item" href="coding/MED1141156846">amias_2mg_tablet (122)</a>
+<a class="dropdown-item" href="coding/MED1203">aloe_vera_product (121)</a>
+<a class="dropdown-item" href="coding/MED1141193282">olmesartan (121)</a>
+<a class="dropdown-item" href="coding/MED2038460076">phenytoin (120)</a>
+<a class="dropdown-item" href="coding/MED1141200384">vesicare_5mg_tablet (120)</a>
+<a class="dropdown-item" href="coding/MED1140874686">glucophage_500mg_tablet (118)</a>
+<a class="dropdown-item" href="coding/MED1141173348">hydroxocobalamin (117)</a>
+<a class="dropdown-item" href="coding/MED1141152590">glimepiride (117)</a>
+<a class="dropdown-item" href="coding/MED1140873394">doxycycline (117)</a>
+<a class="dropdown-item" href="coding/MED1140865752">ispaghula_husk (117)</a>
+<a class="dropdown-item" href="coding/MED1140872198">sodium_valproate (116)</a>
+<a class="dropdown-item" href="coding/MED1140865396">buscopan_10mg_tablet (116)</a>
+<a class="dropdown-item" href="coding/MED1140861138">adizem-60_m/r_tablet (115)</a>
+<a class="dropdown-item" href="coding/MED1141180314">ibandronic_acid (114)</a>
+<a class="dropdown-item" href="coding/MED1140923018">anastrozole (114)</a>
+<a class="dropdown-item" href="coding/MED1140888502">amiodarone (114)</a>
+<a class="dropdown-item" href="coding/MED1140873966">trimethoprim (114)</a>
+<a class="dropdown-item" href="coding/MED1140861276">lacidipine (114)</a>
+<a class="dropdown-item" href="coding/MED1141176662">celecoxib (113)</a>
+<a class="dropdown-item" href="coding/MED1141168752">peptac_liquid (112)</a>
+<a class="dropdown-item" href="coding/MED1141169520">cosopt_2%/0.5%_eye_drops (111)</a>
+<a class="dropdown-item" href="coding/MED1140861924">bezafibrate (110)</a>
+<a class="dropdown-item" href="coding/MED1140871688">solpadol_caplet (109)</a>
+<a class="dropdown-item" href="coding/MED1140923402">co-amilofruse (108)</a>
+<a class="dropdown-item" href="coding/MED1140927086">arthrotec_50_tablet (107)</a>
+<a class="dropdown-item" href="coding/MED1140862776">clarityn_10mg_tablet (107)</a>
+<a class="dropdown-item" href="coding/MED1140865416">colpermin_0.2ml_m/r_gel_e/c_capsule (106)</a>
+<a class="dropdown-item" href="coding/MED1140866280">bumetanide (105)</a>
+<a class="dropdown-item" href="coding/MED1141145668">diovan_40mg_capsule (104)</a>
+<a class="dropdown-item" href="coding/MED1141157252">glyceryl_trinitrate_product (103)</a>
+<a class="dropdown-item" href="coding/MED1141179920">lumigan_0.3mg/ml_eye_drops (102)</a>
+<a class="dropdown-item" href="coding/MED1140875840">timolol_0.25%_eye_drops (102)</a>
+<a class="dropdown-item" href="coding/MED1140856342">syndol_tablet (101)</a>
+<a class="dropdown-item" href="coding/MED1141180140">etoricoxib (100)</a>
+<a class="dropdown-item" href="coding/MED1140871188">etodolac (100)</a>
+</div>
+</div>
+</div>
 </div>
 
  <h3 align="center"> <a href="/about" style="color: black;">Terms of use</a></h3>
