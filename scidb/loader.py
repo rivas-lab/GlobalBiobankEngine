@@ -136,6 +136,8 @@ class Loader:
                         ','.join(str(pipe.poll()) for pipe in pipes))
 
     def remove_arrays(self):
+        if not Loader.confirm('Remove and recreate arrays'):
+            return
         for array in (config.QC_ARRAY,
                       config.ICD_INDEX_ARRAY,
                       config.ICD_ARRAY):
@@ -183,6 +185,14 @@ class Loader:
     def remove_fifos(fifo_names):
         for fn in fifo_names:
             Loader.remove_fifo(fn)
+
+    @staticmethod
+    def confirm(prompt=None):
+        ans = raw_input('{}{} confirm with "y":'.format(
+            prompt, ',' if prompt else ''))
+        if ans.strip().lower() == 'y':
+            return True
+        return False
 
 
 if __name__ == '__main__':
