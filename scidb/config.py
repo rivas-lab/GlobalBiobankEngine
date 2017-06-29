@@ -11,9 +11,9 @@ GBE_DATA_PATH = '/home/scidb/GlobalBiobankEngine/gbe_data'
 # -- -
 QC_PATH = os.path.join(GBE_DATA_PATH, 'qc')
 QC_FILES = (
-    {'filename': os.path.join(QC_PATH, 'UKBioBiLallfreqSNPexclude.dat'),
+    {'file': os.path.join(QC_PATH, 'UKBioBiLallfreqSNPexclude.dat'),
      'header': 1},
-    {'filename': os.path.join(QC_PATH, 'ukb_ukbl_low_concordance.dat')}
+    {'file': os.path.join(QC_PATH, 'ukb_ukbl_low_concordance.dat')}
 )
 
 QC_ARRAY = 'qc'
@@ -35,7 +35,9 @@ ICD_INDEX_SCHEMA = '<icd:string>[icd_id]'
 
 ICD_ARRAY = 'icd'
 ICD_SCHEMA = """
-  <affyid:      string,
+  <icdind:      int64,
+   xpos:        int64,
+   affyid:      string,
    or_val:      double,
    se:          double,
    pvalue:      double,
@@ -73,16 +75,19 @@ ICD_LOAD_QUERY = """
         icd_id,      {icd_id_cond},
         chrom,       int64(a0),
         pos,         int64(a1),
+        icdind,      int64(string(int64(a0) * 1e9 + int64(a1)) +
+                           {icdind_cond}),
+        xpos,        int64(a0) * int64(1e9) + int64(a1),
         affyid,      a2,
         or_val,      dcast(a8,  double(null)),
         se,          dcast(a9,  double(null)),
         pvalue,      dcast(a11, double(null)),
         lor,         log(dcast(a8, double(null))),
         log10pvalue, -log10(dcast(a11, double(null))),
-        l95or,       exp(log(dcast(a8, double(null)))
-                         - 1.96 * dcast(a9, double(null))),
-        u95or,       exp(log(dcast(a8, double(null)))
-                         + 1.96 * dcast(a9, double(null)))),
+        l95or,       exp(log(dcast(a8, double(null))) -
+                         1.96 * dcast(a9, double(null))),
+        u95or,       exp(log(dcast(a8, double(null))) +
+                         1.96 * dcast(a9, double(null)))),
       {icd}),
     {icd})"""
 
@@ -107,6 +112,9 @@ QT_LOAD_QUERY = """
         icd_id,      {icd_id_cond},
         chrom,       int64(a0),
         pos,         int64(a1),
+        icdind,      int64(string(int64(a0) * 1e9 + int64(a1)) +
+                           {icdind_cond}),
+        xpos,        int64(a0) * int64(1e9) + int64(a1),
         affyid,      a1,
         or_val,      dcast(a7,  double(null)),
         se,          dcast(a8,  double(null)),

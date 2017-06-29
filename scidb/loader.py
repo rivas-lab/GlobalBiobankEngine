@@ -35,24 +35,24 @@ class Loader:
     def load_qc(self):
         qc = []
         for rec in config.QC_FILES:
-            with open(rec['filename']) as fp:
+            with open(rec['file']) as fp:
                 lines = fp.readlines()
                 skip = rec.get('header', 0)
                 qc.extend(
                     l.strip().split()[0]
                     for l in lines[:-skip if skip else None])
                 logger.info('QC:file:%s lines:%d skip:%d',
-                            rec['filename'], len(lines), skip)
+                            rec['file'], len(lines), skip)
 
         # TODO fix when upload_data=list() implemented
         self.db.input(upload_data=numpy.array(qc)).store(config.QC_ARRAY)
         logger.info('Array:%s records:%d', config.QC_ARRAY, len(qc))
 
     def load_icd_map(self):
-        icd_lst = list(set(Loader.get_icd(fn)
-                           for fn in itertools.chain(
-                                   glob.iglob(config.ICD_GLOB),
-                                   glob.iglob(config.QT_GLOB))))
+        icd_lst = list(set(Loader.get_icd(*Loader.get_icd_parts(fn))
+                for fn in itertools.chain(
+                        glob.iglob(config.ICD_GLOB),
+                        glob.iglob(config.QT_GLOB))))
         self.icd_id_map = dict(zip(icd_lst, range(len(icd_lst))))
         self.db.input(config.ICD_INDEX_SCHEMA,
                       upload_data=numpy.array(icd_lst)).store(
@@ -69,13 +69,8 @@ class Loader:
                 file_names = [file_name
                               for file_name in file_names if file_name]
 
-            # Map filenames to icd_id based on src_instance_id
-            icd_id_cond = 'null'
-            for (inst, file_name) in zip(range(len(file_names)), file_names):
-                icd_id = self.icd_id_map[Loader.get_icd(file_name)]
-                icd_id_cond = ('iif(src_instance_id = {inst}, ' +
-                               '{icd_id}, {prev})').format(
-                                   inst=inst, icd_id=icd_id, prev=icd_id_cond)
+            # Get conditional expressions
+            (icd_id_cond, icdind_cond) = self.get_icd_cond(file_names)
 
             # Make pipes
             logger.info('Pipes:starting %d...', len(file_names))
@@ -88,7 +83,8 @@ class Loader:
                 qc=config.QC_ARRAY,
                 paths=';'.join(self.fifo_names[:len(file_names)]),
                 instances=';'.join(self.instances[:len(file_names)]),
-                icd_id_cond=icd_id_cond)
+                icd_id_cond=icd_id_cond,
+                icdind_cond=icdind_cond)
 
             logger.info('Query:starting...')
             self.db.iquery(query)
@@ -108,13 +104,8 @@ class Loader:
                 file_names = [file_name
                               for file_name in file_names if file_name]
 
-            # Map filenames to icd_id based on src_instance_id
-            icd_id_cond = 'null'
-            for (inst, file_name) in zip(range(len(file_names)), file_names):
-                icd_id = self.icd_id_map[Loader.get_icd(file_name)]
-                icd_id_cond = ('iif(src_instance_id = {inst}, ' +
-                               '{icd_id}, {prev})').format(
-                                   inst=inst, icd_id=icd_id, prev=icd_id_cond)
+            # Get conditional expressions
+            (icd_id_cond, icdind_cond) = self.get_icd_cond(file_names)
 
             # Make pipes
             logger.info('Pipes:starting %d...', len(file_names))
@@ -127,7 +118,8 @@ class Loader:
                 qc=config.QC_ARRAY,
                 paths=';'.join(self.fifo_names[:len(file_names)]),
                 instances=';'.join(self.instances[:len(file_names)]),
-                icd_id_cond=icd_id_cond)
+                icd_id_cond=icd_id_cond,
+                icdind_cond=icdind_cond)
 
             logger.info('Query:starting...')
             self.db.iquery(query)
@@ -144,6 +136,28 @@ class Loader:
             icd_info=config.ICD_INFO_ARRAY,
             icd_index=config.ICD_INDEX_ARRAY))
         logger.info('Array:%s', config.ICD_INFO_ARRAY)
+
+    def get_icd_cond(self, file_names):
+        """Build SciDB conditional expressions ("iif") to map file names to
+        "icd_id", "icdind" using "src_instance_id"
+
+        """
+        icd_id_cond = 'null'
+        icdind_cond = 'null'
+        for (inst, file_name) in zip(range(len(file_names)), file_names):
+            (prefix, suffix, intadd) = Loader.get_icd_parts(file_name)
+
+            icd_id = self.icd_id_map[Loader.get_icd(prefix, suffix, intadd)]
+            icd_id_cond = ('iif(src_instance_id = {inst}, ' +
+                           '{icd_id}, {prev})').format(
+                               inst=inst, icd_id=icd_id, prev=icd_id_cond)
+
+            icdind_cond = ('iif(src_instance_id = {inst}, ' +
+                           '\'{val}\', {prev})').format(
+                               inst=inst,
+                               val=str(intadd) + suffix,
+                               prev=icdind_cond)
+        return (icd_id_cond, icdind_cond)
 
     def remove_arrays(self):
         if not Loader.confirm('Remove and recreate arrays'):
@@ -162,8 +176,47 @@ class Loader:
                                 self.db.versions(name)[:]['version_id'].max())
 
     @staticmethod
-    def get_icd(filename):
-        return os.path.basename(filename).split('.')[1]
+    def get_icd_parts(file_name):
+        name = os.path.basename(file_name)
+        parts = name.split('.')
+
+        # Figure out prefix and intadd
+        if 'brainmri' in parts:
+            prefix = 'BRMRI'
+            intadd = 10
+        elif 'additionalimaging' in parts:
+            prefix = 'ADD'
+            intadd = 20
+        elif 'initialdata' in parts:
+            prefix = 'INI'
+            intadd = 30
+        elif '_FH2' in name:
+            prefix = 'FH'
+            intadd = 40
+        elif 'RH' in name:
+            prefix = 'RH'
+            intadd = 50
+        elif 'cancer' in name:
+            prefix = 'cancer'
+            intadd = 60
+        elif 'HC' in name:
+            prefix = 'HC'
+            intadd = 70
+
+        # Figure out suffix
+        suffix = parts[1].split(
+                '_')[0].strip()[1:].strip(
+                    'RH').strip(
+                        'FH').strip(
+                            'cancer').strip(
+                                'HC').split(
+                                    '_FH2')[0]
+
+        return (prefix, suffix, intadd)
+
+    @staticmethod
+    def get_icd(prefix, suffix, intadd):
+        return prefix + suffix
 
     @staticmethod
     def make_pipe(file_name, fifo_name):
