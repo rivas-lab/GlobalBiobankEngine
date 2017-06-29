@@ -164,9 +164,12 @@ def get_icd_from_file(icdstats_file, filename):
             elif len(fileidname[1].split('HC')) > 1:
                 prefix = 'HC'
                 intadd = 70
+            elif len(fileidname[1].split('MED')) > 1:
+                prefix = 'MED'
+                intadd = 80
         d = {
-              'icdind' : int(str(get_xpos(fields[0], int(fields[1]))) + str(intadd) + os.path.basename(filename[0]).split('.')[1].split('_')[0].strip()[1:].strip('RH').strip('FH').strip('cancer').strip('HC').split('_FH2')[0]),
-              'icd' : prefix + os.path.basename(filename[0]).split('.')[1].strip('RH').strip('FH').strip('cancer').strip('HC').split('_FH2')[0],
+              'icdind' : int(str(get_xpos(fields[0], int(fields[1]))) + str(intadd) + os.path.basename(filename[0]).split('.')[1].split('_')[0].strip()[1:].strip('RH').strip('FH').strip('cancer').strip('HC').strip('MED').split('_FH2')[0]),
+              'icd' : prefix + os.path.basename(filename[0]).split('.')[1].strip('RH').strip('FH').strip('MED').strip('cancer').strip('HC').split('_FH2')[0],
                 'xpos': get_xpos(fields[0], int(fields[1])),
               'affyid' : fields[2],
             'pos': int(fields[1]),
@@ -256,9 +259,12 @@ def get_qt_from_file(qtstats_file, filename):
             elif len(fileidname.split('HC')) > 1:
                 prefix = 'HC'
                 intadd = 70
+            elif len(fileidname.split('MED')) > 1:
+                prefix = 'MED'
+                intadd = 80
         d = {
-              'icdind' : int(str(get_xpos(fields[0], int(fields[1]))) + str(intadd) + os.path.basename(filename[0]).split('.')[1].split('_')[0].strip()[1:].strip('RH').strip('FH').strip('cancer').strip('HC').split('_FH2')[0]),
-              'icd' : prefix + os.path.basename(filename[0]).split('.')[1].strip('RH').strip('FH').strip('cancer').strip('HC').split('_FH2')[0],
+              'icdind' : int(str(get_xpos(fields[0], int(fields[1]))) + str(intadd) + os.path.basename(filename[0]).split('.')[1].split('_')[0].strip()[1:].strip('RH').strip('FH').strip('cancer').strip('HC').strip('MED').split('_FH2')[0]),
+              'icd' : prefix + os.path.basename(filename[0]).split('.')[1].strip('RH').strip('FH').strip('MED').strip('cancer').strip('HC').split('_FH2')[0],
                 'xpos': get_xpos(fields[0], int(fields[1])),
               'affyid' : fields[1],
             'pos': int(fields[1]),
