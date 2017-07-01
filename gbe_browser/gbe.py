@@ -93,8 +93,8 @@ EXON_PADDING = 50
 #test
 app.config.update(dict(
     DB_HOST='mongodb',
-    DB_PORT=27017, 
-    DB_NAME='gbe', 
+    DB_PORT=27017,
+    DB_NAME='gbe',
     DEBUG=True,
     SECRET_KEY='development key',
     LOAD_DB_PARALLEL_PROCESSES = 8,  # contigs assigned to threads, so good to make this a factor of 24 (eg. 2,3,4,6,8)
@@ -238,7 +238,7 @@ def load_base_icdstats():
             pass  # handle error when icdstats_generator is empty
 
     db = get_db()
-    # update this 
+    # update this
     db.base_icdstats.drop()
     print("Dropped db.base_icdstats")
     # load coverage first; variant info will depend on coverage
@@ -337,7 +337,7 @@ def load_icd_stats():
     keyarr = list(set(keyarr))
     qtkeyarr = list(set(qtkeyarr))
     #random.shuffle(app.config['ICD_STATS_FILES'])
-    
+
     for icdkey in keyarr:
         for i in range(num_procs):
             p = Process(target=load_icd, args=(keylist[icdkey], i, num_procs, db))
@@ -380,7 +380,7 @@ def load_gene_models():
     with gzip.open(app.config['CANONICAL_TRANSCRIPT_FILE']) as canonical_transcript_file:
         for gene, transcript in get_canonical_transcripts(canonical_transcript_file):
             canonical_transcripts[gene] = transcript
-        
+
     omim_annotations = {}
     with gzip.open(app.config['OMIM_FILE']) as omim_file:
         for fields in get_omim_associations(omim_file):
@@ -546,7 +546,7 @@ def load_gene_models():
                 lofdict[gene,str(src[idx]) + 'nvar','uc'] = int(stnvars[idx])
                 lofdict[gene,str(src[idx]) + 'cnta','uc'] = int(stcnta[idx])
                 lofdict[gene,str(src[idx]) + 'cntu','uc'] = int(stcntu[idx])
-            
+
     # grab genes from GTF
     start_time = time.time()
     with gzip.open(app.config['GENCODE_GTF']) as gtf_file:
@@ -570,7 +570,7 @@ def load_gene_models():
                     gene['gwasvars'] = gwasdict[genesym,'gwasvars']
                     gene['gwasgenes'] = gwasdict[genesym,'gwasgenes']
                     gene['gwasstart'] = gwasdict[genesym,'gwasstart']
-                    gene['gwasend'] = gwasdict[genesym,'gwasend'] 
+                    gene['gwasend'] = gwasdict[genesym,'gwasend']
                     gene['af'] = gwasdict[genesym,'af']
                     gene['oddsratio'] = gwasdict[genesym,'oddsratio']
                     gene['gwaspvalue'] = gwasdict[genesym,'gwaspvalue']
@@ -839,7 +839,7 @@ def run_mrp(lof=True, missense=True, genes=None, fdr=5, phenidarr = ['ICD1462','
     fdr = int(fdr)/100
     key = str(random.getrandbits(128))
     annotations = []
-    
+
     # Add in the selected annotations to the category list
     if lof:
         annotations.append('lof_variant')
@@ -853,7 +853,7 @@ def run_mrp(lof=True, missense=True, genes=None, fdr=5, phenidarr = ['ICD1462','
 
         # Generate relevant files
         betas, se, pvalues, annotations, protein_annotations, variant_ids, icd, gene_return, rsids, alts, allele_frequencies = b.query_genome(genes,phenidarr)
-        
+
         # Reshape betas from genome query
         C = numpy.matlib.eye(betas.shape[1])
         annotvec = [str(annotations[i].strip('"').strip('[').strip(']').strip("'")) for i in range(0,len(annotations))]
@@ -869,7 +869,7 @@ def run_mrp(lof=True, missense=True, genes=None, fdr=5, phenidarr = ['ICD1462','
             if fail >= 2:
                 break
             bicarr.append(BIC)
-            
+
             print(tmpc,BIC,AIC)
 #        if tmpc == 5:
 #            with PyCallGraph(output=GraphvizOutput()):
@@ -925,18 +925,18 @@ def run_mr(lof=True, missense=True, genes=None, phenidarr = ['ICD1462','ICD1463'
 
         # Generate relevant files
         betas, se, pvalues, annotations, protein_annotations, variant_ids, icd, gene_return, rsids, alts, allele_frequencies = b.query_genome(genes,phenidarr)
-        
+
         # Reshape betas from genome query
         C = numpy.matlib.eye(betas.shape[1])
         annotvec = [str(annotations[i].strip('"').strip('[').strip(']').strip("'")) for i in range(0,len(annotations))]
         bicarr = []
         for tmpc in range(1,3):
             returndict = mr(betas,se, C, annotvec, gene_return, rsids, variant_ids,tmpc,key,C, numpy.linalg.inv(C),icd, niter=2001,burn=50,thinning=1,verbose=True, outpath = './MRP_out/')
-            BIC = returndict['bic'] 
-            AIC = returndict['aic'] 
-            thetainvdict = returndict['thetainv'] 
-            iter = returndict['iter'] 
-            clustersize = returndict['c'] 
+            BIC = returndict['bic']
+            AIC = returndict['aic']
+            thetainvdict = returndict['thetainv']
+            iter = returndict['iter']
+            clustersize = returndict['c']
             bicarr.append(AIC)
         cminarr = bicarr[1:]
         clustminidx = cminarr.index(min(cminarr))
@@ -957,11 +957,11 @@ def run_mr(lof=True, missense=True, genes=None, phenidarr = ['ICD1462','ICD1463'
 #        if lbf > 1 and (lbf - lbf2) > 1 and lbf2 > 1:
         if lbf > 1:
             returndict = mr(betas,se, C, annotvec, gene_return, rsids, variant_ids,clustminval,key,C, numpy.linalg.inv(C), icd, niter=2001,burn=1000,thinning=1,verbose=True, outpath = './MRP_out/')
-            BIC = returndict['bic'] 
-            AIC = returndict['aic'] 
-            thetainvdict = returndict['thetainv'] 
-            iter = returndict['iter'] 
-            clustersize = returndict['c'] 
+            BIC = returndict['bic']
+            AIC = returndict['aic']
+            thetainvdict = returndict['thetainv']
+            iter = returndict['iter']
+            clustersize = returndict['c']
           #  print("log bayes factor: ",lbf)
             clustvalue = clustersize
             thetainvfindict = thetainvdict
@@ -969,22 +969,22 @@ def run_mr(lof=True, missense=True, genes=None, phenidarr = ['ICD1462','ICD1463'
         elif lbf2 > 1:
             clustminval = 2
             returndict = mr(betas,se, C, annotvec, gene_return, rsids, variant_ids,clustminval,key,C, numpy.linalg.inv(C), icd, niter=2001,burn=1000,thinning=1,verbose=True, outpath = './MRP_out/')
-            BIC = returndict['bic'] 
-            AIC = returndict['aic'] 
-            thetainvdict = returndict['thetainv'] 
-            iter = returndict['iter'] 
-            clustersize = returndict['c'] 
+            BIC = returndict['bic']
+            AIC = returndict['aic']
+            thetainvdict = returndict['thetainv']
+            iter = returndict['iter']
+            clustersize = returndict['c']
            # print("log bayes factor: ",lbf)
             clustvalue = clustersize
             thetainvfindict = thetainvdict
            # print(returndict['thetainv'], "HERE2")
         else:
             returndict = mr(betas,se, C, annotvec, gene_return, rsids, variant_ids,2,key,C, numpy.linalg.inv(C), icd, niter=2001,burn=1000,thinning=1,verbose=True, outpath = './MRP_out/')
-            BIC = returndict['bic'] 
-            AIC = returndict['aic'] 
-            thetainvdict = returndict['thetainv'] 
-            iter = returndict['iter'] 
-            clustersize = returndict['c'] 
+            BIC = returndict['bic']
+            AIC = returndict['aic']
+            thetainvdict = returndict['thetainv']
+            iter = returndict['iter']
+            clustersize = returndict['c']
             thetainvfindict = thetainvdict
             clustvalue = clustersize
             thetainvfindict = thetainvdict
@@ -1086,7 +1086,7 @@ def variant_icd_page(variant_str):
         icdstats = lookups.get_variant_icd(db, xpos)
         indexes = []
         seend = {}
-        for idx in range(0,len(icdstats)): 
+        for idx in range(0,len(icdstats)):
             # ICD10=T81/Name=Complications of procedures, not elsewhere classified/Chapter=T/L95OR=0.97/U95OR=2.04/OR=1.40/pvalue=0.0756463/l10pval=1.12/Case=1229
             item = icdstats[idx]
             icd10 = item['icd']
@@ -1128,7 +1128,7 @@ def variant_icd_page(variant_str):
                 item['pvalue'] = format(float(item['stats'][0]['pvalue']), '.4g')
                 item['l10pval'] = format(float(item['stats'][0]['log10pvalue']), '.4g')
                 item['Case'] = icd10info[0]['Case']
-                se =  format(float(item['stats'][0]['se']), '.4g') 
+                se =  format(float(item['stats'][0]['se']), '.4g')
                 if float(item['l10pval']) <= 1 or float(se) >= .5 or int(item['Case']) <= 100 or item['Group'] == "INI" or item['Code'] == "HC67" or icd10 in seend:
                     indexes.append(idx)
                 seend[icd10] = icd10
@@ -1281,7 +1281,7 @@ def intensity_page(affy_str):
        # print(variant)
         return render_template(
             'intensity.html',
-            affy=affy_str, 
+            affy=affy_str,
             variant=variant
             )
     except Exception as e:
@@ -1341,13 +1341,13 @@ def gene_page(gene_id):
                 functionphen = request.form['phenotypes']
                 phenidarr = []
                 phenidarr.append(str(functionphen))
-               # print(phenidarr) 
+               # print(phenidarr)
                 if lof:
                     annotations.append('lof_variant')
                 if missense:
                     annotations.append('missense_variant')
                 if genes != None:
-                    # Find variants with the given annotation                                                                                                                                                                                            
+                    # Find variants with the given annotation
                     b = models.QueryGenome(category=annotations)
                 betas, se, pvalues, annotations, protein_annotations, variant_ids, icd, gene_return, rsids, alts, allele_frequencies = b.query_genome(genes,phenidarr)
                 betas = [item for sublist in betas for item in sublist]
@@ -1738,7 +1738,7 @@ def metapage(key):
         print('Failed: %s' % e)
         abort(404)
 
-    
+
 
 @app.route('/mrp/<key>')
 def mrp(key):
@@ -1899,4 +1899,3 @@ def apply_caching(response):
 
 if __name__ == "__main__":
     app.run(host = "0.0.0.0", port = 5000, debug=False, use_debugger=False, use_reloader=False)
-
