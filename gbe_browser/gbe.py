@@ -34,6 +34,8 @@ import logging
 from flask_wtf import Form
 from wtforms import StringField, BooleanField
 from wtforms.validators import DataRequired
+import scidbpy
+
 logging.basicConfig(stream=sys.stderr)
 sys.stderr.write("starting gbe.py")
 #from pycallgraph import PyCallGraph
@@ -92,9 +94,8 @@ EXON_PADDING = 50
 # Load default config and override config from an environment variable
 #test
 app.config.update(dict(
-    DB_HOST='mongodb',
-    DB_PORT=27017,
-    DB_NAME='gbe',
+    DB_HOST='scidb',
+    DB_PORT=8080,
     DEBUG=True,
     SECRET_KEY='development key',
     LOAD_DB_PARALLEL_PROCESSES = 8,  # contigs assigned to threads, so good to make this a factor of 24 (eg. 2,3,4,6,8)
@@ -126,8 +127,8 @@ def connect_db():
     """
     Connects to the specific database.
     """
-    client = pymongo.MongoClient(host=app.config['DB_HOST'], port=app.config['DB_PORT'])
-    return client[app.config['DB_NAME']]
+    return scidbpy.connect('http://{host}:{port}'.format(
+        host=app.config['DB_HOST'], port=app.config['DB_PORT']))
 
 
 def parse_tabix_file_subset(tabix_filenames, subset_i, subset_n, record_parser):
