@@ -2,9 +2,7 @@
     window.is_gene = typeof window.transcripts_in_gene != 'undefined';
 </script>
 <script type="text/template" id="variant-table-template">
-<span>
-    <a class="btn btn-success hidden-xs" id="export_to_csv">Export table to CSV</a>
-</span>
+
 {% if transcripts_in_gene is defined %}
     <span style="float:left">
         <small>&dagger; denotes a consequence that is for a non-canonical transcript</small>
