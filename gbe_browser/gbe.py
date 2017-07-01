@@ -1225,16 +1225,16 @@ def get_icd_variant_table(icd, p):
     significant_variants = lookups.get_icd_significant(db, icd, p)
     for v in significant_variants:
         significant_variant_ids[v['xpos']] = {}
-        significant_variant_ids[v['xpos']]['pvalue'] = v['stats'][0]['pvalue']
-        significant_variant_ids[v['xpos']]['or'] = v['stats'][0]['or']
+        significant_variant_ids[v['xpos']]['pvalue'] = v['pvalue']
+        significant_variant_ids[v['xpos']]['or'] = v['or_val']
     variants = lookups.get_variants_by_id(db, significant_variant_ids.keys())
     for v in variants:
         genes = []
         symbols = []
-        for a in v['vep_annotations']:
-            if not a['Gene'] in genes:
-                genes.append(a['Gene'])
-                symbols.append(a['SYMBOL'])
+        # TODO need to group variants
+        if not v['Gene'] in genes:
+            genes.append(v['Gene'])
+            symbols.append(v['SYMBOL'])
 
 
         v['gene_name'] = ",".join(genes[0:3])
