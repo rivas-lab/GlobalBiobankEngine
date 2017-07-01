@@ -50,9 +50,9 @@ class Loader:
 
     def load_icd_map(self):
         icd_lst = list(set(Loader.get_icd(*Loader.get_icd_parts(fn))
-                for fn in itertools.chain(
-                        glob.iglob(config.ICD_GLOB),
-                        glob.iglob(config.QT_GLOB))))
+                           for fn in itertools.chain(
+                                   glob.iglob(config.ICD_GLOB),
+                                   glob.iglob(config.QT_GLOB))))
         self.icd_id_map = dict(zip(icd_lst, range(len(icd_lst))))
         self.db.input(config.ICD_INDEX_SCHEMA,
                       upload_data=numpy.array(icd_lst)).store(
@@ -79,20 +79,19 @@ class Loader:
                                                        self.fifo_names)]
 
             query = config.ICD_LOAD_QUERY.format(
-                icd=config.ICD_ARRAY,
-                qc=config.QC_ARRAY,
                 paths=';'.join(self.fifo_names[:len(file_names)]),
                 instances=';'.join(self.instances[:len(file_names)]),
                 icd_id_cond=icd_id_cond,
                 icdind_cond=icdind_cond)
 
-            logger.info('Query:starting...')
+            logger.info('Query:running...')
             self.db.iquery(query)
             self.remove_versions(config.ICD_ARRAY)
             logger.info('Query:done')
 
             logger.info('Pipes:return code:%s',
                         ','.join(str(pipe.poll()) for pipe in pipes))
+        logger.info('Array:%s', config.ICD_ARRAY)
 
     def load_qt(self):
         file_iter = [glob.iglob(config.QT_GLOB)] * config.SCIDB_INSTANCE_NUM
@@ -114,28 +113,42 @@ class Loader:
                                                        self.fifo_names)]
 
             query = config.QT_LOAD_QUERY.format(
-                icd=config.ICD_ARRAY,
-                qc=config.QC_ARRAY,
                 paths=';'.join(self.fifo_names[:len(file_names)]),
                 instances=';'.join(self.instances[:len(file_names)]),
                 icd_id_cond=icd_id_cond,
                 icdind_cond=icdind_cond)
 
-            logger.info('Query:starting...')
+            logger.info('Query:running...')
             self.db.iquery(query)
             self.remove_versions(config.ICD_ARRAY)
             logger.info('Query:done')
 
             logger.info('Pipes:return code:%s',
                         ','.join(str(pipe.poll()) for pipe in pipes))
+        logger.info('Array:%s', config.ICD_ARRAY)
 
     def load_icd_info(self):
         self.db.create_array(config.ICD_INFO_ARRAY, config.ICD_INFO_SCHEMA)
-        self.db.iquery(config.ICD_INFO_LOAD_QUERY.format(
-            path=config.ICD_INFO_FILE,
-            icd_info=config.ICD_INFO_ARRAY,
-            icd_index=config.ICD_INDEX_ARRAY))
+        self.db.iquery(config.ICD_INFO_LOAD_QUERY)
         logger.info('Array:%s', config.ICD_INFO_ARRAY)
+
+    def load_variant(self):
+        self.db.create_array(config.VARIANT_ARRAY, config.VARIANT_SCHEMA)
+
+        fifo_name = self.fifo_names[0]
+        pipe = Loader.make_pipe(
+            config.VARIANT_FILE,
+            fifo_name,
+            'zcat {{file_name}} | python {} > {{fifo_name}}'.format(
+                os.path.join(
+                    os.path.dirname(os.path.realpath(__file__)),
+                    'unnest.py')))
+
+        logger.info('Query:running...')
+        self.db.iquery(config.VARIANT_LOAD_QUERY.format(path=fifo_name))
+        logger.info('Query:done')
+        logger.info('Pipe:return code:%s', pipe.poll())
+        logger.info('Array:%s', config.VARIANT_ARRAY)
 
     def get_icd_cond(self, file_names):
         """Build SciDB conditional expressions ("iif") to map file names to
@@ -165,7 +178,8 @@ class Loader:
         for array in (config.QC_ARRAY,
                       config.ICD_INDEX_ARRAY,
                       config.ICD_ARRAY,
-                      config.ICD_INFO_ARRAY):
+                      config.ICD_INFO_ARRAY,
+                      config.VARIANT_ARRAY):
             try:
                 self.db.remove(array)
             except:
@@ -219,8 +233,8 @@ class Loader:
         return prefix + suffix
 
     @staticmethod
-    def make_pipe(file_name, fifo_name):
-        cmd = 'zcat {} > {}'.format(file_name, fifo_name)
+    def make_pipe(file_name, fifo_name, pipe='zcat {file_name} > {fifo_name}'):
+        cmd = pipe.format(file_name=file_name, fifo_name=fifo_name)
         proc = subprocess.Popen(cmd, shell=True)
 
         logger.info('Spawn:%s pid:%d', cmd, proc.pid)
@@ -267,3 +281,4 @@ if __name__ == '__main__':
     loader.load_icd()
     loader.load_qt()
     loader.load_icd_info()
+    loader.load_variant()
