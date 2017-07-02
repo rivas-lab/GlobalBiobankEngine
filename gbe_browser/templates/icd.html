@@ -94,25 +94,25 @@
   	icd.forEach(
     	function(d) {
         	if (d.chrom == 1) {
-            	if (d.stats[0].log10pvalue < cutoff) {
-                	data_low.push([parseFloat(d.pos) , d.stats[0].log10pvalue,
+                if (d.log10pvalue < cutoff) {
+                        data_low.push([parseFloat(d.pos) , d.log10pvalue,
                     	d.chrom + '-' + d.pos , d.chrom]);
                 } else {
-					data_high.push([parseFloat(d.pos) , d.stats[0].log10pvalue,
+					data_high.push([parseFloat(d.pos) , d.log10pvalue,
 					d.chrom + '-' + d.pos , d.chrom]);
 				}
 			} else {
-				if (d.stats[0].log10pvalue < cutoff) {
+				if (d.log10pvalue < cutoff) {
 					data_low.push([d.pos + chrom_acum_length[d.chrom - 2],
-						d.stats[0].log10pvalue,
+						d.log10pvalue,
 						d.chrom + '-' + d.pos  , d.chrom]);
 				} else {
 						data_high.push([d.pos + chrom_acum_length[d.chrom - 2],
-							d.stats[0].log10pvalue,
+							d.log10pvalue,
 							d.chrom + '-' + d.pos  , d.chrom]);
 				}
             }
-			data_weight_pvalue.push(d.stats[0].log10pvalue);
+			data_weight_pvalue.push(d.log10pvalue);
 		});
 
 	// Merge the both high and low significance points together into a single array
