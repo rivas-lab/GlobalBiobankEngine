@@ -136,13 +136,7 @@ class Loader:
         self.db.create_array(config.VARIANT_ARRAY, config.VARIANT_SCHEMA)
 
         fifo_name = self.fifo_names[0]
-        pipe = Loader.make_pipe(
-            config.VARIANT_FILE,
-            fifo_name,
-            'zcat {{file_name}} | python {} > {{fifo_name}}'.format(
-                os.path.join(
-                    os.path.dirname(os.path.realpath(__file__)),
-                    'unnest.py')))
+        pipe = Loader.make_pipe(config.VARIANT_FILE, fifo_name)
 
         logger.info('Query:running...')
         self.db.iquery(config.VARIANT_LOAD_QUERY.format(path=fifo_name))

@@ -2,7 +2,7 @@ import os
 import scidbpy
 
 
-SCIDB_INSTANCE_NUM = 8
+SCIDB_INSTANCE_NUM = 2
 GBE_DATA_PATH = '/home/scidb/GlobalBiobankEngine/gbe_data'
 
 
@@ -51,7 +51,7 @@ ICD_SCHEMA = """
    synthetic = 0:999:0:1000]"""
 
 ICD_INFO_ARRAY = 'icd_info'
-ICD_INFO_SCHEMA = '<case:int64, icd_name:string>[icd_id=0:*:0:1000000]'
+ICD_INFO_SCHEMA = '<Case:int64, Name:string>[icd_id=0:*:0:1000000]'
 
 ICD_LOAD_QUERY = """
   insert(
@@ -141,8 +141,8 @@ ICD_INFO_LOAD_QUERY = """
           {icd_index},
           a0,
           icd_id),
-        case,     dcast(a1, int64(null)),
-        icd_name, a2),
+        Case,     dcast(a1, int64(null)),
+        Name, a2),
       {icd_info}, false),
     {icd_info})""".format(
         icd_info=ICD_INFO_ARRAY,
@@ -191,21 +191,20 @@ VARIANT_SCHEMA = """
    alt:          string,
    site_quality: string,
    filter:       string,
-   allele:       string,
-   consequence:  string,
-   impact:       string,
-   SYMBOL:       string,
-   Gene:         string>
+   minpval:      double,
+   minl10pval:   double,
+   csq:          string>
   [chrom     = 1:25:0:1;
    pos       = 0:*:0:10000000;
-   csq       = 0:999:0:1000;
    synthetic = 0:999:0:1000]"""
 
 VARIANT_LOAD_QUERY = """
   store(
     redimension(
       apply(
-        aio_input('{{path}}', 'num_attributes=75'),
+        filter(
+          aio_input('{{path}}', 'num_attributes=8'),
+          substr(a0, 0, 1) <> '#'),
         chrom,        int64(a0),
         pos,          int64(a1),
         rsid,         iif(strlen(a2) > 1,
@@ -216,15 +215,82 @@ VARIANT_LOAD_QUERY = """
         alt,          a4,
         site_quality, a5,
         filter,       a6,
-        csq,          int64(a7),
-        allele,       a8,
-        consequence,  a9,
-        impact,       a10,
-        SYMBOL,       a11,
-        Gene,         a12),
+        minpval,      dcast(rsub(a7, 's/.*minpval=([^;]*).*/$1/'),
+                            double(null)),
+        minl10pval,   dcast(rsub(a7, 's/.*minl10pval=([^;]*).*/$1/'),
+                            double(null)),
+        csq,          rsub(a7, 's/.*CSQ=([^;]*).*/$1/')),
       {variant}),
     {variant})""".format(variant=VARIANT_ARRAY)
 
 VARIANT_LOOKUP_QUERY = "filter({variant}, xpos = {{xpos}})".format(
     variant=VARIANT_ARRAY)
 VARIANT_LOOKUP_SCHEMA_INST = scidbpy.schema.Schema.fromstring(VARIANT_SCHEMA)
+
+VARIANT_CSQ = ('Allele',
+               'Consequence',
+               'IMPACT',
+               'SYMBOL',
+               'Gene',
+               'Feature_type',
+               'Feature',
+               'BIOTYPE',
+               'EXON',
+               'INTRON',
+               'HGVSc',
+               'HGVSp',
+               'cDNA_position',
+               'CDS_position',
+               'Protein_position',
+               'Amino_acids',
+               'Codons',
+               'Existing_variation',
+               'DISTANCE',
+               'ALLELE_NUM',
+               'STRAND',
+               'VARIANT_CLASS',
+               'MINIMISED',
+               'SYMBOL_SOURCE',
+               'HGNC_ID',
+               'CANONICAL',
+               'TSL',
+               'APPRIS',
+               'CCDS',
+               'ENSP',
+               'SWISSPROT',
+               'TREMBL',
+               'UNIPARC',
+               'SIFT2',
+               'SIFT',
+               'PolyPhen',
+               'DOMAINS',
+               'HGVS_OFFSET',
+               'GMAF',
+               'AFR_MAF',
+               'AMR_MAF',
+               'EAS_MAF',
+               'EUR_MAF',
+               'SAS_MAF',
+               'AA_MAF',
+               'EA_MAF',
+               'ExAC_MAF',
+               'ExAC_Adj_MAF',
+               'ExAC_AFR_MAF',
+               'ExAC_AMR_MAF',
+               'ExAC_EAS_MAF',
+               'ExAC_FIN_MAF',
+               'ExAC_NFE_MAF',
+               'ExAC_OTH_MAF',
+               'ExAC_SAS_MAF',
+               'CLIN_SIG',
+               'SOMATIC',
+               'PHENO',
+               'PUBMED',
+               'MOTIF_NAME',
+               'MOTIF_POS',
+               'HIGH_INF_POS',
+               'MOTIF_SCORE_CHANGE',
+               'LoF',
+               'LoF_filter',
+               'LoF_flags',
+               'LoF_info')

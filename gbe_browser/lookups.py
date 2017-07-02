@@ -3,6 +3,7 @@ import scidbpy
 
 
 import config
+import utils
 
 
 def numpy2dict(ar):
@@ -77,15 +78,23 @@ def get_variants_by_id(db, variant_ids):
     SciDB:
       filter(variant, xpos = 1039381448);
     """
-    print(variant_ids)
     if len(variant_ids) > 1:
         raise exceptions.NotImplementedError()
-    return numpy2dict(
+    variants = numpy2dict(
         db.iquery(
             config.VARIANT_LOOKUP_QUERY.format(xpos=variant_ids[0]),
             schema=config.VARIANT_LOOKUP_SCHEMA_INST,
             fetch=True))
-
+    for variant in variants:
+        variant['variant_id'] = '{}-{}-{}-{}'.format(
+            variant['chrom'], variant['pos'], variant['ref'], variant['alt'])
+        anns = [dict(zip(config.VARIANT_CSQ, csq.split('|')))
+                for csq in variant['csq'].split(',')]
+        variant['vep_annotations'] = [ann for ann in anns
+                                      if ('Feature' in ann and
+                                          ann['Feature'].startswith('ENST'))]
+        utils.add_consequence_to_variant(variant)
+    return variants
 
 if __name__ == '__main__':
     db = scidbpy.connect()
