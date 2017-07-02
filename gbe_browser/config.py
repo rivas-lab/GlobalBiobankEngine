@@ -191,6 +191,7 @@ VARIANT_SCHEMA = """
    alt:          string,
    site_quality: string,
    filter:       string,
+   exac_nfe:     double,
    minpval:      double,
    minl10pval:   double,
    csq:          string>
@@ -215,6 +216,8 @@ VARIANT_LOAD_QUERY = """
         alt,          a4,
         site_quality, a5,
         filter,       a6,
+        exac_nfe,     dcast(rsub(a7, 's/.*EXAC_NFE=([^;]*).*/$1/'),
+                            double(null)),
         minpval,      dcast(rsub(a7, 's/.*minpval=([^;]*).*/$1/'),
                             double(null)),
         minl10pval,   dcast(rsub(a7, 's/.*minl10pval=([^;]*).*/$1/'),
@@ -223,7 +226,7 @@ VARIANT_LOAD_QUERY = """
       {variant}),
     {variant})""".format(variant=VARIANT_ARRAY)
 
-VARIANT_LOOKUP_QUERY = "filter({variant}, xpos = {{xpos}})".format(
+VARIANT_LOOKUP_QUERY = "filter({variant}, {{xpos_cond}})".format(
     variant=VARIANT_ARRAY)
 VARIANT_LOOKUP_SCHEMA_INST = scidbpy.schema.Schema.fromstring(VARIANT_SCHEMA)
 

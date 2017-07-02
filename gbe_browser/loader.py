@@ -269,10 +269,11 @@ class Loader:
 
 if __name__ == '__main__':
     loader = Loader()
-    loader.remove_arrays()
-    loader.load_qc()
-    loader.load_icd_map()
-    loader.load_icd()
-    loader.load_qt()
-    loader.load_icd_info()
+    # loader.remove_arrays()
+    # loader.load_qc()
+    # loader.load_icd_map()
+    # loader.load_icd()
+    # loader.load_qt()
+    # loader.load_icd_info()
+    loader.db.remove(config.VARIANT_ARRAY)
     loader.load_variant()
