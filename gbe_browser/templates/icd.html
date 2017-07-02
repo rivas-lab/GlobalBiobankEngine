@@ -7,7 +7,7 @@
         window.table_variants = {{ variants_in_gene|tojson|safe }};
         window.page_name = {{ icd|tojson|safe }};
     </script>
-      		    
+
 
     <script>
         filtered_variants = _.filter(window.table_variants, function(d) {
@@ -26,35 +26,35 @@
 
                 </style>
 
-   
+
     <div class="container">
         <div class="row">
 
             <h1><span class="hidden-xs">Code Phenotype: {{icd_info[0].Name}}</span></h1>
-  
+
         <hr/>
      <dl class="dl-horizontal" style="margin-bottom: 0px;">
-                        <dt>Code:</dt> 
-                        <dt>Case Count:</dt> 
-                                         
+                        <dt>Code:</dt>
+                        <dt>Case Count:</dt>
+
                         <dd>{{ icd[0].icd.replace('ICD','') }}</dd>
-                                             <dd>{{ icd_info[0].Case }} 
+                                             <dd>{{ icd_info[0].Case }}
                                              </dd>
 
-                     
-			
+
+
                     </dl>
-           <hr />     
+           <hr />
          </div>
-         
+
 
       <div id="containergenome">
 
 
-        <script>  
-        
-	
-    // manhattan plot code obtained/edited/adapted from : https://github.com/chengsoonong/rede/tree/master/Rede/manhattanplot 
+        <script>
+
+
+    // manhattan plot code obtained/edited/adapted from : https://github.com/chengsoonong/rede/tree/master/Rede/manhattanplot
     d3.select("html")
                 .style("height", "100%");
                 //.style("overflow", "auto");
@@ -71,7 +71,7 @@
     115169878, 107349540, 102531392, 90354753,
     81195210, 78077248, 59128983, 63025520,
     48129895, 51304566, 155270560, 59373566);
-	
+
 	//this initializes chrom_length and chrom_acum_length to be used in manhattan plot
 	for (var i = 0; i < chromLength.length; i++) {
   	  chrom_length = chrom_length + chromLength[i];
@@ -86,11 +86,11 @@
 	idarr = new Array();
 	data_weight_pvalue = [];
     var cutoff = 3;
-	
-	
-	// Fill two seperate arrays, one with points greater than the -log10(pvalue) threshold, and another 
+
+
+	// Fill two seperate arrays, one with points greater than the -log10(pvalue) threshold, and another
 	// with points lower than the threshold defined in cutoff
-	
+
   	icd.forEach(
     	function(d) {
         	if (d.chrom == 1) {
@@ -100,7 +100,7 @@
                 } else {
 					data_high.push([parseFloat(d.pos) , d.stats[0].log10pvalue,
 					d.chrom + '-' + d.pos , d.chrom]);
-				}       
+				}
 			} else {
 				if (d.stats[0].log10pvalue < cutoff) {
 					data_low.push([d.pos + chrom_acum_length[d.chrom - 2],
@@ -114,14 +114,14 @@
             }
 			data_weight_pvalue.push(d.stats[0].log10pvalue);
 		});
-			
+
 	// Merge the both high and low significance points together into a single array
     all_data = data_low.concat(data_high);
-     
+
 	// Set minimums and maximums for pvalue range
-    var min_pvalue = 0; 
+    var min_pvalue = 0;
     var max_pvalue = d3.max([16, d3.max(data_weight_pvalue)]);
-	
+
     // var which defined the extra space in the bottom and the top of the -log(p-value) axis dynamically to the dataset
     var extend_scale = (max_pvalue - min_pvalue) *0.05;
 
@@ -129,13 +129,13 @@
     ix_2 = chrom_length;
     iy_1 = min_pvalue - extend_scale;
     iy_2 = max_pvalue + extend_scale;
-	
-	//create the manhattan plot              
+
+	//create the manhattan plot
 	x1 = ix_1;
 	x2 = ix_2;
 	y1 = iy_1;
 	y2 = iy_2;
-	
+
     var margin = {
         top: 30,
         right: 50,
@@ -150,15 +150,15 @@
         })])
         .interpolate(d3.interpolateHsl)
         .range(["#B3995D", "#8C1515"]);
-        
+
     var w = 1100 - margin.left - margin.right; //900;
     var h = 500 - margin.top - margin.bottom; //600;
 	console.log(w,h,x1,x2,y1,y2);
-	
+
     //Create scale functions
     var xScale = d3.scale.linear()
         .domain([x1, x2])
-        .range([0, w]); 
+        .range([0, w]);
 
     var yScale = d3.scale.linear()
         .domain([y1, y2])
@@ -166,7 +166,7 @@
 
     var array_test1 = [""];
     var array_test2 = [0];
-    
+
     for (var i = 0; i < chrom_acum_length.length; i++) {
         var num = i + 1;
         array_test1.push("chr" + num);
@@ -174,8 +174,8 @@
     }
     console.log(x1,x2,y1,y2);
 	console.log(data_weight_pvalue.length);
-      
-    //Create scale top           
+
+    //Create scale top
     var xScale_top = d3.scale.ordinal()
         .domain(array_test1)
         .range(array_test2);
@@ -278,7 +278,7 @@
 
     svg.append("g").attr("transform", "translate(0," + 0 + ")")
         .attr("class", "xt axis")
-        .call(xAxis_top);     
+        .call(xAxis_top);
 
     svg.selectAll(".xt text") // select all the text elements for the xaxis
         .attr("transform", function(d) {
