@@ -1231,10 +1231,10 @@ def get_icd_variant_table(icd, p):
     for v in variants:
         genes = []
         symbols = []
-        # TODO need to group variants
-        if not v['Gene'] in genes:
-            genes.append(v['Gene'])
-            symbols.append(v['SYMBOL'])
+        for a in v['vep_annotations']:
+            if not a['Gene'] in genes:
+                genes.append(a['Gene'])
+                symbols.append(a['SYMBOL'])
 
 
         v['gene_name'] = ",".join(genes[0:3])
