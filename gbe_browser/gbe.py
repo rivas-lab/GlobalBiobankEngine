@@ -1123,13 +1123,13 @@ def variant_icd_page(variant_str):
                     item['Group'] = "BRMRI"
                 else:
                     item['Group'] = icd10[0]
-                item['OR'] = format(float(item['stats'][0]['or']), '.4g')
-                item['L95OR'] = format(float(item['stats'][0]['l95or']), '.4g')
-                item['U95OR'] = format(float(item['stats'][0]['u95or']), '.4g')
-                item['pvalue'] = format(float(item['stats'][0]['pvalue']), '.4g')
-                item['l10pval'] = format(float(item['stats'][0]['log10pvalue']), '.4g')
+                item['OR'] = format(float(item['or_val']), '.4g')
+                item['L95OR'] = format(float(item['l95or']), '.4g')
+                item['U95OR'] = format(float(item['u95or']), '.4g')
+                item['pvalue'] = format(float(item['pvalue']), '.4g')
+                item['l10pval'] = format(float(item['log10pvalue']), '.4g')
                 item['Case'] = icd10info[0]['Case']
-                se =  format(float(item['stats'][0]['se']), '.4g')
+                se =  format(float(item['se']), '.4g')
                 if float(item['l10pval']) <= 1 or float(se) >= .5 or int(item['Case']) <= 100 or item['Group'] == "INI" or item['Code'] == "HC67" or icd10 in seend:
                     indexes.append(idx)
                 seend[icd10] = icd10
