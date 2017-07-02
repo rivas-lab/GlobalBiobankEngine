@@ -150,14 +150,23 @@ ICD_INFO_LOAD_QUERY = """
         path=ICD_INFO_FILE)
 
 
-ICD_LOOKUP_QUERY = """
+ICD_PVALUE_LOOKUP_QUERY = """
   filter(
     cross_join(
       {icd},
       filter({icd_index}, icd = '{{icd_id}}'),
       {icd}.icd_id,
       {icd_index}.icd_id),
-    pvalue < {{cutoff}})""".format(
+    pvalue < {{pvalue}})""".format(
+        icd=ICD_ARRAY,
+        icd_index=ICD_INDEX_ARRAY)
+
+ICD_XPOS_LOOKUP_QUERY = """
+  cross_join(
+    filter({icd}, xpos = {{xpos}}),
+    {icd_index},
+    {icd}.icd_id,
+    {icd_index}.icd_id)""".format(
         icd=ICD_ARRAY,
         icd_index=ICD_INDEX_ARRAY)
 
