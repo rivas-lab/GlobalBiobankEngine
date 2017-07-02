@@ -144,6 +144,18 @@ class Loader:
         logger.info('Pipe:return code:%s', pipe.poll())
         logger.info('Array:%s', config.VARIANT_ARRAY)
 
+    def load_gene(self):
+        self.db.create_array(config.GENE_ARRAY, config.GENE_SCHEMA)
+
+        fifo_name = self.fifo_names[0]
+        pipe = Loader.make_pipe(config.GENE_FILE, fifo_name)
+
+        logger.info('Query:running...')
+        self.db.iquery(config.GENE_LOAD_QUERY.format(path=fifo_name))
+        logger.info('Query:done')
+        logger.info('Pipe:return code:%s', pipe.poll())
+        logger.info('Array:%s', config.GENE_ARRAY)
+
     def get_icd_cond(self, file_names):
         """Build SciDB conditional expressions ("iif") to map file names to
         "icd_id", "icdind" using "src_instance_id"
@@ -173,7 +185,8 @@ class Loader:
                       config.ICD_INDEX_ARRAY,
                       config.ICD_ARRAY,
                       config.ICD_INFO_ARRAY,
-                      config.VARIANT_ARRAY):
+                      config.VARIANT_ARRAY,
+                      config.GENE_ARRAY):
             try:
                 self.db.remove(array)
             except:
@@ -276,3 +289,4 @@ if __name__ == '__main__':
     loader.load_qt()
     loader.load_icd_info()
     loader.load_variant()
+    loader.load_gene()

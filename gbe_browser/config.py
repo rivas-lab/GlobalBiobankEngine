@@ -306,3 +306,41 @@ VARIANT_CSQ = ('Allele',
                'LoF_filter',
                'LoF_flags',
                'LoF_info')
+
+
+# -- -
+# -- - GENE - --
+# -- -
+GENE_FILE = os.path.join(GBE_DATA_PATH, 'gencode.gtf.gz')
+
+GENE_ARRAY = 'gene'
+GENE_SCHEMA = """
+  <gene_id:      string,
+   gene_name:    string,
+   strand:       string>
+  [chrom     = 1:25:0:1;
+   start     = 0:*:0:10000000;
+   stop      = 0:*:0:10000000;
+   synthetic = 0:999:0:1000]"""
+
+GENE_LOAD_QUERY = """
+  store(
+    redimension(
+      apply(
+        filter(
+          aio_input('{{path}}', 'num_attributes=9'),
+          substr(a0, 0, 1) <> '#'),
+        chrom,        iif(substr(a0, 3, 4) = 'X',
+                          23,
+                          iif(substr(a0, 3, 4) = 'Y',
+                              24,
+                              iif(substr(a0, 3, 4) = 'M',
+                                  25,
+                                  dcast(substr(a0, 3, 5), int64(null))))),
+        start,        int64(a3) + 1,
+        stop,         int64(a4) + 1,
+        gene_id,      rsub(a8, 's/.*gene_id "([^.]*).*/$1/'),
+        gene_name,    rsub(a8, 's/.*gene_name "([^"]*).*/$1/'),
+        strand,       a6),
+      {gene}),
+    {gene})""".format(gene=GENE_ARRAY)
