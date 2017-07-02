@@ -86,6 +86,7 @@ def get_variants_by_id(db, variant_ids):
             schema=config.VARIANT_LOOKUP_SCHEMA_INST,
             fetch=True))
     for variant in variants:
+        variant['rsid'] = 'rs{}'.format(variant['rsid'])
         variant['variant_id'] = '{}-{}-{}-{}'.format(
             variant['chrom'], variant['pos'], variant['ref'], variant['alt'])
         anns = [dict(zip(config.VARIANT_CSQ, csq.split('|')))
