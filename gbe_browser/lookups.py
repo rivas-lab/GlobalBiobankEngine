@@ -78,11 +78,11 @@ def get_variants_by_id(db, variant_ids):
     SciDB:
       filter(variant, xpos = 1039381448);
     """
-    if len(variant_ids) > 1:
-        raise exceptions.NotImplementedError()
+    xpos_cond = ' or '.join('xpos = {}'.format(xpos)
+                            for xpos in variant_ids)
     variants = numpy2dict(
         db.iquery(
-            config.VARIANT_LOOKUP_QUERY.format(xpos=variant_ids[0]),
+            config.VARIANT_LOOKUP_QUERY.format(xpos_cond=xpos_cond),
             schema=config.VARIANT_LOOKUP_SCHEMA_INST,
             fetch=True))
     for variant in variants:
