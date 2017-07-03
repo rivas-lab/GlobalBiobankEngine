@@ -14,6 +14,7 @@
             <th class="tooltip-table-header" data-tooltip="chr:pos reference/alternate &#xa;(dbSNP135 rsID)">
                 Variant</th>
                 <th class='tooltip-table-header' data-tooltip="hg19 genomic position">Position</th>
+                <th class='tooltip-table-header' data-tooltip="Filter">Filter</th>
               <th class="tooltip-table-header" data-tooltip="HGVS annotation (protein change, where defined, or transcript change for splice variants, otherwise empty)">Consequence</th>
                            <th class="tooltip-table-header" data-tooltip="Variant Effect Predictor (VEP) &#xa; annotation using Gencode 75.&#xa; Worst across all transcripts of this gene.">Annotation</th>
             <th class="tooltip-table-header" data-tooltip="ExAC NFE alternate allele frequency &#xa;">
@@ -48,6 +49,7 @@ P-value</th>
                 </a>
             </td>
             <td> <%= variant.pos %></td>
+            <td> <%= variant.filter %></td>
                 <td>
                 <% if (variant.HGVSp != '') { %>
                     <%= variant.HGVSp %><% if (is_gene & variant.CANONICAL != 'YES') { %>&dagger;<% } %>
