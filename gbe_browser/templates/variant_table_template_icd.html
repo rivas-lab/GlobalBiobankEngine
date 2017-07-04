@@ -93,33 +93,33 @@ P-value</th>
             </td>
             <!-- ODDS RATIO -->
             <td>
-                <% if (variant.this_or != -9) { %>
-                <% if (variant.this_or == 0) { %>
+                <% if (variant.or_val != -9) { %>
+                <% if (variant.or_val == 0) { %>
                     <% '< 1e-16' %>
                 <% } else { %>
-                <%= parseFloat(variant.this_or).toPrecision(3) %>
+                <%= parseFloat(variant.or_val).toPrecision(3) %>
                 <%  } %>
 		        <% } else { %>
-                    <% if (variant.this_or != -9) { %>
-                    <%= parseFloat(variant.this_or).toPrecision(3) %>
+                    <% if (variant.or_val != -9) { %>
+                    <%= parseFloat(variant.or_val).toPrecision(3) %>
                 <% } else { %>
-		        <%= parseFloat(variant.this_or).toPrecision(3) %>
+		        <%= parseFloat(variant.or_val).toPrecision(3) %>
 		        <%  } %>
                 <% } %>
             </td>
             <!-- P-VALUE -->
             <td>
-                <% if (variant.this_pvalue != -9) { %>
-                    <% if (variant.this_pvalue < .00000000000001) { %>
+                <% if (variant.pvalue != -9) { %>
+                    <% if (variant.pvalue < .00000000000001) { %>
                     <%= '< 1e-16' %>
                 <% } else { %>
-                <%= parseFloat(variant.this_pvalue).toPrecision(3) %>
+                <%= parseFloat(variant.pvalue).toPrecision(3) %>
                 <% } %>
                 <% } else { %>
-                    <% if (variant.this_pvalue != -9) { %>
-                      <%= parseFloat(variant.this_pvalue).toPrecision(3) %>
+                    <% if (variant.pvalue != -9) { %>
+                      <%= parseFloat(variant.pvalue).toPrecision(3) %>
                 <% } else { %>
-                <%= parseFloat(variant.this_pvalue).toPrecision(3) %>
+                <%= parseFloat(variant.pvalue).toPrecision(3) %>
                 <% } %>
 
                 <% } %>
