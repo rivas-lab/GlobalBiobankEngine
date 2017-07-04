@@ -1154,36 +1154,30 @@ def icd_page(icd_str):
         return redirect(url_for('login'))
     db = get_db()
     try:
-        icdlabel = icd_str
-        #.strip('ADD').strip('INI').strip('BRMRI')
-        # Try several cutoffs to see if there are too many variants to render.  Arbitrary 10k max.
-        passing = False
+        # icdlabel = str(icd_str)
+        # .strip('ADD').strip('INI').strip('BRMRI')
+        # Try several cutoffs to see if there are too many variants to
+        # render.  Arbitrary 10k max.
+        # passing = False
         cutoff = None
         icd = None
 
         for p in [.001, .0001, .00001]:
-            icd = lookups.get_icd_significant(db, str(icd_str), p)
-           # print(icd_str,icd)
-            if len(icd) < 100000:
-                passing = True
-            if passing:
+            icd = lookups.get_icd_significant_variant(db, icd_str, p)
+            if len(icd):
                 cutoff = p
-               # print("CUTOFF",cutoff)
+                # print("CUTOFF",cutoff)
                 break
-        icd_info = lookups.get_icd_info(db, str(icdlabel))
-        variants = get_icd_variant_table(icd_str, cutoff)
-        print('Rendering ICD10: %s' % icdlabel)
+            # print(icd_str,icd)
+        print('Rendering ICD10: %s' % icd_str)
 
-        if len(icd_info) == 0:
-            icd_info.append({'Case': 'NA', 'Name': 'NA', 'icd': icdlabel})
-       # print(icd_info)
-
+        if icd is None or len(icd) == 0:
+            icd = [{'Case': 'NA', 'Name': 'NA', 'icd': icd_str}]
+        # print(icd_info)
 
         return render_template(
             'icd.html',
             icd=icd,
-            variants_in_gene = variants,
-            icd_info=icd_info,
             cutoff=cutoff
             )
     except Exception as e:
