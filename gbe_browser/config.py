@@ -50,9 +50,10 @@ ICD_SCHEMA = """
    synthetic = 0:999:0:1000]"""
 
 ICD_PVALUE_MAP = dict(
-    (pvalue, '{icd}_pvalue_lt{pvalue:05d}'.format(
+    (pvalue, '{icd}_pvalue_lt{pvalue:05d}_ltd'.format(
         icd=ICD_ARRAY, pvalue=int(pvalue * 10e4)))
     for pvalue in [.001, .0001, .00001])
+ICD_PVALUE_LIMIT = 100000
 
 ICD_INFO_STORE_QUERY = """
   store(
@@ -165,11 +166,23 @@ QT_INSERT_QUERY = """
 
 ICD_PVALUE_STORE_QUERIES = ["""
   store(
-    filter(icd, pvalue < {pvalue}),
+    redimension(
+      cross_join(
+        filter(icd, pvalue < {pvalue}) as icd_pvalue,
+        filter(
+          aggregate(
+            filter(icd, pvalue < {pvalue}),
+            count(*) as idx_cnt, icd_idx),
+          idx_cnt < {limit}) as icd_pvalue_ltd,
+        icd_pvalue.icd_idx,
+        icd_pvalue_ltd.icd_idx),
+      {icd} ),
     {icd_pvalue})""".format(
         pvalue=pvalue,
-        icd_pvalue=icd_pvlue)
-  for (pvalue, icd_pvlue) in ICD_PVALUE_MAP.items()]
+        limit=ICD_PVALUE_LIMIT,
+        icd=ICD_ARRAY,
+        icd_pvalue=icd_pvalue)
+  for (pvalue, icd_pvalue) in ICD_PVALUE_MAP.items()]
 
 ICD_PVALUE_LOOKUP_QUERY = """
     cross_join(
