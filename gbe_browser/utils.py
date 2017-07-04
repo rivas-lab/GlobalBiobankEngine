@@ -64,11 +64,11 @@ def xpos_to_pos(xpos):
 
 def add_consequence_to_variants(variant_list):
     for variant in variant_list:
-        add_consequence_to_variant(variant)
+        add_consequence_to_variant(variant, variant['vep_annotations'])
 
 
-def add_consequence_to_variant(variant):
-    worst_csq = worst_csq_with_vep(variant['vep_annotations'])
+def add_consequence_to_variant(variant, vep_annotations):
+    worst_csq = worst_csq_with_vep(vep_annotations)
     if worst_csq is None: return
     variant['major_consequence'] = worst_csq['major_consequence']
     variant['HGVSp'] = get_proper_hgvs(worst_csq)
