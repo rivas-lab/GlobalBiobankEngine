@@ -19,6 +19,31 @@ def numpy2dict(ar):
         for el in ar]
 
 
+def format_variants(variants):
+    for variant in variants:
+        variant['rsid'] = 'rs{}'.format(variant['rsid'])
+        variant['variant_id'] = '{}-{}-{}-{}'.format(
+            variant['chrom'], variant['pos'], variant['ref'], variant['alt'])
+
+        anns = [dict(zip(config.VARIANT_CSQ, csq.split('|')))
+                for csq in variant['csq'].split(',')]
+        vep_annotations = [ann for ann in anns
+                           if ('Feature' in ann and
+                               ann['Feature'].startswith('ENST'))]
+        # variant['vep_annotations'] = vep_annotations
+
+        variant['genes'] = list(set(ann['Gene'] for ann in vep_annotations))
+        variant['gene_name'] = ','.join(variant['genes'][:3])
+        variant['gene_symbol'] = ','.join(
+            itertools.islice(set(ann['SYMBOL'] for ann in vep_annotations), 3))
+        variant['transcripts'] = list(set(
+            ann['Feature'] for ann in vep_annotations))
+
+        utils.add_consequence_to_variant(variant, vep_annotations)
+
+    return variants
+
+
 # -- -
 # -- - ICD - --
 # -- -
@@ -44,7 +69,7 @@ def get_icd_significant(db, icd_id, cutoff=0.01):
         db.iquery(
             config.ICD_PVALUE_LOOKUP_QUERY.format(
                 icd=icd_id, pvalue=cutoff),
-            schema=config.ICD_LOOKUP_SCHEMA,
+            schema=config.ICD_X_INFO_SCHEMA,
             fetch=True))
 
 
@@ -65,8 +90,8 @@ def get_icd_info(db, icd_id):
     """
     return numpy2dict(
         db.iquery(
-            config.ICD_INFO_LOOKUP_QUERY.format(icd=icd_id),
-            schema=config.ICD_INFO_LOOKUP_SCHEMA,
+            config.ICD_LOOKUP_QUERY.format(icd=icd_id),
+            schema=config.ICD_X_INFO_SCHEMA,
             fetch=True))
 
 
@@ -85,12 +110,12 @@ def get_variant_icd(db, xpos):
     return numpy2dict(
         db.iquery(
             config.ICD_CHROM_POS_LOOKUP_QUERY.format(
-                chrom=xpos / 1e9, pos=xpos % 1e9),
+                chrom=int(xpos / 1e9), pos=int(xpos % 1e9)),
             schema=config.ICD_X_INFO_SCHEMA,
             fetch=True))
 
 
-def get_icd_significant_variant(db, icd_id, cutoff=0.01):
+def get_icd_significant_variant(db, icd_id, cutoff=0.001):
     """
     e.g.,
     UI:
@@ -128,31 +153,6 @@ def get_icd_significant_variant(db, icd_id, cutoff=0.01):
 # -- -
 # -- - VARIANT - --
 # -- -
-def format_variants(variants):
-    for variant in variants:
-        variant['rsid'] = 'rs{}'.format(variant['rsid'])
-        variant['variant_id'] = '{}-{}-{}-{}'.format(
-            variant['chrom'], variant['pos'], variant['ref'], variant['alt'])
-
-        anns = [dict(zip(config.VARIANT_CSQ, csq.split('|')))
-                for csq in variant['csq'].split(',')]
-        vep_annotations = [ann for ann in anns
-                           if ('Feature' in ann and
-                               ann['Feature'].startswith('ENST'))]
-        # variant['vep_annotations'] = vep_annotations
-
-        variant['genes'] = list(set(ann['Gene'] for ann in vep_annotations))
-        variant['gene_name'] = ','.join(variant['genes'][:3])
-        variant['gene_symbol'] = ','.join(
-            itertools.islice(set(ann['SYMBOL'] for ann in vep_annotations), 3))
-        variant['transcripts'] = list(set(
-            ann['Feature'] for ann in vep_annotations))
-
-        utils.add_consequence_to_variant(variant, vep_annotations)
-
-    return variants
-
-
 def get_variants_by_id(db, variant_ids):
     """
     e.g.,
@@ -165,11 +165,14 @@ def get_variants_by_id(db, variant_ids):
     SciDB:
       filter(variant, xpos = 1039381448);
     """
-    xpos_cond = ' or '.join('xpos = {}'.format(xpos)
-                            for xpos in variant_ids)
+    chrom_pos_cond = ' or '.join(
+        'chrom = {chrom} and pos = {pos}'.format(
+            chrom=int(xpos / 1e9), pos=int(xpos % 1e9))
+        for xpos in variant_ids)
     variants = numpy2dict(
         db.iquery(
-            config.VARIANT_LOOKUP_QUERY.format(xpos_cond=xpos_cond),
+            config.VARIANT_MULTI_LOOKUP_QUERY.format(
+                chrom_pos_cond=chrom_pos_cond),
             schema=config.VARIANT_LOOKUP_SCHEMA,
             fetch=True))
     variants = format_variants(variants)
@@ -191,10 +194,10 @@ def get_variant(db, xpos):
                  icd_info.icd_idx,
                  icd_index.icd_idx);
     """
-    xpos_cond = 'xpos = {}'.format(xpos)
     variants = numpy2dict(
         db.iquery(
-            config.VARIANT_LOOKUP_QUERY.format(xpos_cond=xpos_cond),
+            config.VARIANT_LOOKUP_QUERY.format(
+                chrom=int(xpos / 1e9), pos=int(xpos % 1e9)),
             schema=config.VARIANT_LOOKUP_SCHEMA,
             fetch=True))
     variants = format_variants(variants)
@@ -216,14 +219,14 @@ def get_gene(db, gene_id):
     """
     e.g.,
     UI:
-      https://biobankengine.stanford.edu/gene/ENSG00000101255
+      https://biobankengine.stanford.edu/gene/ENSG00000107404
 
     MongoDB:
-      db.genes.find({'gene_id': 'ENSG00000101255'}, fields={'_id': False})
+      db.genes.find({'gene_id': 'ENSG00000107404'}, fields={'_id': False})
 
     SciDB:
       cross_join(gene,
-                 filter(gene_index, gene_id = 'ENSG00000101255'),
+                 filter(gene_index, gene_id = 'ENSG00000107404'),
                  gene.gene_idx,
                  gene_index.gene_idx);
 
@@ -239,10 +242,10 @@ def get_variants_in_gene(db, gene_id):
     """
     e.g.,
     UI:
-      https://biobankengine.stanford.edu/gene/ENSG00000101255
+      https://biobankengine.stanford.edu/gene/ENSG00000107404
 
     MongoDB:
-      db.variants.find({'genes': 'ENSG00000101255'}, fields={'_id': False})
+      db.variants.find({'genes': 'ENSG00000107404'}, fields={'_id': False})
 
     SciDB:
       TODO
@@ -267,7 +270,8 @@ if __name__ == '__main__':
     pp = pprint.PrettyPrinter(indent=2)
     pp.pprint(get_icd_significant(db, 'RH117'))
     pp.pprint(get_icd_info(db, 'RH117'))
+    pp.pprint(get_variant_icd(db, 1039381448))
+    pp.pprint(get_icd_significant_variant(db, 'RH117'))
     pp.pprint(get_variants_by_id(db, (1039381448,)))
     pp.pprint(get_variant(db, 1039381448))
-    pp.pprint(get_variant_icd(db, 1039381448))
-    pp.pprint(get_gene(db, 'ENSG00000101255'))
+    pp.pprint(get_gene(db, 'ENSG00000107404'))

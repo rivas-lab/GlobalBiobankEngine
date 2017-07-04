@@ -305,6 +305,15 @@ GENE_STORE_QUERY = """
 # -- -
 # -- - Lookup: ICD - --
 # -- -
+ICD_LOOKUP_QUERY = """
+  cross_join(
+    {icd},
+    filter({icd_info}, icd = '{{icd}}'),
+    {icd}.icd_idx,
+    {icd_info}.icd_idx)""".format(
+        icd=ICD_ARRAY,
+        icd_info=ICD_INFO_ARRAY)
+
 ICD_PVALUE_LOOKUP_QUERY = """
   filter(
     cross_join(
@@ -316,7 +325,7 @@ ICD_PVALUE_LOOKUP_QUERY = """
         icd=ICD_ARRAY,
         icd_info=ICD_INFO_ARRAY)
 
-ICD_CRHOM_POS_LOOKUP_QUERY = """
+ICD_CHROM_POS_LOOKUP_QUERY = """
   cross_join(
     between({icd}, null, {{chrom}}, {{pos}}, null,
                    null, {{chrom}}, {{pos}}, null),
@@ -361,6 +370,17 @@ VARIANT_X_ICD_X_INFO_SCHEMA = scidbpy.schema.Schema.fromstring(
 # -- -
 # -- - Lookup: VARIANT - --
 # -- -
+VARIANT_LOOKUP_QUERY = """
+  between({variant}, {{chrom}}, {{pos}},
+                     {{chrom}}, {{pos}})""".format(
+    variant=VARIANT_ARRAY)
+
+VARIANT_MULTI_LOOKUP_QUERY = """
+  filter({variant}, {{chrom_pos_cond}})""".format(
+    variant=VARIANT_ARRAY)
+
+VARIANT_LOOKUP_SCHEMA = scidbpy.schema.Schema.fromstring(VARIANT_SCHEMA)
+
 VARIANT_CSQ = ('Allele',
                'Consequence',
                'IMPACT',
