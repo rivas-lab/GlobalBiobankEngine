@@ -19,7 +19,7 @@ def numpy2dict(ar):
         for el in ar]
 
 
-def format_variants(variants):
+def format_variants(variants, add_anno=False):
     for variant in variants:
         variant['rsid'] = 'rs{}'.format(variant['rsid'])
         variant['variant_id'] = '{}-{}-{}-{}'.format(
@@ -30,7 +30,8 @@ def format_variants(variants):
         vep_annotations = [ann for ann in anns
                            if ('Feature' in ann and
                                ann['Feature'].startswith('ENST'))]
-        # variant['vep_annotations'] = vep_annotations
+        if add_anno:
+            variant['vep_annotations'] = vep_annotations
 
         variant['genes'] = list(set(ann['Gene'] for ann in vep_annotations))
         variant['gene_name'] = ','.join(variant['genes'][:3])
@@ -163,7 +164,7 @@ def get_variants_by_id(db, variant_ids):
       db.variants.find({'xpos': '1039381448'}, fields={'_id': False})
 
     SciDB:
-      filter(variant, xpos = 1039381448);
+      filter(variant, chrom = 1 and pos = 39381448); -- or chrom = ...
     """
     chrom_pos_cond = ' or '.join(
         'chrom = {chrom} and pos = {pos}'.format(
@@ -179,6 +180,36 @@ def get_variants_by_id(db, variant_ids):
     return variants
 
 
+def get_variant_chrom_pos(db, chrom, pos):
+    """
+    e.g.,
+    UI:
+      https://biobankengine.stanford.edu/variant/1-39381448
+
+    MongoDB:
+      db.variants.find({'xpos': '1039381448'}, fields={'_id': False})
+
+    SciDB:
+      between(vairant, 1, 39381448,
+                       1, 39381448);
+    """
+    variants = numpy2dict(
+        db.iquery(
+            config.VARIANT_LOOKUP_QUERY.format(chrom=chrom, pos=pos),
+            schema=config.VARIANT_LOOKUP_SCHEMA,
+            fetch=True))
+    variants = format_variants(variants, add_anno=True)
+    variant = variants[0] if len(variants) else None
+    if variant is None or 'rsid' not in variant:
+        return variant
+    if variant['rsid'] == '.' or variant['rsid'] is None:
+        raise NotImplementedError()  # TODO
+        # rsid = db.dbsnp.find_one({'xpos': xpos})
+        # if rsid:
+        #     variant['rsid'] = 'rs%s' % rsid['rsid']
+    return variant
+
+
 def get_variant(db, xpos):
     """
     e.g.,
@@ -189,27 +220,10 @@ def get_variant(db, xpos):
       db.variants.find({'xpos': '1039381448'}, fields={'_id': False})
 
     SciDB:
-      cross_join(filter(icd, xpos = 1039381448),
-                 icd_index,
-                 icd_info.icd_idx,
-                 icd_index.icd_idx);
+      between(vairant, 1, 39381448,
+                       1, 39381448);
     """
-    variants = numpy2dict(
-        db.iquery(
-            config.VARIANT_LOOKUP_QUERY.format(
-                chrom=int(xpos / 1e9), pos=int(xpos % 1e9)),
-            schema=config.VARIANT_LOOKUP_SCHEMA,
-            fetch=True))
-    variants = format_variants(variants)
-    variant = variants[0] if len(variants) else None
-    if variant is None or 'rsid' not in variant:
-        return variant
-    if variant['rsid'] == '.' or variant['rsid'] is None:
-        raise NotImplementedError()  # TODO
-        # rsid = db.dbsnp.find_one({'xpos': xpos})
-        # if rsid:
-        #     variant['rsid'] = 'rs%s' % rsid['rsid']
-    return variant
+    return get_variant(db, int(xpos / 1e9), int(xpos % 1e9))
 
 
 # -- -
