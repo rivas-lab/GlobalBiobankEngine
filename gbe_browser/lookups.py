@@ -115,14 +115,14 @@ def get_icd_significant_variant(db, icd_id, cutoff=0.01):
         variant.pos,
         icd_join.pos);
     """
-    variants = numpy2dict(
-        db.iquery(
-            config.ICD_PVALUE_VARIANT_LOOKUP_QUERY.format(
-                icd=icd_id, icd_pvalue=config.ICD_PVALUE_MAP[cutoff])
-            if cutoff in config.ICD_PVALUE_MAP else
-            "TODO",
-            schema=config.VARIANT_X_ICD_X_INFO_SCHEMA,
-            fetch=True))
+    if cutoff not in config.ICD_PVALUE_MAP:
+        raise NotImplementedError(
+            'Cutoff value, {}, not supported'.format(cutoff))
+    db.iquery(
+        config.ICD_PVALUE_VARIANT_LOOKUP_QUERY.format(
+            icd=icd_id, icd_pvalue=config.ICD_PVALUE_MAP[cutoff])
+        schema=config.VARIANT_X_ICD_X_INFO_SCHEMA,
+        fetch=True))
     return format_variants(variants)
 
 
