@@ -89,14 +89,14 @@ P-value</th>
                     <%= variant.exac_nfe %>
                 <% } else { %>
 
-                <% } %>    
+                <% } %>
             </td>
             <!-- ODDS RATIO -->
             <td>
                 <% if (variant.this_or != -9) { %>
                 <% if (variant.this_or == 0) { %>
                     <% '< 1e-16' %>
-                <% } else { %> 
+                <% } else { %>
                 <%= parseFloat(variant.this_or).toPrecision(3) %>
                 <%  } %>
 		        <% } else { %>
@@ -121,7 +121,7 @@ P-value</th>
                 <% } else { %>
                 <%= parseFloat(variant.this_pvalue).toPrecision(3) %>
                 <% } %>
-                
+
                 <% } %>
                 <div id="variant_af_box_<%= variant.variant_id %>" style="float: right;"></div>
             </td>
