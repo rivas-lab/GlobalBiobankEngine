@@ -32,6 +32,9 @@ class Loader:
                  self.remove_fifos,
                  tuple(self.fifo_names))
 
+    # -- -
+    # -- - QC - --
+    # -- -
     def load_qc(self):
         qc = []
         for rec in config.QC_FILES:
@@ -48,12 +51,15 @@ class Loader:
         self.db.input(upload_data=numpy.array(qc)).store(config.QC_ARRAY)
         logger.info('Array:%s records:%d', config.QC_ARRAY, len(qc))
 
-    def load_icd_map(self):
+    # -- -
+    # -- - ICD - --
+    # -- -
+    def load_icd_index(self):
         icd_lst = list(set(Loader.get_icd(*Loader.get_icd_parts(fn))
                            for fn in itertools.chain(
                                    glob.iglob(config.ICD_GLOB),
                                    glob.iglob(config.QT_GLOB))))
-        self.icd_id_map = dict(zip(icd_lst, range(len(icd_lst))))
+        self.icd_idx_map = dict(zip(icd_lst, range(len(icd_lst))))
         self.db.input(config.ICD_INDEX_SCHEMA,
                       upload_data=numpy.array(icd_lst)).store(
                           config.ICD_INDEX_ARRAY)
@@ -70,7 +76,7 @@ class Loader:
                               for file_name in file_names if file_name]
 
             # Get conditional expressions
-            (icd_id_cond, icdind_cond) = self.get_icd_cond(file_names)
+            (icd_idx_cond, icdind_cond) = self.get_icd_cond(file_names)
 
             # Make pipes
             logger.info('Pipes:starting %d...', len(file_names))
@@ -81,7 +87,7 @@ class Loader:
             query = config.ICD_LOAD_QUERY.format(
                 paths=';'.join(self.fifo_names[:len(file_names)]),
                 instances=';'.join(self.instances[:len(file_names)]),
-                icd_id_cond=icd_id_cond,
+                icd_idx_cond=icd_idx_cond,
                 icdind_cond=icdind_cond)
 
             logger.info('Query:running...')
@@ -104,7 +110,7 @@ class Loader:
                               for file_name in file_names if file_name]
 
             # Get conditional expressions
-            (icd_id_cond, icdind_cond) = self.get_icd_cond(file_names)
+            (icd_idx_cond, icdind_cond) = self.get_icd_cond(file_names)
 
             # Make pipes
             logger.info('Pipes:starting %d...', len(file_names))
@@ -115,7 +121,7 @@ class Loader:
             query = config.QT_LOAD_QUERY.format(
                 paths=';'.join(self.fifo_names[:len(file_names)]),
                 instances=';'.join(self.instances[:len(file_names)]),
-                icd_id_cond=icd_id_cond,
+                icd_idx_cond=icd_idx_cond,
                 icdind_cond=icdind_cond)
 
             logger.info('Query:running...')
@@ -132,6 +138,31 @@ class Loader:
         self.db.iquery(config.ICD_INFO_LOAD_QUERY)
         logger.info('Array:%s', config.ICD_INFO_ARRAY)
 
+    def get_icd_cond(self, file_names):
+        """Build SciDB conditional expressions ("iif") to map file names to
+        "icd_idx", "icdind" using "src_instance_id"
+
+        """
+        icd_idx_cond = 'null'
+        icdind_cond = 'null'
+        for (inst, file_name) in zip(range(len(file_names)), file_names):
+            (prefix, suffix, intadd) = Loader.get_icd_parts(file_name)
+
+            icd_idx = self.icd_idx_map[Loader.get_icd(prefix, suffix, intadd)]
+            icd_idx_cond = ('iif(src_instance_id = {inst}, ' +
+                            '{icd_idx}, {prev})').format(
+                                inst=inst, icd_idx=icd_idx, prev=icd_idx_cond)
+
+            icdind_cond = ('iif(src_instance_id = {inst}, ' +
+                           '\'{val}\', {prev})').format(
+                               inst=inst,
+                               val=str(intadd) + suffix,
+                               prev=icdind_cond)
+        return (icd_idx_cond, icdind_cond)
+
+    # -- -
+    # -- - VARIANT - --
+    # -- -
     def load_variant(self):
         self.db.create_array(config.VARIANT_ARRAY, config.VARIANT_SCHEMA)
 
@@ -143,6 +174,21 @@ class Loader:
         logger.info('Query:done')
         logger.info('Pipe:return code:%s', pipe.poll())
         logger.info('Array:%s', config.VARIANT_ARRAY)
+
+    # -- -
+    # -- - GENE - --
+    # -- -
+    def load_gene_index(self):
+        self.db.create_array(config.GENE_INDEX_ARRAY, config.GENE_INDEX_SCHEMA)
+
+        fifo_name = self.fifo_names[0]
+        pipe = Loader.make_pipe(config.GENE_FILE, fifo_name)
+
+        logger.info('Query:running...')
+        self.db.iquery(config.GENE_INDEX_LOAD_QUERY.format(path=fifo_name))
+        logger.info('Query:done')
+        logger.info('Pipe:return code:%s', pipe.poll())
+        logger.info('Array:%s', config.GENE_INDEX_ARRAY)
 
     def load_gene(self):
         self.db.create_array(config.GENE_ARRAY, config.GENE_SCHEMA)
@@ -156,28 +202,7 @@ class Loader:
         logger.info('Pipe:return code:%s', pipe.poll())
         logger.info('Array:%s', config.GENE_ARRAY)
 
-    def get_icd_cond(self, file_names):
-        """Build SciDB conditional expressions ("iif") to map file names to
-        "icd_id", "icdind" using "src_instance_id"
-
-        """
-        icd_id_cond = 'null'
-        icdind_cond = 'null'
-        for (inst, file_name) in zip(range(len(file_names)), file_names):
-            (prefix, suffix, intadd) = Loader.get_icd_parts(file_name)
-
-            icd_id = self.icd_id_map[Loader.get_icd(prefix, suffix, intadd)]
-            icd_id_cond = ('iif(src_instance_id = {inst}, ' +
-                           '{icd_id}, {prev})').format(
-                               inst=inst, icd_id=icd_id, prev=icd_id_cond)
-
-            icdind_cond = ('iif(src_instance_id = {inst}, ' +
-                           '\'{val}\', {prev})').format(
-                               inst=inst,
-                               val=str(intadd) + suffix,
-                               prev=icdind_cond)
-        return (icd_id_cond, icdind_cond)
-
+    # -- - - --
     def remove_arrays(self):
         if not Loader.confirm('Remove and recreate arrays'):
             return
@@ -186,6 +211,7 @@ class Loader:
                       config.ICD_ARRAY,
                       config.ICD_INFO_ARRAY,
                       config.VARIANT_ARRAY,
+                      config.GENE_INDEX_ARRAY,
                       config.GENE_ARRAY):
             try:
                 self.db.remove(array)
@@ -284,9 +310,10 @@ if __name__ == '__main__':
     loader = Loader()
     loader.remove_arrays()
     loader.load_qc()
-    loader.load_icd_map()
+    loader.load_icd_index()
     loader.load_icd()
     loader.load_qt()
     loader.load_icd_info()
     loader.load_variant()
+    loader.load_gene_index()
     loader.load_gene()

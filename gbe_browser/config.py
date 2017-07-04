@@ -31,7 +31,7 @@ ICD_INFO_FILE = os.path.join(GBE_DATA_PATH, 'icdstats', 'icdinfo.txt')
 
 
 ICD_INDEX_ARRAY = 'icd_index'
-ICD_INDEX_SCHEMA = '<icd:string>[icd_id]'
+ICD_INDEX_SCHEMA = '<icd:string>[icd_idx = 0:*:0:20]'
 
 ICD_ARRAY = 'icd'
 ICD_SCHEMA = """
@@ -45,13 +45,13 @@ ICD_SCHEMA = """
    log10pvalue: double,
    l95or:       double,
    u95or:       double>
-  [icd_id    = 0:*:0:20;
+  [icd_idx   = 0:*:0:20;
    chrom     = 1:25:0:1;
    pos       = 0:*:0:10000000;
    synthetic = 0:999:0:1000]"""
 
 ICD_INFO_ARRAY = 'icd_info'
-ICD_INFO_SCHEMA = '<Case:int64, Name:string>[icd_id=0:*:0:1000000]'
+ICD_INFO_SCHEMA = '<Case:int64, Name:string>[icd_idx=0:*:0:1000000]'
 
 ICD_LOAD_QUERY = """
   insert(
@@ -72,7 +72,7 @@ ICD_LOAD_QUERY = """
           dcast(a9, double(null)) < .5 and
           a11 <> 'NA' and
           dcast(a11, double(null)) <> 0),
-        icd_id,      {{icd_id_cond}},
+        icd_idx,     {{icd_idx_cond}},
         chrom,       int64(a0),
         pos,         int64(a1),
         icdind,      int64(string(int64(a0) * 1e9 + int64(a1)) +
@@ -111,7 +111,7 @@ QT_LOAD_QUERY = """
           is_in_filter is null and
           dcast(a8, double(null)) < .5 and
           a10 <> 'NA'),
-        icd_id,      {{icd_id_cond}},
+        icd_idx,     {{icd_idx_cond}},
         chrom,       int64(a0),
         pos,         int64(a1),
         icdind,      int64(string(int64(a0) * 1e9 + int64(a1)) +
@@ -140,7 +140,7 @@ ICD_INFO_LOAD_QUERY = """
           aio_input('{path}', 'num_attributes=6'),
           {icd_index},
           a0,
-          icd_id),
+          icd_idx),
         Case,     dcast(a1, int64(null)),
         Name, a2),
       {icd_info}, false),
@@ -154,9 +154,9 @@ ICD_PVALUE_LOOKUP_QUERY = """
   filter(
     cross_join(
       {icd},
-      filter({icd_index}, icd = '{{icd_id}}'),
-      {icd}.icd_id,
-      {icd_index}.icd_id),
+      filter({icd_index}, icd = '{{icd}}'),
+      {icd}.icd_idx,
+      {icd_index}.icd_idx),
     pvalue < {{pvalue}})""".format(
         icd=ICD_ARRAY,
         icd_index=ICD_INDEX_ARRAY)
@@ -165,8 +165,8 @@ ICD_XPOS_LOOKUP_QUERY = """
   cross_join(
     filter({icd}, xpos = {{xpos}}),
     {icd_index},
-    {icd}.icd_id,
-    {icd_index}.icd_id)""".format(
+    {icd}.icd_idx,
+    {icd_index}.icd_idx)""".format(
         icd=ICD_ARRAY,
         icd_index=ICD_INDEX_ARRAY)
 
@@ -176,9 +176,9 @@ ICD_LOOKUP_SCHEMA_INST = scidbpy.schema.Schema.fromstring(
 ICD_INFO_LOOKUP_QUERY = """
   cross_join(
     {icd_info},
-    filter({icd_index}, icd = '{{icd_id}}'),
-    {icd_info}.icd_id,
-    {icd_index}.icd_id)""".format(
+    filter({icd_index}, icd = '{{icd}}'),
+    {icd_info}.icd_idx,
+    {icd_index}.icd_idx)""".format(
         icd_info=ICD_INFO_ARRAY,
         icd_index=ICD_INDEX_ARRAY)
 
@@ -313,34 +313,71 @@ VARIANT_CSQ = ('Allele',
 # -- -
 GENE_FILE = os.path.join(GBE_DATA_PATH, 'gencode.gtf.gz')
 
+GENE_INDEX_ARRAY = 'gene_index'
+GENE_INDEX_SCHEMA = '<gene_id:string>[gene_idx = 0:*:0:20]'
+
+GENE_INDEX_LOAD_QUERY = """
+  store(
+    redimension(
+      apply(
+        uniq(
+          sort(
+            project(
+              apply(
+                filter(
+                  aio_input('{{path}}', 'num_attributes=9'),
+                  substr(a0, 0, 1) <> '#'),
+                gene_id, rsub(a8, 's/.*gene_id "([^.]*).*/$1/')),
+              gene_id))),
+        gene_idx, i),
+      {gene_index}),
+    {gene_index})""".format(gene_index=GENE_INDEX_ARRAY)
+
+
 GENE_ARRAY = 'gene'
 GENE_SCHEMA = """
-  <gene_id:      string,
-   gene_name:    string,
-   strand:       string>
-  [chrom     = 1:25:0:1;
+  <gene_name: string,
+   strand:    string>
+  [gene_idx  = 0:*:0:20;
+   chrom     = 1:25:0:1;
    start     = 0:*:0:10000000;
    stop      = 0:*:0:10000000;
-   synthetic = 0:999:0:1000]"""
+   synthetic = 0:199:0:200]"""
 
 GENE_LOAD_QUERY = """
   store(
     redimension(
-      apply(
-        filter(
-          aio_input('{{path}}', 'num_attributes=9'),
-          substr(a0, 0, 1) <> '#'),
-        chrom,        iif(substr(a0, 3, 4) = 'X',
-                          23,
-                          iif(substr(a0, 3, 4) = 'Y',
-                              24,
-                              iif(substr(a0, 3, 4) = 'M',
-                                  25,
-                                  dcast(substr(a0, 3, 5), int64(null))))),
-        start,        int64(a3) + 1,
-        stop,         int64(a4) + 1,
-        gene_id,      rsub(a8, 's/.*gene_id "([^.]*).*/$1/'),
-        gene_name,    rsub(a8, 's/.*gene_name "([^"]*).*/$1/'),
-        strand,       a6),
+      index_lookup(
+        apply(
+          filter(
+            aio_input('{{path}}', 'num_attributes=9'),
+            substr(a0, 0, 1) <> '#'),
+          gene_id,      rsub(a8, 's/.*gene_id "([^.]*).*/$1/'),
+          chrom,        iif(substr(a0, 3, 4) = 'X',
+                            23,
+                            iif(substr(a0, 3, 4) = 'Y',
+                                24,
+                                iif(substr(a0, 3, 4) = 'M',
+                                    25,
+                                    dcast(substr(a0, 3, 5), int64(null))))),
+          start,        int64(a3) + 1,
+          stop,         int64(a4) + 1,
+          gene_name,    rsub(a8, 's/.*gene_name "([^"]*).*/$1/'),
+          strand,       a6) as INPUT,
+        {gene_index},
+        INPUT.gene_id,
+        gene_idx),
       {gene}),
-    {gene})""".format(gene=GENE_ARRAY)
+    {gene})""".format(gene=GENE_ARRAY, gene_index=GENE_INDEX_ARRAY)
+
+GENE_LOOKUP_QUERY = """
+  cross_join(
+    {gene},
+    filter({gene_index}, gene_id = '{{gene_id}}'),
+    {gene}.gene_idx,
+    {gene_index}.gene_idx)""".format(
+        gene=GENE_ARRAY,
+        gene_index=GENE_INDEX_ARRAY)
+
+GENE_LOOKUP_SCHEMA_INST = scidbpy.schema.Schema.fromstring(
+    GENE_SCHEMA.replace('>', ',gene_id:string>'))

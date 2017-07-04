@@ -20,7 +20,7 @@ def numpy2dict(ar):
 
 
 # -- -
-# -- - ICD Lookups - --
+# -- - ICD - --
 # -- -
 def get_icd_significant(db, icd_id, cutoff=0.01):
     """
@@ -36,14 +36,14 @@ def get_icd_significant(db, icd_id, cutoff=0.01):
       filter(
         cross_join(icd,
                    filter(icd_index, icd = 'RH117'),
-                   icd.icd_id,
-                   icd_index.icd_id),
+                   icd.icd_idx,
+                   icd_index.icd_idx),
         pvalue < 0.01);
     """
     return numpy2dict(
         db.iquery(
             config.ICD_PVALUE_LOOKUP_QUERY.format(
-                icd_id=icd_id, pvalue=cutoff),
+                icd=icd_id, pvalue=cutoff),
             schema=config.ICD_LOOKUP_SCHEMA_INST,
             fetch=True))
 
@@ -60,12 +60,12 @@ def get_icd_info(db, icd_id):
     SciDB:
       cross_join(icd_info,
                  filter(icd_index, icd = 'RH117'),
-                 icd_info.icd_id,
-                 icd_index.icd_id);
+                 icd_info.icd_idx,
+                 icd_index.icd_idx);
     """
     return numpy2dict(
         db.iquery(
-            config.ICD_INFO_LOOKUP_QUERY.format(icd_id=icd_id),
+            config.ICD_INFO_LOOKUP_QUERY.format(icd=icd_id),
             schema=config.ICD_INFO_LOOKUP_SCHEMA_INST,
             fetch=True))
 
@@ -90,7 +90,7 @@ def get_variant_icd(db, xpos):
 
 
 # -- -
-# -- - Variant Lookups - --
+# -- - VARIANT - --
 # -- -
 def format_variants(variants):
     for variant in variants:
@@ -147,8 +147,8 @@ def get_variant(db, xpos):
     SciDB:
       cross_join(filter(icd, xpos = 1039381448),
                  icd_index,
-                 icd_info.icd_id,
-                 icd_index.icd_id);
+                 icd_info.icd_idx,
+                 icd_index.icd_idx);
     """
     xpos_cond = 'xpos = {}'.format(xpos)
     variants = numpy2dict(
@@ -168,6 +168,57 @@ def get_variant(db, xpos):
     return variant
 
 
+# -- -
+# -- - GENE - --
+# -- -
+def get_gene(db, gene_id):
+    """
+    e.g.,
+    UI:
+      https://biobankengine.stanford.edu/gene/ENSG00000101255
+
+    MongoDB:
+      db.genes.find({'gene_id': 'ENSG00000101255'}, fields={'_id': False})
+
+    SciDB:
+      cross_join(gene,
+                 filter(gene_index, gene_id = 'ENSG00000101255'),
+                 gene.gene_idx,
+                 gene_index.gene_idx);
+
+    """
+    return numpy2dict(
+        db.iquery(
+            config.GENE_LOOKUP_QUERY.format(gene_id=gene_id),
+            schema=config.GENE_LOOKUP_SCHEMA_INST,
+            fetch=True))
+
+
+def get_variants_in_gene(db, gene_id):
+    """
+    e.g.,
+    UI:
+      https://biobankengine.stanford.edu/gene/ENSG00000101255
+
+    MongoDB:
+      db.variants.find({'genes': 'ENSG00000101255'}, fields={'_id': False})
+
+    SciDB:
+      TODO
+    """
+    # TODO
+    # variants = []
+    # for variant in db.variants.find({'genes': gene_id},
+    #                                 fields={'_id': False}):
+    #     variant['vep_annotations'] = [x
+    #                                   for x in variant['vep_annotations']
+    #                                   if x['Gene'] == gene_id]
+    #     add_consequence_to_variant(variant)
+    #     variants.append(variant)
+    # return variants
+    pass
+
+
 if __name__ == '__main__':
     db = scidbpy.connect()
 
@@ -178,3 +229,4 @@ if __name__ == '__main__':
     pp.pprint(get_variants_by_id(db, (1039381448,)))
     pp.pprint(get_variant(db, 1039381448))
     pp.pprint(get_variant_icd(db, 1039381448))
+    pp.pprint(get_gene(db, 'ENSG00000101255'))
