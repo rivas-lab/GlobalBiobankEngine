@@ -73,7 +73,7 @@
         $("#variants_loading").hide();
         $("#variants_table_container").show();
     window.variants_template = _.template($('#variant-table-template').html());
-    $('#variants_table_container').html(variants_template({table_variants: table_variants}));
+    $('#variants_table_container').html(variants_template({table_variants: icd}));
         //define click event handler that re-renders the table using the selected population
           $("#variant_table").tablesorter({
           //  sortList: [[1,0], [2,0], [10,1]],
@@ -87,7 +87,7 @@
            // }
         });
 {#                .tablesorterPager({container: $("#pager"), positionFixed: false});#}
-{#        if (window.table_variants.length <= 10) {#}
+{#        if (window.icd.length <= 10) {#}
             $('#pager').hide();
 {#        }#}
 
@@ -111,7 +111,7 @@
             }
         }
 
-        var data = window.table_variants;
+        var data = window.icd;
 
         var width = 50;
         var height = 15;

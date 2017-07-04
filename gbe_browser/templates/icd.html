@@ -2,10 +2,8 @@
 {% block body %}
     <!-- Render context vars in JS here -->
     <script type="text/javascript">
-        window.icd = {{ icd|tojson|safe }};
-        window.icd_info = {{ icd_info|tojson|safe }};
-        window.table_variants = {{ variants_in_gene|tojson|safe }};
-        window.page_name = {{ icd|tojson|safe }};
+        window.icd = window.table_variants = {{ icd|tojson|safe }};
+        window.page_name = window.icd[0].icd_id;
     </script>
 
 
@@ -30,7 +28,7 @@
     <div class="container">
         <div class="row">
 
-            <h1><span class="hidden-xs">Code Phenotype: {{icd_info[0].Name}}</span></h1>
+            <h1><span class="hidden-xs">Code Phenotype: {{icd[0].Name}}</span></h1>
 
         <hr/>
      <dl class="dl-horizontal" style="margin-bottom: 0px;">
@@ -38,7 +36,7 @@
                         <dt>Case Count:</dt>
 
                         <dd>{{ icd[0].icd.replace('ICD','') }}</dd>
-                                             <dd>{{ icd_info[0].Case }}
+                                             <dd>{{ icd[0].Case }}
                                              </dd>
 
 
@@ -303,8 +301,8 @@
           Note: only variants with a p-value less than {{cutoff}} are included in the manhattan plot.
       </div>
         <div class="row">
-            {% if variants_in_gene %}
-                {% set chrom = variants_in_gene[0].chrom %}
+            {% if icd %}
+                {% set chrom = icd[0].chrom %}
                 {% include 'variant_table_icd.html' %}
             {% else %}
                 No significantly associated variants.
