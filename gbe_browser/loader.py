@@ -1,3 +1,4 @@
+import StringIO
 import glob
 import itertools
 import logging
@@ -35,7 +36,7 @@ class Loader:
     # -- -
     # -- - QC - --
     # -- -
-    def load_qc(self):
+    def store_qc(self):
         qc = []
         for rec in config.QC_FILES:
             with open(rec['file']) as fp:
@@ -54,17 +55,22 @@ class Loader:
     # -- -
     # -- - ICD - --
     # -- -
-    def load_icd_index(self):
+    def store_icd_info(self):
         icd_lst = list(set(Loader.get_icd(*Loader.get_icd_parts(fn))
                            for fn in itertools.chain(
                                    glob.iglob(config.ICD_GLOB),
                                    glob.iglob(config.QT_GLOB))))
-        self.icd_idx_map = dict(zip(icd_lst, range(len(icd_lst))))
-        self.db.input(config.ICD_INDEX_SCHEMA,
-                      upload_data=numpy.array(icd_lst)).store(
-                          config.ICD_INDEX_ARRAY)
 
-    def load_icd(self):
+        self.icd_idx_map = dict(zip(icd_lst, range(len(icd_lst))))
+        self.db.iquery(config.ICD_INFO_STORE_QUERY,
+                       upload_data=StringIO.StringIO('\n'.join(icd_lst)))
+        logger.info('Array:%s', config.ICD_INFO_ARRAY)
+
+    def insert_icd_info(self):
+        self.db.iquery(config.ICD_INFO_INSERT_QUERY)
+        logger.info('Array:%s', config.ICD_INFO_ARRAY)
+
+    def insert_icd(self):
         self.db.create_array(config.ICD_ARRAY, config.ICD_SCHEMA)
         file_iter = [glob.iglob(config.ICD_GLOB)] * config.SCIDB_INSTANCE_NUM
 
@@ -84,7 +90,7 @@ class Loader:
                      for (file_name, fifo_name) in zip(file_names,
                                                        self.fifo_names)]
 
-            query = config.ICD_LOAD_QUERY.format(
+            query = config.ICD_INSERT_QUERY.format(
                 paths=';'.join(self.fifo_names[:len(file_names)]),
                 instances=';'.join(self.instances[:len(file_names)]),
                 icd_idx_cond=icd_idx_cond,
@@ -99,7 +105,7 @@ class Loader:
                         ','.join(str(pipe.poll()) for pipe in pipes))
         logger.info('Array:%s', config.ICD_ARRAY)
 
-    def load_qt(self):
+    def insert_qt(self):
         file_iter = [glob.iglob(config.QT_GLOB)] * config.SCIDB_INSTANCE_NUM
 
         for file_names in zip_longest(*file_iter):
@@ -118,7 +124,7 @@ class Loader:
                      for (file_name, fifo_name) in zip(file_names,
                                                        self.fifo_names)]
 
-            query = config.QT_LOAD_QUERY.format(
+            query = config.QT_INSERT_QUERY.format(
                 paths=';'.join(self.fifo_names[:len(file_names)]),
                 instances=';'.join(self.instances[:len(file_names)]),
                 icd_idx_cond=icd_idx_cond,
@@ -133,10 +139,13 @@ class Loader:
                         ','.join(str(pipe.poll()) for pipe in pipes))
         logger.info('Array:%s', config.ICD_ARRAY)
 
-    def load_icd_info(self):
-        self.db.create_array(config.ICD_INFO_ARRAY, config.ICD_INFO_SCHEMA)
-        self.db.iquery(config.ICD_INFO_LOAD_QUERY)
-        logger.info('Array:%s', config.ICD_INFO_ARRAY)
+    def store_icd_pvalue(self):
+        for (query, name) in zip(config.ICD_PVALUE_CREATE_QUERIES,
+                                 config.ICD_PVALUE_MAP.values()):
+            logger.info('Query:running...')
+            self.db.iquery(query)
+            logger.info('Query:done')
+            logger.info('Array:%s', name)
 
     def get_icd_cond(self, file_names):
         """Build SciDB conditional expressions ("iif") to map file names to
@@ -163,14 +172,14 @@ class Loader:
     # -- -
     # -- - VARIANT - --
     # -- -
-    def load_variant(self):
+    def store_variant(self):
         self.db.create_array(config.VARIANT_ARRAY, config.VARIANT_SCHEMA)
 
         fifo_name = self.fifo_names[0]
         pipe = Loader.make_pipe(config.VARIANT_FILE, fifo_name)
 
         logger.info('Query:running...')
-        self.db.iquery(config.VARIANT_LOAD_QUERY.format(path=fifo_name))
+        self.db.iquery(config.VARIANT_STORE_QUERY.format(path=fifo_name))
         logger.info('Query:done')
         logger.info('Pipe:return code:%s', pipe.poll())
         logger.info('Array:%s', config.VARIANT_ARRAY)
@@ -178,26 +187,26 @@ class Loader:
     # -- -
     # -- - GENE - --
     # -- -
-    def load_gene_index(self):
+    def store_gene_index(self):
         self.db.create_array(config.GENE_INDEX_ARRAY, config.GENE_INDEX_SCHEMA)
 
         fifo_name = self.fifo_names[0]
         pipe = Loader.make_pipe(config.GENE_FILE, fifo_name)
 
         logger.info('Query:running...')
-        self.db.iquery(config.GENE_INDEX_LOAD_QUERY.format(path=fifo_name))
+        self.db.iquery(config.GENE_INDEX_STORE_QUERY.format(path=fifo_name))
         logger.info('Query:done')
         logger.info('Pipe:return code:%s', pipe.poll())
         logger.info('Array:%s', config.GENE_INDEX_ARRAY)
 
-    def load_gene(self):
+    def store_gene(self):
         self.db.create_array(config.GENE_ARRAY, config.GENE_SCHEMA)
 
         fifo_name = self.fifo_names[0]
         pipe = Loader.make_pipe(config.GENE_FILE, fifo_name)
 
         logger.info('Query:running...')
-        self.db.iquery(config.GENE_LOAD_QUERY.format(path=fifo_name))
+        self.db.iquery(config.GENE_STORE_QUERY.format(path=fifo_name))
         logger.info('Query:done')
         logger.info('Pipe:return code:%s', pipe.poll())
         logger.info('Array:%s', config.GENE_ARRAY)
@@ -206,13 +215,13 @@ class Loader:
     def remove_arrays(self):
         if not Loader.confirm('Remove and recreate arrays'):
             return
-        for array in (config.QC_ARRAY,
-                      config.ICD_INDEX_ARRAY,
-                      config.ICD_ARRAY,
-                      config.ICD_INFO_ARRAY,
-                      config.VARIANT_ARRAY,
-                      config.GENE_INDEX_ARRAY,
-                      config.GENE_ARRAY):
+        for array in itertools.chain((config.QC_ARRAY,
+                                      config.ICD_INFO_ARRAY,
+                                      config.ICD_ARRAY,
+                                      config.VARIANT_ARRAY,
+                                      config.GENE_INDEX_ARRAY,
+                                      config.GENE_ARRAY),
+                                     config.ICD_PVALUE_MAP.values()):
             try:
                 self.db.remove(array)
             except:
@@ -309,11 +318,12 @@ class Loader:
 if __name__ == '__main__':
     loader = Loader()
     loader.remove_arrays()
-    loader.load_qc()
-    loader.load_icd_index()
-    loader.load_icd()
-    loader.load_qt()
-    loader.load_icd_info()
-    loader.load_variant()
-    loader.load_gene_index()
-    loader.load_gene()
+    loader.store_qc()
+    loader.store_icd_info()
+    loader.insert_icd_info()
+    loader.insert_icd()
+    loader.insert_qt()
+    loader.store_icd_pvalue()
+    loader.store_variant()
+    loader.store_gene_index()
+    loader.store_gene()

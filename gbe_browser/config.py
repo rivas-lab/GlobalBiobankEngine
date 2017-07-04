@@ -30,13 +30,12 @@ QT_GLOB = os.path.join(
 ICD_INFO_FILE = os.path.join(GBE_DATA_PATH, 'icdstats', 'icdinfo.txt')
 
 
-ICD_INDEX_ARRAY = 'icd_index'
-ICD_INDEX_SCHEMA = '<icd:string>[icd_idx = 0:*:0:20]'
+ICD_INFO_ARRAY = 'icd_info'
+ICD_INFO_SCHEMA = '<icd:string, Case:int64, Name:string>[icd_idx = 0:*:0:20]'
 
 ICD_ARRAY = 'icd'
 ICD_SCHEMA = """
   <icdind:      int64,
-   xpos:        int64,
    affyid:      string,
    or_val:      double,
    se:          double,
@@ -50,10 +49,44 @@ ICD_SCHEMA = """
    pos       = 0:*:0:10000000;
    synthetic = 0:999:0:1000]"""
 
-ICD_INFO_ARRAY = 'icd_info'
-ICD_INFO_SCHEMA = '<Case:int64, Name:string>[icd_idx=0:*:0:1000000]'
+ICD_PVALUE_MAP = dict(
+    (pvalue, '{icd}_pvalue_lt{pvalue:05d}'.format(
+        icd=ICD_ARRAY, pvalue=int(pvalue * 10e4)))
+    for pvalue in [.001, .0001, .00001])
 
-ICD_LOAD_QUERY = """
+ICD_INFO_STORE_QUERY = """
+  store(
+    redimension(
+      apply(
+        input({input_schema}, '{{fn}}', 0, 'CSV'),
+        Case, int64(null),
+        Name, string(null)),
+      {icd_info_schema}),
+    {icd_info})""".format(
+        input_schema=ICD_INFO_SCHEMA.replace(', Case:int64, Name:string', ''),
+        icd_info_schema=ICD_INFO_SCHEMA,
+        icd_info=ICD_INFO_ARRAY)
+
+ICD_INFO_INSERT_QUERY = """
+  insert(
+    join(
+      project({icd_info}, icd),
+      redimension(
+        apply(
+          index_lookup(
+            aio_input('{path}', 'num_attributes=6'),
+            project({icd_info}, icd),
+            a0,
+            icd_idx),
+          Case, dcast(a1, int64(null)),
+          Name, a2),
+        {input_schema})),
+    {icd_info})""".format(
+        icd_info=ICD_INFO_ARRAY,
+        input_schema=ICD_INFO_SCHEMA.replace('icd:string, ', ''),
+        path=ICD_INFO_FILE)
+
+ICD_INSERT_QUERY = """
   insert(
     redimension(
       apply(
@@ -77,7 +110,6 @@ ICD_LOAD_QUERY = """
         pos,         int64(a1),
         icdind,      int64(string(int64(a0) * 1e9 + int64(a1)) +
                            {{icdind_cond}}),
-        xpos,        int64(a0) * int64(1e9) + int64(a1),
         affyid,      a2,
         or_val,      dcast(a8,  double(null)),
         se,          dcast(a9,  double(null)),
@@ -93,7 +125,7 @@ ICD_LOAD_QUERY = """
         icd=ICD_ARRAY,
         qc=QC_ARRAY)
 
-QT_LOAD_QUERY = """
+QT_INSERT_QUERY = """
   insert(
     redimension(
       apply(
@@ -116,7 +148,6 @@ QT_LOAD_QUERY = """
         pos,         int64(a1),
         icdind,      int64(string(int64(a0) * 1e9 + int64(a1)) +
                            {{icdind_cond}}),
-        xpos,        int64(a0) * int64(1e9) + int64(a1),
         affyid,      a1,
         or_val,      dcast(a7,  double(null)),
         se,          dcast(a8,  double(null)),
@@ -132,59 +163,33 @@ QT_LOAD_QUERY = """
         icd=ICD_ARRAY,
         qc=QC_ARRAY)
 
-ICD_INFO_LOAD_QUERY = """
+ICD_PVALUE_STORE_QUERIES = ["""
   store(
-    redimension(
-      apply(
-        index_lookup(
-          aio_input('{path}', 'num_attributes=6'),
-          {icd_index},
-          a0,
-          icd_idx),
-        Case,     dcast(a1, int64(null)),
-        Name, a2),
-      {icd_info}, false),
-    {icd_info})""".format(
-        icd_info=ICD_INFO_ARRAY,
-        icd_index=ICD_INDEX_ARRAY,
-        path=ICD_INFO_FILE)
-
+    filter(icd, pvalue < {pvalue}),
+    {icd_pvalue})""".format(
+        pvalue=pvalue,
+        icd_pvalue=icd_pvlue)
+  for (pvalue, icd_pvlue) in ICD_PVALUE_MAP.items()]
 
 ICD_PVALUE_LOOKUP_QUERY = """
-  filter(
     cross_join(
-      {icd},
-      filter({icd_index}, icd = '{{icd}}'),
-      {icd}.icd_idx,
-      {icd_index}.icd_idx),
-    pvalue < {{pvalue}})""".format(
-        icd=ICD_ARRAY,
-        icd_index=ICD_INDEX_ARRAY)
+      {{icd_pvalue}},
+      filter({icd_info}, icd = '{{icd}}'),
+      {{icd_pvalue}}.icd_idx,
+      {icd_info}.icd_idx)""".format(
+        icd_info=ICD_INFO_ARRAY)
 
-ICD_XPOS_LOOKUP_QUERY = """
-  cross_join(
-    filter({icd}, xpos = {{xpos}}),
-    {icd_index},
-    {icd}.icd_idx,
-    {icd_index}.icd_idx)""".format(
-        icd=ICD_ARRAY,
-        icd_index=ICD_INDEX_ARRAY)
+# ICD_XPOS_LOOKUP_QUERY = """
+#   cross_join(
+#     filter({icd}, xpos = {{xpos}}),
+#     {icd_index},
+#     {icd}.icd_idx,
+#     {icd_index}.icd_idx)""".format(
+#         icd=ICD_ARRAY,
+#         icd_index=ICD_INDEX_ARRAY)
 
 ICD_LOOKUP_SCHEMA_INST = scidbpy.schema.Schema.fromstring(
-    ICD_SCHEMA.replace('>', ',icd:string>'))
-
-ICD_INFO_LOOKUP_QUERY = """
-  cross_join(
-    {icd_info},
-    filter({icd_index}, icd = '{{icd}}'),
-    {icd_info}.icd_idx,
-    {icd_index}.icd_idx)""".format(
-        icd_info=ICD_INFO_ARRAY,
-        icd_index=ICD_INDEX_ARRAY)
-
-ICD_INFO_LOOKUP_SCHEMA_INST = scidbpy.schema.Schema.fromstring(
-    ICD_INFO_SCHEMA.replace('>', ',icd:string>'))
-
+    ICD_SCHEMA.replace('>', ',icd:string,Case:int64,Name:string>'))
 
 # -- -
 # -- - VARIANT - --
@@ -195,7 +200,6 @@ VARIANT_FILE = os.path.join(GBE_DATA_PATH,
 VARIANT_ARRAY = 'variant'
 VARIANT_SCHEMA = """
   <rsid:         int64,
-   xpos:         int64,
    ref:          string,
    alt:          string,
    site_quality: string,
@@ -208,7 +212,7 @@ VARIANT_SCHEMA = """
    pos       = 0:*:0:10000000;
    synthetic = 0:999:0:1000]"""
 
-VARIANT_LOAD_QUERY = """
+VARIANT_STORE_QUERY = """
   store(
     redimension(
       apply(
@@ -220,7 +224,6 @@ VARIANT_LOAD_QUERY = """
         rsid,         iif(strlen(a2) > 1,
                           int64(substr(a2, 2, 100)),
                           int64(null)),
-        xpos,         int64(a0) * int64(1e9) + int64(a1),
         ref,          a3,
         alt,          a4,
         site_quality, a5,
@@ -234,10 +237,6 @@ VARIANT_LOAD_QUERY = """
         csq,          rsub(a7, 's/.*CSQ=([^;]*).*/$1/')),
       {variant}),
     {variant})""".format(variant=VARIANT_ARRAY)
-
-VARIANT_LOOKUP_QUERY = "filter({variant}, {{xpos_cond}})".format(
-    variant=VARIANT_ARRAY)
-VARIANT_LOOKUP_SCHEMA_INST = scidbpy.schema.Schema.fromstring(VARIANT_SCHEMA)
 
 VARIANT_CSQ = ('Allele',
                'Consequence',
@@ -316,7 +315,7 @@ GENE_FILE = os.path.join(GBE_DATA_PATH, 'gencode.gtf.gz')
 GENE_INDEX_ARRAY = 'gene_index'
 GENE_INDEX_SCHEMA = '<gene_id:string>[gene_idx = 0:*:0:20]'
 
-GENE_INDEX_LOAD_QUERY = """
+GENE_INDEX_STORE_QUERY = """
   store(
     redimension(
       apply(
@@ -344,7 +343,7 @@ GENE_SCHEMA = """
    stop      = 0:*:0:10000000;
    synthetic = 0:199:0:200]"""
 
-GENE_LOAD_QUERY = """
+GENE_STORE_QUERY = """
   store(
     redimension(
       index_lookup(
