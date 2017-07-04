@@ -140,7 +140,7 @@ class Loader:
         logger.info('Array:%s', config.ICD_ARRAY)
 
     def store_icd_pvalue(self):
-        for (query, name) in zip(config.ICD_PVALUE_CREATE_QUERIES,
+        for (query, name) in zip(config.ICD_PVALUE_STORE_QUERIES,
                                  config.ICD_PVALUE_MAP.values()):
             logger.info('Query:running...')
             self.db.iquery(query)
