@@ -64,6 +64,14 @@
         <hr/>
         <div class="col-md-6">
      <dl class="dl-horizontal" style="margin-bottom: 0px;">
+ <dt>
+                            {% if variant.filter != "PASS" %}
+                                <span class="label label-danger">Filter Status</span>
+                            {% else %}
+                                Filter Status
+                            {% endif %}
+                        </dt>
+                        <dd>{{ variant.filter }}</dd>
                         <dt>dbSNP</dt>
                         {% if variant.rsid and variant.rsid != "." %}
                             <dd><a href="http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs={{ variant.rsid }}" target="_blank">{{ variant.rsid }}</a></dd>

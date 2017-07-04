@@ -1487,9 +1487,12 @@ def get_gene_page_content(gene_id):
 
                 if len(icd10info) > 0:
 
-
+                    
                     if "Name" in icd10info[0].keys():
-                        variants_in_gene[i]["minicd_info"] = icd10info[0]["Name"]
+                        names = icd10info[0]["Name"]
+                        names = names.split()
+                        names = "&nbsp;".join(names)
+                        variants_in_gene[i]["minicd_info"] = names
 
             #print ("Transcripts in gene")
             #print(transcripts_in_gene)
