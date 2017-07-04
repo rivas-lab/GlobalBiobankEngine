@@ -2,12 +2,16 @@ import os
 import scidbpy
 
 
+# == =
+# == = Load = ==
+# == =
+
 SCIDB_INSTANCE_NUM = 2
 GBE_DATA_PATH = '/home/scidb/GlobalBiobankEngine/gbe_data'
 
 
 # -- -
-# -- - QC - --
+# -- - Load: QC - --
 # -- -
 QC_PATH = os.path.join(GBE_DATA_PATH, 'qc')
 QC_FILES = (
@@ -20,7 +24,7 @@ QC_ARRAY = 'qc'
 
 
 # -- -
-# -- - ICD - --
+# -- - Load: ICD - --
 # -- -
 ICD_GLOB = os.path.join(
     GBE_DATA_PATH, 'icdassoc', 'hybrid', 'c*.hybrid.rewrite.gz')
@@ -28,7 +32,6 @@ QT_GLOB = os.path.join(
     GBE_DATA_PATH, 'icdassoc', 'hybrid', 'c*.linear.rewrite.gz')
 
 ICD_INFO_FILE = os.path.join(GBE_DATA_PATH, 'icdstats', 'icdinfo.txt')
-
 
 ICD_INFO_ARRAY = 'icd_info'
 ICD_INFO_SCHEMA = '<icd:string, Case:int64, Name:string>[icd_idx = 0:*:0:20]'
@@ -184,28 +187,9 @@ ICD_PVALUE_STORE_QUERIES = ["""
         icd_pvalue=icd_pvalue)
   for (pvalue, icd_pvalue) in ICD_PVALUE_MAP.items()]
 
-ICD_PVALUE_LOOKUP_QUERY = """
-    cross_join(
-      {{icd_pvalue}},
-      filter({icd_info}, icd = '{{icd}}'),
-      {{icd_pvalue}}.icd_idx,
-      {icd_info}.icd_idx)""".format(
-        icd_info=ICD_INFO_ARRAY)
-
-# ICD_XPOS_LOOKUP_QUERY = """
-#   cross_join(
-#     filter({icd}, xpos = {{xpos}}),
-#     {icd_index},
-#     {icd}.icd_idx,
-#     {icd_index}.icd_idx)""".format(
-#         icd=ICD_ARRAY,
-#         icd_index=ICD_INDEX_ARRAY)
-
-ICD_LOOKUP_SCHEMA_INST = scidbpy.schema.Schema.fromstring(
-    ICD_SCHEMA.replace('>', ',icd:string,Case:int64,Name:string>'))
 
 # -- -
-# -- - VARIANT - --
+# -- - Load: VARIANT - --
 # -- -
 VARIANT_FILE = os.path.join(GBE_DATA_PATH,
                             'icd10ukbb.ukbiobank.merge.sort.vcf.gz')
@@ -222,8 +206,7 @@ VARIANT_SCHEMA = """
    minl10pval:   double,
    csq:          string>
   [chrom     = 1:25:0:1;
-   pos       = 0:*:0:10000000;
-   synthetic = 0:999:0:1000]"""
+   pos       = 0:*:0:10000000]"""
 
 VARIANT_STORE_QUERY = """
   store(
@@ -251,6 +234,133 @@ VARIANT_STORE_QUERY = """
       {variant}),
     {variant})""".format(variant=VARIANT_ARRAY)
 
+
+# -- -
+# -- - Load: GENE - --
+# -- -
+GENE_FILE = os.path.join(GBE_DATA_PATH, 'gencode.gtf.gz')
+
+GENE_INDEX_ARRAY = 'gene_index'
+GENE_INDEX_SCHEMA = '<gene_id:string>[gene_idx = 0:*:0:20]'
+
+GENE_INDEX_STORE_QUERY = """
+  store(
+    redimension(
+      apply(
+        uniq(
+          sort(
+            project(
+              apply(
+                filter(
+                  aio_input('{{path}}', 'num_attributes=9'),
+                  substr(a0, 0, 1) <> '#'),
+                gene_id, rsub(a8, 's/.*gene_id "([^.]*).*/$1/')),
+              gene_id))),
+        gene_idx, i),
+      {gene_index}),
+    {gene_index})""".format(gene_index=GENE_INDEX_ARRAY)
+
+
+GENE_ARRAY = 'gene'
+GENE_SCHEMA = """
+  <gene_name: string,
+   strand:    string>
+  [gene_idx  = 0:*:0:20;
+   chrom     = 1:25:0:1;
+   start     = 0:*:0:10000000;
+   stop      = 0:*:0:10000000;
+   synthetic = 0:199:0:200]"""
+
+GENE_STORE_QUERY = """
+  store(
+    redimension(
+      index_lookup(
+        apply(
+          filter(
+            aio_input('{{path}}', 'num_attributes=9'),
+            substr(a0, 0, 1) <> '#'),
+          gene_id,      rsub(a8, 's/.*gene_id "([^.]*).*/$1/'),
+          chrom,        iif(substr(a0, 3, 4) = 'X',
+                            23,
+                            iif(substr(a0, 3, 4) = 'Y',
+                                24,
+                                iif(substr(a0, 3, 4) = 'M',
+                                    25,
+                                    dcast(substr(a0, 3, 5), int64(null))))),
+          start,        int64(a3) + 1,
+          stop,         int64(a4) + 1,
+          gene_name,    rsub(a8, 's/.*gene_name "([^"]*).*/$1/'),
+          strand,       a6) as INPUT,
+        {gene_index},
+        INPUT.gene_id,
+        gene_idx),
+      {gene}),
+    {gene})""".format(gene=GENE_ARRAY, gene_index=GENE_INDEX_ARRAY)
+
+
+# == =
+# == = LOOKUP = ==
+# == =
+
+# -- -
+# -- - Lookup: ICD - --
+# -- -
+ICD_PVALUE_LOOKUP_QUERY = """
+  filter(
+    cross_join(
+      {icd},
+      filter({icd_info}, icd = '{{icd}}'),
+      {icd}.icd_idx,
+      {icd_info}.icd_idx),
+    pvalue < {{pvalue}})""".format(
+        icd=ICD_ARRAY,
+        icd_info=ICD_INFO_ARRAY)
+
+ICD_CRHOM_POS_LOOKUP_QUERY = """
+  cross_join(
+    between({icd}, null, {{chrom}}, {{pos}}, null,
+                   null, {{chrom}}, {{pos}}, null),
+    {icd_info},
+    {icd}.icd_idx,
+    {icd_info}.icd_idx)""".format(
+        icd=ICD_ARRAY,
+        icd_info=ICD_INFO_ARRAY)
+
+ICD_PVALUE_VARIANT_LOOKUP_QUERY = """
+  cross_join(
+    {variant},
+    cross_join(
+        {{icd_pvalue}},
+        filter({icd_info}, icd = '{{icd}}'),
+        {{icd_pvalue}}.icd_idx,
+        {icd_info}.icd_idx) as icd_join,
+    {variant}.chrom,
+    icd_join.chrom,
+    {variant}.pos,
+    icd_join.pos)""".format(
+        icd_info=ICD_INFO_ARRAY,
+        variant=VARIANT_ARRAY)
+
+ICD_X_INFO_SCHEMA = scidbpy.schema.Schema.fromstring(
+    ICD_SCHEMA.replace(
+        '>',
+        ',{}>'.format(
+            ICD_INFO_SCHEMA[ICD_INFO_SCHEMA.index('<') + 1:
+                            ICD_INFO_SCHEMA.index('>')])))
+
+VARIANT_X_ICD_X_INFO_SCHEMA = scidbpy.schema.Schema.fromstring(
+    VARIANT_SCHEMA.replace(
+        '>',
+        ',{},{}>'.format(
+            ICD_SCHEMA[ICD_SCHEMA.index('<') + 1:
+                       ICD_SCHEMA.index('>')],
+            ICD_INFO_SCHEMA[ICD_INFO_SCHEMA.index('<') + 1:
+                            ICD_INFO_SCHEMA.index('>')])))
+
+
+# -- -
+# -- - Lookup: VARIANT - --
+# -- -
 VARIANT_CSQ = ('Allele',
                'Consequence',
                'IMPACT',
@@ -319,68 +429,9 @@ VARIANT_CSQ = ('Allele',
                'LoF_flags',
                'LoF_info')
 
-
 # -- -
-# -- - GENE - --
+# -- - Lookup: GENE - --
 # -- -
-GENE_FILE = os.path.join(GBE_DATA_PATH, 'gencode.gtf.gz')
-
-GENE_INDEX_ARRAY = 'gene_index'
-GENE_INDEX_SCHEMA = '<gene_id:string>[gene_idx = 0:*:0:20]'
-
-GENE_INDEX_STORE_QUERY = """
-  store(
-    redimension(
-      apply(
-        uniq(
-          sort(
-            project(
-              apply(
-                filter(
-                  aio_input('{{path}}', 'num_attributes=9'),
-                  substr(a0, 0, 1) <> '#'),
-                gene_id, rsub(a8, 's/.*gene_id "([^.]*).*/$1/')),
-              gene_id))),
-        gene_idx, i),
-      {gene_index}),
-    {gene_index})""".format(gene_index=GENE_INDEX_ARRAY)
-
-
-GENE_ARRAY = 'gene'
-GENE_SCHEMA = """
-  <gene_name: string,
-   strand:    string>
-  [gene_idx  = 0:*:0:20;
-   chrom     = 1:25:0:1;
-   start     = 0:*:0:10000000;
-   stop      = 0:*:0:10000000;
-   synthetic = 0:199:0:200]"""
-
-GENE_STORE_QUERY = """
-  store(
-    redimension(
-      index_lookup(
-        apply(
-          filter(
-            aio_input('{{path}}', 'num_attributes=9'),
-            substr(a0, 0, 1) <> '#'),
-          gene_id,      rsub(a8, 's/.*gene_id "([^.]*).*/$1/'),
-          chrom,        iif(substr(a0, 3, 4) = 'X',
-                            23,
-                            iif(substr(a0, 3, 4) = 'Y',
-                                24,
-                                iif(substr(a0, 3, 4) = 'M',
-                                    25,
-                                    dcast(substr(a0, 3, 5), int64(null))))),
-          start,        int64(a3) + 1,
-          stop,         int64(a4) + 1,
-          gene_name,    rsub(a8, 's/.*gene_name "([^"]*).*/$1/'),
-          strand,       a6) as INPUT,
-        {gene_index},
-        INPUT.gene_id,
-        gene_idx),
-      {gene}),
-    {gene})""".format(gene=GENE_ARRAY, gene_index=GENE_INDEX_ARRAY)
 
 GENE_LOOKUP_QUERY = """
   cross_join(
@@ -391,5 +442,5 @@ GENE_LOOKUP_QUERY = """
         gene=GENE_ARRAY,
         gene_index=GENE_INDEX_ARRAY)
 
-GENE_LOOKUP_SCHEMA_INST = scidbpy.schema.Schema.fromstring(
+GENE_LOOKUP_SCHEMA = scidbpy.schema.Schema.fromstring(
     GENE_SCHEMA.replace('>', ',gene_id:string>'))

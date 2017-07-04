@@ -1,4 +1,4 @@
-import exceptions
+import itertools
 import scidbpy
 
 
@@ -44,7 +44,7 @@ def get_icd_significant(db, icd_id, cutoff=0.01):
         db.iquery(
             config.ICD_PVALUE_LOOKUP_QUERY.format(
                 icd=icd_id, pvalue=cutoff),
-            schema=config.ICD_LOOKUP_SCHEMA_INST,
+            schema=config.ICD_LOOKUP_SCHEMA,
             fetch=True))
 
 
@@ -66,7 +66,7 @@ def get_icd_info(db, icd_id):
     return numpy2dict(
         db.iquery(
             config.ICD_INFO_LOOKUP_QUERY.format(icd=icd_id),
-            schema=config.ICD_INFO_LOOKUP_SCHEMA_INST,
+            schema=config.ICD_INFO_LOOKUP_SCHEMA,
             fetch=True))
 
 
@@ -80,13 +80,50 @@ def get_variant_icd(db, xpos):
       db.icd.find({'xpos': '1039381448'}, fields={'_id': False})
 
     SciDB:
-      filter(icd, xpos = 1039381448);
+      between(icd, null, 1, 39381448, null, null, 1, 39381448, null);
     """
     return numpy2dict(
         db.iquery(
-            config.ICD_XPOS_LOOKUP_QUERY.format(xpos=xpos),
-            schema=config.ICD_LOOKUP_SCHEMA_INST,
+            config.ICD_CHROM_POS_LOOKUP_QUERY.format(
+                chrom=xpos / 1e9, pos=xpos % 1e9),
+            schema=config.ICD_X_INFO_SCHEMA,
             fetch=True))
+
+
+def get_icd_significant_variant(db, icd_id, cutoff=0.01):
+    """
+    e.g.,
+    UI:
+      https://biobankengine.stanford.edu/coding/RH117
+
+    MongoDB:
+      db.icd.find({'icd': 'RH117', 'stats.pvalue': {'$lt': 0.01}},
+                  fields={'_id': false})
+      db.icd_info.find({'icd': 'RH117'}, fields={'_id': False})
+      db.variants.find({'xpos': '1039381448'}, fields={'_id': False})
+
+    SciDB:
+      cross_join(
+        variant,
+        cross_join(
+            icd_pvalue_lt001_ltd,
+            filter(icd_info, icd = 'RH117'),
+            icd_pvalue_lt001.icd_idx,
+            icd_info_index.icd_idx) as icd_join,
+        variant.chrom,
+        icd_join.chrom,
+        variant.pos,
+        icd_join.pos);
+    """
+    variants = numpy2dict(
+        db.iquery(
+            config.ICD_PVALUE_VARIANT_LOOKUP_QUERY.format(
+                icd=icd_id, icd_pvalue=config.ICD_PVALUE_MAP[cutoff])
+            if cutoff in config.ICD_PVALUE_MAP else
+            "TODO",
+            schema=config.VARIANT_X_ICD_X_INFO_SCHEMA,
+            fetch=True))
+    return format_variants(variants)
 
 
 # -- -
@@ -103,10 +140,17 @@ def format_variants(variants):
         vep_annotations = [ann for ann in anns
                            if ('Feature' in ann and
                                ann['Feature'].startswith('ENST'))]
-        variant['vep_annotations'] = vep_annotations
+        # variant['vep_annotations'] = vep_annotations
+
         variant['genes'] = list(set(ann['Gene'] for ann in vep_annotations))
+        variant['gene_name'] = ','.join(variant['genes'][:3])
+        variant['gene_symbol'] = ','.join(
+            itertools.islice(set(ann['SYMBOL'] for ann in vep_annotations), 3))
         variant['transcripts'] = list(set(
             ann['Feature'] for ann in vep_annotations))
+
+        utils.add_consequence_to_variant(variant, vep_annotations)
+
     return variants
 
 
@@ -127,11 +171,9 @@ def get_variants_by_id(db, variant_ids):
     variants = numpy2dict(
         db.iquery(
             config.VARIANT_LOOKUP_QUERY.format(xpos_cond=xpos_cond),
-            schema=config.VARIANT_LOOKUP_SCHEMA_INST,
+            schema=config.VARIANT_LOOKUP_SCHEMA,
             fetch=True))
     variants = format_variants(variants)
-    for variant in variants:
-        utils.add_consequence_to_variant(variant)
     return variants
 
 
@@ -154,7 +196,7 @@ def get_variant(db, xpos):
     variants = numpy2dict(
         db.iquery(
             config.VARIANT_LOOKUP_QUERY.format(xpos_cond=xpos_cond),
-            schema=config.VARIANT_LOOKUP_SCHEMA_INST,
+            schema=config.VARIANT_LOOKUP_SCHEMA,
             fetch=True))
     variants = format_variants(variants)
     variant = variants[0] if len(variants) else None
@@ -190,7 +232,7 @@ def get_gene(db, gene_id):
     return numpy2dict(
         db.iquery(
             config.GENE_LOOKUP_QUERY.format(gene_id=gene_id),
-            schema=config.GENE_LOOKUP_SCHEMA_INST,
+            schema=config.GENE_LOOKUP_SCHEMA,
             fetch=True))
 
 
