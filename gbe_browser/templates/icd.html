@@ -2,7 +2,7 @@
 {% block body %}
     <!-- Render context vars in JS here -->
     <script type="text/javascript">
-        window.icd = window.table_variants = {{ icd|tojson|safe }};
+        window.icd = {{ icd|tojson|safe }};
         window.page_name = window.icd[0].icd_id;
     </script>
 
