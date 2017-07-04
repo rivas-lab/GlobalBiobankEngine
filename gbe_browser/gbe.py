@@ -1066,7 +1066,7 @@ def variant_icd_page(variant_str):
         pos = int(pos)
         # pos, ref, alt = get_minimal_representation(pos, ref, alt)
         xpos = get_xpos(chrom, pos)
-        variant = lookups.get_variant(db, xpos)
+        variant = lookups.get_variant_chrom_pos(db, chrom, pos)
         if variant is None:
             variant = {
                 'chrom': chrom,
@@ -1092,8 +1092,8 @@ def variant_icd_page(variant_str):
             item = icdstats[idx]
             icd10 = item['icd']
             item['Code'] = icd10
-            icd10info = lookups.get_icd_info(db, icd10)
-            if len(icd10info) == 0:
+            # icd10info = lookups.get_icd_info(db, icd10)
+            if 'Name' not in item:
                 item['Name'] = 'NA'
                 item['Group'] = 'NA'
                 item['OR'] = 1
@@ -1104,7 +1104,7 @@ def variant_icd_page(variant_str):
                 item['Case'] = 'NA'
                 indexes.append(idx)
             else:
-                item['Name'] = icd10info[0]['Name']
+                # item['Name'] = icd10info[0]['Name']
                 if icd10[0:2] == "RH":
                     item['Group'] = "RH"
                 elif icd10[0:2] == "FH":
@@ -1128,7 +1128,7 @@ def variant_icd_page(variant_str):
                 item['U95OR'] = format(float(item['u95or']), '.4g')
                 item['pvalue'] = format(float(item['pvalue']), '.4g')
                 item['l10pval'] = format(float(item['log10pvalue']), '.4g')
-                item['Case'] = icd10info[0]['Case']
+                # item['Case'] = icd10info[0]['Case']
                 se =  format(float(item['se']), '.4g')
                 if float(item['l10pval']) <= 1 or float(se) >= .5 or int(item['Case']) <= 100 or item['Group'] == "INI" or item['Code'] == "HC67" or icd10 in seend:
                     indexes.append(idx)
@@ -1487,7 +1487,6 @@ def get_gene_page_content(gene_id):
 
                 if len(icd10info) > 0:
 
-                    
                     if "Name" in icd10info[0].keys():
                         names = icd10info[0]["Name"]
                         names = names.split()
