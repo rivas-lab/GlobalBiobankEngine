@@ -1404,165 +1404,165 @@ MED292	102	timolol_0.25%_eye_drops	102	102	Y
 MED293	101	syndol_tablet	101	101	Y
 MED294	100	etoricoxib	100	100	Y
 MED295	100	etodolac	100	100	Y
-HC446   36733   hypertension    36733   36733   Y
-HC447   14078   hiatus hernia   14078   14078   Y
-HC448   10611   other joint disorder    10611   10611   Y
-HC449   10300   gastro-oesophageal reflux (gord) / gastric reflux       10300   10300   Y
-HC450   7437    diabetes        7437    7437    Y
-HC451   6807    haemorrhoids / piles    6807    6807    Y
-HC452   6509    cataract        6509    6509    Y
-HC453   6667    hypothyroidism/myxoedema        6667    6667    Y
-HC454   6586    angina  6586    6586    Y
-HC455   5405    anaemia 5405    5405    Y
-HC456   5307    arthritis (nos) 5307    5307    Y
-HC457   5146    cholelithiasis/gall stones      5146    5146    Y
-HC458   4452    pneumonia       4452    4452    Y
-HC459   4319    heart attack/myocardial infarction      4319    4319    Y
-HC460   3886    migraine        3886    3886    Y
-HC461   3972    urinary tract infection/kidney infection        3972    3972    Y
-HC462   3985    eczema/dermatitis       3985    3985    Y
-HC463   3337    varicose veins  3337    3337    Y
-HC464   3344    oesophagitis/barretts oesophagus        3344    3344    Y
-HC465   2710    iron deficiency anaemia 2710    2710    Y
-HC466   2849    carpal tunnel syndrome  2849    2849    Y
-HC467   2485    renal/kidney failure    2485    2485    Y
-HC468   1965    fracture forearm / wrist        1965    1965    Y
-HC469   2075    fracture lower leg / ankle      2075    2075    Y
-HC470   1949    rheumatoid arthritis    1949    1949    Y
-HC471   2306    emphysema/chronic bronchitis    2306    2306    Y
-HC472   1730    psoriasis       1730    1730    Y
-HC473   1754    enlarged prostate       1754    1754    Y
-HC474   1704    heart failure/pulmonary odema   1704    1704    Y
-HC475   1578    nasal polyps    1578    1578    Y
-HC476   1524    head injury     1524    1524    Y
-HC477   1471    chronic sinusitis       1471    1471    Y
-HC478   1471    synovitis       1471    1471    Y
-HC479   1478    epilepsy        1478    1478    Y
-HC480   1349    inflammatory bowel disease      1349    1349    Y
-HC481   1239    hyperthyroidism/thyrotoxicosis  1239    1239    Y
-HC482   1245    duodenal ulcer  1245    1245    Y
-HC483   1289    peripheral vascular disease     1289    1289    Y
-HC484   1274    bowel / intestinal obstruction  1274    1274    Y
-HC485   1122    ulcerative colitis      1122    1122    Y
-HC486   989     disc degeneration       989     989     Y
-HC487   924     anal fissure    924     924     Y
-HC488   941     cystitis        941     941     Y
-HC489   934     kidney stone/ureter stone/bladder stone 934     934     Y
-HC490   817     connective tissue disorder      817     817     Y
-HC491   855     gastric/stomach ulcers  855     855     Y
-HC492   821     fracture hand   821     821     Y
-HC493   801     fracture shoulder / scapula     801     801     Y
-HC494   847     chickenpox      847     847     Y
-HC495   822     heart valve problem/heart murmur        822     822     Y
-HC496   796     fracture neck of femur / hip    796     796     Y
-HC497   680     fracture skull / head   680     680     Y
-HC498   693     bladder problem (not cancer)    693     693     Y
-HC499   747     measles / morbillivirus 747     747     Y
-HC500   598     tuberculosis (tb)       598     598     Y
-HC501   640     cerebral palsy  640     640     Y
-HC502   673     heart arrhythmia        673     673     Y
-HC503   697     emphysema       697     697     Y
-HC504   553     fracture sternum        553     553     Y
-HC505   487     other renal/kidney problem      487     487     Y
-HC506   419     spontaneous pneumothorax/recurrent pneumothorax 419     419     Y
-HC507   447     gestational hypertension/pre-eclampsia  447     447     Y
-HC508   477     other neurological problem      477     477     Y
-HC509   431     breast cysts    431     431     Y
-HC510   468     cardiomyopathy  468     468     Y
-HC511   380     hepatitis       380     380     Y
-HC512   377     female infertility      377     377     Y
-HC513   408     fracture pelvis 408     408     Y
-HC514   469     fracture foot   469     469     Y
-HC515   418     stress  418     418     Y
-HC516   374     meniere's disease       374     374     Y
-HC517   492     aortic aneurysm 492     492     Y
-HC518   429     mumps / epidemic parotitis      429     429     Y
-HC519   365     urticaria       365     365     Y
-HC520   480     aortic dissection       480     480     Y
-HC521   373     nephritis       373     373     Y
-HC522   393     hypertrophic cardiomyopathy (hcm / hocm)        393     393     Y
-HC523   367     scoliosis       367     367     Y
-HC524   363     rectal or colon adenoma/polyps  363     363     Y
-HC525   334     rheumatic fever 334     334     Y
-HC526   329     rectal prolapse 329     329     Y
-HC527   315     psoriatic arthropathy   315     315     Y
-HC528   312     anorexia/bulimia/other eating disorder  312     312     Y
-HC529   307     sarcoidosis     307     307     Y
-HC530   258     diabetic eye disease    258     258     Y
-HC531   295     rosacea 295     295     Y
-HC532   300     alcoholic liver disease / alcoholic cirrhosis   300     300     Y
-HC533   296     arterial embolism       296     296     Y
-HC534   214     infective/viral hepatitis       214     214     Y
-HC535   225     schizophrenia   225     225     Y
-HC536   233     peptic ulcer    233     233     Y
-HC537   236     hyperparathyroidism     236     236     Y
-HC538   221     irregular heart beat    221     221     Y
-HC539   207     spinal injury   207     207     Y
-HC540   233     disorder of adrenal gland       233     233     Y
-HC541   235     rubella / german measles        235     235     Y
-HC542   203     lichen planus   203     203     Y
-HC543   195     prostate problem (not cancer)   195     195     Y
-HC544   179     ectopic pregnancy       179     179     Y
-HC545   205     other respiratory problems      205     205     Y
-HC546   189     infectious mononucleosis / glandular fever / epstein barr virus (ebv)   189     189     Y
-HC547   174     systemic lupus erythematosis/sle        174     174     Y
-HC548   177     blistering/desquamating skin disorder   177     177     Y
-HC549   181     scarlet fever / scarlatina      181     181     Y
-HC550   167     eye trauma      167     167     Y
-HC551   176     other abdominal problem 176     176     Y
-HC552   163     oesophageal varicies    163     163     Y
-HC553   133     encephalitis    133     133     Y
-HC554   135     parathyroid gland problem (not cancer)  135     135     Y
-HC555   115     herpes simplex  115     115     Y
-HC556   131     aplastic anaemia        131     131     Y
-HC557   125     breast fibroadenoma     125     125     Y
-HC558   116     fracture shaft of femur 116     116     Y
-HC559   113     eye infection   113     113     Y
-HC560   104     polycystic kidney       104     104     Y
-HC561   109     brain abscess/intracranial abscess      109     109     Y
-HC562   110     food intolerance        110     110     Y
-HC563   99      fracture neck / cervical fracture       99      99      Y
-HC564   106     acne/acne vulgaris      106     106     Y
-HC565   7       sickle cell disease     7       7       Y
-HC566   92      myositis/myopathy       92      92      Y
-HC567   93      paraplegia      93      93      Y
-HC568   25      thalassaemia    25      25      Y
-HC569   76      vasculitis      76      76      Y
-HC570   97      liver failure/cirrhosis 97      97      Y
-HC571   90      varicose ulcer  90      90      Y
-HC572   70      undescended testicle    70      70      Y
-HC573   63      hepatitis a     63      63      Y
-HC574   65      scleroderma/systemic sclerosis  65      65      Y
-HC575   77      peripheral nerve injury 77      77      Y
-HC576   64      myasthenia gravis       64      64      Y
-HC577   63      obsessive compulsive disorder (ocd)     63      63      Y
-HC578   42      hepatitis c     42      42      Y
-HC579   29      hepatitis b     29      29      Y
-HC580   54      fracture face / orbit / eye socket      54      54      Y
-HC581   52      brain haemorrhage       52      52      Y
-HC582   40      alopecia / hair loss    40      40      Y
-HC583   41      chronic skin ulcers     41      41      Y
-HC584   46      chronic laryngitis      46      46      Y
-HC585   33      cushings syndrome       33      33      Y
-HC586   36      lung abscess    36      36      Y
-HC587   27      hydatiform mole 27      27      Y
-HC588   28      pemphigoid/pemphigus    28      28      Y
-HC589   25      acromegaly      25      25      Y
-HC590   29      dermatomyositis 29      29      Y
-HC591   21      hyperaldosteronism/conn's syndrome      21      21      Y
-HC592   24      dermatopolymyositis     24      24      Y
-HC593   27      oesophageal stricture   27      27      Y
-HC594   22      male infertility        22      22      Y
-HC595   24      fibrosing alveolitis/unspecified alveolitis     24      24      Y
-HC596   15      kidney nephropathy      15      15      Y
-HC597   17      carcinoid syndrome/tumour       17      17      Y
-HC598   12      iga nephropathy 12      12      Y
-HC599   7       typhoid fever   7       7       Y
-HC600   13      other substance abuse/dependency        13      13      Y
-HC601   10      schistosomiasis/bilharzia       10      10      Y
-HC602   8       spinal abscess  8       8       Y
-HC603   9       dengue fever    9       9       Y
-HC604   7       other venous/lymphatic disease  7       7       Y
-HC605   4       diabetic nephropathy    4       4       Y
-HC606   3       hepatitis e     3       3       Y
-HC608   0       hepatitis d     0       0       Y
+HC446	36733	hypertension	36733	36733	Y
+HC447	14078	hiatus hernia	14078	14078	Y
+HC448	10611	other joint disorder	10611	10611	Y
+HC449	10300	gastro-oesophageal reflux (gord) / gastric reflux	10300	10300	Y
+HC450	7437	diabetes	7437	7437	Y
+HC451	6807	haemorrhoids / piles	6807	6807	Y
+HC452	6509	cataract	6509	6509	Y
+HC453	6667	hypothyroidism/myxoedema	6667	6667	Y
+HC454	6586	angina	6586	6586	Y
+HC455	5405	anaemia	5405	5405	Y
+HC456	5307	arthritis (nos)	5307	5307	Y
+HC457	5146	cholelithiasis/gall stones	5146	5146	Y
+HC458	4452	pneumonia	4452	4452	Y
+HC459	4319	heart attack/myocardial infarction	4319	4319	Y
+HC460	3886	migraine	3886	3886	Y
+HC461	3972	urinary tract infection/kidney infection	3972	3972	Y
+HC462	3985	eczema/dermatitis	3985	3985	Y
+HC463	3337	varicose veins	3337	3337	Y
+HC464	3344	oesophagitis/barretts oesophagus	3344	3344	Y
+HC465	2710	iron deficiency anaemia	2710	2710	Y
+HC466	2849	carpal tunnel syndrome	2849	2849	Y
+HC467	2485	renal/kidney failure	2485	2485	Y
+HC468	1965	fracture forearm / wrist	1965	1965	Y
+HC469	2075	fracture lower leg / ankle	2075	2075	Y
+HC470	1949	rheumatoid arthritis	1949	1949	Y
+HC471	2306	emphysema/chronic bronchitis	2306	2306	Y
+HC472	1730	psoriasis	1730	1730	Y
+HC473	1754	enlarged prostate	1754	1754	Y
+HC474	1704	heart failure/pulmonary odema	1704	1704	Y
+HC475	1578	nasal polyps	1578	1578	Y
+HC476	1524	head injury	1524	1524	Y
+HC477	1471	chronic sinusitis	1471	1471	Y
+HC478	1471	synovitis	1471	1471	Y
+HC479	1478	epilepsy	1478	1478	Y
+HC480	1349	inflammatory bowel disease	1349	1349	Y
+HC481	1239	hyperthyroidism/thyrotoxicosis	1239	1239	Y
+HC482	1245	duodenal ulcer	1245	1245	Y
+HC483	1289	peripheral vascular disease	1289	1289	Y
+HC484	1274	bowel / intestinal obstruction	1274	1274	Y
+HC485	1122	ulcerative colitis	1122	1122	Y
+HC486	989	disc degeneration	989	989	Y
+HC487	924	anal fissure	924	924	Y
+HC488	941	cystitis	941	941	Y
+HC489	934	kidney stone/ureter stone/bladder stone	934	934	Y
+HC490	817	connective tissue disorder	817	817	Y
+HC491	855	gastric/stomach ulcers	855	855	Y
+HC492	821	fracture hand	821	821	Y
+HC493	801	fracture shoulder / scapula	801	801	Y
+HC494	847	chickenpox	847	847	Y
+HC495	822	heart valve problem/heart murmur	822	822	Y
+HC496	796	fracture neck of femur / hip	796	796	Y
+HC497	680	fracture skull / head	680	680	Y
+HC498	693	bladder problem (not cancer)	693	693	Y
+HC499	747	measles / morbillivirus	747	747	Y
+HC500	598	tuberculosis (tb)	598	598	Y
+HC501	640	cerebral palsy	640	640	Y
+HC502	673	heart arrhythmia	673	673	Y
+HC503	697	emphysema	697	697	Y
+HC504	553	fracture sternum	553	553	Y
+HC505	487	other renal/kidney problem	487	487	Y
+HC506	419	spontaneous pneumothorax/recurrent pneumothorax	419	419	Y
+HC507	447	gestational hypertension/pre-eclampsia	447	447	Y
+HC508	477	other neurological problem	477	477	Y
+HC509	431	breast cysts	431	431	Y
+HC510	468	cardiomyopathy	468	468	Y
+HC511	380	hepatitis	380	380	Y
+HC512	377	female infertility	377	377	Y
+HC513	408	fracture pelvis	408	408	Y
+HC514	469	fracture foot	469	469	Y
+HC515	418	stress	418	418	Y
+HC516	374	meniere's disease	374	374	Y
+HC517	492	aortic aneurysm	492	492	Y
+HC518	429	mumps / epidemic parotitis	429	429	Y
+HC519	365	urticaria	365	365	Y
+HC520	480	aortic dissection	480	480	Y
+HC521	373	nephritis	373	373	Y
+HC522	393	hypertrophic cardiomyopathy (hcm / hocm)	393	393	Y
+HC523	367	scoliosis	367	367	Y
+HC524	363	rectal or colon adenoma/polyps	363	363	Y
+HC525	334	rheumatic fever	334	334	Y
+HC526	329	rectal prolapse	329	329	Y
+HC527	315	psoriatic arthropathy	315	315	Y
+HC528	312	anorexia/bulimia/other eating disorder	312	312	Y
+HC529	307	sarcoidosis	307	307	Y
+HC530	258	diabetic eye disease	258	258	Y
+HC531	295	rosacea	295	295	Y
+HC532	300	alcoholic liver disease / alcoholic cirrhosis	300	300	Y
+HC533	296	arterial embolism	296	296	Y
+HC534	214	infective/viral hepatitis	214	214	Y
+HC535	225	schizophrenia	225	225	Y
+HC536	233	peptic ulcer	233	233	Y
+HC537	236	hyperparathyroidism	236	236	Y
+HC538	221	irregular heart beat	221	221	Y
+HC539	207	spinal injury	207	207	Y
+HC540	233	disorder of adrenal gland	233	233	Y
+HC541	235	rubella / german measles	235	235	Y
+HC542	203	lichen planus	203	203	Y
+HC543	195	prostate problem (not cancer)	195	195	Y
+HC544	179	ectopic pregnancy	179	179	Y
+HC545	205	other respiratory problems	205	205	Y
+HC546	189	infectious mononucleosis / glandular fever / epstein barr virus (ebv)	189	189	Y
+HC547	174	systemic lupus erythematosis/sle	174	174	Y
+HC548	177	blistering/desquamating skin disorder	177	177	Y
+HC549	181	scarlet fever / scarlatina	181	181	Y
+HC550	167	eye trauma	167	167	Y
+HC551	176	other abdominal problem	176	176	Y
+HC552	163	oesophageal varicies	163	163	Y
+HC553	133	encephalitis	133	133	Y
+HC554	135	parathyroid gland problem (not cancer)	135	135	Y
+HC555	115	herpes simplex	115	115	Y
+HC556	131	aplastic anaemia	131	131	Y
+HC557	125	breast fibroadenoma	125	125	Y
+HC558	116	fracture shaft of femur	116	116	Y
+HC559	113	eye infection	113	113	Y
+HC560	104	polycystic kidney	104	104	Y
+HC561	109	brain abscess/intracranial abscess	109	109	Y
+HC562	110	food intolerance	110	110	Y
+HC563	99	fracture neck / cervical fracture	99	99	Y
+HC564	106	acne/acne vulgaris	106	106	Y
+HC565	7	sickle cell disease	7	7	Y
+HC566	92	myositis/myopathy	92	92	Y
+HC567	93	paraplegia	93	93	Y
+HC568	25	thalassaemia	25	25	Y
+HC569	76	vasculitis	76	76	Y
+HC570	97	liver failure/cirrhosis	97	97	Y
+HC571	90	varicose ulcer	90	90	Y
+HC572	70	undescended testicle	70	70	Y
+HC573	63	hepatitis a	63	63	Y
+HC574	65	scleroderma/systemic sclerosis	65	65	Y
+HC575	77	peripheral nerve injury	77	77	Y
+HC576	64	myasthenia gravis	64	64	Y
+HC577	63	obsessive compulsive disorder (ocd)	63	63	Y
+HC578	42	hepatitis c	42	42	Y
+HC579	29	hepatitis b	29	29	Y
+HC580	54	fracture face / orbit / eye socket	54	54	Y
+HC581	52	brain haemorrhage	52	52	Y
+HC582	40	alopecia / hair loss	40	40	Y
+HC583	41	chronic skin ulcers	41	41	Y
+HC584	46	chronic laryngitis	46	46	Y
+HC585	33	cushings syndrome	33	33	Y
+HC586	36	lung abscess	36	36	Y
+HC587	27	hydatiform mole	27	27	Y
+HC588	28	pemphigoid/pemphigus	28	28	Y
+HC589	25	acromegaly	25	25	Y
+HC590	29	dermatomyositis	29	29	Y
+HC591	21	hyperaldosteronism/conn's syndrome	21	21	Y
+HC592	24	dermatopolymyositis	24	24	Y
+HC593	27	oesophageal stricture	27	27	Y
+HC594	22	male infertility	22	22	Y
+HC595	24	fibrosing alveolitis/unspecified alveolitis	24	24	Y
+HC596	15	kidney nephropathy	15	15	Y
+HC597	17	carcinoid syndrome/tumour	17	17	Y
+HC598	12	iga nephropathy	12	12	Y
+HC599	7	typhoid fever	7	7	Y
+HC600	13	other substance abuse/dependency	13	13	Y
+HC601	10	schistosomiasis/bilharzia	10	10	Y
+HC602	8	spinal abscess	8	8	Y
+HC603	9	dengue fever	9	9	Y
+HC604	7	other venous/lymphatic disease	7	7	Y
+HC605	4	diabetic nephropathy	4	4	Y
+HC606	3	hepatitis e	3	3	Y
+HC608	0	hepatitis d	0	0	Y
