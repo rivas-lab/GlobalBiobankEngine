@@ -174,53 +174,6 @@ QT_INSERT_QUERY = """
 
 
 # -- -
-# -- - Load: VARIANT - --
-# -- -
-VARIANT_FILE = os.path.join(GBE_DATA_PATH,
-                            'icd10ukbb.ukbiobank.merge.sort.vcf.gz')
-
-VARIANT_ARRAY = 'variant'
-VARIANT_SCHEMA = """
-  <rsid:         int64,
-   ref:          string,
-   alt:          string,
-   site_quality: string,
-   filter:       string,
-   exac_nfe:     double,
-   minpval:      double,
-   minl10pval:   double,
-   csq:          string>
-  [chrom     = 1:25:0:1;
-   pos       = 0:*:0:10000000]"""
-
-VARIANT_STORE_QUERY = """
-  store(
-    redimension(
-      apply(
-        filter(
-          aio_input('{{path}}', 'num_attributes=8'),
-          substr(a0, 0, 1) <> '#'),
-        chrom,        int64(a0),
-        pos,          int64(a1),
-        rsid,         iif(strlen(a2) > 1,
-                          int64(substr(a2, 2, 100)),
-                          int64(null)),
-        ref,          a3,
-        alt,          a4,
-        site_quality, a5,
-        filter,       a6,
-        exac_nfe,     dcast(rsub(a7, 's/.*EXAC_NFE=([^;]*).*/$1/'),
-                            double(null)),
-        minpval,      dcast(rsub(a7, 's/.*minpval=([^;]*).*/$1/'),
-                            double(null)),
-        minl10pval,   dcast(rsub(a7, 's/.*minl10pval=([^;]*).*/$1/'),
-                            double(null)),
-        csq,          rsub(a7, 's/.*CSQ=([^;]*).*/$1/')),
-      {variant}),
-    {variant})""".format(variant=VARIANT_ARRAY)
-
-
-# -- -
 # -- - Load: GENE - --
 # -- -
 GENE_FILE = os.path.join(GBE_DATA_PATH, 'gencode.gtf.gz')
@@ -281,6 +234,78 @@ GENE_STORE_QUERY = """
         gene_idx),
       {gene}),
     {gene})""".format(gene=GENE_ARRAY, gene_index=GENE_INDEX_ARRAY)
+
+
+# -- -
+# -- - Load: VARIANT - --
+# -- -
+VARIANT_FILE = os.path.join(GBE_DATA_PATH,
+                            'icd10ukbb.ukbiobank.merge.sort.vcf.gz')
+
+VARIANT_ARRAY = 'variant'
+VARIANT_SCHEMA = """
+  <rsid:         int64,
+   ref:          string,
+   alt:          string,
+   site_quality: string,
+   filter:       string,
+   exac_nfe:     double,
+   minpval:      double,
+   minl10pval:   double,
+   csq:          string>
+  [chrom = 1:25:0:1;
+   pos   = 0:*:0:10000000]"""
+
+VARIANT_STORE_QUERY = """
+  store(
+    redimension(
+      apply(
+        filter(
+          aio_input('{{path}}', 'num_attributes=8'),
+          substr(a0, 0, 1) <> '#'),
+        chrom,        int64(a0),
+        pos,          int64(a1),
+        rsid,         iif(strlen(a2) > 1,
+                          int64(substr(a2, 2, 100)),
+                          int64(null)),
+        ref,          a3,
+        alt,          a4,
+        site_quality, a5,
+        filter,       a6,
+        exac_nfe,     dcast(rsub(a7, 's/.*EXAC_NFE=([^;]*).*/$1/'),
+                            double(null)),
+        minpval,      dcast(rsub(a7, 's/.*minpval=([^;]*).*/$1/'),
+                            double(null)),
+        minl10pval,   dcast(rsub(a7, 's/.*minl10pval=([^;]*).*/$1/'),
+                            double(null)),
+        csq,          rsub(a7, 's/.*CSQ=([^;]*).*/$1/')),
+      {variant}),
+    {variant})""".format(variant=VARIANT_ARRAY)
+
+VARIANT_GENE_ARRAY = 'variant_gene'
+VARIANT_GENE_SCHEMA = """
+  <val: int8 not null>
+  [chrom    = 1:25:0:1;
+   pos      = 0:*:0:10000000;
+   gene_idx = 0:*:0:20]"""
+
+VARIANT_GENE_STORE_QUERY = """
+  store(
+    redimension(
+      index_lookup(
+        apply(
+          aio_input('{{path}}', 'num_attributes=3'),
+          chrom,   int64(a0),
+          pos,     int64(a1),
+          gene_id, a2,
+          val,     int8(0)) as INPUT,
+        {gene_index},
+        INPUT.gene_id,
+        gene_idx),
+      {variant_gene}),
+    {variant_gene})""".format(
+        gene_index=GENE_INDEX_ARRAY,
+        variant_gene=VARIANT_GENE_ARRAY)
 
 
 # == =

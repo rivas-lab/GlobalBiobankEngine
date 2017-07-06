@@ -170,21 +170,6 @@ class Loader:
         return (icd_idx_cond, icdind_cond)
 
     # -- -
-    # -- - VARIANT - --
-    # -- -
-    def store_variant(self):
-        self.db.create_array(config.VARIANT_ARRAY, config.VARIANT_SCHEMA)
-
-        fifo_name = self.fifo_names[0]
-        pipe = Loader.make_pipe(config.VARIANT_FILE, fifo_name)
-
-        logger.info('Query:running...')
-        self.db.iquery(config.VARIANT_STORE_QUERY.format(path=fifo_name))
-        logger.info('Query:done')
-        logger.info('Pipe:return code:%s', pipe.poll())
-        logger.info('Array:%s', config.VARIANT_ARRAY)
-
-    # -- -
     # -- - GENE - --
     # -- -
     def store_gene_index(self):
@@ -211,6 +196,40 @@ class Loader:
         logger.info('Pipe:return code:%s', pipe.poll())
         logger.info('Array:%s', config.GENE_ARRAY)
 
+    # -- -
+    # -- - VARIANT - --
+    # -- -
+    def store_variant(self):
+        self.db.create_array(config.VARIANT_ARRAY, config.VARIANT_SCHEMA)
+
+        fifo_name = self.fifo_names[0]
+        pipe = Loader.make_pipe(config.VARIANT_FILE, fifo_name)
+
+        logger.info('Query:running...')
+        self.db.iquery(config.VARIANT_STORE_QUERY.format(path=fifo_name))
+        logger.info('Query:done')
+        logger.info('Pipe:return code:%s', pipe.poll())
+        logger.info('Array:%s', config.VARIANT_ARRAY)
+
+    def store_variant_gene(self):
+        self.db.create_array(config.VARIANT_GENE_ARRAY,
+                             config.VARIANT_GENE_SCHEMA)
+
+        fifo_name = self.fifo_names[0]
+        pipe = Loader.make_pipe(
+            config.VARIANT_FILE,
+            fifo_name,
+            'zcat {{file_name}} | python {} > {{fifo_name}}'.format(
+                os.path.join(
+                    os.path.dirname(os.path.realpath(__file__)),
+                    'unnest.py')))
+
+        logger.info('Query:running...')
+        self.db.iquery(config.VARIANT_GENE_STORE_QUERY.format(path=fifo_name))
+        logger.info('Query:done')
+        logger.info('Pipe:return code:%s', pipe.poll())
+        logger.info('Array:%s', config.VARIANT_GENE_ARRAY)
+
     # -- - - --
     def remove_arrays(self):
         if not Loader.confirm('Remove and recreate arrays'):
@@ -218,10 +237,11 @@ class Loader:
         for array in (config.QC_ARRAY,
                       config.ICD_INFO_ARRAY,
                       config.ICD_ARRAY,
-                      config.VARIANT_ARRAY,
                       config.GENE_INDEX_ARRAY,
-                      config.GENE_ARRAY):
-        try:
+                      config.GENE_ARRAY,
+                      config.VARIANT_ARRAY,
+                      config.VARIANT_GENE_ARRAY):
+            try:
                 self.db.remove(array)
             except:
                 pass
@@ -323,6 +343,8 @@ if __name__ == '__main__':
     loader.insert_icd()
     loader.insert_qt()
     loader.store_icd_pvalue()
-    loader.store_variant()
     loader.store_gene_index()
     loader.store_gene()
+    loader.store_variant()
+    loader.db.remove(config.VARIANT_GENE_ARRAY)
+    loader.store_variant_gene()

@@ -3,8 +3,10 @@ import itertools
 import re
 
 
-RE_INFO = re.compile(';(?=\w)')  # TODO is \w needed?
-EMPTY_CSQ = ('0',) + ('',) * 67
+import config
+
+
+RE_INFO = re.compile(';(?=\w)')
 
 
 for line in fileinput.input():
@@ -15,14 +17,11 @@ for line in fileinput.input():
     info = dict(i.split('=', 1) if '=' in i else (i, i)
                 for i in RE_INFO.split(fields[7]))
 
-    if 'CSQ' in info:           # TODO is CSQ missing sometimes?
-        for idx, csq in enumerate(info['CSQ'].split(',')):
-            print('\t'.join(itertools.chain(
-                fields[:7],
-                (str(idx),),
-                csq.split('|'))))
-
-    else:
-        print('\t'.join(itertools.chain(
-            fields[:7],
-            EMPTY_CSQ)))
+    if 'CSQ' in info:
+        anns = [dict(zip(config.VARIANT_CSQ, csq.split('|')))
+                for csq in info['CSQ'].split(',')]
+        vep_annotations = [ann for ann in anns
+                           if ('Feature' in ann and
+                               ann['Feature'].startswith('ENST'))]
+        for gene in set(ann['Gene'] for ann in vep_annotations):
+            print('\t'.join((fields[0], fields[1], gene)))
