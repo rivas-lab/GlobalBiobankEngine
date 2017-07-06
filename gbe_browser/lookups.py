@@ -19,7 +19,7 @@ def numpy2dict(ar):
         for el in ar]
 
 
-def format_variants(variants, add_anno=False):
+def format_variants(variants, add_ann=False):
     for variant in variants:
         variant['rsid'] = 'rs{}'.format(variant['rsid'])
         variant['variant_id'] = '{}-{}-{}-{}'.format(
@@ -30,7 +30,7 @@ def format_variants(variants, add_anno=False):
         vep_annotations = [ann for ann in anns
                            if ('Feature' in ann and
                                ann['Feature'].startswith('ENST'))]
-        if add_anno:
+        if add_ann:
             variant['vep_annotations'] = vep_annotations
 
         variant['genes'] = list(set(ann['Gene'] for ann in vep_annotations))
@@ -196,7 +196,7 @@ def get_variant_chrom_pos(db, chrom, pos):
             config.VARIANT_LOOKUP_QUERY.format(chrom=chrom, pos=pos),
             schema=config.VARIANT_LOOKUP_SCHEMA,
             fetch=True))
-    variants = format_variants(variants, add_anno=True)
+    variants = format_variants(variants, add_ann=True)
     variant = variants[0] if len(variants) else None
     if variant is None or 'rsid' not in variant:
         return variant
