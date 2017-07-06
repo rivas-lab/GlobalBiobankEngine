@@ -320,12 +320,29 @@ ICD_CHROM_POS_LOOKUP_QUERY = """
         icd=ICD_ARRAY,
         icd_info=ICD_INFO_ARRAY)
 
+ICD_X_INFO_SCHEMA = scidbpy.schema.Schema.fromstring(
+    ICD_SCHEMA.replace(
+        '>',
+        ',{}>'.format(
+            ICD_INFO_SCHEMA[ICD_INFO_SCHEMA.index('<') + 1:
+                            ICD_INFO_SCHEMA.index('>')])))
+
 ICD_VARIANT_LOOKUP_QUERY = """
   cross_join(
-    {variant},
+    project({variant},
+            rsid,
+            ref,
+            alt,
+            filter,
+            exac_nfe,
+            csq),
     cross_join(
-        between({icd}, null, null, null, {{pdecimal}}, null,
-                       null, null, null, null,         null),
+        project(
+          between({icd}, null, null, null, {{pdecimal}}, null,
+                         null, null, null, null,         null),
+          or_val,
+          pvalue,
+          log10pvalue),
         filter({icd_info}, icd = '{{icd}}'),
         {icd}.icd_idx,
         {icd_info}.icd_idx) as icd_join,
@@ -337,21 +354,24 @@ ICD_VARIANT_LOOKUP_QUERY = """
         icd_info=ICD_INFO_ARRAY,
         variant=VARIANT_ARRAY)
 
-ICD_X_INFO_SCHEMA = scidbpy.schema.Schema.fromstring(
-    ICD_SCHEMA.replace(
-        '>',
-        ',{}>'.format(
-            ICD_INFO_SCHEMA[ICD_INFO_SCHEMA.index('<') + 1:
-                            ICD_INFO_SCHEMA.index('>')])))
-
-VARIANT_X_ICD_X_INFO_SCHEMA = scidbpy.schema.Schema.fromstring(
-    VARIANT_SCHEMA.replace(
-        '>',
-        ',{},{}>'.format(
-            ICD_SCHEMA[ICD_SCHEMA.index('<') + 1:
-                       ICD_SCHEMA.index('>')],
-            ICD_INFO_SCHEMA[ICD_INFO_SCHEMA.index('<') + 1:
-                            ICD_INFO_SCHEMA.index('>')])))
+VARIANT_X_ICD_X_INFO_SCHEMA = scidbpy.schema.Schema.fromstring("""
+  <rsid:        int64,
+   ref:         string,
+   alt:         string,
+   filter:      string,
+   exac_nfe:    double,
+   csq:         string,
+   or_val:      double,
+   pvalue:      double,
+   log10pvalue: double,
+   icd:         string,
+   Case:        int64,
+   Name:        string>
+  [chrom     = 1:25:0:1;
+   pos       = 0:*:0:10000000;
+   icd_idx   = 0:*:0:20;
+   pdecimal  = 0:3:0:1;
+   synthetic = 0:999:0:1000]""")
 
 
 # -- -
