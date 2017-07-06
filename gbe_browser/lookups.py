@@ -141,12 +141,10 @@ def get_icd_significant_variant(db, icd_id, cutoff=0.001):
         variant.pos,
         icd_join.pos);
     """
-    if cutoff not in config.ICD_PVALUE_MAP:
-        raise NotImplementedError(
-            'Cutoff value, {}, not supported'.format(cutoff))
+    pdecimal = config.ICD_PVALUE_MAP.get(cutoff, 0)
     return format_variants(numpy2dict(db.iquery(
-        config.ICD_PVALUE_VARIANT_LOOKUP_QUERY.format(
-            icd=icd_id, icd_pvalue=config.ICD_PVALUE_MAP[cutoff]),
+        config.ICD_VARIANT_LOOKUP_QUERY.format(
+            icd=icd_id, pdecimal=pdecimal),
         schema=config.VARIANT_X_ICD_X_INFO_SCHEMA,
         fetch=True)))
 
@@ -223,7 +221,7 @@ def get_variant(db, xpos):
       between(vairant, 1, 39381448,
                        1, 39381448);
     """
-    return get_variant(db, int(xpos / 1e9), int(xpos % 1e9))
+    return get_variant_chrom_pos(db, int(xpos / 1e9), int(xpos % 1e9))
 
 
 # -- -

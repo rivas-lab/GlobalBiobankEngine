@@ -50,13 +50,12 @@ ICD_SCHEMA = """
   [icd_idx   = 0:*:0:20;
    chrom     = 1:25:0:1;
    pos       = 0:*:0:10000000;
+   pdecimal  = 0:3:0:1;
    synthetic = 0:999:0:1000]"""
 
-ICD_PVALUE_MAP = dict(
-    (pvalue, '{icd}_pvalue_lt{pvalue:05d}_ltd'.format(
-        icd=ICD_ARRAY, pvalue=int(pvalue * 10e4)))
-    for pvalue in [.001, .0001, .00001])
-ICD_PVALUE_LIMIT = 100000
+ICD_PVALUE_MAP = dict(zip((.001, .0001, .00001), range(1, 4)))
+
+# TODO 10K limit
 
 ICD_INFO_STORE_QUERY = """
   store(
@@ -112,6 +111,9 @@ ICD_INSERT_QUERY = """
         icd_idx,     {{icd_idx_cond}},
         chrom,       int64(a0),
         pos,         int64(a1),
+        pdecimal,    iif(dcast(a11, double(null)) < .00001, 3,
+                      iif(dcast(a11, double(null)) < .0001, 2,
+                       iif(dcast(a11, double(null)) < .001, 1, 0))),
         icdind,      int64(string(int64(a0) * 1e9 + int64(a1)) +
                            {{icdind_cond}}),
         affyid,      a2,
@@ -150,6 +152,9 @@ QT_INSERT_QUERY = """
         icd_idx,     {{icd_idx_cond}},
         chrom,       int64(a0),
         pos,         int64(a1),
+        pdecimal,    iif(dcast(a10, double(null)) < .00001, 3,
+                      iif(dcast(a10, double(null)) < .0001, 2,
+                       iif(dcast(a10, double(null)) < .001, 1, 0))),
         icdind,      int64(string(int64(a0) * 1e9 + int64(a1)) +
                            {{icdind_cond}}),
         affyid,      a1,
@@ -166,26 +171,6 @@ QT_INSERT_QUERY = """
     {icd})""".format(
         icd=ICD_ARRAY,
         qc=QC_ARRAY)
-
-ICD_PVALUE_STORE_QUERIES = ["""
-  store(
-    redimension(
-      cross_join(
-        filter(icd, pvalue < {pvalue}) as icd_pvalue,
-        filter(
-          aggregate(
-            filter(icd, pvalue < {pvalue}),
-            count(*) as idx_cnt, icd_idx),
-          idx_cnt < {limit}) as icd_pvalue_ltd,
-        icd_pvalue.icd_idx,
-        icd_pvalue_ltd.icd_idx),
-      {icd} ),
-    {icd_pvalue})""".format(
-        pvalue=pvalue,
-        limit=ICD_PVALUE_LIMIT,
-        icd=ICD_ARRAY,
-        icd_pvalue=icd_pvalue)
-  for (pvalue, icd_pvalue) in ICD_PVALUE_MAP.items()]
 
 
 # -- -
@@ -327,26 +312,28 @@ ICD_PVALUE_LOOKUP_QUERY = """
 
 ICD_CHROM_POS_LOOKUP_QUERY = """
   cross_join(
-    between({icd}, null, {{chrom}}, {{pos}}, null,
-                   null, {{chrom}}, {{pos}}, null),
+    between({icd}, null, {{chrom}}, {{pos}}, null, null,
+                   null, {{chrom}}, {{pos}}, null, null),
     {icd_info},
     {icd}.icd_idx,
     {icd_info}.icd_idx)""".format(
         icd=ICD_ARRAY,
         icd_info=ICD_INFO_ARRAY)
 
-ICD_PVALUE_VARIANT_LOOKUP_QUERY = """
+ICD_VARIANT_LOOKUP_QUERY = """
   cross_join(
     {variant},
     cross_join(
-        {{icd_pvalue}},
+        between({icd}, null, null, null, {{pdecimal}}, null,
+                       null, null, null, null,         null),
         filter({icd_info}, icd = '{{icd}}'),
-        {{icd_pvalue}}.icd_idx,
+        {icd}.icd_idx,
         {icd_info}.icd_idx) as icd_join,
     {variant}.chrom,
     icd_join.chrom,
     {variant}.pos,
     icd_join.pos)""".format(
+        icd=ICD_ARRAY,
         icd_info=ICD_INFO_ARRAY,
         variant=VARIANT_ARRAY)
 

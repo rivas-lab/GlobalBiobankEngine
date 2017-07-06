@@ -215,14 +215,13 @@ class Loader:
     def remove_arrays(self):
         if not Loader.confirm('Remove and recreate arrays'):
             return
-        for array in itertools.chain((config.QC_ARRAY,
-                                      config.ICD_INFO_ARRAY,
-                                      config.ICD_ARRAY,
-                                      config.VARIANT_ARRAY,
-                                      config.GENE_INDEX_ARRAY,
-                                      config.GENE_ARRAY),
-                                     config.ICD_PVALUE_MAP.values()):
-            try:
+        for array in (config.QC_ARRAY,
+                      config.ICD_INFO_ARRAY,
+                      config.ICD_ARRAY,
+                      config.VARIANT_ARRAY,
+                      config.GENE_INDEX_ARRAY,
+                      config.GENE_ARRAY):
+        try:
                 self.db.remove(array)
             except:
                 pass
