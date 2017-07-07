@@ -177,10 +177,26 @@ class Loader:
         pipe = Loader.make_pipe(config.GENE_FILE, fifo_name)
 
         logger.info('Query:running...')
-        self.db.iquery(config.GENE_INDEX_STORE_QUERY.format(path=fifo_name))
+        self.db.iquery(config.GENE_INDEX_STORE_QUERY.format(
+            path=fifo_name,
+            index_array=config.GENE_INDEX_ARRAY,
+            keyword='gene_id'))
         logger.info('Query:done')
         logger.info('Pipe:return code:%s', pipe.poll())
         logger.info('Array:%s', config.GENE_INDEX_ARRAY)
+
+    def store_transcript_index(self):
+        fifo_name = self.fifo_names[0]
+        pipe = Loader.make_pipe(config.GENE_FILE, fifo_name)
+
+        logger.info('Query:running...')
+        self.db.iquery(config.GENE_INDEX_STORE_QUERY.format(
+            path=fifo_name,
+            index_array=config.TRANSCRIPT_INDEX_ARRAY,
+            keyword='transcript_id'))
+        logger.info('Query:done')
+        logger.info('Pipe:return code:%s', pipe.poll())
+        logger.info('Array:%s', config.TRANSCRIPT_INDEX_ARRAY)
 
     def store_gene(self):
         fifo_name = self.fifo_names[0]
@@ -229,6 +245,7 @@ class Loader:
                       config.ICD_INFO_ARRAY,
                       config.ICD_ARRAY,
                       config.GENE_INDEX_ARRAY,
+                      config.TRANSCRIPT_INDEX_ARRAY,
                       config.GENE_ARRAY,
                       config.VARIANT_ARRAY,
                       config.VARIANT_GENE_ARRAY):
@@ -335,6 +352,7 @@ if __name__ == '__main__':
     loader.insert_qt()
     loader.store_icd_pvalue()
     loader.store_gene_index()
+    loader.store_transcript_index()
     loader.store_gene()
     loader.store_variant()
     loader.db.remove(config.VARIANT_GENE_ARRAY)

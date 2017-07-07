@@ -179,7 +179,9 @@ QT_INSERT_QUERY = """
 GENE_FILE = os.path.join(GBE_DATA_PATH, 'gencode.gtf.gz')
 
 GENE_INDEX_ARRAY = 'gene_index'
-GENE_INDEX_SCHEMA = '<gene_id:string>[gene_idx = 0:*:0:20]'
+TRANSCRIPT_INDEX_ARRAY = 'transcript_index'
+
+GENE_INDEX_SCHEMA = '<id:string>[gene_idx = 0:*:0:20]'
 
 GENE_INDEX_STORE_QUERY = """
   store(
@@ -192,13 +194,11 @@ GENE_INDEX_STORE_QUERY = """
                 filter(
                   aio_input('{{path}}', 'num_attributes=9'),
                   substr(a0, 0, 1) <> '#'),
-                gene_id, rsub(a8, 's/.*gene_id "([^.]*).*/$1/')),
-              gene_id))),
+                id, rsub(a8, 's/.*{{keyword}} "([^.]*).*/$1/')),
+              id))),
         gene_idx, i),
       {gene_index_schema}),
-    {gene_index_array})""".format(gene_index_array=GENE_INDEX_ARRAY,
-                                  gene_index_schema=GENE_INDEX_SCHEMA)
-
+    {{index_array}})""".format(gene_index_schema=GENE_INDEX_SCHEMA)
 
 GENE_ARRAY = 'gene'
 GENE_SCHEMA = """
@@ -206,7 +206,7 @@ GENE_SCHEMA = """
    strand:    string>
   [gene_idx  = 0:*:0:20;
    chrom     = 1:25:0:1;
-   type      = 1:3:0:1;
+   gene_type = 1:3:0:1;
    start     = 0:*:0:10000000;
    stop      = 0:*:0:10000000;
    synthetic = 0:199:0:200]"""
@@ -223,23 +223,23 @@ GENE_STORE_QUERY = """
           filter(
             aio_input('{{path}}', 'num_attributes=9'),
             substr(a0, 0, 1) <> '#'),
-          gene_id,      rsub(a8, 's/.*gene_id "([^.]*).*/$1/'),
-          chrom,        iif(substr(a0, 3, 4) = 'X',
-                            23,
-                            iif(substr(a0, 3, 4) = 'Y',
-                                24,
-                                iif(substr(a0, 3, 4) = 'M',
-                                    25,
-                                    dcast(substr(a0, 3, 5), int64(null))))),
-          type,         iif(a2 = 'gene',
-                            1,
-                            iif(a2 = 'transcript',
-                                2,
-                                3)),
-          start,        int64(a3) + 1,
-          stop,         int64(a4) + 1,
-          gene_name,    rsub(a8, 's/.*gene_name "([^"]*).*/$1/'),
-          strand,       a6) as INPUT,
+          gene_id,   rsub(a8, 's/.*gene_id "([^.]*).*/$1/'),
+          chrom,     iif(substr(a0, 3, 4) = 'X',
+                         23,
+                         iif(substr(a0, 3, 4) = 'Y',
+                             24,
+                             iif(substr(a0, 3, 4) = 'M',
+                                 25,
+                                 dcast(substr(a0, 3, 5), int64(null))))),
+          gene_type, iif(a2 = 'gene',
+                         1,
+                         iif(a2 = 'transcript',
+                             2,
+                             3)),
+          start,     int64(a3) + 1,
+          stop,      int64(a4) + 1,
+          gene_name, rsub(a8, 's/.*gene_name "([^"]*).*/$1/'),
+          strand,    a6) as INPUT,
         {gene_index_array},
         INPUT.gene_id,
         gene_idx),
@@ -363,9 +363,8 @@ ICD_CHROM_POS_LOOKUP_QUERY = """
 ICD_X_INFO_SCHEMA = scidbpy.schema.Schema.fromstring(
     ICD_SCHEMA.replace(
         '>',
-        ',{}>'.format(
-            ICD_INFO_SCHEMA[ICD_INFO_SCHEMA.index('<') + 1:
-                            ICD_INFO_SCHEMA.index('>')])))
+        ',{}>'.format(ICD_INFO_SCHEMA[ICD_INFO_SCHEMA.index('<') + 1:
+                                      ICD_INFO_SCHEMA.index('>')])))
 
 ICD_VARIANT_LOOKUP_QUERY = """
   cross_join(
@@ -420,16 +419,19 @@ VARIANT_X_ICD_X_INFO_SCHEMA = scidbpy.schema.Schema.fromstring("""
 
 GENE_LOOKUP_QUERY = """
   cross_join(
-    between({gene_array}, null, null, 1, null, null, null,
-                          null, null, 1, null, null, null),
-    filter({gene_index_array}, gene_id = '{{gene_id}}'),
+    between({gene_array}, null, null, {{gene_type}}, null, null, null,
+                          null, null, {{gene_type}}, null, null, null),
+    filter({gene_index_array}, id = '{{gene_id}}'),
     {gene_array}.gene_idx,
     {gene_index_array}.gene_idx)""".format(
         gene_array=GENE_ARRAY,
         gene_index_array=GENE_INDEX_ARRAY)
 
 GENE_LOOKUP_SCHEMA = scidbpy.schema.Schema.fromstring(
-    GENE_SCHEMA.replace('>', ',gene_id:string>'))
+    GENE_SCHEMA.replace(
+        '>',
+        ',{}>'.format(GENE_INDEX_SCHEMA[GENE_INDEX_SCHEMA.index('<') + 1:
+                                        GENE_INDEX_SCHEMA.index('>')])))
 
 
 # -- -
@@ -451,7 +453,7 @@ VARIANT_GENE_LOOKUP = """
     {variant_array},
     cross_join(
       {variant_gene_array},
-      filter({gene_index_array}, gene_id = '{{gene_id}}'),
+      filter({gene_index_array}, id = '{{gene_id}}'),
       {variant_gene_array}.gene_idx,
       {gene_index_array}.gene_idx) as variant_gene_index,
     {variant_array}.chrom,

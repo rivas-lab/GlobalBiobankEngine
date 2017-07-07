@@ -256,7 +256,7 @@ def get_gene_by_type(db, gene_id, gene_type=1):
     """
     return numpy2dict(
         db.iquery(
-            config.GENE_LOOKUP_QUERY.format(gene_id=gene_id,
+            config.GENE_LOOKUP_QUERY.format(id=gene_id,
                                             gene_type=gene_type),
             schema=config.GENE_LOOKUP_SCHEMA,
             fetch=True))
@@ -274,7 +274,7 @@ def get_gene(db, gene_id):
     SciDB:
       cross_join(between(gene, null, null, 1, null, null, null,
                                null, null, 1, null, null, null),
-                 filter(gene_index, gene_id = 'ENSG00000107404'),
+                 filter(gene_index, id = 'ENSG00000107404'),
                  gene.gene_idx,
                  gene_index.gene_idx);
     """
@@ -294,7 +294,7 @@ def get_transcripts_in_gene(db, gene_id):
     SciDB:
       cross_join(between(gene, null, null, 1, null, null, null,
                                null, null, 1, null, null, null),
-                 filter(gene_index, gene_id = 'ENSG00000107404'),
+                 filter(gene_index, id = 'ENSG00000107404'),
                  gene.gene_idx,
                  gene_index.gene_idx);
     """
@@ -313,7 +313,7 @@ def get_variants_in_gene(db, gene_id):
     SciDB:
       cross_join(variant,
                  cross_join(variant_gene,
-                            filter(gene_index, gene_id = 'ENSG00000107404'),
+                            filter(gene_index, id = 'ENSG00000107404'),
                             variant_gene.gene_idx,
                             gene_index.gene_idx) as variant_gene_index,
                  variant.chrom,
@@ -324,7 +324,7 @@ def get_variants_in_gene(db, gene_id):
     return format_variants(
         numpy2dict(
             db.iquery(
-                config.VARIANT_GENE_LOOKUP.format(gene_id=gene_id),
+                config.VARIANT_GENE_LOOKUP.format(id=gene_id),
                 schema=config.VARIANT_X_GENE_INDEX_SCHEMA,
                 fetch=True)))
 
