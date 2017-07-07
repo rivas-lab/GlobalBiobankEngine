@@ -173,8 +173,6 @@ class Loader:
     # -- - GENE - --
     # -- -
     def store_gene_index(self):
-        self.db.create_array(config.GENE_INDEX_ARRAY, config.GENE_INDEX_SCHEMA)
-
         fifo_name = self.fifo_names[0]
         pipe = Loader.make_pipe(config.GENE_FILE, fifo_name)
 
@@ -185,8 +183,6 @@ class Loader:
         logger.info('Array:%s', config.GENE_INDEX_ARRAY)
 
     def store_gene(self):
-        self.db.create_array(config.GENE_ARRAY, config.GENE_SCHEMA)
-
         fifo_name = self.fifo_names[0]
         pipe = Loader.make_pipe(config.GENE_FILE, fifo_name)
 
@@ -200,8 +196,6 @@ class Loader:
     # -- - VARIANT - --
     # -- -
     def store_variant(self):
-        self.db.create_array(config.VARIANT_ARRAY, config.VARIANT_SCHEMA)
-
         fifo_name = self.fifo_names[0]
         pipe = Loader.make_pipe(config.VARIANT_FILE, fifo_name)
 
@@ -212,9 +206,6 @@ class Loader:
         logger.info('Array:%s', config.VARIANT_ARRAY)
 
     def store_variant_gene(self):
-        self.db.create_array(config.VARIANT_GENE_ARRAY,
-                             config.VARIANT_GENE_SCHEMA)
-
         fifo_name = self.fifo_names[0]
         pipe = Loader.make_pipe(
             config.VARIANT_FILE,

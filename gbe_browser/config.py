@@ -195,8 +195,9 @@ GENE_INDEX_STORE_QUERY = """
                 gene_id, rsub(a8, 's/.*gene_id "([^.]*).*/$1/')),
               gene_id))),
         gene_idx, i),
-      {gene_index_array}),
-    {gene_index_array})""".format(gene_index_array=GENE_INDEX_ARRAY)
+      {gene_index_schema}),
+    {gene_index_array})""".format(gene_index_array=GENE_INDEX_ARRAY,
+                                  gene_index_schema=GENE_INDEX_SCHEMA)
 
 
 GENE_ARRAY = 'gene'
@@ -232,8 +233,9 @@ GENE_STORE_QUERY = """
         {gene_index_array},
         INPUT.gene_id,
         gene_idx),
-      {gene_array}),
+      {gene_schema}),
     {gene_array})""".format(gene_array=GENE_ARRAY,
+                            gene_schema=GENE_SCHEMA,
                             gene_index_array=GENE_INDEX_ARRAY)
 
 
@@ -280,8 +282,9 @@ VARIANT_STORE_QUERY = """
         minl10pval,   dcast(rsub(a7, 's/.*minl10pval=([^;]*).*/$1/'),
                             double(null)),
         csq,          rsub(a7, 's/.*CSQ=([^;]*).*/$1/')),
-      {variant_array}),
-    {variant_array})""".format(variant_array=VARIANT_ARRAY)
+      {variant_array_schema}),
+    {variant_array})""".format(variant_array=VARIANT_ARRAY,
+                               variant_array_schema=VARIANT_SCHEMA)
 
 VARIANT_GENE_ARRAY = 'variant_gene'
 VARIANT_GENE_SCHEMA = """
@@ -303,10 +306,11 @@ VARIANT_GENE_STORE_QUERY = """
         {gene_index_array},
         INPUT.gene_id,
         gene_idx),
-      {variant_gene_array}),
+      {variant_gene_schema}),
     {variant_gene_array})""".format(
         gene_index_array=GENE_INDEX_ARRAY,
-        variant_gene_array=VARIANT_GENE_ARRAY)
+        variant_gene_array=VARIANT_GENE_ARRAY,
+        variant_gene_schema=VARIANT_GENE_SCHEMA)
 
 
 # == =
