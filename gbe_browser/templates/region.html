@@ -4,15 +4,13 @@
         window.coverage_stats = {{ coverage|tojson|safe }};
         window.genes = {{ genes_in_region|tojson|safe }};
         window.variants = {{ variants_in_region|tojson|safe }};
-        window.table_variants = variants;
+        window.table_variants = {{ variants_in_region|tojson|safe }};
         window.start = {{ start|tojson|safe }};
         window.stop = {{ stop|tojson|safe }};
 
         $(document).ready(function() {
-            if (window.coverage_stats != null) {
-                region_chart(window.coverage_stats, window.variants);
-                update_variants();
-            }
+update_variants();
+            
         });
     </script>
     <div class="container">
@@ -40,10 +38,10 @@
         {% endif %}
         {% if genes_in_region %}
             {% if stop != None %}
-                <h3>Coverage summary</h3>
+<!--                <h3>Coverage summary</h3>
                 <div class="row">
                     {% include 'region_display.html' %}
-                </div>
+                </div> -->
             {% endif %}
             <div class="section_header">Genes</div>
             <ul>
