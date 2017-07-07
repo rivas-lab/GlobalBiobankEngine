@@ -65,27 +65,27 @@ ICD_INFO_STORE_QUERY = """
         Case, int64(null),
         Name, string(null)),
       {icd_info_schema}),
-    {icd_info})""".format(
+    {icd_info_array})""".format(
         input_schema=ICD_INFO_SCHEMA.replace(', Case:int64, Name:string', ''),
         icd_info_schema=ICD_INFO_SCHEMA,
-        icd_info=ICD_INFO_ARRAY)
+        icd_info_array=ICD_INFO_ARRAY)
 
 ICD_INFO_INSERT_QUERY = """
   insert(
     join(
-      project({icd_info}, icd),
+      project({icd_info_array}, icd),
       redimension(
         apply(
           index_lookup(
             aio_input('{path}', 'num_attributes=6'),
-            project({icd_info}, icd),
+            project({icd_info_array}, icd),
             a0,
             icd_idx),
           Case, dcast(a1, int64(null)),
           Name, a2),
         {input_schema})),
-    {icd_info})""".format(
-        icd_info=ICD_INFO_ARRAY,
+    {icd_info_array})""".format(
+        icd_info_array=ICD_INFO_ARRAY,
         input_schema=ICD_INFO_SCHEMA.replace('icd:string, ', ''),
         path=ICD_INFO_FILE)
 
@@ -99,7 +99,7 @@ ICD_INSERT_QUERY = """
               'paths={{paths}}',
               'instances={{instances}}',
               'num_attributes=12') as INPUT,
-            {qc},
+            {qc_array},
             INPUT.a2,
             is_in_filter),
           substr(a0, 0, 1) <> '#' and
@@ -126,10 +126,10 @@ ICD_INSERT_QUERY = """
                          1.96 * dcast(a9, double(null))),
         u95or,       exp(log(dcast(a8, double(null))) +
                          1.96 * dcast(a9, double(null)))),
-      {icd}),
-    {icd})""".format(
-        icd=ICD_ARRAY,
-        qc=QC_ARRAY)
+      {icd_array}),
+    {icd_array})""".format(
+        icd_array=ICD_ARRAY,
+        qc_array=QC_ARRAY)
 
 QT_INSERT_QUERY = """
   insert(
@@ -141,7 +141,7 @@ QT_INSERT_QUERY = """
               'paths={{paths}}',
               'instances={{instances}}',
               'num_attributes=12') as INPUT,
-            {qc},
+            {qc_array},
             INPUT.a2,
             is_in_filter),
           substr(a0, 0, 1) <> '#' and
@@ -167,10 +167,10 @@ QT_INSERT_QUERY = """
                          - 1.96 * dcast(a8, double(null))),
         u95or,       exp(log(dcast(a7, double(null)))
                          + 1.96 * dcast(a8, double(null)))),
-      {icd}),
-    {icd})""".format(
-        icd=ICD_ARRAY,
-        qc=QC_ARRAY)
+      {icd_array}),
+    {icd_array})""".format(
+        icd_array=ICD_ARRAY,
+        qc_array=QC_ARRAY)
 
 
 # -- -
@@ -195,8 +195,8 @@ GENE_INDEX_STORE_QUERY = """
                 gene_id, rsub(a8, 's/.*gene_id "([^.]*).*/$1/')),
               gene_id))),
         gene_idx, i),
-      {gene_index}),
-    {gene_index})""".format(gene_index=GENE_INDEX_ARRAY)
+      {gene_index_array}),
+    {gene_index_array})""".format(gene_index_array=GENE_INDEX_ARRAY)
 
 
 GENE_ARRAY = 'gene'
@@ -229,11 +229,12 @@ GENE_STORE_QUERY = """
           stop,         int64(a4) + 1,
           gene_name,    rsub(a8, 's/.*gene_name "([^"]*).*/$1/'),
           strand,       a6) as INPUT,
-        {gene_index},
+        {gene_index_array},
         INPUT.gene_id,
         gene_idx),
-      {gene}),
-    {gene})""".format(gene=GENE_ARRAY, gene_index=GENE_INDEX_ARRAY)
+      {gene_array}),
+    {gene_array})""".format(gene_array=GENE_ARRAY,
+                            gene_index_array=GENE_INDEX_ARRAY)
 
 
 # -- -
@@ -279,8 +280,8 @@ VARIANT_STORE_QUERY = """
         minl10pval,   dcast(rsub(a7, 's/.*minl10pval=([^;]*).*/$1/'),
                             double(null)),
         csq,          rsub(a7, 's/.*CSQ=([^;]*).*/$1/')),
-      {variant}),
-    {variant})""".format(variant=VARIANT_ARRAY)
+      {variant_array}),
+    {variant_array})""".format(variant_array=VARIANT_ARRAY)
 
 VARIANT_GENE_ARRAY = 'variant_gene'
 VARIANT_GENE_SCHEMA = """
@@ -299,13 +300,13 @@ VARIANT_GENE_STORE_QUERY = """
           pos,     int64(a1),
           gene_id, a2,
           val,     int8(0)) as INPUT,
-        {gene_index},
+        {gene_index_array},
         INPUT.gene_id,
         gene_idx),
-      {variant_gene}),
-    {variant_gene})""".format(
-        gene_index=GENE_INDEX_ARRAY,
-        variant_gene=VARIANT_GENE_ARRAY)
+      {variant_gene_array}),
+    {variant_gene_array})""".format(
+        gene_index_array=GENE_INDEX_ARRAY,
+        variant_gene_array=VARIANT_GENE_ARRAY)
 
 
 # == =
@@ -317,33 +318,33 @@ VARIANT_GENE_STORE_QUERY = """
 # -- -
 ICD_LOOKUP_QUERY = """
   cross_join(
-    {icd},
-    filter({icd_info}, icd = '{{icd}}'),
-    {icd}.icd_idx,
-    {icd_info}.icd_idx)""".format(
-        icd=ICD_ARRAY,
-        icd_info=ICD_INFO_ARRAY)
+    {icd_array},
+    filter({icd_info_array}, icd = '{{icd}}'),
+    {icd_array}.icd_idx,
+    {icd_info_array}.icd_idx)""".format(
+        icd_array=ICD_ARRAY,
+        icd_info_array=ICD_INFO_ARRAY)
 
 ICD_PVALUE_LOOKUP_QUERY = """
   filter(
     cross_join(
-      {icd},
-      filter({icd_info}, icd = '{{icd}}'),
-      {icd}.icd_idx,
-      {icd_info}.icd_idx),
+      {icd_array},
+      filter({icd_info_array}, icd = '{{icd}}'),
+      {icd_array}.icd_idx,
+      {icd_info_array}.icd_idx),
     pvalue < {{pvalue}})""".format(
-        icd=ICD_ARRAY,
-        icd_info=ICD_INFO_ARRAY)
+        icd_array=ICD_ARRAY,
+        icd_info_array=ICD_INFO_ARRAY)
 
 ICD_CHROM_POS_LOOKUP_QUERY = """
   cross_join(
-    between({icd}, null, {{chrom}}, {{pos}}, null, null,
-                   null, {{chrom}}, {{pos}}, null, null),
-    {icd_info},
-    {icd}.icd_idx,
-    {icd_info}.icd_idx)""".format(
-        icd=ICD_ARRAY,
-        icd_info=ICD_INFO_ARRAY)
+    between({icd_array}, null, {{chrom}}, {{pos}}, null, null,
+                         null, {{chrom}}, {{pos}}, null, null),
+    {icd_info_array},
+    {icd_array}.icd_idx,
+    {icd_info_array}.icd_idx)""".format(
+        icd_array=ICD_ARRAY,
+        icd_info_array=ICD_INFO_ARRAY)
 
 ICD_X_INFO_SCHEMA = scidbpy.schema.Schema.fromstring(
     ICD_SCHEMA.replace(
@@ -354,7 +355,7 @@ ICD_X_INFO_SCHEMA = scidbpy.schema.Schema.fromstring(
 
 ICD_VARIANT_LOOKUP_QUERY = """
   cross_join(
-    project({variant},
+    project({variant_array},
             rsid,
             ref,
             alt,
@@ -363,21 +364,21 @@ ICD_VARIANT_LOOKUP_QUERY = """
             csq),
     cross_join(
         project(
-          between({icd}, null, null, null, {{pdecimal}}, null,
-                         null, null, null, null,         null),
+          between({icd_array}, null, null, null, {{pdecimal}}, null,
+                               null, null, null, null,         null),
           or_val,
           pvalue,
           log10pvalue),
-        filter({icd_info}, icd = '{{icd}}'),
-        {icd}.icd_idx,
-        {icd_info}.icd_idx) as icd_join,
-    {variant}.chrom,
+        filter({icd_info_array}, icd = '{{icd}}'),
+        {icd_array}.icd_idx,
+        {icd_info_array}.icd_idx) as icd_join,
+    {variant_array}.chrom,
     icd_join.chrom,
-    {variant}.pos,
+    {variant_array}.pos,
     icd_join.pos)""".format(
-        icd=ICD_ARRAY,
-        icd_info=ICD_INFO_ARRAY,
-        variant=VARIANT_ARRAY)
+        icd_array=ICD_ARRAY,
+        icd_info_array=ICD_INFO_ARRAY,
+        variant_array=VARIANT_ARRAY)
 
 VARIANT_X_ICD_X_INFO_SCHEMA = scidbpy.schema.Schema.fromstring("""
   <rsid:        int64,
@@ -405,12 +406,12 @@ VARIANT_X_ICD_X_INFO_SCHEMA = scidbpy.schema.Schema.fromstring("""
 
 GENE_LOOKUP_QUERY = """
   cross_join(
-    {gene},
-    filter({gene_index}, gene_id = '{{gene_id}}'),
-    {gene}.gene_idx,
-    {gene_index}.gene_idx)""".format(
-        gene=GENE_ARRAY,
-        gene_index=GENE_INDEX_ARRAY)
+    {gene_array},
+    filter({gene_index_array}, gene_id = '{{gene_id}}'),
+    {gene_array}.gene_idx,
+    {gene_index_array}.gene_idx)""".format(
+        gene_array=GENE_ARRAY,
+        gene_index_array=GENE_INDEX_ARRAY)
 
 GENE_LOOKUP_SCHEMA = scidbpy.schema.Schema.fromstring(
     GENE_SCHEMA.replace('>', ',gene_id:string>'))
@@ -420,31 +421,31 @@ GENE_LOOKUP_SCHEMA = scidbpy.schema.Schema.fromstring(
 # -- - Lookup: VARIANT - --
 # -- -
 VARIANT_LOOKUP_QUERY = """
-  between({variant}, {{chrom}}, {{pos}},
+  between({variant_array}, {{chrom}}, {{pos}},
                      {{chrom}}, {{pos}})""".format(
-    variant=VARIANT_ARRAY)
+    variant_array=VARIANT_ARRAY)
 
 VARIANT_MULTI_LOOKUP_QUERY = """
-  filter({variant}, {{chrom_pos_cond}})""".format(
-    variant=VARIANT_ARRAY)
+  filter({variant_array}, {{chrom_pos_cond}})""".format(
+    variant_array=VARIANT_ARRAY)
 
 VARIANT_LOOKUP_SCHEMA = scidbpy.schema.Schema.fromstring(VARIANT_SCHEMA)
 
 VARIANT_GENE_LOOKUP = """
   cross_join(
-    {variant},
+    {variant_array},
     cross_join(
-      {variant_gene},
-      filter({gene_index}, gene_id = '{{gene_id}}'),
-      {variant_gene}.gene_idx,
-      {gene_index}.gene_idx) as variant_gene_index,
-    {variant}.chrom,
+      {variant_gene_array},
+      filter({gene_index_array}, gene_id = '{{gene_id}}'),
+      {variant_gene_array}.gene_idx,
+      {gene_index_array}.gene_idx) as variant_gene_index,
+    {variant_array}.chrom,
     variant_gene_index.chrom,
-    {variant}.pos,
+    {variant_array}.pos,
     variant_gene_index.pos)""".format(
-        variant=VARIANT_ARRAY,
-        variant_gene=VARIANT_GENE_ARRAY,
-        gene_index=GENE_INDEX_ARRAY)
+        variant_array=VARIANT_ARRAY,
+        variant_gene_array=VARIANT_GENE_ARRAY,
+        gene_index_array=GENE_INDEX_ARRAY)
 
 VARIANT_X_GENE_INDEX_SCHEMA = scidbpy.schema.Schema.fromstring(
     VARIANT_GENE_SCHEMA.replace(
