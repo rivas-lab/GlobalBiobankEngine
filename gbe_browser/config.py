@@ -400,6 +400,23 @@ VARIANT_X_ICD_X_INFO_SCHEMA = scidbpy.schema.Schema.fromstring("""
 
 
 # -- -
+# -- - Lookup: GENE - --
+# -- -
+
+GENE_LOOKUP_QUERY = """
+  cross_join(
+    {gene},
+    filter({gene_index}, gene_id = '{{gene_id}}'),
+    {gene}.gene_idx,
+    {gene_index}.gene_idx)""".format(
+        gene=GENE_ARRAY,
+        gene_index=GENE_INDEX_ARRAY)
+
+GENE_LOOKUP_SCHEMA = scidbpy.schema.Schema.fromstring(
+    GENE_SCHEMA.replace('>', ',gene_id:string>'))
+
+
+# -- -
 # -- - Lookup: VARIANT - --
 # -- -
 VARIANT_LOOKUP_QUERY = """
@@ -412,6 +429,34 @@ VARIANT_MULTI_LOOKUP_QUERY = """
     variant=VARIANT_ARRAY)
 
 VARIANT_LOOKUP_SCHEMA = scidbpy.schema.Schema.fromstring(VARIANT_SCHEMA)
+
+VARIANT_GENE_LOOKUP = """
+  cross_join(
+    {variant},
+    cross_join(
+      {variant_gene},
+      filter({gene_index}, gene_id = '{{gene_id}}'),
+      {variant_gene}.gene_idx,
+      {gene_index}.gene_idx) as variant_gene_index,
+    {variant}.chrom,
+    variant_gene_index.chrom,
+    {variant}.pos,
+    variant_gene_index.pos)""".format(
+        variant=VARIANT_ARRAY,
+        variant_gene=VARIANT_GENE_ARRAY,
+        gene_index=GENE_INDEX_ARRAY)
+
+VARIANT_X_GENE_INDEX_SCHEMA = scidbpy.schema.Schema.fromstring(
+    VARIANT_GENE_SCHEMA.replace(
+        '<',
+        '<{},'.format(
+            VARIANT_SCHEMA[VARIANT_SCHEMA.index('<') + 1:
+                           VARIANT_SCHEMA.index('>')]).replace(
+                               '>',
+                               ',{}>'.format(
+                                   GENE_INDEX_SCHEMA[
+                                       GENE_INDEX_SCHEMA.index('<') + 1:
+                                       GENE_INDEX_SCHEMA.index('>')]))))
 
 VARIANT_CSQ = ('Allele',
                'Consequence',
@@ -480,19 +525,3 @@ VARIANT_CSQ = ('Allele',
                'LoF_filter',
                'LoF_flags',
                'LoF_info')
-
-# -- -
-# -- - Lookup: GENE - --
-# -- -
-
-GENE_LOOKUP_QUERY = """
-  cross_join(
-    {gene},
-    filter({gene_index}, gene_id = '{{gene_id}}'),
-    {gene}.gene_idx,
-    {gene_index}.gene_idx)""".format(
-        gene=GENE_ARRAY,
-        gene_index=GENE_INDEX_ARRAY)
-
-GENE_LOOKUP_SCHEMA = scidbpy.schema.Schema.fromstring(
-    GENE_SCHEMA.replace('>', ',gene_id:string>'))

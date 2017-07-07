@@ -130,12 +130,23 @@ def get_icd_significant_variant(db, icd_id, cutoff=0.001):
 
     SciDB:
       cross_join(
-        variant,
+        project(variant,
+                rsid,
+                ref,
+                alt,
+                filter,
+                exac_nfe,
+                csq),
         cross_join(
-            icd_pvalue_lt001_ltd,
+            project(
+              between(icd, null, null, null, 1,    null,
+                           null, null, null, null, null),
+              or_val,
+              pvalue,
+              log10pvalue),
             filter(icd_info, icd = 'RH117'),
-            icd_pvalue_lt001.icd_idx,
-            icd_info_index.icd_idx) as icd_join,
+            icd.icd_idx,
+            icd_info.icd_idx) as icd_join,
         variant.chrom,
         icd_join.chrom,
         variant.pos,
@@ -260,19 +271,22 @@ def get_variants_in_gene(db, gene_id):
       db.variants.find({'genes': 'ENSG00000107404'}, fields={'_id': False})
 
     SciDB:
-      TODO
+      cross_join(variant,
+                 cross_join(variant_gene,
+                            filter(gene_index, gene_id = 'ENSG00000107404'),
+                            variant_gene.gene_idx,
+                            gene_index.gene_idx) as variant_gene_index,
+                 variant.chrom,
+                 variant_gene_index.chrom,
+                 variant.pos,
+                 variant_gene_index.pos);
     """
-    # TODO
-    # variants = []
-    # for variant in db.variants.find({'genes': gene_id},
-    #                                 fields={'_id': False}):
-    #     variant['vep_annotations'] = [x
-    #                                   for x in variant['vep_annotations']
-    #                                   if x['Gene'] == gene_id]
-    #     add_consequence_to_variant(variant)
-    #     variants.append(variant)
-    # return variants
-    pass
+    return format_variants(
+        numpy2dict(
+            db.iquery(
+                config.VARIANT_GENE_LOOKUP.format(gene_id=gene_id),
+                schema=config.VARIANT_X_GENE_INDEX_SCHEMA,
+                fetch=True)))
 
 
 if __name__ == '__main__':
@@ -287,3 +301,4 @@ if __name__ == '__main__':
     pp.pprint(get_variants_by_id(db, (1039381448,)))
     pp.pprint(get_variant(db, 1039381448))
     pp.pprint(get_gene(db, 'ENSG00000107404'))
+    pp.pprint(get_variants_in_gene(db, 'ENSG00000107404'))
