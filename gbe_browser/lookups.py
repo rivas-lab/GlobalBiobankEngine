@@ -238,7 +238,7 @@ def get_variant(db, xpos):
 # -- -
 # -- - GENE - --
 # -- -
-def get_gene_by_type(db, gene_id, gene_type=1):
+def get_gene_by_type(db, index_array, id, gene_type=1):
     """
     e.g.,
     UI:
@@ -256,10 +256,11 @@ def get_gene_by_type(db, gene_id, gene_type=1):
     """
     return numpy2dict(
         db.iquery(
-            config.GENE_LOOKUP_QUERY.format(id=gene_id,
+            config.GENE_LOOKUP_QUERY.format(index_array=index_array,
+                                            id=id,
                                             gene_type=gene_type),
             schema=config.GENE_LOOKUP_SCHEMA,
-            fetch=True))
+            fetch=True))[0]
 
 
 def get_gene(db, gene_id):
@@ -278,7 +279,28 @@ def get_gene(db, gene_id):
                  gene.gene_idx,
                  gene_index.gene_idx);
     """
-    return get_gene_by_type(db, gene_id, 1)
+    return get_gene_by_type(db, config.GENE_INDEX_ARRAY, gene_id, 1)
+
+
+def get_transcript(db, transcript_id):
+    """
+    e.g.,
+    UI:
+      https://biobankengine.stanford.edu/gene/ENSG00000107404
+
+    MongoDB:
+      db.transcripts.find({'transcript_id': 'ENSG00000107404'},
+                          fields={'_id': False})
+
+    SciDB:
+      cross_join(between(gene, null, null, 2, null, null, null,
+                               null, null, 2, null, null, null),
+                 filter(transcript_index, id = 'ENSG00000107404'),
+                 gene.gene_idx,
+                 transcript_index.gene_idx);
+    """
+    return get_gene_by_type(
+        db, config.TRANSCRIPT_INDEX_ARRAY, transcript_id, 2)
 
 
 def get_transcripts_in_gene(db, gene_id):
@@ -298,7 +320,7 @@ def get_transcripts_in_gene(db, gene_id):
                  gene.gene_idx,
                  gene_index.gene_idx);
     """
-    return get_gene_by_type(db, gene_id, 2)
+    return get_gene_by_type(db, config.GENE_INDEX_ARRAY, gene_id, 2)
 
 
 def get_variants_in_gene(db, gene_id):

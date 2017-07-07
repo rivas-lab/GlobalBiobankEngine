@@ -421,11 +421,9 @@ GENE_LOOKUP_QUERY = """
   cross_join(
     between({gene_array}, null, null, {{gene_type}}, null, null, null,
                           null, null, {{gene_type}}, null, null, null),
-    filter({gene_index_array}, id = '{{gene_id}}'),
+    filter({{index_array}}, id = '{{id}}'),
     {gene_array}.gene_idx,
-    {gene_index_array}.gene_idx)""".format(
-        gene_array=GENE_ARRAY,
-        gene_index_array=GENE_INDEX_ARRAY)
+    {{index_array}}.gene_idx)""".format(gene_array=GENE_ARRAY)
 
 GENE_LOOKUP_SCHEMA = scidbpy.schema.Schema.fromstring(
     GENE_SCHEMA.replace(
@@ -453,7 +451,7 @@ VARIANT_GENE_LOOKUP = """
     {variant_array},
     cross_join(
       {variant_gene_array},
-      filter({gene_index_array}, id = '{{gene_id}}'),
+      filter({gene_index_array}, id = '{{id}}'),
       {variant_gene_array}.gene_idx,
       {gene_index_array}.gene_idx) as variant_gene_index,
     {variant_array}.chrom,
