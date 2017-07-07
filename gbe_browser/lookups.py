@@ -238,6 +238,30 @@ def get_variant(db, xpos):
 # -- -
 # -- - GENE - --
 # -- -
+def get_gene_by_type(db, gene_id, gene_type=1):
+    """
+    e.g.,
+    UI:
+      https://biobankengine.stanford.edu/gene/ENSG00000107404
+
+    MongoDB:
+      db.genes.find({'gene_id': 'ENSG00000107404'}, fields={'_id': False})
+
+    SciDB:
+      cross_join(between(gene, null, null, 1, null, null, null,
+                               null, null, 1, null, null, null),
+                 filter(gene_index, gene_id = 'ENSG00000107404'),
+                 gene.gene_idx,
+                 gene_index.gene_idx);
+    """
+    return numpy2dict(
+        db.iquery(
+            config.GENE_LOOKUP_QUERY.format(gene_id=gene_id,
+                                            gene_type=gene_type),
+            schema=config.GENE_LOOKUP_SCHEMA,
+            fetch=True))
+
+
 def get_gene(db, gene_id):
     """
     e.g.,
@@ -248,17 +272,33 @@ def get_gene(db, gene_id):
       db.genes.find({'gene_id': 'ENSG00000107404'}, fields={'_id': False})
 
     SciDB:
-      cross_join(gene,
+      cross_join(between(gene, null, null, 1, null, null, null,
+                               null, null, 1, null, null, null),
                  filter(gene_index, gene_id = 'ENSG00000107404'),
                  gene.gene_idx,
                  gene_index.gene_idx);
-
     """
-    return numpy2dict(
-        db.iquery(
-            config.GENE_LOOKUP_QUERY.format(gene_id=gene_id),
-            schema=config.GENE_LOOKUP_SCHEMA,
-            fetch=True))
+    return get_gene_by_type(db, gene_id, 1)
+
+
+def get_transcripts_in_gene(db, gene_id):
+    """
+    e.g.,
+    UI:
+      https://biobankengine.stanford.edu/gene/ENSG00000107404
+
+    MongoDB:
+      db.transcripts.find({'gene_id': 'ENSG00000107404'},
+                          fields={'_id': False})
+
+    SciDB:
+      cross_join(between(gene, null, null, 1, null, null, null,
+                               null, null, 1, null, null, null),
+                 filter(gene_index, gene_id = 'ENSG00000107404'),
+                 gene.gene_idx,
+                 gene_index.gene_idx);
+    """
+    return get_gene_by_type(db, gene_id, 2)
 
 
 def get_variants_in_gene(db, gene_id):
@@ -301,4 +341,5 @@ if __name__ == '__main__':
     pp.pprint(get_variants_by_id(db, (1039381448,)))
     pp.pprint(get_variant(db, 1039381448))
     pp.pprint(get_gene(db, 'ENSG00000107404'))
+    pp.pprint(get_transcripts_in_gene(db, 'ENSG00000107404'))
     pp.pprint(get_variants_in_gene(db, 'ENSG00000107404'))
