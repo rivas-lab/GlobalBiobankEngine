@@ -206,10 +206,15 @@ GENE_SCHEMA = """
    strand:    string>
   [gene_idx  = 0:*:0:20;
    chrom     = 1:25:0:1;
+   type      = 1:3:0:1;
    start     = 0:*:0:10000000;
    stop      = 0:*:0:10000000;
    synthetic = 0:199:0:200]"""
 
+# type
+#   1  : gene
+#   2  : transcript
+#   3  : exon (other)
 GENE_STORE_QUERY = """
   store(
     redimension(
@@ -226,6 +231,11 @@ GENE_STORE_QUERY = """
                                 iif(substr(a0, 3, 4) = 'M',
                                     25,
                                     dcast(substr(a0, 3, 5), int64(null))))),
+          type,         iif(a2 = 'gene',
+                            1,
+                            iif(a2 = 'transcript',
+                                2,
+                                3)),
           start,        int64(a3) + 1,
           stop,         int64(a4) + 1,
           gene_name,    rsub(a8, 's/.*gene_name "([^"]*).*/$1/'),
@@ -410,7 +420,8 @@ VARIANT_X_ICD_X_INFO_SCHEMA = scidbpy.schema.Schema.fromstring("""
 
 GENE_LOOKUP_QUERY = """
   cross_join(
-    {gene_array},
+    between({gene_array}, null, null, 1, null, null, null,
+                          null, null, 1, null, null, null),
     filter({gene_index_array}, gene_id = '{{gene_id}}'),
     {gene_array}.gene_idx,
     {gene_index_array}.gene_idx)""".format(
