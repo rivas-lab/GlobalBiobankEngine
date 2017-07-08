@@ -1,0 +1,708 @@
+RH141	14793	Osteoarthritis	14793	14793	Y
+RH160	10608	Asthma	10608	10608	Y
+RH134	7825	Diabetes Mellitus Type 2	7825	7825	Y
+RH107	5271	Acquired Hypothyroidism	5271	5271	Y
+RH32	4703	Depression	4703	4703	Y
+RH9	4326	Hyperplasia of the Prostate	4326	4326	Y
+RH24	3205	Cataract	3205	3205	Y
+RH48	3078	Skin Cyst	3078	3078	Y
+RH45	2827	Prostate Cancer	2827	2827	Y
+RH3	2073	Acute Myocardial Infarction	2073	2073	Y
+RH95	1863	Colorectal Cancer	1863	1863	Y
+RH91	1822	Anxiety	1822	1822	Y
+RH56	1621	Deep Vein Thrombosis	1621	1621	Y
+RH81	1440	Pulmonary Embolism and Infarction	1440	1440	Y
+RH86	1410	Epilepsy	1410	1410	Y
+RH110	1267	Cerebral Infarction	1267	1267	Y
+RH36	1238	Eczema	1238	1238	Y
+RH140	1150	Melanoma	1150	1150	Y
+RH130	1127	Diabetes Mellitus Type 1	1127	1127	Y
+RH145	1045	Lung Cancer	1045	1045	Y
+RH129	1032	Migraine	1032	1032	Y
+RH74	1012	Rheumatoid Arthritis	1012	1012	Y
+RH119	961	Glaucoma	961	961	Y
+RH108	852	Emphysema	852	852	Y
+RH146	841	Bladder Cancer	841	841	Y
+RH89	814	Psoriasis	814	814	Y
+RH128	676	Crohns Disease	676	676	Y
+RH7	670	Gout	670	670	Y
+RH150	657	Celiac Disease	657	657	Y
+RH67	646	Unspecified Viral Infection (Common Cold)	646	646	Y
+RH122	546	Uterine Cancer	546	546	Y
+RH65	404	Bipolar Disorder	404	404	Y
+RH159	396	Parkinsonism	396	396	Y
+RH157	389	Bronchitis	389	389	Y
+RH50	273	Lymphosarcoma/Reticulorsarcoma	273	273	Y
+RH99	251	Gastric Cancer	251	251	Y
+RH94	238	Schizophrenia	238	238	Y
+RH77	224	Sarcoidosis	224	224	Y
+RH60	222	Liche	222	222	Y
+RH126	209	Phobia	209	209	Y
+RH156	198	Malignant Brain Neoplasm	198	198	Y
+RH131	172	Haemophilia	172	172	Y
+RH30	164	Alzheimers Disease	164	164	Y
+RH51	163	Lupus	163	163	Y
+RH84	120	Rosacea	120	120	Y
+RH37	105	Hypopituitarism	105	105	Y
+cancer1022	8117	colon cancer/sigmoid cancer	8117	8117	Y
+cancer1039	7102	ovarian cancer	7102	7102	Y
+cancer1080	4778	trachea cancer	4778	4778	Y
+cancer1023	2895	rectal cancer	2895	2895	Y
+cancer1077	2295	mouth cancer	2295	2295	Y
+cancer1004	1946	cancer of lip/mouth/pharynx/oral cavity	1946	1946	Y
+cancer1040	1749	uterine/endometrial cancer	1749	1749	Y
+cancer1079	1535	oropharynx / oropharyngeal cancer	1535	1535	Y
+cancer1003	1427	skin cancer	1427	1427	Y
+cancer1026	1337	pancreas cancer	1337	1337	Y
+cancer1011	1292	tongue cancer	1292	1292	Y
+cancer1085	1087	bone metastases/bony secondaries	1087	1087	Y
+cancer1060	928	non-melanoma skin cancer	928	928	Y
+cancer1033	904	spinal cord or cranial nerve cancer	904	904	Y
+cancer1025	849	gallbladder/bile duct cancer	849	849	Y
+cancer1066	818	parathyroid cancer	818	818	Y
+cancer1034	710	kidney/renal cell cancer	710	710	Y
+cancer1012	658	gum cancer	658	658	Y
+cancer1087	526	fallopian tube cancer	526	526	Y
+cancer1065	493	thyroid cancer	493	493	Y
+cancer1035	378	bladder cancer	378	378	Y
+cancer1005	312	salivary gland cancer	312	312	Y
+cancer1088	310	malignant insulinoma	310	310	Y
+cancer1008	308	ear cancer	308	308	Y
+cancer1001	284	lung cancer	284	284	Y
+cancer1042	277	vaginal cancer	277	277	Y
+cancer1076	265	kaposis sarcoma	265	265	Y
+cancer1017	252	oesophageal cancer	252	252	Y
+cancer1032	241	brain cancer/primary malignant brain tumour	241	241	Y
+cancer1053	220	non-hodgkins lymphoma	220	220	Y
+cancer1030	208	eye and/or adnexal cancer	208	208	Y
+cancer1081	197	thymus cancer / malignant thymoma	197	197	Y
+cancer1044	190	prostate cancer	190	190	Y
+cancer1067	175	adrenal cancer	175	175	Y
+cancer1074	152	acute myeloid leukaemia	152	152	Y
+cancer1082	141	heart / mediastinum cancer	141	141	Y
+cancer1075	131	retinoblastoma	131	131	Y
+cancer1010	115	lip cancer	115	115	Y
+cancer1046	105	penis cancer	105	105	Y
+cancer1043	103	vulval cancer	103	103	Y
+cancer1064	92	mesothelioma	92	92	Y
+HC111	30491	essential hypertension	30491	30491	Y
+HC153	21217	asthma	21217	21217	Y
+HC37	20478	high cholesterol	20478	20478	Y
+HC154	13560	osteoarthritis	13560	13560	Y
+HC430	9493	depression	9493	9493	Y
+HC39	9064	hayfever/allergic rhinitis	9064	9064	Y
+HC67	6529	unclassifiable	6529	6529	Y
+HC199	6134	inguinal hernia	6134	6134	Y
+HC367	6022	cholecystitis	6022	6022	Y
+HC268	5689	atrial fibrillation	5689	5689	Y
+HC292	5474	atrial flutter	5474	5474	Y
+HC306	5113	irritable bowel syndrome	5113	5113	Y
+HC69	4701	dyspepsia / indigestion	4701	4701	Y
+HC212	4513	chronic obstructive airways disease/copd	4513	4513	Y
+HC281	4267	respiratory infection	4267	4267	Y
+HC412	4259	back pain	4259	4259	Y
+HC179	4188	osteoporosis	4188	4188	Y
+HC220	4165	constipation	4165	4165	Y
+HC185	3642	joint pain	3642	3642	Y
+HC320	3030	deep venous thrombosis (dvt)	3030	3030	Y
+HC112	2951	cellulitis	2951	2951	Y
+HC246	2941	gout	2941	2941	Y
+HC75	2784	stroke	2784	2784	Y
+HC150	2748	back problem	2748	2748	Y
+HC399	2682	glaucoma	2682	2682	Y
+HC57	2639	prolapsed disc/slipped disc	2639	2639	Y
+HC370	2527	appendicitis	2527	2527	Y
+HC5	2412	bronchitis	2412	2412	Y
+HC156	2407	sciatica	2407	2407	Y
+HC227	2385	uterine fibroids	2385	2385	Y
+HC122	2361	endometriosis	2361	2361	Y
+HC59	2248	pulmonary embolism +/- dvt	2248	2248	Y
+HC282	2208	anxiety/panic attacks	2208	2208	Y
+HC404	2066	subdural haemorrhage/haematoma	2066	2066	Y
+HC390	2061	pleural effusion	2061	2061	Y
+HC198	2051	sleep apnoea	2051	2051	Y
+HC50	1998	fracture radius	1998	1998	Y
+HC425	1992	cervical spondylosis	1992	1992	Y
+HC244	1790	diverticular disease/diverticulitis	1790	1790	Y
+HC19	1601	umbilical hernia	1601	1601	Y
+HC360	1450	spinal stenosis	1450	1450	Y
+HC192	1443	allergy or anaphylactic reaction to drug	1443	1443	Y
+HC103	1430	whooping cough / pertussis	1430	1430	Y
+HC16	1409	spine arthritis/spondylitis	1409	1409	Y
+HC363	1382	headaches (not migraine)	1382	1382	Y
+HC415	1375	ear/vestibular disorder	1375	1375	Y
+HC359	1309	transient ischaemic attack (tia)	1309	1309	Y
+HC283	1303	muscle/soft tissue problem	1303	1303	Y
+HC273	1299	ovarian cyst or cysts	1299	1299	Y
+HC200	1254	muscle or soft tissue injuries	1254	1254	Y
+HC271	1248	type 2 diabetes	1248	1248	Y
+HC414	1216	svt / supraventricular tachycardia	1216	1216	Y
+HC343	1215	retinal detachment	1215	1215	Y
+HC89	1170	eye/eyelid problem	1170	1170	Y
+HC43	1150	peritonitis	1150	1150	Y
+HC242	1106	allergy/hypersensitivity/anaphylaxis	1106	1106	Y
+HC12	1101	tonsiltis	1101	1101	Y
+HC313	1058	benign breast lump	1058	1058	Y
+HC248	1019	pancreatitis	1019	1019	Y
+HC188	995	respiratory failure	995	995	Y
+HC194	958	bronchiectasis	958	958	Y
+HC148	918	bursitis	918	918	Y
+HC119	905	malabsorption/coeliac disease	905	905	Y
+HC110	859	vaginal prolapse/uterine prolapse	859	859	Y
+HC102	843	joint disorder	843	843	Y
+HC23	829	fracture tibia	829	829	Y
+HC437	800	urinary frequency / incontinence	800	800	Y
+HC324	798	fracture upper arm / humerus / elbow	798	798	Y
+HC277	792	helicobacter pylori	792	792	Y
+HC82	789	crohns disease	789	789	Y
+HC381	775	allergy or anaphylactic reaction to food	775	775	Y
+HC429	765	gall bladder disease	765	765	Y
+HC380	765	pleurisy	765	765	Y
+HC403	737	meningitis	737	737	Y
+HC438	735	aortic stenosis	735	735	Y
+HC99	732	stomach disorder	732	732	Y
+HC314	668	fracture finger	668	668	Y
+HC201	667	fracture ulna	667	667	Y
+HC255	665	multiple sclerosis	665	665	Y
+HC333	661	chronic fatigue syndrome	661	661	Y
+HC61	657	bone disorder	657	657	Y
+HC276	617	polymyalgia rheumatica	617	617	Y
+HC177	600	other demyelinating disease (not multiple sclerosis)	600	600	Y
+HC355	593	tinnitus / tiniitis	593	593	Y
+HC408	591	nasal/sinus disorder	591	591	Y
+HC378	589	aortic aneurysm rupture	589	589	Y
+HC245	574	ankylosing spondylitis	574	574	Y
+HC431	550	fibromyalgia	550	550	Y
+HC361	530	heart/cardiac problem	530	530	Y
+HC252	514	subarachnoid haemorrhage	514	514	Y
+HC18	507	trapped nerve/compressed nerve	507	507	Y
+HC308	484	pernicious anaemia	484	484	Y
+HC326	474	colitis/not crohns or ulcerative colitis	474	474	Y
+HC34	472	mania/bipolar disorder/manic depression	472	472	Y
+HC180	472	fracture wrist / colles fracture	472	472	Y
+HC115	470	menorrhagia (unknown cause)	470	470	Y
+HC160	465	pneumothorax	465	465	Y
+HC113	461	parkinsons disease	461	461	Y
+HC6	456	osteopenia	456	456	Y
+HC311	450	uterine polyps	450	450	Y
+HC315	445	osteomyelitis	445	445	Y
+HC170	438	prostatitis	438	438	Y
+HC238	425	bile duct obstruction/ascending cholangitis	425	425	Y
+HC372	410	fracture rib	410	410	Y
+HC256	410	miscarriage	410	410	Y
+HC222	398	thyroid problem (not cancer)	398	398	Y
+HC134	393	ureteric obstruction/hydronephrosis	393	393	Y
+HC312	388	labyrinthitis	388	388	Y
+HC54	377	pulmonary fibrosis	377	377	Y
+HC317	373	fracture fibula	373	373	Y
+HC210	353	bph / benign prostatic hypertrophy	353	353	Y
+HC127	331	tennis elbow / lateral epicondylitis	331	331	Y
+HC169	324	vertigo	324	324	Y
+HC209	301	epicondylitis	301	301	Y
+HC44	299	liver/biliary/pancreas problem	299	299	Y
+HC413	288	dry eyes	288	288	Y
+HC236	277	gastritis/gastric erosions	277	277	Y
+HC400	276	fracture clavicle / collar bone	276	276	Y
+HC354	272	abdominal hernia	272	272	Y
+HC197	271	alcohol dependency	271	271	Y
+HC189	271	pericardial effusion	271	271	Y
+HC374	262	peripheral neuropathy	262	262	Y
+HC208	258	gynaecological disorder (not cancer)	258	258	Y
+HC349	256	femoral hernia	256	256	Y
+HC319	253	polycystic ovaries/polycystic ovarian syndrome	253	253	Y
+HC152	249	sjogren's syndrome/sicca syndrome	249	249	Y
+HC239	248	retinal problem	248	248	Y
+HC323	244	fracture nose	244	244	Y
+HC28	243	abnormal smear (cervix)	243	243	Y
+HC133	243	blepharitis / eyelid infection	243	243	Y
+HC106	243	polycythaemia vera	243	243	Y
+HC269	239	nervous breakdown	239	239	Y
+HC38	237	fracture patella / knee	237	237	Y
+HC157	236	burns	236	236	Y
+HC339	231	cerebral aneurysm	231	231	Y
+HC2	228	testicular problems (not cancer)	228	228	Y
+HC207	225	lymphoedema	225	225	Y
+HC74	224	fracture toe	224	224	Y
+HC55	224	malaria	224	224	Y
+HC309	217	fracture metatarsal	217	217	Y
+HC249	213	mitral valve prolapse	213	213	Y
+HC278	210	throat or larynx disorder	210	210	Y
+HC335	200	trigemminal neuralgia	200	200	Y
+HC427	194	raynaud's phenomenon/disease	194	194	Y
+HC126	193	spinal cord disorder	193	193	Y
+HC368	192	interstitial lung disease	192	192	Y
+HC270	192	disorder or pituitary gland	192	192	Y
+HC100	190	sclerosing cholangitis	190	190	Y
+HC64	188	bell's palsy/facial nerve palsy	188	188	Y
+HC392	178	vocal cord polyp	178	178	Y
+HC264	177	mrsa / methicillin resistant staphylococcus aureus	177	177	Y
+HC7	176	fracture thumb	176	176	Y
+HC303	173	thyroiditis	173	173	Y
+HC279	172	menopausal symptoms / menopause	172	172	Y
+HC88	169	otosclerosis	169	169	Y
+HC405	165	insomnia	165	165	Y
+HC145	162	shingles	162	162	Y
+HC98	159	hypopituitarism	159	159	Y
+HC280	159	thyroid goitre	159	159	Y
+HC135	158	neck problem/injury	158	158	Y
+HC328	155	non-infective hepatitis	155	155	Y
+HC48	153	jaundice (unknown cause)	153	153	Y
+HC24	153	giant cell/temporal arteritis	153	153	Y
+HC214	153	post-natal depression	153	153	Y
+HC445	152	post-traumatic stress disorder	152	152	Y
+HC92	149	disc problem	149	149	Y
+HC386	148	psychological/psychiatric problem	148	148	Y
+HC254	146	pericarditis	146	146	Y
+HC202	146	leg claudication/ intermittent claudication	146	146	Y
+HC20	146	type 1 diabetes	146	146	Y
+HC71	140	sick sinus syndrome	140	140	Y
+HC41	140	polio / poliomyelitis	140	140	Y
+HC14	138	retinal artery/vein occlusion	138	138	Y
+HC304	137	tendonitis / tendinitis / tenosynovitis	137	137	Y
+HC101	137	hereditary/genetic haematological disorder	137	137	Y
+HC347	136	clotting disorder/excessive bleeding	136	136	Y
+HC295	136	macular degeneration	136	136	Y
+HC375	134	hiv/aids	134	134	Y
+HC141	129	low platelets/platelet disorder	129	129	Y
+HC121	129	breast disease (not cancer)	129	129	Y
+HC125	128	fracture vertebra / crush fracture / vertebral collapse	128	128	Y
+HC331	127	renal failure not requiring dialysis	127	127	Y
+HC94	125	septicaemia / sepsis	125	125	Y
+HC247	121	monoclonal gammopathy/not myeloma	121	121	Y
+HC51	120	dupuytren's contracture	120	120	Y
+HC350	120	erectile dysfunction / impotence	120	120	Y
+HC224	120	benign / essential tremor	120	120	Y
+HC346	116	acute infective polyneuritis/guillain-barre syndrome	116	116	Y
+HC17	114	cervical intra-epithelial neoplasia (cin) / precancerous cells cervix	114	114	Y
+HC142	113	oesophageal disorder	113	113	Y
+HC143	112	allergy to house dust mite	112	112	Y
+HC117	109	pelvic inflammatory disease/ pid	109	109	Y
+HC342	108	dysmenorrhoea / dysmenorrhea	108	108	Y
+HC96	107	primary biliary cirrhosis	107	107	Y
+HC284	105	pyloric stenosis	105	105	Y
+HC162	104	contact dermatitis	104	104	Y
+HC441	102	motor neurone disease	102	102	Y
+HC211	102	pituitary adenoma/tumour	102	102	Y
+FH1065	91063	High blood pressure	91063	91063	Y
+FH1001	55698	Lung cancer	55698	55698	Y
+FH1220	38169	Diabetes	38169	38169	Y
+FH1113	36413	Chronic bronchitis/emphysema	36413	36413	Y
+FH1019	33362	Bowel cancer	33362	33362	Y
+FH1002	27618	Breast cancer	27618	27618	Y
+FH1286	24788	Severe depression	24788	24788	Y
+FH1263	22909	Alzheimer's disease/dementia	22909	22909	Y
+FH1044	15241	Prostate cancer	15241	15241	Y
+FH1262	9688	Parkinson's disease	9688	9688	Y
+MED1	21364	paracetamol	21364	21364	Y
+MED2	16007	aspirin	16007	16007	Y
+MED3	14234	ibuprofen	14234	14234	Y
+MED4	13918	simvastatin	13918	13918	Y
+MED5	7710	glucosamine_product	7710	7710	Y
+MED6	7100	omeprazole	7100	7100	Y
+MED7	6786	cod_liver_oil_capsule	6786	6786	Y
+MED8	6606	bendroflumethiazide	6606	6606	Y
+MED9	5708	ramipril	5708	5708	Y
+MED10	4958	amlodipine	4958	4958	Y
+MED11	4738	levothyroxine_sodium	4738	4738	Y
+MED12	4596	atenolol	4596	4596	Y
+MED13	4486	omega-3/fish_oil_supplement	4486	4486	Y
+MED14	4278	lansoprazole	4278	4278	Y
+MED15	3795	ventolin_100micrograms_inhaler	3795	3795	Y
+MED16	3791	atorvastatin	3791	3791	Y
+MED17	3646	multivitamins	3646	3646	Y
+MED18	3328	lisinopril	3328	3328	Y
+MED19	3180	metformin	3180	3180	Y
+MED20	2902	co-codamol	2902	2902	Y
+MED21	2394	diclofenac	2394	2394	Y
+MED22	2287	amitriptyline	2287	2287	Y
+MED23	2080	citalopram	2080	2080	Y
+MED24	1886	ranitidine	1886	1886	Y
+MED25	1829	bisoprolol	1829	1829	Y
+MED26	1808	evening_primrose_oil	1808	1808	Y
+MED27	1739	perindopril	1739	1739	Y
+MED28	1661	multivitamin+mineral_preparations	1661	1661	Y
+MED29	1600	garlic_product	1600	1600	Y
+MED30	1576	seretide_50_evohaler	1576	1576	Y
+MED31	1560	salbutamol	1560	1560	Y
+MED32	1468	vitamin_c_product	1468	1468	Y
+MED33	1444	chondroitin_product	1444	1444	Y
+MED34	1413	fluoxetine	1413	1413	Y
+MED35	1363	tramadol	1363	1363	Y
+MED36	1354	allopurinol	1354	1354	Y
+MED37	1338	cetirizine	1338	1338	Y
+MED38	1329	doxazosin	1329	1329	Y
+MED39	1327	candesartan_cilexetil	1327	1327	Y
+MED40	1321	alendronate_sodium	1321	1321	Y
+MED41	1261	thyroxine_product	1261	1261	Y
+MED42	1243	warfarin	1243	1243	Y
+MED43	1237	insulin_product	1237	1237	Y
+MED44	1163	beclometasone	1163	1163	Y
+MED45	1137	tamsulosin	1137	1137	Y
+MED46	1119	calcichew_d3_tablet	1119	1119	Y
+MED47	1096	losartan	1096	1096	Y
+MED48	1081	gliclazide	1081	1081	Y
+MED49	1060	felodipine	1060	1060	Y
+MED50	1018	folic_acid_product	1018	1018	Y
+MED51	958	furosemide	958	958	Y
+MED52	905	enalapril	905	905	Y
+MED53	895	irbesartan	895	895	Y
+MED54	872	lipitor_10mg_tablet	872	872	Y
+MED55	855	symbicort_100/6_turbohaler	855	855	Y
+MED56	852	loratadine	852	852	Y
+MED57	840	adcal-d3_1.5g/10micrograms_chewable_tablet	840	840	Y
+MED58	833	vitamin_b_compound_tablet	833	833	Y
+MED59	812	naproxen	812	812	Y
+MED60	809	quinine	809	809	Y
+MED61	798	salbutamol_100micrograms_spacehaler	798	798	Y
+MED62	792	clopidogrel	792	792	Y
+MED63	791	zinc_product	791	791	Y
+MED64	790	co-dydramol	790	790	Y
+MED65	775	beconase_50micrograms_nasal_spray	775	775	Y
+MED66	755	becotide_50_inhaler	755	755	Y
+MED67	753	rosuvastatin	753	753	Y
+MED68	748	aspirin_75mg_tablet	748	748	Y
+MED69	747	propranolol	747	747	Y
+MED70	724	ezetimibe	724	724	Y
+MED71	694	prednisolone	694	694	Y
+MED72	666	calcium_salts	666	666	Y
+MED73	651	ginkgo_forte_tablet	651	651	Y
+MED74	651	methotrexate	651	651	Y
+MED75	637	gaviscon_liquid	637	637	Y
+MED76	630	codeine	630	630	Y
+MED77	627	pravastatin	627	627	Y
+MED78	614	bendrofluazide	614	614	Y
+MED79	586	gabapentin	586	586	Y
+MED80	578	mebeverine	578	578	Y
+MED81	574	ferrous_sulphate	574	574	Y
+MED82	566	nasonex_0.05%_aqueous_nasal_spray	566	566	Y
+MED83	548	sertraline	548	548	Y
+MED84	545	fluticasone	545	545	Y
+MED85	531	calcium+vitamin_d_500units_tablet	531	531	Y
+MED86	511	valsartan	511	511	Y
+MED87	504	qvar_50_inhaler	504	504	Y
+MED88	490	venlafaxine	490	490	Y
+MED89	487	beclomethasone	487	487	Y
+MED90	463	flixonase_50micrograms_aqueous_nasal_spray	463	463	Y
+MED91	459	premarin_625micrograms_tablet	459	459	Y
+MED92	442	zopiclone	442	442	Y
+MED93	429	vitamin_e_product	429	429	Y
+MED94	424	dihydrocodeine	424	424	Y
+MED95	420	food_supplement/plant/herbal_extract	420	420	Y
+MED96	407	co-enzyme_q10/ubiquinone/bio-quinone/coenzyme_q10	407	407	Y
+MED97	407	nicorandil	407	407	Y
+MED98	405	betnovate_cream	405	405	Y
+MED99	402	loperamide	402	402	Y
+MED100	402	paroxetine	402	402	Y
+MED101	402	isosorbide_mononitrate	402	402	Y
+MED102	400	tiotropium	400	400	Y
+MED103	398	indapamide	398	398	Y
+MED104	395	esomeprazole	395	395	Y
+MED105	394	fexofenadine	394	394	Y
+MED106	393	finasteride	393	393	Y
+MED107	392	glyceryl_trinitrate	392	392	Y
+MED108	390	dosulepin	390	390	Y
+MED109	387	salamol_100micrograms_inhaler	387	387	Y
+MED110	385	beclazone_50_inhaler	385	385	Y
+MED111	385	serevent_25mcg_inhaler	385	385	Y
+MED112	379	vitamin_b12_preparation	379	379	Y
+MED113	371	selenium_product	371	371	Y
+MED114	368	vitamin_d_product	368	368	Y
+MED115	366	xalatan_0.005%_eye_drops	366	366	Y
+MED116	355	meloxicam	355	355	Y
+MED117	351	movicol_oral_powder	351	351	Y
+MED118	346	iron_product	346	346	Y
+MED119	344	adcal_600mg_chewable_tablet	344	344	Y
+MED120	343	betahistine	343	343	Y
+MED121	343	tamoxifen	343	343	Y
+MED122	340	mirtazapine	340	340	Y
+MED123	340	oxytetracycline	340	340	Y
+MED124	334	diazepam	334	334	Y
+MED125	322	salmeterol	322	322	Y
+MED126	318	digoxin	318	318	Y
+MED127	308	bricanyl_250mcg_inhaler	308	308	Y
+MED128	304	thyroxine_sodium	304	304	Y
+MED129	303	vitamin_c_product	303	303	Y
+MED130	296	lactulose_product	296	296	Y
+MED131	294	gtn_400micrograms_spray	294	294	Y
+MED132	286	sumatriptan	286	286	Y
+MED133	285	lercanidipine	285	285	Y
+MED134	285	vagifem_25mcg_pessary	285	285	Y
+MED135	277	pregabalin	277	277	Y
+MED136	273	oxybutynin	273	273	Y
+MED137	272	viscotears_liquid_eye_gel	272	272	Y
+MED138	270	budesonide	270	270	Y
+MED139	269	cerazette_75micrograms_tablet	269	269	Y
+MED140	266	elleste_duet_conti_tablet	266	266	Y
+MED141	265	pioglitazone	265	265	Y
+MED142	262	tegretol_100mg_tablet	262	262	Y
+MED143	260	alfuzosin	260	260	Y
+MED144	259	nifedipine	259	259	Y
+MED145	254	minerals_-_magnesium	254	254	Y
+MED146	252	sildenafil	252	252	Y
+MED147	250	salmeterol+fluticasone_propionate	250	250	Y
+MED148	250	azathioprine	250	250	Y
+MED149	248	spiriva_18micrograms_inhalation_capsule	248	248	Y
+MED150	247	evening_primrose_oil_product	247	247	Y
+MED151	247	domperidone	247	247	Y
+MED152	247	adalat_5mg_capsule	247	247	Y
+MED153	245	mometasone	245	245	Y
+MED154	244	diltiazem	244	244	Y
+MED155	238	latanoprost	238	238	Y
+MED156	238	calcichew_1.25g_chewable_tablet	238	238	Y
+MED157	236	ezetrol_10mg_tablet	236	236	Y
+MED158	236	montelukast_product	236	236	Y
+MED159	232	kliovance_1mg/0.5mg_tablet	232	232	Y
+MED160	232	terbinafine	232	232	Y
+MED161	232	premique_0.625mg/5mg_tablet	232	232	Y
+MED162	230	metoprolol	230	230	Y
+MED163	229	tildiem_60mg_m/r_tablet	229	229	Y
+MED164	228	rino_clenil_50micrograms_nasal_spray	228	228	Y
+MED165	225	temazepam	225	225	Y
+MED166	224	fybogel_orange_s/f_granules	224	224	Y
+MED167	221	tolterodine_l-tartrate	221	221	Y
+MED168	220	spironolactone	220	220	Y
+MED169	217	st_john's_wort/hypericum_[ctsu]	217	217	Y
+MED170	217	risedronate_sodium	217	217	Y
+MED171	215	pantoprazole	215	215	Y
+MED172	214	flixotide_25micrograms_inhaler	214	214	Y
+MED173	211	gtn_-_glyceryl_trinitrate	211	211	Y
+MED174	211	frusemide	211	211	Y
+MED175	210	hydrocortisone	210	210	Y
+MED176	209	estradiol_product	209	209	Y
+MED177	208	salbutamol_product	208	208	Y
+MED178	208	senna	208	208	Y
+MED179	208	dipyridamole	208	208	Y
+MED180	206	verapamil	206	206	Y
+MED181	204	sotalol	204	204	Y
+MED182	203	nexium_20mg_tablet	203	203	Y
+MED183	203	elleste-solo_1mg_tablet	203	203	Y
+MED184	201	pulmicort_ls_50micrograms_inhaler	201	201	Y
+MED185	198	tibolone	198	198	Y
+MED186	196	sulfasalazine	196	196	Y
+MED187	195	solifenacin	195	195	Y
+MED188	192	diprobase_cream	192	192	Y
+MED189	191	rosiglitazone	191	191	Y
+MED190	191	terbutaline	191	191	Y
+MED191	189	rabeprazole_sodium	189	189	Y
+MED192	189	calcium_carbonate+cholecalciferol_1.25g/200iu_tablet	189	189	Y
+MED193	188	escitalopram	188	188	Y
+MED194	187	betamethasone	187	187	Y
+MED195	184	evorel_25_patch	184	184	Y
+MED196	183	estraderm_mx_25_patch	183	183	Y
+MED197	183	piriton_4mg_tablet	183	183	Y
+MED198	182	flax_oil_tablet	182	182	Y
+MED199	182	flecainide	182	182	Y
+MED200	182	ipratropium	182	182	Y
+MED201	182	hypromellose	182	182	Y
+MED202	182	arthrotec_tablet	182	182	Y
+MED203	179	detrusitol_1mg_tablet	179	179	Y
+MED204	178	telmisartan	178	178	Y
+MED205	178	ginseng_product	178	178	Y
+MED206	178	epilim_100mg_crushable_tablet	178	178	Y
+MED207	177	carbamazepine	177	177	Y
+MED208	177	mirena_52mg_intrauterine_system	177	177	Y
+MED209	177	imigran_50mg_tablet	177	177	Y
+MED210	176	fybogel_mebeverine_sachet	176	176	Y
+MED211	174	mirena_20mcg/24hrs_intrauterine_system	174	174	Y
+MED212	174	dermovate_cream	174	174	Y
+MED213	174	fenofibrate	174	174	Y
+MED214	173	tadalafil	173	173	Y
+MED215	173	thiamine_preparation	173	173	Y
+MED216	172	arimidex_1mg_tablet	172	172	Y
+MED217	172	lacri-lube_eye_ointment	172	172	Y
+MED218	172	prochlorperazine	172	172	Y
+MED219	171	starflower_oil	171	171	Y
+MED220	171	mesalazine	171	171	Y
+MED221	169	prozac_20mg_capsule	169	169	Y
+MED222	168	simvador_10mg_tablet	168	168	Y
+MED223	168	prempak_0.625_tablet	168	168	Y
+MED224	167	femoston_1/10_tablet	167	167	Y
+MED225	167	hydroxychloroquine	167	167	Y
+MED226	164	desloratadine	164	164	Y
+MED227	164	co-tenidone	164	164	Y
+MED228	164	seroxat_20mg_tablet	164	164	Y
+MED229	160	pizotifen	160	160	Y
+MED230	157	asacol_400mg_e/c_tablet	157	157	Y
+MED231	156	atrovent_20micrograms_inhaler	156	156	Y
+MED232	150	livial_2.5mg_tablet	150	150	Y
+MED233	148	omacor_1g_capsule	148	148	Y
+MED234	147	selenium_ace_tablet	147	147	Y
+MED235	146	clonidine	146	146	Y
+MED236	145	tranexamic_acid	145	145	Y
+MED237	144	trazodone	144	144	Y
+MED238	144	microgynon_30_tablet	144	144	Y
+MED239	141	voltarol_25mg_e/c_tablet	141	141	Y
+MED240	139	colofac-100_tablet	139	139	Y
+MED241	139	micronor_tablet	139	139	Y
+MED242	138	dovobet_ointment	138	138	Y
+MED243	138	lamotrigine	138	138	Y
+MED244	138	climaval_1mg_tablet	138	138	Y
+MED245	136	cardicor_1.25mg_tablet	136	136	Y
+MED246	136	dicloflex_25mg_e/c_tablet	136	136	Y
+MED247	135	metoclopramide	135	135	Y
+MED248	134	olanzapine	134	134	Y
+MED249	131	baclofen	131	131	Y
+MED250	131	nitrolingual_400micrograms_spray	131	131	Y
+MED251	129	migraleve_tablet	129	129	Y
+MED252	128	orlistat	128	128	Y
+MED253	127	neoclarityn_5mg_tablet	127	127	Y
+MED254	125	saw_palmetto_product	125	125	Y
+MED255	125	fosamax_5mg_tablet	125	125	Y
+MED256	125	vitamin_b6_preparation	125	125	Y
+MED257	125	eumovate_cream	125	125	Y
+MED258	124	cozaar_25mg_tablet	124	124	Y
+MED259	124	evorel_conti_patch	124	124	Y
+MED260	123	cipralex_5mg_tablet	123	123	Y
+MED261	122	amias_2mg_tablet	122	122	Y
+MED262	121	aloe_vera_product	121	121	Y
+MED263	121	olmesartan	121	121	Y
+MED264	120	phenytoin	120	120	Y
+MED265	120	vesicare_5mg_tablet	120	120	Y
+MED266	118	glucophage_500mg_tablet	118	118	Y
+MED267	117	hydroxocobalamin	117	117	Y
+MED268	117	glimepiride	117	117	Y
+MED269	117	doxycycline	117	117	Y
+MED270	117	ispaghula_husk	117	117	Y
+MED271	116	sodium_valproate	116	116	Y
+MED272	116	buscopan_10mg_tablet	116	116	Y
+MED273	115	adizem-60_m/r_tablet	115	115	Y
+MED274	114	ibandronic_acid	114	114	Y
+MED275	114	anastrozole	114	114	Y
+MED276	114	amiodarone	114	114	Y
+MED277	114	trimethoprim	114	114	Y
+MED278	114	lacidipine	114	114	Y
+MED279	113	celecoxib	113	113	Y
+MED280	112	peptac_liquid	112	112	Y
+MED281	111	cosopt_2%/0.5%_eye_drops	111	111	Y
+MED282	110	bezafibrate	110	110	Y
+MED283	109	solpadol_caplet	109	109	Y
+MED284	108	co-amilofruse	108	108	Y
+MED285	107	arthrotec_50_tablet	107	107	Y
+MED286	107	clarityn_10mg_tablet	107	107	Y
+MED287	106	colpermin_0.2ml_m/r_gel_e/c_capsule	106	106	Y
+MED288	105	bumetanide	105	105	Y
+MED289	104	diovan_40mg_capsule	104	104	Y
+MED290	103	glyceryl_trinitrate_product	103	103	Y
+MED291	102	lumigan_0.3mg/ml_eye_drops	102	102	Y
+MED292	102	timolol_0.25%_eye_drops	102	102	Y
+MED293	101	syndol_tablet	101	101	Y
+MED294	100	etoricoxib	100	100	Y
+MED295	100	etodolac	100	100	Y
+HC446	36733	hypertension	36733	36733	Y
+HC447	14078	hiatus hernia	14078	14078	Y
+HC448	10611	other joint disorder	10611	10611	Y
+HC449	10300	gastro-oesophageal reflux (gord) / gastric reflux	10300	10300	Y
+HC450	7437	diabetes	7437	7437	Y
+HC451	6807	haemorrhoids / piles	6807	6807	Y
+HC452	6509	cataract	6509	6509	Y
+HC453	6667	hypothyroidism/myxoedema	6667	6667	Y
+HC454	6586	angina	6586	6586	Y
+HC455	5405	anaemia	5405	5405	Y
+HC456	5307	arthritis (nos)	5307	5307	Y
+HC457	5146	cholelithiasis/gall stones	5146	5146	Y
+HC458	4452	pneumonia	4452	4452	Y
+HC459	4319	heart attack/myocardial infarction	4319	4319	Y
+HC460	3886	migraine	3886	3886	Y
+HC461	3972	urinary tract infection/kidney infection	3972	3972	Y
+HC462	3985	eczema/dermatitis	3985	3985	Y
+HC463	3337	varicose veins	3337	3337	Y
+HC464	3344	oesophagitis/barretts oesophagus	3344	3344	Y
+HC465	2710	iron deficiency anaemia	2710	2710	Y
+HC466	2849	carpal tunnel syndrome	2849	2849	Y
+HC467	2485	renal/kidney failure	2485	2485	Y
+HC468	1965	fracture forearm / wrist	1965	1965	Y
+HC469	2075	fracture lower leg / ankle	2075	2075	Y
+HC470	1949	rheumatoid arthritis	1949	1949	Y
+HC471	2306	emphysema/chronic bronchitis	2306	2306	Y
+HC472	1730	psoriasis	1730	1730	Y
+HC473	1754	enlarged prostate	1754	1754	Y
+HC474	1704	heart failure/pulmonary odema	1704	1704	Y
+HC475	1578	nasal polyps	1578	1578	Y
+HC476	1524	head injury	1524	1524	Y
+HC477	1471	chronic sinusitis	1471	1471	Y
+HC478	1471	synovitis	1471	1471	Y
+HC479	1478	epilepsy	1478	1478	Y
+HC480	1349	inflammatory bowel disease	1349	1349	Y
+HC481	1239	hyperthyroidism/thyrotoxicosis	1239	1239	Y
+HC482	1245	duodenal ulcer	1245	1245	Y
+HC483	1289	peripheral vascular disease	1289	1289	Y
+HC484	1274	bowel / intestinal obstruction	1274	1274	Y
+HC485	1122	ulcerative colitis	1122	1122	Y
+HC486	989	disc degeneration	989	989	Y
+HC487	924	anal fissure	924	924	Y
+HC488	941	cystitis	941	941	Y
+HC489	934	kidney stone/ureter stone/bladder stone	934	934	Y
+HC490	817	connective tissue disorder	817	817	Y
+HC491	855	gastric/stomach ulcers	855	855	Y
+HC492	821	fracture hand	821	821	Y
+HC493	801	fracture shoulder / scapula	801	801	Y
+HC494	847	chickenpox	847	847	Y
+HC495	822	heart valve problem/heart murmur	822	822	Y
+HC496	796	fracture neck of femur / hip	796	796	Y
+HC497	680	fracture skull / head	680	680	Y
+HC498	693	bladder problem (not cancer)	693	693	Y
+HC499	747	measles / morbillivirus	747	747	Y
+HC500	598	tuberculosis (tb)	598	598	Y
+HC501	640	cerebral palsy	640	640	Y
+HC502	673	heart arrhythmia	673	673	Y
+HC503	697	emphysema	697	697	Y
+HC504	553	fracture sternum	553	553	Y
+HC505	487	other renal/kidney problem	487	487	Y
+HC506	419	spontaneous pneumothorax/recurrent pneumothorax	419	419	Y
+HC507	447	gestational hypertension/pre-eclampsia	447	447	Y
+HC508	477	other neurological problem	477	477	Y
+HC509	431	breast cysts	431	431	Y
+HC510	468	cardiomyopathy	468	468	Y
+HC511	380	hepatitis	380	380	Y
+HC512	377	female infertility	377	377	Y
+HC513	408	fracture pelvis	408	408	Y
+HC514	469	fracture foot	469	469	Y
+HC515	418	stress	418	418	Y
+HC516	374	meniere's disease	374	374	Y
+HC517	492	aortic aneurysm	492	492	Y
+HC518	429	mumps / epidemic parotitis	429	429	Y
+HC519	365	urticaria	365	365	Y
+HC520	480	aortic dissection	480	480	Y
+HC521	373	nephritis	373	373	Y
+HC522	393	hypertrophic cardiomyopathy (hcm / hocm)	393	393	Y
+HC523	367	scoliosis	367	367	Y
+HC524	363	rectal or colon adenoma/polyps	363	363	Y
+HC525	334	rheumatic fever	334	334	Y
+HC526	329	rectal prolapse	329	329	Y
+HC527	315	psoriatic arthropathy	315	315	Y
+HC528	312	anorexia/bulimia/other eating disorder	312	312	Y
+HC529	307	sarcoidosis	307	307	Y
+HC530	258	diabetic eye disease	258	258	Y
+HC531	295	rosacea	295	295	Y
+HC532	300	alcoholic liver disease / alcoholic cirrhosis	300	300	Y
+HC533	296	arterial embolism	296	296	Y
+HC534	214	infective/viral hepatitis	214	214	Y
+HC535	225	schizophrenia	225	225	Y
+HC536	233	peptic ulcer	233	233	Y
+HC537	236	hyperparathyroidism	236	236	Y
+HC538	221	irregular heart beat	221	221	Y
+HC539	207	spinal injury	207	207	Y
+HC540	233	disorder of adrenal gland	233	233	Y
+HC541	235	rubella / german measles	235	235	Y
+HC542	203	lichen planus	203	203	Y
+HC543	195	prostate problem (not cancer)	195	195	Y
+HC544	179	ectopic pregnancy	179	179	Y
+HC545	205	other respiratory problems	205	205	Y
+HC546	189	infectious mononucleosis / glandular fever / epstein barr virus (ebv)	189	189	Y
+HC547	174	systemic lupus erythematosis/sle	174	174	Y
+HC548	177	blistering/desquamating skin disorder	177	177	Y
+HC549	181	scarlet fever / scarlatina	181	181	Y
+HC550	167	eye trauma	167	167	Y
+HC551	176	other abdominal problem	176	176	Y
+HC552	163	oesophageal varicies	163	163	Y
+HC553	133	encephalitis	133	133	Y
+HC554	135	parathyroid gland problem (not cancer)	135	135	Y
+HC555	115	herpes simplex	115	115	Y
+HC556	131	aplastic anaemia	131	131	Y
+HC557	125	breast fibroadenoma	125	125	Y
+HC558	116	fracture shaft of femur	116	116	Y
+HC559	113	eye infection	113	113	Y
+HC560	104	polycystic kidney	104	104	Y
+HC561	109	brain abscess/intracranial abscess	109	109	Y
+HC562	110	food intolerance	110	110	Y
+HC563	99	fracture neck / cervical fracture	99	99	Y
