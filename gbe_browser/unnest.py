@@ -1,15 +1,16 @@
-import fileinput
 import itertools
 import re
+import sys
 
 
 import config
 
 
 RE_INFO = re.compile(';(?=\w)')
+FIELD = sys.argv[1]
 
 
-for line in fileinput.input():
+for line in sys.stdin:
     if line.startswith('#'):
         continue
 
@@ -23,5 +24,5 @@ for line in fileinput.input():
         vep_annotations = [ann for ann in anns
                            if ('Feature' in ann and
                                ann['Feature'].startswith('ENST'))]
-        for gene in set(ann['Gene'] for ann in vep_annotations):
-            print('\t'.join((fields[0], fields[1], gene)))
+        for value in set(ann[FIELD] for ann in vep_annotations):
+            print('\t'.join((fields[0], fields[1], value)))

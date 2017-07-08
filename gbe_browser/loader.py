@@ -174,39 +174,54 @@ class Loader:
     # -- -
     def store_gene_index(self):
         fifo_name = self.fifo_names[0]
-        pipe = Loader.make_pipe(config.GENE_FILE, fifo_name)
+        pipe = Loader.make_pipe(config.CANONICAL_FILE, fifo_name)
 
         logger.info('Query:running...')
-        self.db.iquery(config.GENE_INDEX_STORE_QUERY.format(
-            path=fifo_name,
-            index_array=config.GENE_INDEX_ARRAY,
-            keyword='gene_id'))
+        self.db.iquery(config.GENE_INDEX_STORE_QUERY.format(path=fifo_name))
         logger.info('Query:done')
         logger.info('Pipe:return code:%s', pipe.poll())
         logger.info('Array:%s', config.GENE_INDEX_ARRAY)
 
     def store_transcript_index(self):
         fifo_name = self.fifo_names[0]
-        pipe = Loader.make_pipe(config.GENE_FILE, fifo_name)
+        pipe = Loader.make_pipe(
+            config.GENE_FILE,
+            fifo_name,
+            "zcat {file_name} | grep '\ttranscript\t' | " +
+            "cut -f 9 | cut -d ' ' -f 4 | sort | uniq > {fifo_name}")
 
         logger.info('Query:running...')
-        self.db.iquery(config.GENE_INDEX_STORE_QUERY.format(
-            path=fifo_name,
-            index_array=config.TRANSCRIPT_INDEX_ARRAY,
-            keyword='transcript_id'))
+        self.db.iquery(
+            config.TRANSCRIPT_INDEX_STORE_QUERY.format(path=fifo_name))
         logger.info('Query:done')
         logger.info('Pipe:return code:%s', pipe.poll())
         logger.info('Array:%s', config.TRANSCRIPT_INDEX_ARRAY)
 
     def store_gene(self):
         fifo_name = self.fifo_names[0]
-        pipe = Loader.make_pipe(config.GENE_FILE, fifo_name)
+        pipe = Loader.make_pipe(
+            config.GENE_FILE,
+            fifo_name,
+            "zcat {file_name} | grep '\tgene\t' > {fifo_name}")
 
         logger.info('Query:running...')
         self.db.iquery(config.GENE_STORE_QUERY.format(path=fifo_name))
         logger.info('Query:done')
         logger.info('Pipe:return code:%s', pipe.poll())
         logger.info('Array:%s', config.GENE_ARRAY)
+
+    def store_transcript(self):
+        fifo_name = self.fifo_names[0]
+        pipe = Loader.make_pipe(
+            config.GENE_FILE,
+            fifo_name,
+            "zcat {file_name} | grep '\ttranscript\t' > {fifo_name}")
+
+        logger.info('Query:running...')
+        self.db.iquery(config.TRANSCRIPT_STORE_QUERY.format(path=fifo_name))
+        logger.info('Query:done')
+        logger.info('Pipe:return code:%s', pipe.poll())
+        logger.info('Array:%s', config.TRANSCRIPT_ARRAY)
 
     # -- -
     # -- - VARIANT - --
@@ -221,21 +236,32 @@ class Loader:
         logger.info('Pipe:return code:%s', pipe.poll())
         logger.info('Array:%s', config.VARIANT_ARRAY)
 
-    def store_variant_gene(self):
+    def store_variant_index(self, key, query, array):
         fifo_name = self.fifo_names[0]
         pipe = Loader.make_pipe(
             config.VARIANT_FILE,
             fifo_name,
-            'zcat {{file_name}} | python {} > {{fifo_name}}'.format(
-                os.path.join(
-                    os.path.dirname(os.path.realpath(__file__)),
-                    'unnest.py')))
+            'zcat {{file_name}} | python {cmd} {key} > {{fifo_name}}'.format(
+                cmd=os.path.join(
+                      os.path.dirname(os.path.realpath(__file__)),
+                      'unnest.py'),
+                key=key))
 
         logger.info('Query:running...')
-        self.db.iquery(config.VARIANT_GENE_STORE_QUERY.format(path=fifo_name))
+        self.db.iquery(query.format(path=fifo_name))
         logger.info('Query:done')
         logger.info('Pipe:return code:%s', pipe.poll())
-        logger.info('Array:%s', config.VARIANT_GENE_ARRAY)
+        logger.info('Array:%s', array)
+
+    def store_variant_gene(self):
+        self.store_variant_index('Gene',
+                                 config.VARIANT_GENE_STORE_QUERY,
+                                 config.VARIANT_GENE_ARRAY)
+
+    def store_variant_transcript(self):
+        self.store_variant_index('Feature',
+                                 config.VARIANT_TRANSCRIPT_STORE_QUERY,
+                                 config.VARIANT_TRANSCRIPT_ARRAY)
 
     # -- - - --
     def remove_arrays(self):
@@ -354,6 +380,7 @@ if __name__ == '__main__':
     loader.store_gene_index()
     loader.store_transcript_index()
     loader.store_gene()
+    loader.store_transcript()
     loader.store_variant()
-    loader.db.remove(config.VARIANT_GENE_ARRAY)
     loader.store_variant_gene()
+    loader.store_variant_transcript()
