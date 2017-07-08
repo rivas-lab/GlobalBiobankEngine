@@ -161,81 +161,6 @@ def get_icd_significant_variant(db, icd_id, cutoff=0.001):
 
 
 # -- -
-# -- - VARIANT - --
-# -- -
-def get_variants_by_id(db, variant_ids):
-    """
-    e.g.,
-    UI:
-      https://biobankengine.stanford.edu/coding/RH117
-
-    MongoDB:
-      db.variants.find({'xpos': '1039381448'}, fields={'_id': False})
-
-    SciDB:
-      filter(variant, chrom = 1 and pos = 39381448); -- or chrom = ...
-    """
-    chrom_pos_cond = ' or '.join(
-        'chrom = {chrom} and pos = {pos}'.format(
-            chrom=int(xpos / 1e9), pos=int(xpos % 1e9))
-        for xpos in variant_ids)
-    variants = numpy2dict(
-        db.iquery(
-            config.VARIANT_MULTI_LOOKUP_QUERY.format(
-                chrom_pos_cond=chrom_pos_cond),
-            schema=config.VARIANT_LOOKUP_SCHEMA,
-            fetch=True))
-    variants = format_variants(variants)
-    return variants
-
-
-def get_variant_chrom_pos(db, chrom, pos):
-    """
-    e.g.,
-    UI:
-      https://biobankengine.stanford.edu/variant/1-39381448
-
-    MongoDB:
-      db.variants.find({'xpos': '1039381448'}, fields={'_id': False})
-
-    SciDB:
-      between(vairant, 1, 39381448,
-                       1, 39381448);
-    """
-    variants = numpy2dict(
-        db.iquery(
-            config.VARIANT_LOOKUP_QUERY.format(chrom=chrom, pos=pos),
-            schema=config.VARIANT_LOOKUP_SCHEMA,
-            fetch=True))
-    variants = format_variants(variants, add_ann=True)
-    variant = variants[0] if len(variants) else None
-    if variant is None or 'rsid' not in variant:
-        return variant
-    if variant['rsid'] == '.' or variant['rsid'] is None:
-        raise NotImplementedError()  # TODO
-        # rsid = db.dbsnp.find_one({'xpos': xpos})
-        # if rsid:
-        #     variant['rsid'] = 'rs%s' % rsid['rsid']
-    return variant
-
-
-def get_variant(db, xpos):
-    """
-    e.g.,
-    UI:
-      https://biobankengine.stanford.edu/variant/1-39381448
-
-    MongoDB:
-      db.variants.find({'xpos': '1039381448'}, fields={'_id': False})
-
-    SciDB:
-      between(vairant, 1, 39381448,
-                       1, 39381448);
-    """
-    return get_variant_chrom_pos(db, int(xpos / 1e9), int(xpos % 1e9))
-
-
-# -- -
 # -- - GENE - --
 # -- -
 def get_gene(db, gene_id):
@@ -317,6 +242,81 @@ def get_transcripts_in_gene(db, gene_id):
                                        idx_attr='gene_idx'),
             schema=config.TRANSCRIPT_GENE_LOOKUP_SCHEMA,
             fetch=True))[0]
+
+
+# -- -
+# -- - VARIANT - --
+# -- -
+def get_variants_by_id(db, variant_ids):
+    """
+    e.g.,
+    UI:
+      https://biobankengine.stanford.edu/coding/RH117
+
+    MongoDB:
+      db.variants.find({'xpos': '1039381448'}, fields={'_id': False})
+
+    SciDB:
+      filter(variant, chrom = 1 and pos = 39381448); -- or chrom = ...
+    """
+    chrom_pos_cond = ' or '.join(
+        'chrom = {chrom} and pos = {pos}'.format(
+            chrom=int(xpos / 1e9), pos=int(xpos % 1e9))
+        for xpos in variant_ids)
+    variants = numpy2dict(
+        db.iquery(
+            config.VARIANT_MULTI_LOOKUP_QUERY.format(
+                chrom_pos_cond=chrom_pos_cond),
+            schema=config.VARIANT_LOOKUP_SCHEMA,
+            fetch=True))
+    variants = format_variants(variants)
+    return variants
+
+
+def get_variant_chrom_pos(db, chrom, pos):
+    """
+    e.g.,
+    UI:
+      https://biobankengine.stanford.edu/variant/1-39381448
+
+    MongoDB:
+      db.variants.find({'xpos': '1039381448'}, fields={'_id': False})
+
+    SciDB:
+      between(vairant, 1, 39381448,
+                       1, 39381448);
+    """
+    variants = numpy2dict(
+        db.iquery(
+            config.VARIANT_LOOKUP_QUERY.format(chrom=chrom, pos=pos),
+            schema=config.VARIANT_LOOKUP_SCHEMA,
+            fetch=True))
+    variants = format_variants(variants, add_ann=True)
+    variant = variants[0] if len(variants) else None
+    if variant is None or 'rsid' not in variant:
+        return variant
+    if variant['rsid'] == '.' or variant['rsid'] is None:
+        raise NotImplementedError()  # TODO
+        # rsid = db.dbsnp.find_one({'xpos': xpos})
+        # if rsid:
+        #     variant['rsid'] = 'rs%s' % rsid['rsid']
+    return variant
+
+
+def get_variant(db, xpos):
+    """
+    e.g.,
+    UI:
+      https://biobankengine.stanford.edu/variant/1-39381448
+
+    MongoDB:
+      db.variants.find({'xpos': '1039381448'}, fields={'_id': False})
+
+    SciDB:
+      between(vairant, 1, 39381448,
+                       1, 39381448);
+    """
+    return get_variant_chrom_pos(db, int(xpos / 1e9), int(xpos % 1e9))
 
 
 def get_variants_in_gene(db, gene_id):
