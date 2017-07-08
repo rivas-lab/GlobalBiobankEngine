@@ -395,6 +395,34 @@ VARIANT_TRANSCRIPT_STORE_QUERY = """
         variant_transcript_array=VARIANT_TRANSCRIPT_ARRAY,
         variant_transcript_schema=VARIANT_TRANSCRIPT_SCHEMA)
 
+
+# -- -
+# -- - Load: COVERAGE - --
+# -- -
+COVERAGE_FILE = os.path.join(
+    GBE_DATA_PATH, 'coverage', 'Panel2016.all.coverage.txt.gz')
+
+COVERAGE_ARRAY = 'coverage'
+COVERAGE_SCHEMA = """
+  <log10pvalue:  double>
+  [chrom = 1:25:0:1;
+   pos   = 0:*:0:10000000]"""
+
+COVERAGE_STORE_QUERY = """
+  store(
+    redimension(
+      apply(
+        filter(
+          aio_input('{{path}}', 'num_attributes=8'),
+          substr(a0, 0, 1) <> '#'),
+        chrom,        int64(a0),
+        pos,          int64(a1),
+        log10pvalue,  dcast(a5, double(null))),
+      {coverage_array_schema}),
+    {coverage_array})""".format(coverage_array=COVERAGE_ARRAY,
+                                coverage_array_schema=COVERAGE_SCHEMA)
+
+
 # == =
 # == = LOOKUP = ==
 # == =
@@ -653,3 +681,11 @@ VARIANT_CSQ = ('Allele',
                'LoF_filter',
                'LoF_flags',
                'LoF_info')
+
+# -- -
+# -- - Lookup: COVERAGE - --
+# -- -
+COVERAGE_LOOKUP_QUERY = """
+  between({coverage_array}, {{chrom_start}}, {{pos_start}},
+                            {{chrom_stop}},  {{pos_stop}})""".format(
+                                coverage_array=COVERAGE_ARRAY)

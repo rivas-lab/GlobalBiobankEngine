@@ -263,6 +263,19 @@ class Loader:
                                  config.VARIANT_TRANSCRIPT_STORE_QUERY,
                                  config.VARIANT_TRANSCRIPT_ARRAY)
 
+    # -- -
+    # -- - COVERAGE - --
+    # -- -
+    def store_coverage(self):
+        fifo_name = self.fifo_names[0]
+        pipe = Loader.make_pipe(config.COVERAGE_FILE, fifo_name)
+
+        logger.info('Query:running...')
+        self.db.iquery(config.COVERAGE_STORE_QUERY.format(path=fifo_name))
+        logger.info('Query:done')
+        logger.info('Pipe:return code:%s', pipe.poll())
+        logger.info('Array:%s', config.COVERAGE_ARRAY)
+
     # -- - - --
     def remove_arrays(self):
         if not Loader.confirm('Remove and recreate arrays'):
@@ -274,7 +287,9 @@ class Loader:
                       config.TRANSCRIPT_INDEX_ARRAY,
                       config.GENE_ARRAY,
                       config.VARIANT_ARRAY,
-                      config.VARIANT_GENE_ARRAY):
+                      config.VARIANT_GENE_ARRAY,
+                      config.VARIANT_TRANSCRIPT_ARRAY,
+                      config.COVERAGE_ARRAY):
             try:
                 self.db.remove(array)
             except:
@@ -384,3 +399,4 @@ if __name__ == '__main__':
     loader.store_variant()
     loader.store_variant_gene()
     loader.store_variant_transcript()
+    loader.store_coverage()

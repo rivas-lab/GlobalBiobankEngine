@@ -6,6 +6,9 @@ import config
 import utils
 
 
+xoff = 1e9
+
+
 def numpy2dict(ar):
     """Convert SciDB NumPy array result to Python dictionary and populate
     nullable attributes with values (discards null codes).
@@ -43,6 +46,13 @@ def format_variants(variants, add_ann=False):
         utils.add_consequence_to_variant(variant, vep_annotations)
 
     return variants
+
+
+def format_genes(genes):
+    for gene in genes:
+        gene['xstart'] = gene['chrom'] * xoff + gene['start']
+        gene['xstop'] = gene['chrom'] * xoff + gene['stop']
+    return genes
 
 
 # -- -
@@ -111,7 +121,7 @@ def get_variant_icd(db, xpos):
     return numpy2dict(
         db.iquery(
             config.ICD_CHROM_POS_LOOKUP_QUERY.format(
-                chrom=int(xpos / 1e9), pos=int(xpos % 1e9)),
+                chrom=int(xpos / xoff), pos=int(xpos % xoff)),
             schema=config.ICD_X_INFO_SCHEMA,
             fetch=True))
 
@@ -205,16 +215,17 @@ def get_transcript(db, transcript_id):
                  transcript.transcript_idx,
                  transcript_index.transcript_idx);
     """
-    return numpy2dict(
-        db.iquery(
-            config.LOOKUP_QUERY.format(
-                main_array=config.TRANSCRIPT_ARRAY,
-                index_array=config.TRANSCRIPT_INDEX_ARRAY,
-                id_attr='transcript_id',
-                id_val=transcript_id,
-                idx_attr='transcript_idx'),
-            schema=config.TRANSCRIPT_LOOKUP_SCHEMA,
-            fetch=True))[0]
+    return format_genes(
+        numpy2dict(
+            db.iquery(
+                config.LOOKUP_QUERY.format(
+                    main_array=config.TRANSCRIPT_ARRAY,
+                    index_array=config.TRANSCRIPT_INDEX_ARRAY,
+                    id_attr='transcript_id',
+                    id_val=transcript_id,
+                    idx_attr='transcript_idx'),
+                schema=config.TRANSCRIPT_LOOKUP_SCHEMA,
+                fetch=True)))[0]
 
 
 def get_transcripts_in_gene(db, gene_id):
@@ -261,7 +272,7 @@ def get_variants_by_id(db, variant_ids):
     """
     chrom_pos_cond = ' or '.join(
         'chrom = {chrom} and pos = {pos}'.format(
-            chrom=int(xpos / 1e9), pos=int(xpos % 1e9))
+            chrom=int(xpos / xoff), pos=int(xpos % xoff))
         for xpos in variant_ids)
     variants = numpy2dict(
         db.iquery(
@@ -316,7 +327,7 @@ def get_variant(db, xpos):
       between(vairant, 1, 39381448,
                        1, 39381448);
     """
-    return get_variant_chrom_pos(db, int(xpos / 1e9), int(xpos % 1e9))
+    return get_variant_chrom_pos(db, int(xpos / xoff), int(xpos % xoff))
 
 
 def get_variants_in_gene(db, gene_id):
@@ -377,6 +388,32 @@ def get_variants_in_transcript(db, transcript_id):
                     transcript_id=transcript_id),
                 schema=config.VARIANT_X_TRANSCRIPT_INDEX_SCHEMA,
                 fetch=True)))
+
+
+# -- -
+# -- - COVERAGE - --
+# -- -
+def get_coverage_for_transcript(db, xstart, xstop=None):
+    """
+    e.g.,
+    UI:
+      https://biobankengine.stanford.edu/gene/ENSG00000107404
+
+    MongoDB:
+      db.base_coverage.find({'xpos': {'$gte': xstart, '$lte': xstop}},
+                            fields={'_id': False})
+
+    SciDB:
+      between(coverage, ,
+                        , )
+    """
+    if xstop is None:
+        xstop = xstart
+    return numpy2dict(
+        db.iquery(config.COVERAGE_LOOKUP_QUERY.format(
+            chrom_start=int(xstart / xoff), pos_start=int(xstart % xoff),
+            chrom_stop=int(xstop / xoff), pos_stop=int(xstop % xoff)),
+                fetch=True))
 
 
 if __name__ == '__main__':
