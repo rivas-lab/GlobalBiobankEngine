@@ -33,6 +33,16 @@ class Loader:
                  self.remove_fifos,
                  tuple(self.fifo_names))
 
+    def store(self, file_name, query, array_name):
+        fifo_name = self.fifo_names[0]
+        pipe = Loader.make_pipe(file_name, fifo_name)
+
+        logger.info('Query:running...')
+        self.db.iquery(query.format(path=fifo_name))
+        logger.info('Query:done')
+        logger.info('Pipe:return code:%s', pipe.poll())
+        logger.info('Array:%s', array_name)
+
     # -- -
     # -- - QC - --
     # -- -
@@ -178,7 +188,7 @@ class Loader:
             config.GENE_FILE,
             fifo_name,
             "zcat {file_name} | grep '\tgene\t' | " +
-            "cut --fields=9 | cut --delimiter=' ' --fields=2,10 | "
+            "cut --fields=9 | cut --delimiter=' ' --fields=2 | "
             "sort | uniq > {fifo_name}")
 
         logger.info('Query:running...')
@@ -188,27 +198,20 @@ class Loader:
         logger.info('Pipe:return code:%s', pipe.poll())
         logger.info('Array:%s', config.GENE_INDEX_ARRAY)
 
-    def insert_gene_index_dbnsfp(self):
-        fifo_name = self.fifo_names[0]
-        pipe = Loader.make_pipe(config.DBNSFP_FILE, fifo_name)
+    def store_dbnsfp(self):
+        self.store(config.DBNSFP_FILE,
+                   config.DBNSFP_STORE_QUERY,
+                   config.DBNSFP_ARRAY)
 
-        logger.info('Query:running...')
-        self.db.iquery(
-            config.GENE_INDEX_INSERT_DBNSFP_QUERY.format(path=fifo_name))
-        logger.info('Query:done')
-        logger.info('Pipe:return code:%s', pipe.poll())
-        logger.info('Array:%s', config.GENE_INDEX_ARRAY)
+    def store_canonical(self):
+        self.store(config.CANONICAL_FILE,
+                   config.CANONICAL_STORE_QUERY,
+                   config.CANONICAL_ARRAY)
 
-    def insert_gene_index_canonical(self):
-        fifo_name = self.fifo_names[0]
-        pipe = Loader.make_pipe(config.CANONICAL_FILE, fifo_name)
-
-        logger.info('Query:running...')
-        self.db.iquery(
-            config.GENE_INDEX_INSERT_CANONICAL_QUERY.format(path=fifo_name))
-        logger.info('Query:done')
-        logger.info('Pipe:return code:%s', pipe.poll())
-        logger.info('Array:%s', config.GENE_INDEX_ARRAY)
+    def store_omim(self):
+        self.store(config.OMIM_FILE,
+                   config.OMIM_STORE_QUERY,
+                   config.OMIM_ARRAY)
 
     def store_transcript_index(self):
         fifo_name = self.fifo_names[0]
@@ -327,6 +330,9 @@ class Loader:
                       config.ICD_INFO_ARRAY,
                       config.ICD_ARRAY,
                       config.GENE_INDEX_ARRAY,
+                      config.DBNSFP_ARRAY,
+                      config.CANONICAL_ARRAY,
+                      config.OMIM_ARRAY,
                       config.TRANSCRIPT_INDEX_ARRAY,
                       config.GENE_ARRAY,
                       config.VARIANT_ARRAY,
@@ -438,8 +444,9 @@ if __name__ == '__main__':
     loader.store_icd_pvalue()
 
     loader.store_gene_index()
-    loader.insert_gene_index_dbnsfp()
-    loader.insert_gene_index_canonical()
+    loader.store_dbnsfp()
+    loader.store_canonical()
+    loader.store_omim()
     loader.store_transcript_index()
     loader.store_gene()
     loader.store_transcript()

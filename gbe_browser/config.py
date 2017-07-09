@@ -179,61 +179,77 @@ QT_INSERT_QUERY = """
 GENE_FILE = os.path.join(GBE_DATA_PATH, 'gencode.gtf.gz')
 CANONICAL_FILE = os.path.join(GBE_DATA_PATH, 'canonical_transcripts.txt.gz')
 DBNSFP_FILE = os.path.join(GBE_DATA_PATH, 'dbNSFP2.6_gene.gz')
+OMIM_FILE = os.path.join(GBE_DATA_PATH, 'omim_info.txt.gz')
 
 GENE_INDEX_ARRAY = 'gene_index'
-GENE_INDEX_SCHEMA = """
-  <gene_id:              string,
-   gene_name:            string,
-   full_gene_name:       string,
-   canonical_transcript: string>
-  [gene_idx = 0:*:0:20]"""
+GENE_INDEX_SCHEMA = '<gene_id: string>[gene_idx = 0:*:0:20]'
 
 GENE_INDEX_STORE_QUERY = """
   store(
     redimension(
       apply(
-        aio_input('{{path}}', 'num_attributes=2', 'attribute_delimiter= '),
-        gene_idx,             tuple_no,
-        gene_id,              rsub(a0, 's/"([^.]*).*/$1/'),
-        gene_name,            rsub(a1, 's/"([^"]*).*/$1/'),
-        full_gene_name,       string(null),
-        canonical_transcript, string(null)),
+        aio_input('{{path}}', 'num_attributes=1'),
+        gene_idx, tuple_no,
+        gene_id,  rsub(a0, 's/"([^.]*).*/$1/')),
       {gene_index_schema}),
     {gene_index_array})""".format(gene_index_schema=GENE_INDEX_SCHEMA,
                                   gene_index_array=GENE_INDEX_ARRAY)
 
-GENE_INDEX_INSERT_DBNSFP_QUERY = """
-  insert(
-    join(
-      project({gene_index_array}, gene_id, gene_name, canonical_transcript),
-      redimension(
-        index_lookup(
-          apply(
-            filter(
-              aio_input('{{path}}', 'num_attributes=14', 'header=1'),
-              a1 <> '.' and a0 <> a12),
-            full_gene_name, a12),
-          project({gene_index_array}, gene_id),
-          a1,
-          gene_idx),
-        <full_gene_name:string>[gene_idx = 0:*:0:20], false)),
-    {gene_index_array})""".format(gene_index_array=GENE_INDEX_ARRAY)
+DBNSFP_ARRAY = 'dbnsfp'
+DBNSFP_SCHEMA = '<full_gene_name: string>[gene_idx = 0:*:0:20]'
 
-GENE_INDEX_INSERT_CANONICAL_QUERY = """
-  insert(
-    join(
-      project({gene_index_array}, gene_id, gene_name, full_gene_name),
-      redimension(
-        index_lookup(
-          apply(
-            aio_input('{{path}}', 'num_attributes=2'),
-            gene_id,              a0,
-            canonical_transcript, a1),
-          project({gene_index_array}, gene_id),
-          a0,
-          gene_idx),
-        <canonical_transcript:string>[gene_idx = 0:*:0:20])),
-    {gene_index_array})""".format(gene_index_array=GENE_INDEX_ARRAY)
+DBNSFP_STORE_QUERY = """
+  store(
+    redimension(
+      index_lookup(
+        apply(
+          filter(
+            aio_input('{{path}}', 'num_attributes=14', 'header=1'),
+            a1 <> '.' and a0 <> a12),
+          full_gene_name, a12),
+        {gene_index_array},
+        a1,
+        gene_idx),
+      {dbnsfp_schema}, false),
+    {dbnsfp_array})""".format(gene_index_array=GENE_INDEX_ARRAY,
+                              dbnsfp_schema=DBNSFP_SCHEMA,
+                              dbnsfp_array=DBNSFP_ARRAY)
+
+CANONICAL_ARRAY = 'canonical'
+CANONICAL_SCHEMA = '<canonical_transcript: string>[gene_idx = 0:*:0:20]'
+
+CANONICAL_STORE_QUERY = """
+  store(
+    redimension(
+      index_lookup(
+        apply(
+          aio_input('{{path}}', 'num_attributes=2'),
+          canonical_transcript, a1),
+        {gene_index_array},
+        a0,
+        gene_idx),
+      {canonical_schema}, false),
+    {canonical_array})""".format(gene_index_array=GENE_INDEX_ARRAY,
+                                 canonical_schema=CANONICAL_SCHEMA,
+                                 canonical_array=CANONICAL_ARRAY)
+
+OMIM_ARRAY = 'omim'
+OMIM_SCHEMA = '<omim_accession: string>[gene_idx = 0:*:0:20]'
+
+OMIM_STORE_QUERY = """
+  store(
+    redimension(
+      index_lookup(
+        apply(
+          aio_input('{{path}}', 'num_attributes=4'),
+          omim_accession, a2),
+        {gene_index_array},
+        a0,
+        gene_idx),
+      {omim_schema}, false),
+    {omim_array})""".format(gene_index_array=GENE_INDEX_ARRAY,
+                            omim_schema=OMIM_SCHEMA,
+                            omim_array=OMIM_ARRAY)
 
 TRANSCRIPT_INDEX_ARRAY = 'transcript_index'
 TRANSCRIPT_INDEX_SCHEMA = """
@@ -253,41 +269,61 @@ TRANSCRIPT_INDEX_STORE_QUERY = """
 
 GENE_ARRAY = 'gene'
 GENE_SCHEMA = """
-  <gene_name: string,
-   strand:    string>
+  <gene_name:            string,
+   strand:               string,
+   full_gene_name:       string,
+   canonical_transcript: string,
+   omim_accession:       string>
   [gene_idx       = 0:*:0:20;
    chrom          = 1:25:0:1;
    start          = 0:*:0:10000000;
-   stop           = 0:*:0:10000000;
-   synthetic      = 0:199:0:200]"""
+   stop           = 0:*:0:10000000]"""
 
 GENE_STORE_QUERY = """
   store(
     redimension(
-      index_lookup(
-        apply(
-          filter(
-            aio_input('{{path}}', 'num_attributes=9'),
-            substr(a0, 0, 1) <> '#' and a2 = 'gene'),
-          gene_id,   rsub(a8, 's/.*gene_id "([^.]*).*/$1/'),
-          chrom,     iif(substr(a0, 3, 4) = 'X',
-                         23,
-                         iif(substr(a0, 3, 4) = 'Y',
-                             24,
-                             iif(substr(a0, 3, 4) = 'M',
-                                 25,
-                                 dcast(substr(a0, 3, 5), int64(null))))),
-          start,     int64(a3) + 1,
-          stop,      int64(a4) + 1,
-          gene_name, rsub(a8, 's/.*gene_name "([^"]*).*/$1/'),
-          strand,    a6) as INPUT,
-        project({gene_index_array}, gene_id),
-        INPUT.gene_id,
-        gene_idx),
+      join(
+        join(
+          join(
+            redimension(
+              index_lookup(
+                apply(
+                  filter(
+                    aio_input('{{path}}', 'num_attributes=9'),
+                    substr(a0, 0, 1) <> '#' and a2 = 'gene'),
+                  gene_id,   rsub(a8, 's/.*gene_id "([^.]*).*/$1/'),
+                  chrom,     iif(substr(a0, 3, 4) = 'X',
+                                 23,
+                                 iif(substr(a0, 3, 4) = 'Y',
+                                     24,
+                                     iif(substr(a0, 3, 4) = 'M',
+                                         25,
+                                         int64(substr(a0, 3, 5))))),
+                  start,     int64(a3) + 1,
+                  stop,      int64(a4) + 1,
+                  gene_name, rsub(a8, 's/.*gene_name "([^"]*).*/$1/'),
+                  strand,    a6) as INPUT,
+                project({gene_index_array}, gene_id),
+                INPUT.gene_id,
+                gene_idx),
+
+              <gene_name: string,
+               strand:    string,
+               chrom:     int64,
+               start:     int64,
+               stop:      int64>
+              [gene_idx = 0:*:0:20]),
+
+            {dbnsfp_array}),
+          {canonical_array}),
+        {omim_array}),
       {gene_schema}),
     {gene_array})""".format(gene_array=GENE_ARRAY,
                             gene_schema=GENE_SCHEMA,
-                            gene_index_array=GENE_INDEX_ARRAY)
+                            gene_index_array=GENE_INDEX_ARRAY,
+                            dbnsfp_array=DBNSFP_ARRAY,
+                            canonical_array=CANONICAL_ARRAY,
+                            omim_array=OMIM_ARRAY)
 
 TRANSCRIPT_ARRAY = 'transcript'
 TRANSCRIPT_SCHEMA = """
