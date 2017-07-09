@@ -174,10 +174,38 @@ class Loader:
     # -- -
     def store_gene_index(self):
         fifo_name = self.fifo_names[0]
+        pipe = Loader.make_pipe(
+            config.GENE_FILE,
+            fifo_name,
+            "zcat {file_name} | grep '\tgene\t' | " +
+            "cut --fields=9 | cut --delimiter=' ' --fields=2,10 | "
+            "sort | uniq > {fifo_name}")
+
+        logger.info('Query:running...')
+        self.db.iquery(
+            config.GENE_INDEX_STORE_QUERY.format(path=fifo_name))
+        logger.info('Query:done')
+        logger.info('Pipe:return code:%s', pipe.poll())
+        logger.info('Array:%s', config.GENE_INDEX_ARRAY)
+
+    def insert_gene_index_canonical(self):
+        fifo_name = self.fifo_names[0]
         pipe = Loader.make_pipe(config.CANONICAL_FILE, fifo_name)
 
         logger.info('Query:running...')
-        self.db.iquery(config.GENE_INDEX_STORE_QUERY.format(path=fifo_name))
+        self.db.iquery(
+            config.GENE_INDEX_INSERT_CANONICAL_QUERY.format(path=fifo_name))
+        logger.info('Query:done')
+        logger.info('Pipe:return code:%s', pipe.poll())
+        logger.info('Array:%s', config.GENE_INDEX_ARRAY)
+
+    def insert_gene_index_dbnsfp(self):
+        fifo_name = self.fifo_names[0]
+        pipe = Loader.make_pipe(config.DBNSFP_FILE, fifo_name)
+
+        logger.info('Query:running...')
+        self.db.iquery(
+            config.GENE_INDEX_INSERT_DBNSFP_QUERY.format(path=fifo_name))
         logger.info('Query:done')
         logger.info('Pipe:return code:%s', pipe.poll())
         logger.info('Array:%s', config.GENE_INDEX_ARRAY)
@@ -188,7 +216,8 @@ class Loader:
             config.GENE_FILE,
             fifo_name,
             "zcat {file_name} | grep '\ttranscript\t' | " +
-            "cut -f 9 | cut -d ' ' -f 4 | sort | uniq > {fifo_name}")
+            "cut --fields=9 | cut --delimiter=' ' --fields=4 | " +
+            "sort | uniq > {fifo_name}")
 
         logger.info('Query:running...')
         self.db.iquery(
@@ -409,6 +438,8 @@ if __name__ == '__main__':
     loader.store_icd_pvalue()
 
     loader.store_gene_index()
+    loader.insert_gene_index_canonical()
+    loader.insert_gene_index_dbnsfp()
     loader.store_transcript_index()
     loader.store_gene()
     loader.store_transcript()

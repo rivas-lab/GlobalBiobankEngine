@@ -178,10 +178,13 @@ QT_INSERT_QUERY = """
 # -- -
 GENE_FILE = os.path.join(GBE_DATA_PATH, 'gencode.gtf.gz')
 CANONICAL_FILE = os.path.join(GBE_DATA_PATH, 'canonical_transcripts.txt.gz')
+DBNSFP_FILE = os.path.join(GBE_DATA_PATH, 'dbNSFP2.6_gene.gz')
 
 GENE_INDEX_ARRAY = 'gene_index'
 GENE_INDEX_SCHEMA = """
   <gene_id:              string,
+   gene_name:            string,
+   full_gene_name:       string,
    canonical_transcript: string>
   [gene_idx = 0:*:0:20]"""
 
@@ -189,13 +192,48 @@ GENE_INDEX_STORE_QUERY = """
   store(
     redimension(
       apply(
-        aio_input('{{path}}', 'num_attributes=2'),
+        aio_input('{{path}}', 'num_attributes=2', 'attribute_delimiter= '),
         gene_idx,             tuple_no,
-        gene_id,              a0,
-        canonical_transcript, a1),
+        gene_id,              rsub(a0, 's/"([^.]*).*/$1/'),
+        gene_name,            rsub(a1, 's/"([^"]*).*/$1/'),
+        full_gene_name,       string(null),
+        canonical_transcript, string(null)),
       {gene_index_schema}),
     {gene_index_array})""".format(gene_index_schema=GENE_INDEX_SCHEMA,
                                   gene_index_array=GENE_INDEX_ARRAY)
+
+GENE_INDEX_INSERT_CANONICAL_QUERY = """
+  insert(
+    join(
+      project({gene_index_array}, gene_id, gene_name, full_gene_name),
+      redimension(
+        index_lookup(
+          apply(
+            aio_input('{{path}}', 'num_attributes=2'),
+            gene_id,              a0,
+            canonical_transcript, a1),
+          project({gene_index_array}, gene_id),
+          a0,
+          gene_idx),
+        <canonical_transcript:string>[gene_idx = 0:*:0:20])),
+    {gene_index_array})""".format(gene_index_array=GENE_INDEX_ARRAY)
+
+GENE_INDEX_INSERT_DBNSFP_QUERY = """
+  insert(
+    join(
+      project({gene_index_array}, gene_id, gene_name, canonical_transcript),
+      redimension(
+        index_lookup(
+          apply(
+            filter(
+              aio_input('{{path}}', 'num_attributes=14', 'header=1'),
+              a1 <> '.' and a0 <> a12),
+            full_gene_name, a12),
+          project({gene_index_array}, gene_id),
+          a1,
+          gene_idx),
+        <full_gene_name:string>[gene_idx = 0:*:0:20], false)),
+    {gene_index_array})""".format(gene_index_array=GENE_INDEX_ARRAY)
 
 TRANSCRIPT_INDEX_ARRAY = 'transcript_index'
 TRANSCRIPT_INDEX_SCHEMA = """
