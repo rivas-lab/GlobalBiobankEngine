@@ -149,14 +149,6 @@ class Loader:
                         ','.join(str(pipe.poll()) for pipe in pipes))
         logger.info('Array:%s', config.ICD_ARRAY)
 
-    def store_icd_pvalue(self):
-        for (query, name) in zip(config.ICD_PVALUE_STORE_QUERIES,
-                                 config.ICD_PVALUE_MAP.values()):
-            logger.info('Query:running...')
-            self.db.iquery(query)
-            logger.info('Query:done')
-            logger.info('Array:%s', name)
-
     def get_icd_cond(self, file_names):
         """Build SciDB conditional expressions ("iif") to map file names to
         "icd_idx", "icdind" using "src_instance_id"
@@ -335,6 +327,8 @@ class Loader:
                       config.OMIM_ARRAY,
                       config.TRANSCRIPT_INDEX_ARRAY,
                       config.GENE_ARRAY,
+                      config.TRANSCRIPT_INDEX_ARRAY,
+                      config.EXON_ARRAY,
                       config.VARIANT_ARRAY,
                       config.VARIANT_GENE_ARRAY,
                       config.VARIANT_TRANSCRIPT_ARRAY,
@@ -441,7 +435,6 @@ if __name__ == '__main__':
     loader.insert_icd_info()
     loader.insert_icd()
     loader.insert_qt()
-    loader.store_icd_pvalue()
 
     loader.store_gene_index()
     loader.store_dbnsfp()
