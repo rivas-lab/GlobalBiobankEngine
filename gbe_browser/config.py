@@ -291,7 +291,7 @@ GENE_STORE_QUERY = """
                   filter(
                     aio_input('{{path}}', 'num_attributes=9'),
                     substr(a0, 0, 1) <> '#' and a2 = 'gene'),
-                  gene_id,   rsub(a8, 's/.*gene_id "([^.]*).*/$1/'),
+                  g_id,       rsub(a8, 's/.*gene_id "([^.]*).*/$1/'),
                   chrom,     iif(substr(a0, 3, 4) = 'X',
                                  23,
                                  iif(substr(a0, 3, 4) = 'Y',
@@ -302,9 +302,9 @@ GENE_STORE_QUERY = """
                   start,     int64(a3) + 1,
                   stop,      int64(a4) + 1,
                   gene_name, rsub(a8, 's/.*gene_name "([^"]*).*/$1/'),
-                  strand,    a6) as INPUT,
-                project({gene_index_array}, gene_id),
-                INPUT.gene_id,
+                  strand,    a6),
+                {gene_index_array},
+                g_id,
                 gene_idx),
 
               <gene_name: string,
@@ -327,7 +327,7 @@ GENE_STORE_QUERY = """
 
 TRANSCRIPT_ARRAY = 'transcript'
 TRANSCRIPT_SCHEMA = """
-  <val: int8 not null>
+  <noval: int8 not null>
   [gene_idx       = 0:*:0:20;
    transcript_idx = 0:*:0:20;
    chrom          = 1:25:0:1;
@@ -344,24 +344,24 @@ TRANSCRIPT_STORE_QUERY = """
             filter(
               aio_input('{{path}}', 'num_attributes=9'),
               substr(a0, 0, 1) <> '#' and a2 = 'transcript'),
-            gene_id,       rsub(a8, 's/.*gene_id "([^.]*).*/$1/'),
-            transcript_id, rsub(a8, 's/.*transcript_id "([^.]*).*/$1/'),
-            chrom,         iif(substr(a0, 3, 4) = 'X',
-                               23,
-                               iif(substr(a0, 3, 4) = 'Y',
-                                   24,
+            g_id,  rsub(a8, 's/.*gene_id "([^.]*).*/$1/'),
+            t_id,  rsub(a8, 's/.*transcript_id "([^.]*).*/$1/'),
+            chrom, iif(substr(a0, 3, 4) = 'X',
+                       23,
+                       iif(substr(a0, 3, 4) = 'Y',
+                           24,
 
-                                   iif(substr(a0, 3, 4) = 'M',
-                                       25,
-                                       dcast(substr(a0, 3, 5), int64(null))))),
-            start,         int64(a3) + 1,
-            stop,          int64(a4) + 1,
-            val,           int8(0)) as INPUT_GENE,
-          project({gene_index_array}, gene_id),
-          INPUT_GENE.gene_id,
-          gene_idx) as INPUT_TRANSCRIPT,
+                           iif(substr(a0, 3, 4) = 'M',
+                               25,
+                               int64(substr(a0, 3, 5))))),
+            start, int64(a3) + 1,
+            stop,  int64(a4) + 1,
+            noval, int8(0)),
+          {gene_index_array},
+          g_id,
+          gene_idx),
         {transcript_index_array},
-        INPUT_TRANSCRIPT.transcript_id,
+        t_id,
         transcript_idx),
       {transcript_schema}),
     {transcript_array})""".format(
@@ -372,7 +372,7 @@ TRANSCRIPT_STORE_QUERY = """
 
 EXON_ARRAY = 'exon'
 EXON_SCHEMA = """
-  <val: int8 not null>
+  <noval: int8 not null>
   [gene_idx       = 0:*:0:20;
    transcript_idx = 0:*:0:20;
    chrom          = 1:25:0:1;
@@ -389,23 +389,23 @@ EXON_STORE_QUERY = """
             filter(
               aio_input('{{path}}', 'num_attributes=9'),
               substr(a0, 0, 1) <> '#' and a2 = 'exon'),
-            gene_id,       rsub(a8, 's/.*gene_id "([^.]*).*/$1/'),
-            transcript_id, rsub(a8, 's/.*transcript_id "([^.]*).*/$1/'),
-            chrom,         iif(substr(a0, 3, 4) = 'X',
-                               23,
-                               iif(substr(a0, 3, 4) = 'Y',
-                                   24,
-                                   iif(substr(a0, 3, 4) = 'M',
-                                       25,
-                                       dcast(substr(a0, 3, 5), int64(null))))),
-            start,         int64(a3) + 1,
-            stop,          int64(a4) + 1,
-            val,           int8(0)) as INPUT_GENE,
-          project({gene_index_array}, gene_id),
-          INPUT_GENE.gene_id,
-          gene_idx) as INPUT_TRANSCRIPT,
+            g_id,  rsub(a8, 's/.*gene_id "([^.]*).*/$1/'),
+            t_id,  rsub(a8, 's/.*transcript_id "([^.]*).*/$1/'),
+            chrom, iif(substr(a0, 3, 4) = 'X',
+                       23,
+                       iif(substr(a0, 3, 4) = 'Y',
+                           24,
+                           iif(substr(a0, 3, 4) = 'M',
+                               25,
+                               dcast(substr(a0, 3, 5), int64(null))))),
+            start, int64(a3) + 1,
+            stop,  int64(a4) + 1,
+            noval, int8(0)),
+          {gene_index_array},
+          g_id,
+          gene_idx),
         {transcript_index_array},
-        INPUT_TRANSCRIPT.transcript_id,
+        t_id,
         transcript_idx),
       {exon_schema}),
     {exon_array})""".format(
@@ -470,7 +470,7 @@ VARIANT_STORE_QUERY = """
 
 VARIANT_GENE_ARRAY = 'variant_gene'
 VARIANT_GENE_SCHEMA = """
-  <val: int8 not null>
+  <noval: int8 not null>
   [chrom    = 1:25:0:1;
    pos      = 0:*:0:10000000;
    gene_idx = 0:*:0:20]"""
@@ -483,10 +483,9 @@ VARIANT_GENE_STORE_QUERY = """
           aio_input('{{path}}', 'num_attributes=3'),
           chrom,   int64(a0),
           pos,     int64(a1),
-          gene_id, a2,
-          val,     int8(0)) as INPUT,
-        project({gene_index_array}, gene_id),
-        INPUT.gene_id,
+          noval,   int8(0)),
+        {gene_index_array},
+        a2,
         gene_idx),
       {variant_gene_schema}),
     {variant_gene_array})""".format(
@@ -496,7 +495,7 @@ VARIANT_GENE_STORE_QUERY = """
 
 VARIANT_TRANSCRIPT_ARRAY = 'variant_transcript'
 VARIANT_TRANSCRIPT_SCHEMA = """
-  <val: int8 not null>
+  <noval: int8 not null>
   [chrom          = 1:25:0:1;
    pos            = 0:*:0:10000000;
    transcript_idx = 0:*:0:20]"""
@@ -510,7 +509,7 @@ VARIANT_TRANSCRIPT_STORE_QUERY = """
           chrom,         int64(a0),
           pos,           int64(a1),
           transcript_id, a2,
-          val,           int8(0)) as INPUT,
+          noval,         int8(0)) as INPUT,
         {transcript_index_array},
         INPUT.transcript_id,
         transcript_idx),
