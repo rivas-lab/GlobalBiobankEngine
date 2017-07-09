@@ -202,22 +202,6 @@ GENE_INDEX_STORE_QUERY = """
     {gene_index_array})""".format(gene_index_schema=GENE_INDEX_SCHEMA,
                                   gene_index_array=GENE_INDEX_ARRAY)
 
-GENE_INDEX_INSERT_CANONICAL_QUERY = """
-  insert(
-    join(
-      project({gene_index_array}, gene_id, gene_name, full_gene_name),
-      redimension(
-        index_lookup(
-          apply(
-            aio_input('{{path}}', 'num_attributes=2'),
-            gene_id,              a0,
-            canonical_transcript, a1),
-          project({gene_index_array}, gene_id),
-          a0,
-          gene_idx),
-        <canonical_transcript:string>[gene_idx = 0:*:0:20])),
-    {gene_index_array})""".format(gene_index_array=GENE_INDEX_ARRAY)
-
 GENE_INDEX_INSERT_DBNSFP_QUERY = """
   insert(
     join(
@@ -233,6 +217,22 @@ GENE_INDEX_INSERT_DBNSFP_QUERY = """
           a1,
           gene_idx),
         <full_gene_name:string>[gene_idx = 0:*:0:20], false)),
+    {gene_index_array})""".format(gene_index_array=GENE_INDEX_ARRAY)
+
+GENE_INDEX_INSERT_CANONICAL_QUERY = """
+  insert(
+    join(
+      project({gene_index_array}, gene_id, gene_name, full_gene_name),
+      redimension(
+        index_lookup(
+          apply(
+            aio_input('{{path}}', 'num_attributes=2'),
+            gene_id,              a0,
+            canonical_transcript, a1),
+          project({gene_index_array}, gene_id),
+          a0,
+          gene_idx),
+        <canonical_transcript:string>[gene_idx = 0:*:0:20])),
     {gene_index_array})""".format(gene_index_array=GENE_INDEX_ARRAY)
 
 TRANSCRIPT_INDEX_ARRAY = 'transcript_index'

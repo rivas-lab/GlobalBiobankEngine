@@ -188,17 +188,6 @@ class Loader:
         logger.info('Pipe:return code:%s', pipe.poll())
         logger.info('Array:%s', config.GENE_INDEX_ARRAY)
 
-    def insert_gene_index_canonical(self):
-        fifo_name = self.fifo_names[0]
-        pipe = Loader.make_pipe(config.CANONICAL_FILE, fifo_name)
-
-        logger.info('Query:running...')
-        self.db.iquery(
-            config.GENE_INDEX_INSERT_CANONICAL_QUERY.format(path=fifo_name))
-        logger.info('Query:done')
-        logger.info('Pipe:return code:%s', pipe.poll())
-        logger.info('Array:%s', config.GENE_INDEX_ARRAY)
-
     def insert_gene_index_dbnsfp(self):
         fifo_name = self.fifo_names[0]
         pipe = Loader.make_pipe(config.DBNSFP_FILE, fifo_name)
@@ -206,6 +195,17 @@ class Loader:
         logger.info('Query:running...')
         self.db.iquery(
             config.GENE_INDEX_INSERT_DBNSFP_QUERY.format(path=fifo_name))
+        logger.info('Query:done')
+        logger.info('Pipe:return code:%s', pipe.poll())
+        logger.info('Array:%s', config.GENE_INDEX_ARRAY)
+
+    def insert_gene_index_canonical(self):
+        fifo_name = self.fifo_names[0]
+        pipe = Loader.make_pipe(config.CANONICAL_FILE, fifo_name)
+
+        logger.info('Query:running...')
+        self.db.iquery(
+            config.GENE_INDEX_INSERT_CANONICAL_QUERY.format(path=fifo_name))
         logger.info('Query:done')
         logger.info('Pipe:return code:%s', pipe.poll())
         logger.info('Array:%s', config.GENE_INDEX_ARRAY)
@@ -438,8 +438,8 @@ if __name__ == '__main__':
     loader.store_icd_pvalue()
 
     loader.store_gene_index()
-    loader.insert_gene_index_canonical()
     loader.insert_gene_index_dbnsfp()
+    loader.insert_gene_index_canonical()
     loader.store_transcript_index()
     loader.store_gene()
     loader.store_transcript()
