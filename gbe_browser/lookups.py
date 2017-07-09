@@ -18,13 +18,15 @@ def numpy2dict(ar):
         dict(
             (de[0],
              el[de[0]]['val'] if isinstance(de[1], list) else el[de[0]])
-            for de in ar.dtype.descr if de[0] != 'val')
+            for de in ar.dtype.descr if de[0] != 'noval'
+        )
         for el in ar]
 
 
-def format_variants(variants, add_ann=False):
+def format_variants(variants, add_ann=False, gene_id=None):
     for variant in variants:
-        variant['rsid'] = 'rs{}'.format(variant['rsid'])
+        variant['rsid'] = ('rs{}'.format(variant['rsid'])
+                           if variant['rsid'] else '.')
         variant['variant_id'] = '{}-{}-{}-{}'.format(
             variant['chrom'], variant['pos'], variant['ref'], variant['alt'])
 
@@ -32,7 +34,8 @@ def format_variants(variants, add_ann=False):
                 for csq in variant['csq'].split(',')]
         vep_annotations = [ann for ann in anns
                            if ('Feature' in ann and
-                               ann['Feature'].startswith('ENST'))]
+                               ann['Feature'].startswith('ENST') and
+                               (gene_id is None or ann['Gene'] == gene_id))]
         if add_ann:
             variant['vep_annotations'] = vep_annotations
 
@@ -385,7 +388,8 @@ def get_variants_in_gene(db, gene_id):
             db.iquery(
                 config.VARIANT_GENE_LOOKUP.format(gene_id=gene_id),
                 schema=config.VARIANT_X_GENE_INDEX_SCHEMA,
-                fetch=True)))
+                fetch=True)),
+        gene_id=gene_id)
 
 
 def get_variants_in_transcript(db, transcript_id):
