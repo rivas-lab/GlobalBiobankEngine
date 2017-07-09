@@ -6,7 +6,7 @@ import config
 import utils
 
 
-xoff = 1e9
+xoff = int(1e9)
 
 
 def numpy2dict(ar):
@@ -18,7 +18,7 @@ def numpy2dict(ar):
         dict(
             (de[0],
              el[de[0]]['val'] if isinstance(de[1], list) else el[de[0]])
-            for de in ar.dtype.descr)
+            for de in ar.dtype.descr if de[0] != 'val')
         for el in ar]
 
 
@@ -215,8 +215,7 @@ def get_transcript(db, transcript_id):
                  transcript.transcript_idx,
                  transcript_index.transcript_idx);
     """
-    return format_genes(
-        numpy2dict(
+    res = format_genes(numpy2dict(
             db.iquery(
                 config.LOOKUP_QUERY.format(
                     main_array=config.TRANSCRIPT_ARRAY,
@@ -226,6 +225,8 @@ def get_transcript(db, transcript_id):
                     idx_attr='transcript_idx'),
                 schema=config.TRANSCRIPT_LOOKUP_SCHEMA,
                 fetch=True)))[0]
+    res['exons'] = get_exons_in_transcript(db, transcript_id)
+    return res
 
 
 def get_transcripts_in_gene(db, gene_id):
@@ -240,7 +241,7 @@ def get_transcripts_in_gene(db, gene_id):
 
     SciDB:
       cross_join(transcript,
-                 filter(gene_index, id = 'ENSG00000107404'),
+                 filter(gene_index, gene_id = 'ENSG00000107404'),
                  transcript.gene_idx,
                  gene_index.gene_idx);
     """
@@ -252,7 +253,36 @@ def get_transcripts_in_gene(db, gene_id):
                                        id_val=gene_id,
                                        idx_attr='gene_idx'),
             schema=config.TRANSCRIPT_GENE_LOOKUP_SCHEMA,
-            fetch=True))[0]
+            fetch=True))
+
+
+def get_exons_in_transcript(db, transcript_id):
+    """
+    e.g.,
+    UI:
+      https://biobankengine.stanford.edu/gene/ENSG00000107404
+
+    MongoDB:
+      db.exons.find({'transcript_id': transcript_id,
+                     'feature_type': { "$in": ['CDS', 'UTR', 'exon'] }},
+                    fields={'_id': False})
+
+    SciDB:
+      cross_join(exon,
+                 filter(transcript_index, transcript_id = 'ENST00000378891'),
+                 exon.transcript_idx,
+                 transcript_index.transcript_idx);
+    """
+    return numpy2dict(
+        db.iquery(
+            config.LOOKUP_QUERY.format(
+                main_array=config.EXON_ARRAY,
+                index_array=config.TRANSCRIPT_INDEX_ARRAY,
+                id_attr='transcript_id',
+                id_val=transcript_id,
+                idx_attr='transcript_idx'),
+            schema=config.EXON_TRANSCRIPT_LOOKUP_SCHEMA,
+            fetch=True))
 
 
 # -- -

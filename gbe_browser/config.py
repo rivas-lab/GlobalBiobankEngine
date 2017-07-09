@@ -276,6 +276,7 @@ TRANSCRIPT_STORE_QUERY = """
                                23,
                                iif(substr(a0, 3, 4) = 'Y',
                                    24,
+
                                    iif(substr(a0, 3, 4) = 'M',
                                        25,
                                        dcast(substr(a0, 3, 5), int64(null))))),
@@ -295,6 +296,50 @@ TRANSCRIPT_STORE_QUERY = """
         gene_index_array=GENE_INDEX_ARRAY,
         transcript_index_array=TRANSCRIPT_INDEX_ARRAY)
 
+EXON_ARRAY = 'exon'
+EXON_SCHEMA = """
+  <val: int8 not null>
+  [gene_idx       = 0:*:0:20;
+   transcript_idx = 0:*:0:20;
+   chrom          = 1:25:0:1;
+   start          = 0:*:0:10000000;
+   stop           = 0:*:0:10000000;
+   synthetic      = 0:199:0:200]"""
+
+EXON_STORE_QUERY = """
+  store(
+    redimension(
+      index_lookup(
+        index_lookup(
+          apply(
+            filter(
+              aio_input('{{path}}', 'num_attributes=9'),
+              substr(a0, 0, 1) <> '#' and a2 = 'exon'),
+            gene_id,       rsub(a8, 's/.*gene_id "([^.]*).*/$1/'),
+            transcript_id, rsub(a8, 's/.*transcript_id "([^.]*).*/$1/'),
+            chrom,         iif(substr(a0, 3, 4) = 'X',
+                               23,
+                               iif(substr(a0, 3, 4) = 'Y',
+                                   24,
+                                   iif(substr(a0, 3, 4) = 'M',
+                                       25,
+                                       dcast(substr(a0, 3, 5), int64(null))))),
+            start,         int64(a3) + 1,
+            stop,          int64(a4) + 1,
+            val,           int8(0)) as INPUT_GENE,
+          project({gene_index_array}, gene_id),
+          INPUT_GENE.gene_id,
+          gene_idx) as INPUT_TRANSCRIPT,
+        {transcript_index_array},
+        INPUT_TRANSCRIPT.transcript_id,
+        transcript_idx),
+      {exon_schema}),
+    {exon_array})""".format(
+        exon_array=EXON_ARRAY,
+        exon_schema=EXON_SCHEMA,
+        gene_index_array=GENE_INDEX_ARRAY,
+        transcript_index_array=TRANSCRIPT_INDEX_ARRAY)
+
 
 # -- -
 # -- - Load: VARIANT - --
@@ -310,7 +355,9 @@ VARIANT_SCHEMA = """
    site_quality: string,
    filter:       string,
    exac_nfe:     double,
+   minicd:       int64,
    minpval:      double,
+   minor:        double,
    minl10pval:   double,
    csq:          string>
   [chrom = 1:25:0:1;
@@ -334,7 +381,11 @@ VARIANT_STORE_QUERY = """
         filter,       a6,
         exac_nfe,     dcast(rsub(a7, 's/.*EXAC_NFE=([^;]*).*/$1/'),
                             double(null)),
+        minicd,       dcast(rsub(a7, 's/.*minicd=([^;]*).*/$1/'),
+                            int64(null)),
         minpval,      dcast(rsub(a7, 's/.*minpval=([^;]*).*/$1/'),
+                            double(null)),
+        minor,        dcast(rsub(a7, 's/.*minor=([^;]*).*/$1/'),
                             double(null)),
         minl10pval,   dcast(rsub(a7, 's/.*minl10pval=([^;]*).*/$1/'),
                             double(null)),
@@ -542,6 +593,13 @@ TRANSCRIPT_GENE_LOOKUP_SCHEMA = scidbpy.schema.Schema.fromstring(
         '>',
         ',{}>'.format(GENE_INDEX_SCHEMA[GENE_INDEX_SCHEMA.index('<') + 1:
                                         GENE_INDEX_SCHEMA.index('>')])))
+
+EXON_TRANSCRIPT_LOOKUP_SCHEMA = scidbpy.schema.Schema.fromstring(
+    EXON_SCHEMA.replace(
+        '>',
+        ',{}>'.format(
+            TRANSCRIPT_INDEX_SCHEMA[TRANSCRIPT_INDEX_SCHEMA.index('<') + 1:
+                                    TRANSCRIPT_INDEX_SCHEMA.index('>')])))
 
 
 # -- -

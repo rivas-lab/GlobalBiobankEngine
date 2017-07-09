@@ -223,6 +223,20 @@ class Loader:
         logger.info('Pipe:return code:%s', pipe.poll())
         logger.info('Array:%s', config.TRANSCRIPT_ARRAY)
 
+    def store_exon(self):
+        fifo_name = self.fifo_names[0]
+        pipe = Loader.make_pipe(
+            config.GENE_FILE,
+            fifo_name,
+            "zcat {file_name} | " +
+            "grep --perl-regexp '\t(exon)|(CDS)|(UTR)|\t' > {fifo_name}")
+
+        logger.info('Query:running...')
+        self.db.iquery(config.EXON_STORE_QUERY.format(path=fifo_name))
+        logger.info('Query:done')
+        logger.info('Pipe:return code:%s', pipe.poll())
+        logger.info('Array:%s', config.EXON_ARRAY)
+
     # -- -
     # -- - VARIANT - --
     # -- -
@@ -386,17 +400,22 @@ class Loader:
 if __name__ == '__main__':
     loader = Loader()
     loader.remove_arrays()
+
     loader.store_qc()
     loader.store_icd_info()
     loader.insert_icd_info()
     loader.insert_icd()
     loader.insert_qt()
     loader.store_icd_pvalue()
+
     loader.store_gene_index()
     loader.store_transcript_index()
     loader.store_gene()
     loader.store_transcript()
+    loader.store_exon()
+
     loader.store_variant()
     loader.store_variant_gene()
     loader.store_variant_transcript()
+
     loader.store_coverage()
