@@ -44,47 +44,6 @@ RH30	164	Alzheimers Disease	164	164	Y
 RH51	163	Lupus	163	163	Y
 RH84	120	Rosacea	120	120	Y
 RH37	105	Hypopituitarism	105	105	Y
-cancer1022	8117	colon cancer/sigmoid cancer	8117	8117	Y
-cancer1039	7102	ovarian cancer	7102	7102	Y
-cancer1080	4778	trachea cancer	4778	4778	Y
-cancer1023	2895	rectal cancer	2895	2895	Y
-cancer1077	2295	mouth cancer	2295	2295	Y
-cancer1004	1946	cancer of lip/mouth/pharynx/oral cavity	1946	1946	Y
-cancer1040	1749	uterine/endometrial cancer	1749	1749	Y
-cancer1079	1535	oropharynx / oropharyngeal cancer	1535	1535	Y
-cancer1003	1427	skin cancer	1427	1427	Y
-cancer1026	1337	pancreas cancer	1337	1337	Y
-cancer1011	1292	tongue cancer	1292	1292	Y
-cancer1085	1087	bone metastases/bony secondaries	1087	1087	Y
-cancer1060	928	non-melanoma skin cancer	928	928	Y
-cancer1033	904	spinal cord or cranial nerve cancer	904	904	Y
-cancer1025	849	gallbladder/bile duct cancer	849	849	Y
-cancer1066	818	parathyroid cancer	818	818	Y
-cancer1034	710	kidney/renal cell cancer	710	710	Y
-cancer1012	658	gum cancer	658	658	Y
-cancer1087	526	fallopian tube cancer	526	526	Y
-cancer1065	493	thyroid cancer	493	493	Y
-cancer1035	378	bladder cancer	378	378	Y
-cancer1005	312	salivary gland cancer	312	312	Y
-cancer1088	310	malignant insulinoma	310	310	Y
-cancer1008	308	ear cancer	308	308	Y
-cancer1001	284	lung cancer	284	284	Y
-cancer1042	277	vaginal cancer	277	277	Y
-cancer1076	265	kaposis sarcoma	265	265	Y
-cancer1017	252	oesophageal cancer	252	252	Y
-cancer1032	241	brain cancer/primary malignant brain tumour	241	241	Y
-cancer1053	220	non-hodgkins lymphoma	220	220	Y
-cancer1030	208	eye and/or adnexal cancer	208	208	Y
-cancer1081	197	thymus cancer / malignant thymoma	197	197	Y
-cancer1044	190	prostate cancer	190	190	Y
-cancer1067	175	adrenal cancer	175	175	Y
-cancer1074	152	acute myeloid leukaemia	152	152	Y
-cancer1082	141	heart / mediastinum cancer	141	141	Y
-cancer1075	131	retinoblastoma	131	131	Y
-cancer1010	115	lip cancer	115	115	Y
-cancer1046	105	penis cancer	105	105	Y
-cancer1043	103	vulval cancer	103	103	Y
-cancer1064	92	mesothelioma	92	92	Y
 HC111	30491	essential hypertension	30491	30491	Y
 HC153	21217	asthma	21217	21217	Y
 HC37	20478	high cholesterol	20478	20478	Y
@@ -706,3 +665,46 @@ HC560	104	polycystic kidney	104	104	Y
 HC561	109	brain abscess/intracranial abscess	109	109	Y
 HC562	110	food intolerance	110	110	Y
 HC563	99	fracture neck / cervical fracture	99	99	Y
+cancer1003	6250	skin cancer	6250	6250	Y
+cancer1060	5478	non-melanoma skin cancer	5478	5478	Y
+cancer1002	3556	breast cancer	3556	3556	Y
+cancer1044	2203	prostate cancer	2203	2203	Y
+cancer1037	1683	female genital tract cancer	1683	1683	Y
+cancer1020	1478	large bowel cancer/colorectal cancer	1478	1478	Y
+cancer1059	1343	malignant melanoma	1343	1343	Y
+cancer1038	1184	male genital tract cancer	1184	1184	Y
+cancer1022	1092	colon cancer/sigmoid cancer	1092	1092	Y
+cancer1041	978	cervical cancer	978	978	Y
+cancer1084	951	respiratory / intrathoracic cancer	951	951	Y
+cancer1001	800	lung cancer	800	800	Y
+cancer1035	698	bladder cancer	698	698	Y
+cancer1023	694	rectal cancer	694	694	Y
+cancer1047	620	lymphoma	620	620	Y
+cancer1085	603	bone metastases / bony secondaries	603	603	Y
+cancer1040	534	uterine/endometrial cancer	534	534	Y
+cancer1053	486	non-hodgkins lymphoma	486	486	Y
+cancer1039	388	ovarian cancer	388	388	Y
+cancer1034	372	kidney/renal cell cancer	372	372	Y
+cancer1048	281	leukaemia	281	281	Y
+cancer1045	245	testicular cancer	245	245	Y
+cancer1017	245	oesophageal cancer	245	245	Y
+cancer1004	226	cancer of lip/mouth/pharynx/oral cavity	226	226	Y
+cancer1018	214	stomach cancer	214	214	Y
+cancer1026	209	pancreas cancer	209	209	Y
+cancer1055	198	chronic lymphocytic	198	198	Y
+cancer1032	188	brain cancer / primary malignant brain tumour	188	188	Y
+cancer1065	180	thyroid cancer	180	180	Y
+cancer1024	173	liver/hepatocellular cancer	173	173	Y
+cancer1050	155	multiple myeloma	155	155	Y
+cancer1052	144	hodgkins lymphoma / hodgkins disease	144	144	Y
+cancer1056	143	chronic myeloid	143	143	Y
+cancer1006	132	larynx/throat cancer	132	132	Y
+cancer1019	122	small intestine/small bowel cancer	122	122	Y
+cancer1011	110	tongue cancer	110	110	Y
+cancer1074	99	acute myeloid leukaemia	99	99	Y
+cancer1068	87	sarcoma/fibrosarcoma	87	87	Y
+cancer1025	82	gallbladder/bile duct cancer	82	82	Y
+cancer1030	78	eye and/or adnexal cancer	78	78	Y
+cancer1077	69	mouth cancer	69	69	Y
+cancer1063	64	primary bone cancer	64	64	Y
+cancer1064	61	mesothelioma	61	61	Y
