@@ -23,7 +23,7 @@ def numpy2dict(ar):
         for el in ar]
 
 
-def format_variants(variants, add_ann=False, gene_id=None):
+def format_variants(variants, add_ann=False, gene_id=None, transcript_id=None):
     for variant in variants:
         variant['rsid'] = ('rs{}'.format(variant['rsid'])
                            if variant['rsid'] else '.')
@@ -32,10 +32,12 @@ def format_variants(variants, add_ann=False, gene_id=None):
 
         anns = [dict(zip(config.VARIANT_CSQ, csq.split('|')))
                 for csq in variant['csq'].split(',')]
-        vep_annotations = [ann for ann in anns
-                           if ('Feature' in ann and
-                               ann['Feature'].startswith('ENST') and
-                               (gene_id is None or ann['Gene'] == gene_id))]
+        vep_annotations = [
+            ann for ann in anns
+            if ('Feature' in ann and
+                ann['Feature'].startswith('ENST') and
+                (gene_id is None or ann['Gene'] == gene_id) and
+                (transcript_id is None or ann['Feature'] == transcript_id))]
         if add_ann:
             variant['vep_annotations'] = vep_annotations
 
@@ -421,7 +423,8 @@ def get_variants_in_transcript(db, transcript_id):
                 config.VARIANT_TRANSCRIPT_LOOKUP.format(
                     transcript_id=transcript_id),
                 schema=config.VARIANT_X_TRANSCRIPT_INDEX_SCHEMA,
-                fetch=True)))
+                fetch=True)),
+        transcript_id=transcript_id)
 
 
 # -- -
