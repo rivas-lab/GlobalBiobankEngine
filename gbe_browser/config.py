@@ -558,14 +558,14 @@ COVERAGE_STORE_QUERY = """
                              a7 = 'inframe_insertion' or
                              a7 = 'inframe_deletion' or
                              a7 = 'missense_variant',
-                             'missense_variant',
-                             iif(a7 = 'protein_altering_variant' or
-                                 a7 = 'splice_region_variant' or
-                                 a7 = 'incomplete_terminal_codon_variant' or
-                                 a7 = 'stop_retained_variant' or
-                                 a7 = 'synonymous_variant',
-                                 'synonymous_variant',
-                                 a7)))),
+                           'missense_variant',
+                           iif(a7 = 'protein_altering_variant' or
+                               a7 = 'splice_region_variant' or
+                               a7 = 'incomplete_terminal_codon_variant' or
+                               a7 = 'stop_retained_variant' or
+                               a7 = 'synonymous_variant',
+                             'synonymous_variant',
+                             a7)))),
       {coverage_array_schema}),
     {coverage_array})""".format(coverage_array=COVERAGE_ARRAY,
                                 coverage_array_schema=COVERAGE_SCHEMA)
