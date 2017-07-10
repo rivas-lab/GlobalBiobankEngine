@@ -327,7 +327,7 @@ GENE_STORE_QUERY = """
 
 TRANSCRIPT_ARRAY = 'transcript'
 TRANSCRIPT_SCHEMA = """
-  <noval: int8 not null>
+  <strand: string>
   [gene_idx       = 0:*:0:20;
    transcript_idx = 0:*:0:20;
    chrom          = 1:25:0:1;
@@ -344,19 +344,18 @@ TRANSCRIPT_STORE_QUERY = """
             filter(
               aio_input('{{path}}', 'num_attributes=9'),
               substr(a0, 0, 1) <> '#' and a2 = 'transcript'),
-            g_id,  rsub(a8, 's/.*gene_id "([^.]*).*/$1/'),
-            t_id,  rsub(a8, 's/.*transcript_id "([^.]*).*/$1/'),
-            chrom, iif(substr(a0, 3, 4) = 'X',
-                       23,
-                       iif(substr(a0, 3, 4) = 'Y',
-                           24,
-
-                           iif(substr(a0, 3, 4) = 'M',
-                               25,
-                               int64(substr(a0, 3, 5))))),
-            start, int64(a3) + 1,
-            stop,  int64(a4) + 1,
-            noval, int8(0)),
+            g_id,   rsub(a8, 's/.*gene_id "([^.]*).*/$1/'),
+            t_id,   rsub(a8, 's/.*transcript_id "([^.]*).*/$1/'),
+            chrom,  iif(substr(a0, 3, 4) = 'X',
+                        23,
+                        iif(substr(a0, 3, 4) = 'Y',
+                            24,
+                            iif(substr(a0, 3, 4) = 'M',
+                                25,
+                                int64(substr(a0, 3, 5))))),
+            start,  int64(a3) + 1,
+            stop,   int64(a4) + 1,
+            strand, a6),
           {gene_index_array},
           g_id,
           gene_idx),
