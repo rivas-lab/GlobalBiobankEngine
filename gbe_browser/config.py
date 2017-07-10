@@ -367,7 +367,7 @@ TRANSCRIPT_STORE_QUERY = """
 
 EXON_ARRAY = 'exon'
 EXON_SCHEMA = """
-  <noval: int8 not null>
+  <feature_type: string>
   [gene_idx       = 0:*:0:20;
    transcript_idx = 0:*:0:20;
    chrom          = 1:25:0:1;
@@ -382,18 +382,18 @@ EXON_STORE_QUERY = """
         index_lookup(
           apply(
             aio_input('{{path}}', 'num_attributes=9'),
-            g_id,  rsub(a8, 's/.*gene_id "([^.]*).*/$1/'),
-            t_id,  rsub(a8, 's/.*transcript_id "([^.]*).*/$1/'),
-            chrom, iif(substr(a0, 3, 4) = 'X',
-                       23,
-                       iif(substr(a0, 3, 4) = 'Y',
-                           24,
-                           iif(substr(a0, 3, 4) = 'M',
-                               25,
-                               dcast(substr(a0, 3, 5), int64(null))))),
-            start, int64(a3) + 1,
-            stop,  int64(a4) + 1,
-            noval, int8(0)),
+            g_id,         rsub(a8, 's/.*gene_id "([^.]*).*/$1/'),
+            t_id,         rsub(a8, 's/.*transcript_id "([^.]*).*/$1/'),
+            chrom,        iif(substr(a0, 3, 4) = 'X',
+                              23,
+                              iif(substr(a0, 3, 4) = 'Y',
+                                  24,
+                                  iif(substr(a0, 3, 4) = 'M',
+                                      25,
+                                      dcast(substr(a0, 3, 5), int64(null))))),
+            start,        int64(a3) + 1,
+            stop,         int64(a4) + 1,
+            feature_type, a2),
           {gene_index_array},
           g_id,
           gene_idx),
