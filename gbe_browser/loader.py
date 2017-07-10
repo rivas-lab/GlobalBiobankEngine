@@ -253,7 +253,7 @@ class Loader:
             config.GENE_FILE,
             fifo_name,
             "zcat {file_name} | " +
-            "grep --perl-regexp '\t(exon)|(CDS)|(UTR)|\t' > {fifo_name}")
+            "grep --perl-regexp '\\t(exon|CDS|UTR)\\t' > {fifo_name}")
 
         logger.info('Query:running...')
         self.db.iquery(config.EXON_STORE_QUERY.format(path=fifo_name))
