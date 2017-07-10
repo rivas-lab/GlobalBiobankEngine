@@ -288,9 +288,7 @@ GENE_STORE_QUERY = """
             redimension(
               index_lookup(
                 apply(
-                  filter(
-                    aio_input('{{path}}', 'num_attributes=9'),
-                    substr(a0, 0, 1) <> '#' and a2 = 'gene'),
+                  aio_input('{{path}}', 'num_attributes=9'),
                   g_id,       rsub(a8, 's/.*gene_id "([^.]*).*/$1/'),
                   chrom,     iif(substr(a0, 3, 4) = 'X',
                                  23,
@@ -341,9 +339,7 @@ TRANSCRIPT_STORE_QUERY = """
       index_lookup(
         index_lookup(
           apply(
-            filter(
-              aio_input('{{path}}', 'num_attributes=9'),
-              substr(a0, 0, 1) <> '#' and a2 = 'transcript'),
+            aio_input('{{path}}', 'num_attributes=9'),
             g_id,   rsub(a8, 's/.*gene_id "([^.]*).*/$1/'),
             t_id,   rsub(a8, 's/.*transcript_id "([^.]*).*/$1/'),
             chrom,  iif(substr(a0, 3, 4) = 'X',
@@ -385,9 +381,7 @@ EXON_STORE_QUERY = """
       index_lookup(
         index_lookup(
           apply(
-            filter(
-              aio_input('{{path}}', 'num_attributes=9'),
-              substr(a0, 0, 1) <> '#' and a2 = 'exon'),
+            aio_input('{{path}}', 'num_attributes=9'),
             g_id,  rsub(a8, 's/.*gene_id "([^.]*).*/$1/'),
             t_id,  rsub(a8, 's/.*transcript_id "([^.]*).*/$1/'),
             chrom, iif(substr(a0, 3, 4) = 'X',
