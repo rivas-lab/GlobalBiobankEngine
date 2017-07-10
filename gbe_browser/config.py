@@ -528,7 +528,9 @@ COVERAGE_FILE = os.path.join(
 COVERAGE_ARRAY = 'coverage'
 COVERAGE_SCHEMA = """
   <odds_ratio:  double,
-   log10pvalue: double>
+   log10pvalue: double,
+   flag:        string,
+   category:    string>
   [chrom = 1:25:0:1;
    pos   = 0:*:0:10000000]"""
 
@@ -542,7 +544,9 @@ COVERAGE_STORE_QUERY = """
         chrom,       int64(a0),
         pos,         int64(a1),
         odds_ratio,  dcast(a2, double(null)),
-        log10pvalue, dcast(a5, double(null))),
+        log10pvalue, dcast(a5, double(null)),
+        flag,        a6,
+        category,    a7),
       {coverage_array_schema}),
     {coverage_array})""".format(coverage_array=COVERAGE_ARRAY,
                                 coverage_array_schema=COVERAGE_SCHEMA)
