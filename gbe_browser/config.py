@@ -546,7 +546,27 @@ COVERAGE_STORE_QUERY = """
         odds_ratio,  dcast(a2, double(null)),
         log10pvalue, dcast(a5, double(null)),
         flag,        a6,
-        category,    a7),
+        category,    iif(a7 = 'transcript_ablation' or
+                         a7 = 'splice_acceptor_variant' or
+                         a7 = 'splice_donor_variant' or
+                         a7 = 'stop_gained' or
+                         a7 = 'frameshift_variant',
+                         'lof_variant',
+                         iif(a7 = 'stop_lost' or
+                             a7 = 'start_lost' or
+                             a7 = 'initiator_codon_variant' or
+                             a7 = 'transcript_amplification' or
+                             a7 = 'inframe_insertion' or
+                             a7 = 'inframe_deletion' or
+                             a7 = 'missense_variant',
+                             'missense_variant',
+                             iif(a7 = 'protein_altering_variant' or
+                                 a7 = 'splice_region_variant' or
+                                 a7 = 'incomplete_terminal_codon_variant' or
+                                 a7 = 'stop_retained_variant' or
+                                 a7 = 'synonymous_variant',
+                                 'synonymous_variant',
+                                 a7)))),
       {coverage_array_schema}),
     {coverage_array})""".format(coverage_array=COVERAGE_ARRAY,
                                 coverage_array_schema=COVERAGE_SCHEMA)
