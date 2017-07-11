@@ -231,6 +231,13 @@ def get_transcript(db, transcript_id):
                 schema=config.TRANSCRIPT_LOOKUP_SCHEMA,
                 fetch=True)))[0]
     res['exons'] = get_exons_in_transcript(db, transcript_id)
+    res['gene_id'] = db.iquery(
+        'between({gene_index_array}, {gene_idx}, {gene_idx})'.format(
+            gene_index_array=config.GENE_INDEX_ARRAY,
+            gene_idx=res['gene_idx']),
+        fetch=True,
+        atts_only=True,
+        schema=config.GENE_INDEX_SCHEMA)[0]['gene_id']['val']
     return res
 
 
