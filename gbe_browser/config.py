@@ -241,7 +241,9 @@ OMIM_STORE_QUERY = """
     redimension(
       index_lookup(
         apply(
-          aio_input('{{path}}', 'num_attributes=4'),
+          filter(
+            aio_input('{{path}}', 'num_attributes=4'),
+            a2 <> ''),
           omim_accession, a2),
         {gene_index_array},
         a0,
@@ -312,9 +314,12 @@ GENE_STORE_QUERY = """
                stop:      int64>
               [gene_idx = 0:*:0:20]),
 
-            {dbnsfp_array}),
-          {canonical_array}),
-        {omim_array}),
+            merge({dbnsfp_array},
+                  project(apply(gene_index, empty, string(null)), empty))),
+          merge({canonical_array},
+                project(apply(gene_index, empty, string(null)), empty))),
+        merge({omim_array},
+              project(apply(gene_index, empty, string(null)), empty))),
       {gene_schema}),
     {gene_array})""".format(gene_array=GENE_ARRAY,
                             gene_schema=GENE_SCHEMA,
