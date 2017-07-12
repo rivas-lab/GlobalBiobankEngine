@@ -416,8 +416,9 @@ def get_significant_or(db, cutoff=0.01, lor=0):
 def get_significant_prot(db, cutoff=0.01, lor=0):
     cutoff = float(cutoff)
     lor = float(lor)
-    icdarr = ["FH1065","FH1001","FH1220","HC446","FH1113","FH1019","HC111","FH1002","FH1286","FH1263","HC153","HC37","FH1044","RH141","HC447","HC154","HC448","RH160","HC449","FH1262","HC430","HC39","RH134","HC450","HC451","HC453","HC454","HC67","HC452","cancer1003","HC199","HC367","HC268","cancer1060","HC292","HC455","HC456","RH107","HC457","HC306","RH32","HC69","HC212","HC458","RH9","HC459","HC281","HC412","HC179","HC220","HC462","HC461","HC460","HC185","cancer1002","HC464","HC463","RH24","RH48","HC320"]
-    return list(db.icd.find({'icd': {"$in": icdarr}, 'stats.lor': {"$lt": lor}, 'stats.pvalue': {"$lt": cutoff}}, fields={'_id': False}))
+#    icdarr = ["FH1065","FH1001","FH1220","HC446","FH1113","FH1019","HC111","FH1002","FH1286","FH1263","HC153","HC37","FH1044","RH141","HC447","HC154","HC448","RH160","HC449","FH1262","HC430","HC39","RH134","HC450","HC451","HC453","HC454","HC67","HC452","cancer1003","HC199","HC367","HC268","cancer1060","HC292","HC455","HC456","RH107","HC457","HC306","RH32","HC69","HC212","HC458","RH9","HC459","HC281","HC412","HC179","HC220","HC462","HC461","HC460","HC185","cancer1002","HC464","HC463","RH24","RH48","HC320"]
+  #  return list(db.icd.find({'icd': {"$in": icdarr}, 'stats.lor': {"$lt": lor}, 'stats.pvalue': {"$lt": cutoff}}, fields={'_id': False}))
+    return list(db.icd.find({'stats.lor': {"$lt": lor}, 'stats.pvalue': {"$lt": cutoff}}, fields={'_id': False}))
 
 
 def get_exons_in_transcript(db, transcript_id):
