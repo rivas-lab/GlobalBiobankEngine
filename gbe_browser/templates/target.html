@@ -23,9 +23,17 @@
 
                 </style>
 
+
    
     <div class="container">
         <div class="row">
+
+
+            <h1><span class="hidden-xs">Targeted</span></h1>
+
+<h5><span class="label label-info">Note:</span> Only phenotypes with more than 3000 cases are included</h5>
+        <hr/>
+
             {% if variants_in_gene %}
                 {% set chrom = variants_in_gene[0].chrom %}
                 {% include 'variant_table_icd.html' %}
