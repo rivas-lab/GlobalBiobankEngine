@@ -1,0 +1,1 @@
+Output files for cached images, html sites
