@@ -999,8 +999,8 @@ def target_page():
     try:
         passing = False
         cutoff = None
-        for p in [.00001]:
-            vars = lookups.get_significant_or(db, p, 0)
+        for p in [.001]:
+            vars = lookups. get_significant_prot(db, p, 0)
             print(vars)
             if len(vars) < 10000000000:
                 passing = True
@@ -1048,7 +1048,7 @@ def get_icd_variant_table(icd, p):
 def get_prot_variant_table(lor, p):
     db = get_db()
     significant_variant_ids = {}
-    significant_variants = lookups.get_significant_or(db,p, lor)
+    significant_variants = lookups.get_significant_prot(db,p, lor)
     for v in significant_variants:
         significant_variant_ids[v['xpos']] = {}
         significant_variant_ids[v['xpos']]['pvalue'] = v['stats'][0]['pvalue']
