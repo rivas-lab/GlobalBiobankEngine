@@ -1599,7 +1599,7 @@ def mrp(key):
             if j % 3 == 1:
 #                headerarr.append(j)
                 headeritem = header[j].decode('utf8').replace(" ","")
-                headeritem = headeritem.rstrip(header[j][-3:]).upper()
+                headeritem = headeritem.rstrip(header[j][-3:])
                 headerarr.append(headeritem)
         for line in inFiler[1:]:
             line = line.strip()
@@ -1612,7 +1612,7 @@ def mrp(key):
                 if j % 3 == 1:
                     tmp = []
                     headeritem = header[j].decode('utf8').replace(" ","")
-                    headeritem = headeritem.rstrip(header[j][-3:]).upper()
+                    headeritem = headeritem.rstrip(header[j][-3:])
                     tmp.append(headeritem.encode("ascii"))
                    # print(headeritem)
                     tmp.append(float(clust_info[j]))
