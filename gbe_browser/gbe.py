@@ -658,7 +658,7 @@ def run_mrp(lof=True, missense=True, genes=None, fdr=5, phenidarr = ['ICD1462','
 
         # Run MRP with 2 clusters, output to the MRP_out subdirectory in the gbe_browser directory
         bicarr = []
-        cmax = 6
+        cmax = 4
         fail = 0
         for tmpc in range(1,cmax+1):
             [BIC, AIC, genedat] = mrpmm(betas,se, C, annotvec, gene_return, rsids, variant_ids,tmpc,key,C, numpy.linalg.inv(C),icd, fdr=fdr, niter=51,burn=10,thinning=1,verbose=True, outpath = './MRP_out/')
