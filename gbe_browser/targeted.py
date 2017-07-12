@@ -37,7 +37,7 @@ def is_pos_def(x):
 
 # return BIC -2*log(p(Data | theta that maximizes C, Mc)) + vc log(n) : vc is the number of parameters (K+J)*(C-1), K is the number of phenotypes, J is the number of genes, C is the number of clusters
 @profile
-def mrpmm(betas,ses,vymat,annotvec,genevec,protvec,chroffvec,clusters,fout,Rphen,Rpheninv,phenidarr, Rphenuse=True, fdr=.05, niter=1000,burn=100,thinning=1,verbose=True, outpath='/Users/mrivas/'):
+def mrpmm(betas,ses,vymat,annotvec,genevec,protvec,chroffvec,clusters,fout,Rphen,Rpheninv,phenidarr, Rphenuse=True, fdr=.05, niter=1000,burn=100,thinning=1,verbose=True, protectivescan = False, outpath='/Users/mrivas/', maxlor = 0.693):
     print("Running MCMC algorithm...")
     print(sys.flags.optimize)
     epsilon = .0000000000000001
@@ -136,6 +136,8 @@ def mrpmm(betas,ses,vymat,annotvec,genevec,protvec,chroffvec,clusters,fout,Rphen
         scales[0,scaleidx] = np.power(0.2,2)
     # initialize variant membership across clusters
     deltam[0,:] = np.random.randint(0,C,m)
+    # protective candidate alleles
+    protind = numpy.zeros((niter+2,m))
     # Iterations MCMC samplers
     for iter in range(1,niter+1):
         gamma = 1
@@ -223,6 +225,16 @@ def mrpmm(betas,ses,vymat,annotvec,genevec,protvec,chroffvec,clusters,fout,Rphen
             else:
                 custm = stats.rv_discrete(name='custm',values=(xk,probmjc))
             deltam[iter,varidx] = custm.rvs(size=1)[0]
+            if protectivescan:
+                protbool = 0
+                protadverse = 0
+                for tmptidx in range(0, k):
+                    if np.sqrt(scales[iter-1,annotidx])*bc[iter-1,deltam[iter,varidx],tmptidx] >= maxlor:
+                        protadverse = 1
+                        if np.sqrt(scales[iter-1,annotidx])*bc[iter-1,deltam[iter,varidx],tmptidx] < -.1:
+                            protbool = 1
+                if protbool == 1 and protadverse == 0:
+                    protind[iter,varidx] = 1
         # d) Update b_c using a Gibbs update from a Gaussian distribution
         for cidx in range(1,C):
             cnt = 0
@@ -279,8 +291,6 @@ def mrpmm(betas,ses,vymat,annotvec,genevec,protvec,chroffvec,clusters,fout,Rphen
                     lnum2 += multivariate_normal.logpdf(betas[varidx,:],scaleprop*bc[iter,cidx,:],Vjm)
                     ldenom2 += multivariate_normal.logpdf(betas[varidx,:],np.sqrt(scales[iter-1,annotidx])*bc[iter,cidx,:],Vjm)
             ## Metropolis-Hastings step
-   #         if iter % 100 == 0:
-   #             print(probnum1,probdenom1,lnum2,ldenom2)
             if np.log(np.random.uniform(0,1,size = 1)[0]) < min(0, (lnum2 + probnum1) - (probdenom1 + ldenom2)):
                 acceptmh2[annotidx] += 1
                 scales[iter,annotidx] = np.power(scaleprop,2)
@@ -335,6 +345,15 @@ def mrpmm(betas,ses,vymat,annotvec,genevec,protvec,chroffvec,clusters,fout,Rphen
             mcout.write('\t'  + str(probclustervar))
         mcout.write('\n')
     mcout.close()
+    ## Write output for protective scan
+    if protectivescan:
+        protout = open(outpath + str(fout) + '.mcmc.protective','w+')
+        for varidx in range(0,m):
+            protout.write(chroffvec[varidx] + '\t' + annotvec[varidx] + '\t' + protvec[varidx] + '\t' + genevec[varidx] + '\t' + str(genevec[varidx] + ':' + annotvec[varidx] + ':' +  protvec[varidx]))
+            protdattmp = numpy.where(protind[burn+1:niter+1,varidx] == 1)[0].shape[0]/(niter - burn)
+            protout.write('\t'  + str(protdattmp))
+            protout.write('\n')
+        protout.close()
     fdrout = open(outpath + str(fout) + '.fdr','w+')
     print(str(fdr),file = fdrout)
     varprobnull = []
@@ -356,10 +375,7 @@ def mrpmm(betas,ses,vymat,annotvec,genevec,protvec,chroffvec,clusters,fout,Rphen
             print(varfdridsort[i], file = fdrout)
     fdrout.close()
     rejectionrate = rejectmh1_postburnin/(acceptmh1_postburnin + rejectmh1_postburnin)
-  #  print(rejectmh1_postburnin,acceptmh1_postburnin)
     logger.info(("Your acceptance rate is %2.2f")  % ( rejectmh1_postburnin/(acceptmh1_postburnin + rejectmh1_postburnin)))
-  #  print(rejectmh2_postburnin,acceptmh2_postburnin)
-  #  print(rejectmh3_postburnin,acceptmh3_postburnin)
     genedatm50 = {}
     genedatl95 = {}
     genedatu95 = {}
@@ -393,9 +409,6 @@ def mrpmm(betas,ses,vymat,annotvec,genevec,protvec,chroffvec,clusters,fout,Rphen
                 print(Theta0[jidx,kidx], file = tmpbc,end = ' ')
             print('\n',end='',file=tmpbc)
         tmpbc.close()
-        pc[0,0,:]
-    #    print('geneset', np.mean(pcj[burn+1:niter+1:thinning,:],axis=0))
-        # initialize pcj (proportions for each gene j)
         genesdict = {}
         for geneidx in range(0,genenum):
             genesdict[genemap[geneidx]] = genemap[geneidx]
@@ -406,7 +419,6 @@ def mrpmm(betas,ses,vymat,annotvec,genevec,protvec,chroffvec,clusters,fout,Rphen
     mean = numpy.mean(alpha[burn+1:niter+1:thinning,0],axis = 0)
     l95ci = numpy.percentile(alpha[burn+1:niter+1:thinning,0],2.5, axis = 0)
     u95ci = numpy.percentile(alpha[burn+1:niter+1:thinning,0],97.5, axis = 0)
-   # print(mean)
     print(("%2.2f\t%2.2f\t%2.2f") % (mean,l95ci,u95ci), file = alphaout)
     alphaout.close()
     maxllkiter = np.max(maxloglkiter[burn+1:niter:thinning,0])
@@ -423,8 +435,6 @@ def mrpmm(betas,ses,vymat,annotvec,genevec,protvec,chroffvec,clusters,fout,Rphen
             print(("\t%2.2f") % (genedatu95[genekey][i]), file = geneout, end = '')
         geneout.write("\n")
     geneout.close()
-   # print((k+genenum)*(C-1)*np.log(m), k,genenum,C,m,np.log(m), maxllkiter)
-   # print(maxloglkiter[burn+1:niter:thinning,0])
     return [BIC,AIC,genedatm50]
 
 def targeted(betas,ses,vymat,annotvec,genevec,protvec,chroffvec,clusters,fout,Rphen,Rpheninv,Rphenuse=True,niter=1000,burn=100,thinning=1,verbose=True, maxlor = 0.693):
