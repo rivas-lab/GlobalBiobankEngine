@@ -455,6 +455,10 @@ function columnChart() {
 	  .style("stroke", "black")
           .style("stroke-width", 2)
           .style("opacity",".5");
+	.on("mouseover", function(d){return tooltip.style("visibility", "visible").text("BETA:" + d[1] + "; " + "L95BETA: " + Number((d[2]).toFixed(2))) + "; " + "U95BETA: " + Number((d[3]).toFixed(2)));})
+        .on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
+        .on("mouseout", function(){return tooltip.style("visibility", "hidden");})
+
 //          .attr("x1", function(d){return X(d); })
  //         .attr("y1", function(d, i){ return d[2] })
   //        .attr("x2", function(d){return X(d) + 1; })
