@@ -1,3 +1,4 @@
+
 {% extends "layout.html" %}
 {% block body %}
 
@@ -112,6 +113,16 @@ body {
  var margin = {top: 30, right: 50, bottom: 50, left: 300},
       width = 600;
       height = 500;
+ var tooltip = d3.select("body")
+            .append("div")
+            .attr('text-anchor', 'middle')
+            .style("position", "absolute")
+            .style("z-index", "10")
+            .style("visibility", "hidden")
+            .style("background", "#E3EAF0")
+            .style("border-radius", "8px")
+            .style("border", "#C6D6E1")
+            .style("padding", "4px");
 
 var y = d3.scale.ordinal()
     .rangeRoundBands([height, 0], .1);
@@ -232,6 +243,14 @@ var y = d3.scale.ordinal()
 
 var x = d3.scale.linear()
     .rangeRound([0, width]);
+
+ var tooltip = d3.select("body")
+            .append("div")
+            .style("position", "absolute")
+            .style("z-index", "10")
+            .style("visibility", "hidden")
+            .text("a simple tooltip");
+
 
 var color = d3.scale.ordinal()
     .range(["#8C1515", "#B26F16", "#E98300", "#EAAB00", "#009B76", "#007C92", "#0098DB", "#53284F"]);
@@ -379,6 +398,13 @@ function columnChart() {
       xAxis = d3.svg.axis().scale(xScale);
   //            .tickFormat(function(d, i) { return d[0]; })
    //           .orient("bottom");
+ var tooltip = d3.select("body")
+            .append("div")
+            .style("position", "absolute")
+            .style("z-index", "10")
+            .style("visibility", "hidden")
+            .text("a simple tooltip");
+
 
   function chart(selection) {
     selection.each(function(data) {
@@ -429,7 +455,10 @@ function columnChart() {
           .attr("x", function(d) { return X(d); })
           .attr("y", function(d, i) { return d[1] < 0 ? Y0() : Y(d); })
           .attr("width", xScale.rangeBand())
-          .attr("height", function(d, i) { return Math.abs( yScale(d[1]) - Y0() ); });
+          .attr("height", function(d, i) { return Math.abs( yScale(d[1]) - Y0() ); })
+	  .on("mouseover", function(d){return tooltip.style("visibility", "visible").style("background", "#E3EAF0").style("border-radius", "8px").style("border", "#C6D6E1").style("padding", "4px").html("BETA:" + d[1] + "<br> " + "L95BETA: " + Number((d[2]).toFixed(2)) + "<br>" + "U95BETA: " + Number((d[3]).toFixed(2)));})
+          .on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
+          .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
       bar.enter().append("line")
 	  .style("stroke", "black")
           .style("stroke-width", 2)
@@ -455,9 +484,7 @@ function columnChart() {
 	  .style("stroke", "black")
           .style("stroke-width", 2)
           .style("opacity",".5");
-	.on("mouseover", function(d){return tooltip.style("visibility", "visible").text("BETA:" + d[1] + "; " + "L95BETA: " + Number((d[2]).toFixed(2))) + "; " + "U95BETA: " + Number((d[3]).toFixed(2)));})
-        .on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
-        .on("mouseout", function(){return tooltip.style("visibility", "hidden");})
+
 
 //          .attr("x1", function(d){return X(d); })
  //         .attr("y1", function(d, i){ return d[2] })
