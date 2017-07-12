@@ -366,15 +366,15 @@ d3.select("#cluster_".concat("{{ n[0] }}"))
 
 function columnChart() {
   var margin = {top: 30, right: 10, bottom: 50, left: 50},
-      width = 420,
-      height = 420,
+      width = 250,
+      height = 250,
       xRoundBands = 0.2,
       xValue = function(d) { return d[0]; },
       yValue = function(d) { return d[1]; },
       ylValue = function(d) { return d[2]; }, 
       yuValue = function(d) { return d[3]; },
       xScale = d3.scale.ordinal(),
-      yScale = d3.scale.linear().domain([-2,2]),
+      yScale = d3.scale.linear().domain([-3,3]),
       yAxis = d3.svg.axis().scale(yScale).orient("left"),
       xAxis = d3.svg.axis().scale(xScale);
   //            .tickFormat(function(d, i) { return d[0]; })
@@ -398,7 +398,7 @@ function columnChart() {
       // Update the y-scale.
       yScale
           //.domain(d3.extent(data.map(function(d) { return d[1];} )))
-          .domain([-2,2])
+          .domain([-4,4])
           .range([height - margin.top - margin.bottom, 0])
           .nice();
 
