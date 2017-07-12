@@ -38,7 +38,7 @@ class QueryGenome(object):
         self.debug = debug
 
         # Set up database connection
-        client = MongoClient('localhost', 27017)
+        client = MongoClient('mongodb', 27017)
         self.db = client.gbe
 
     """
