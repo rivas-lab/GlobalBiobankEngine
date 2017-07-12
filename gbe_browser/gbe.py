@@ -638,7 +638,6 @@ def run_graph():
 
 def run_mrp(lof=True, missense=True, genes=None, fdr=5, phenidarr = ['ICD1462','ICD1463']):
     fdr = int(fdr)/100
-    key = str(random.getrandbits(128))
     annotations = []
     
     # Add in the selected annotations to the category list
@@ -646,7 +645,6 @@ def run_mrp(lof=True, missense=True, genes=None, fdr=5, phenidarr = ['ICD1462','
         annotations.append('lof_variant')
     if missense:
         annotations.append('missense_variant')
-
     # If the input file has genes
     if genes != None:
         # Find variants with the given annotation
@@ -654,7 +652,7 @@ def run_mrp(lof=True, missense=True, genes=None, fdr=5, phenidarr = ['ICD1462','
 
         # Generate relevant files
         betas, se, pvalues, annotations, protein_annotations, variant_ids, icd, gene_return, rsids, alts, allele_frequencies = b.query_genome(genes,phenidarr)
-        
+        key = '_'.join(annotations) + '_' + '_'.join(phenidarr) + '_' + '_'.join(genes)
         # Reshape betas from genome query
         C = numpy.matlib.eye(betas.shape[1])
         annotvec = [str(annotations[i].strip('"').strip('[').strip(']').strip("'")) for i in range(0,len(annotations))]
@@ -693,16 +691,16 @@ def run_mrp(lof=True, missense=True, genes=None, fdr=5, phenidarr = ['ICD1462','
         clustvalue = 1
         if lbf > 1 and (lbf - lbf2) > 1 and lbf2 > 1:
 #        if lbf > 1:
-            [BIC, AIC, genedat] = mrpmm(betas,se, C, annotvec, gene_return, rsids, variant_ids,clustminval,key,C, numpy.linalg.inv(C), icd, fdr=fdr, niter=201,burn=100,thinning=1,verbose=True, outpath = './MRP_out/')
+            [BIC, AIC, genedat] = mrpmm(betas,se, C, annotvec, gene_return, rsids, variant_ids,clustminval,key,C, numpy.linalg.inv(C), icd, fdr=fdr, niter=201,burn=100,thinning=1,verbose=True, outpath = './MRP_out/', protectivescan=True)
             print("log bayes factor: ",lbf)
             clustvalue = clustminval
         elif lbf2 > 1:
             clustminval = 2
-            [BIC, AIC, genedat] = mrpmm(betas,se, C, annotvec, gene_return, rsids, variant_ids,clustminval,key,C, numpy.linalg.inv(C), icd, fdr=fdr, niter=201,burn=100,thinning=1,verbose=True, outpath = './MRP_out/')
+            [BIC, AIC, genedat] = mrpmm(betas,se, C, annotvec, gene_return, rsids, variant_ids,clustminval,key,C, numpy.linalg.inv(C), icd, fdr=fdr, niter=201,burn=100,thinning=1,verbose=True, outpath = './MRP_out/', protectivescan=True)
             print("log bayes factor: ",lbf)
             clustvalue = clustminval
         else:
-            [BIC, AIC, genedat] = mrpmm(betas,se, C, annotvec, gene_return, rsids, variant_ids,1,key,C, numpy.linalg.inv(C), icd, fdr=fdr, niter=51,burn=10,thinning=1,verbose=True, outpath = './MRP_out/')
+            [BIC, AIC, genedat] = mrpmm(betas,se, C, annotvec, gene_return, rsids, variant_ids,1,key,C, numpy.linalg.inv(C), icd, fdr=fdr, niter=51,burn=10,thinning=1,verbose=True, outpath = './MRP_out/', protectivescan=True)
         print(bicarr)
         print(icd)
         print("genedat",genedat)
@@ -1549,11 +1547,11 @@ def mrp(key):
     if not check_credentials():
         return redirect(url_for('login'))
     db = get_db()
-
     with open("./MRP_out/"+key+".mcmc.posteriors", "r") as inFile:
         probabilities = []
         admixture_data = []
         variants = []
+        nullmembership = []
         for line in inFile.readlines():
             line = line.strip()
             var_info = line.split("\t")
@@ -1565,9 +1563,12 @@ def mrp(key):
             variant["varid"] = var
             for j in range(5, len(var_info)):
                 variant["%s" % (j-4)] = var_info[j]
+            if float(var_info[5]) >= .99:
+                        continue
+            nullmembership.append(float(var_info[5]))
             variants.append(variant)
-           # print("variant",variant)
-       # print("variants",variants)
+        idxnewarr = [b[0] for b in sorted(enumerate(nullmembership),key=lambda i:i[1], reverse = True)]
+        variants = [variants[i] for i in idxnewarr]
         admixture_data.append(variants)
     with open("./MRP_out/"+key+".mcmc.gene.posteriors", "r") as inFile:
         admixture_datagene = []
