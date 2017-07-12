@@ -54,7 +54,7 @@
 }
 
 .dl-horizontal dt {
-    white-space: pre-line;
+    white-space: normal;
 }
 
 .tt-query {
@@ -115,7 +115,6 @@ th.allele_frequency_column {
     position: relative;
     z-index: 2;
     cursor: pointer;
-    white-space: pre-line;
 }
 
 /* Hide the tooltip content by default */
@@ -131,7 +130,7 @@ th.allele_frequency_column {
 /* Position tooltip above the element */
 [data-tooltip]:before {
     position: absolute;
-    white-space: pre-line;
+    white-space: pre;
     bottom: 150%;
     left: 50%;
     margin-bottom: 5px;
@@ -186,5 +185,4 @@ TODO: come up with a better way to position tooltip
     -webkit-transform: translate(-5px, 7px);
     -moz-transform:    translate(-5px, 7px);
     transform:         translate(-5px, 7px);
-    white-space: pre-line;
 }
