@@ -376,8 +376,8 @@ console.log(data);
 d3.select("#cluster_".concat("{{ n[0] }}"))
   .datum(data)
     .call(columnChart()
-      .width(600)
-      .height(400)
+      .width(960)
+      .height(500)
       .x(function(d, i) { return String(d[0]); })
      // .x(function(d, i) { return i; })
       .y(function(d, i) { return d[1]; }));
