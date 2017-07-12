@@ -115,7 +115,6 @@ th.allele_frequency_column {
     position: relative;
     z-index: 2;
     cursor: pointer;
-    white-space: normal;
 }
 
 /* Hide the tooltip content by default */
@@ -186,5 +185,4 @@ TODO: come up with a better way to position tooltip
     -webkit-transform: translate(-5px, 7px);
     -moz-transform:    translate(-5px, 7px);
     transform:         translate(-5px, 7px);
-    white-space: normal;
 }
