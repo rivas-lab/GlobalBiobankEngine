@@ -16,3 +16,4 @@ scipy
 rpy2
 profilehooks==1.9.0
 #rstan
+backports.weakref
