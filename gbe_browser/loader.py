@@ -399,6 +399,7 @@ class Loader:
     @staticmethod
     def make_fifo():
         fifo_dir = tempfile.mkdtemp()
+        os.chmod(fifo_dir, 0755)
         fifo_name = os.path.join(fifo_dir, 'fifo')
         os.mkfifo(fifo_name)
 
