@@ -353,7 +353,7 @@ TRANSCRIPT_STORE_QUERY = """
                             24,
                             iif(substr(a0, 3, 4) = 'M',
                                 25,
-                                int64(substr(a0, 3, 5))))),
+                                dcast(substr(a0, 3, 5), int64(null))))),
             start,  int64(a3) + 1,
             stop,   int64(a4) + 1,
             strand, a6),
