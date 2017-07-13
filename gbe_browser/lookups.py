@@ -376,6 +376,31 @@ def get_variants_chrom_pos(db, chrom, start, stop=None):
         add_ann=True)
 
 
+def get_variant_chrom_pos(db, chrom, start, stop=None):
+    """
+    e.g.,
+    UI:
+      https://biobankengine.stanford.edu/variant/1-39381448
+
+    MongoDB:
+      db.variants.find({'xpos': '1039381448'}, fields={'_id': False})
+
+    SciDB:
+      between(vairant, 1, 39381448,
+                       1, 39381448);
+    """
+    variants = get_variants_chrom_pos(db, start, stop)
+    variant = variants[0] if len(variants) else None
+    if variant is None or 'rsid' not in variant:
+        return variant
+    if variant['rsid'] == '.' or variant['rsid'] is None:
+        raise NotImplementedError()  # TODO
+        # rsid = db.dbsnp.find_one({'xpos': xpos})
+        # if rsid:
+        #     variant['rsid'] = 'rs%s' % rsid['rsid']
+    return variant
+
+
 def get_variant(db, xpos):
     """
     e.g.,
@@ -389,16 +414,7 @@ def get_variant(db, xpos):
       between(vairant, 1, 39381448,
                        1, 39381448);
     """
-    variants = get_variants_chrom_pos(db, int(xpos / xoff), int(xpos % xoff))
-    variant = variants[0] if len(variants) else None
-    if variant is None or 'rsid' not in variant:
-        return variant
-    if variant['rsid'] == '.' or variant['rsid'] is None:
-        raise NotImplementedError()  # TODO
-        # rsid = db.dbsnp.find_one({'xpos': xpos})
-        # if rsid:
-        #     variant['rsid'] = 'rs%s' % rsid['rsid']
-    return vairant
+    return get_variant_chrom_pos(db, int(xpos / xoff), int(xpos % xoff))
 
 
 def get_variants_in_gene(db, gene_id):
