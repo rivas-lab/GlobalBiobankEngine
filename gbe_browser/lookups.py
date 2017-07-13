@@ -389,7 +389,7 @@ def get_variant_chrom_pos(db, chrom, start, stop=None):
       between(vairant, 1, 39381448,
                        1, 39381448);
     """
-    variants = get_variants_chrom_pos(db, start, stop)
+    variants = get_variants_chrom_pos(db, chrom, start, stop)
     variant = variants[0] if len(variants) else None
     if variant is None or 'rsid' not in variant:
         return variant
