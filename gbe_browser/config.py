@@ -7,7 +7,7 @@ import scidbpy
 # == =
 
 SCIDB_INSTANCE_NUM = 2
-GBE_DATA_PATH = '/home/scidb/GlobalBiobankEngine/gbe_data'
+GBE_DATA_PATH = '/opt/biobankengine/GlobalBioBankEngineRepo/gbe_data'
 
 
 # -- -
