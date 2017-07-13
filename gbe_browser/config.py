@@ -671,6 +671,15 @@ VARIANT_X_ICD_X_INFO_SCHEMA = scidbpy.schema.Schema.fromstring("""
 # -- - Lookup: GENE - --
 # -- -
 
+GENE_BETWEEN_QUERY = """
+  cross_join(
+    between({gene_array}, null, {{chrom}}, null    , {{start}},
+                          null, {{chrom}}, {{stop}}, null),
+    {gene_index_array},
+    {gene_array}.gene_idx,
+    {gene_index_array}.gene_idx)""".format(gene_array=GENE_ARRAY,
+                                           gene_index_array=GENE_INDEX_ARRAY)
+
 GENE_LOOKUP_SCHEMA = scidbpy.schema.Schema.fromstring(
     GENE_SCHEMA.replace(
         '>',
@@ -702,8 +711,8 @@ EXON_TRANSCRIPT_LOOKUP_SCHEMA = scidbpy.schema.Schema.fromstring(
 # -- - Lookup: VARIANT - --
 # -- -
 VARIANT_LOOKUP_QUERY = """
-  between({variant_array}, {{chrom}}, {{pos}},
-                     {{chrom}}, {{pos}})""".format(
+  between({variant_array}, {{chrom}}, {{start}},
+                           {{chrom}}, {{stop}})""".format(
     variant_array=VARIANT_ARRAY)
 
 VARIANT_MULTI_LOOKUP_QUERY = """

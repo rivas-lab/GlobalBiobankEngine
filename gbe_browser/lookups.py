@@ -204,6 +204,31 @@ def get_gene(db, gene_id):
             fetch=True))[0]
 
 
+def get_genes_in_region(db, chrom, start, stop):
+    """
+    e.g.,
+    UI:
+      https://biobankengine.stanford.edu/region/16-50727514-50766988
+
+    MongoDB:
+      db.genes.find({'xstart': {'$lte': 1650766988},
+                     'xstop' : {'$gte': 1650727514}}, fields={'_id': False})
+
+    SciDB:
+      cross_join(between(gene, null, 16, null,     50727514,
+                               null, 16, 50766988, null),
+                 gene_index,
+                 gene.gene_idx,
+                 gene_index.gene_idx);
+    """
+    return numpy2dict(
+        db.iquery(
+            config.GENE_BETWEEN_QUERY.format(
+                chrom=chrom, start=start, stop=stop),
+            schema=config.GENE_LOOKUP_SCHEMA,
+            fetch=True))
+
+
 def get_transcript(db, transcript_id):
     """
     e.g.,
@@ -326,7 +351,7 @@ def get_variants_by_id(db, variant_ids):
     return variants
 
 
-def get_variant_chrom_pos(db, chrom, pos):
+def get_variants_chrom_pos(db, chrom, start, stop=None):
     """
     e.g.,
     UI:
@@ -339,21 +364,16 @@ def get_variant_chrom_pos(db, chrom, pos):
       between(vairant, 1, 39381448,
                        1, 39381448);
     """
-    variants = numpy2dict(
-        db.iquery(
-            config.VARIANT_LOOKUP_QUERY.format(chrom=chrom, pos=pos),
-            schema=config.VARIANT_LOOKUP_SCHEMA,
-            fetch=True))
-    variants = format_variants(variants, add_ann=True)
-    variant = variants[0] if len(variants) else None
-    if variant is None or 'rsid' not in variant:
-        return variant
-    if variant['rsid'] == '.' or variant['rsid'] is None:
-        raise NotImplementedError()  # TODO
-        # rsid = db.dbsnp.find_one({'xpos': xpos})
-        # if rsid:
-        #     variant['rsid'] = 'rs%s' % rsid['rsid']
-    return variant
+    if stop is None:
+        stop = start
+    return format_variants(
+        numpy2dict(
+            db.iquery(
+                config.VARIANT_LOOKUP_QUERY.format(
+                    chrom=chrom, start=start, stop=stop),
+                schema=config.VARIANT_LOOKUP_SCHEMA,
+                fetch=True)),
+        add_ann=True)
 
 
 def get_variant(db, xpos):
@@ -369,7 +389,16 @@ def get_variant(db, xpos):
       between(vairant, 1, 39381448,
                        1, 39381448);
     """
-    return get_variant_chrom_pos(db, int(xpos / xoff), int(xpos % xoff))
+    variants = get_variants_chrom_pos(db, int(xpos / xoff), int(xpos % xoff))
+    variant = variants[0] if len(variants) else None
+    if variant is None or 'rsid' not in variant:
+        return variant
+    if variant['rsid'] == '.' or variant['rsid'] is None:
+        raise NotImplementedError()  # TODO
+        # rsid = db.dbsnp.find_one({'xpos': xpos})
+        # if rsid:
+        #     variant['rsid'] = 'rs%s' % rsid['rsid']
+    return vairant
 
 
 def get_variants_in_gene(db, gene_id):
@@ -434,6 +463,24 @@ def get_variants_in_transcript(db, transcript_id):
         transcript_id=transcript_id)
 
 
+def get_variants_in_region(db, chrom, start, stop):
+    """
+    e.g.,
+    UI:
+      https://biobankengine.stanford.edu/region/16-50727514-50766988
+
+    MongoDB:
+      db.variants.find({'xpos': {'$lte': 1650766988},
+                                 '$gte': 1650727514}}, fields={'_id': False})
+
+    SciDB:
+      between(variant, 16, 50727514,
+                       16, 50766988);
+    """
+    # TODO add SEARCH_LIMIT
+    return get_variants_chrom_pos(db, chrom, start, stop)
+
+
 # -- -
 # -- - COVERAGE - --
 # -- -
@@ -448,8 +495,27 @@ def get_coverage_for_transcript(db, xstart, xstop=None):
                             fields={'_id': False})
 
     SciDB:
-      between(coverage, ,
-                        , )
+      between(coverage, 1, 1270607,
+                        1, 1284543);
+
+    """
+    # TODO has_coverage filter
+    return get_coverage_for_bases(db, xstart, xstop)
+
+
+def get_coverage_for_bases(db, xstart, xstop=None):
+    """
+    e.g.,
+    UI:
+      https://biobankengine.stanford.edu/region/16-50727514-50766988
+
+    MongoDB:
+      db.base_coverage.find({'xpos': {'$gte': xstart, '$lte': xstop}},
+                            fields={'_id': False})
+
+    SciDB:
+      between(coverage, 16, 50727514,
+                        16,  50766988);
     """
     if xstop is None:
         xstop = xstart
