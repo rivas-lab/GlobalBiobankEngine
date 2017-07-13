@@ -94,8 +94,8 @@ EXON_PADDING = 50
 # Load default config and override config from an environment variable
 #test
 app.config.update(dict(
-    DB_HOST='scidb',
-    DB_PORT=8080,
+    ## Set SCIDB_URL='http://localhost:8080' environment variable
+    # SCIDB_URL='http://localhost:8080',
     DEBUG=True,
     SECRET_KEY='development key',
     LOAD_DB_PARALLEL_PROCESSES = 8,  # contigs assigned to threads, so good to make this a factor of 24 (eg. 2,3,4,6,8)
@@ -127,8 +127,7 @@ def connect_db():
     """
     Connects to the specific database.
     """
-    return scidbpy.connect('http://{host}:{port}'.format(
-        host=app.config['DB_HOST'], port=app.config['DB_PORT']))
+    return scidbpy.connect(app.config.get('SCIDB_URL', None))
 
 
 def parse_tabix_file_subset(tabix_filenames, subset_i, subset_n, record_parser):
