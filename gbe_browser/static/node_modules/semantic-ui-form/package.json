@@ -1,0 +1,82 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "semantic-ui-form",
+        "scope": null,
+        "escapedName": "semantic-ui-form",
+        "name": "semantic-ui-form",
+        "rawSpec": "",
+        "spec": "latest",
+        "type": "tag"
+      },
+      "/Users/mrivas/git/browsertmp/GlobalBiobankEngine/gbe_browser/static"
+    ]
+  ],
+  "_from": "semantic-ui-form@latest",
+  "_id": "semantic-ui-form@2.2.10",
+  "_inCache": true,
+  "_location": "/semantic-ui-form",
+  "_nodeVersion": "5.7.0",
+  "_npmOperationalInternal": {
+    "host": "packages-12-west.internal.npmjs.com",
+    "tmp": "tmp/semantic-ui-form-2.2.10.tgz_1490784752626_0.799544126028195"
+  },
+  "_npmUser": {
+    "name": "semantic-bot",
+    "email": "bot@semantic-ui.com"
+  },
+  "_npmVersion": "3.7.5",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "semantic-ui-form",
+    "scope": null,
+    "escapedName": "semantic-ui-form",
+    "name": "semantic-ui-form",
+    "rawSpec": "",
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "https://registry.npmjs.org/semantic-ui-form/-/semantic-ui-form-2.2.10.tgz",
+  "_shasum": "1c8eee9f48f2d7cb859773f64235ab8ba86a0736",
+  "_shrinkwrap": null,
+  "_spec": "semantic-ui-form",
+  "_where": "/Users/mrivas/git/browsertmp/GlobalBiobankEngine/gbe_browser/static",
+  "author": {
+    "name": "Jack Lukic",
+    "email": "jack@semantic-ui.com"
+  },
+  "bugs": {
+    "url": "https://github.com/Semantic-Org/Semantic-UI/issues"
+  },
+  "dependencies": {},
+  "description": "Single component release of form",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "shasum": "1c8eee9f48f2d7cb859773f64235ab8ba86a0736",
+    "tarball": "https://registry.npmjs.org/semantic-ui-form/-/semantic-ui-form-2.2.10.tgz"
+  },
+  "gitHead": "dc175455ab8ca40dd6bebcb6fe6cf703976758b5",
+  "homepage": "http://www.semantic-ui.com",
+  "license": "MIT",
+  "maintainers": [
+    {
+      "name": "semantic-bot",
+      "email": "bot@semantic-ui.com"
+    }
+  ],
+  "name": "semantic-ui-form",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Semantic-Org/UI-Form.git"
+  },
+  "scripts": {},
+  "title": "Semantic UI - Form",
+  "version": "2.2.10"
+}
