@@ -369,6 +369,9 @@ class Loader:
         elif 'HC' in name:
             prefix = 'HC'
             intadd = 70
+        elif 'MED' in name:
+            prefix = 'HC'
+            intadd = 80
 
         # Figure out suffix
         suffix = parts[1].split(
