@@ -686,6 +686,27 @@ GENE_LOOKUP_SCHEMA = scidbpy.schema.Schema.fromstring(
         ',{}>'.format(GENE_INDEX_SCHEMA[GENE_INDEX_SCHEMA.index('<') + 1:
                                         GENE_INDEX_SCHEMA.index('>')])))
 
+GENE_ID_BY_NAME_QUERY = """
+  project(
+    cross_join(
+      {gene_index_array},
+      filter({gene_array}, gene_name = '{{gene_name}}'),
+      {gene_index_array}.gene_idx,
+      {gene_array}.gene_idx),
+    gene_id)""".format(gene_array=GENE_ARRAY,
+                       gene_index_array=GENE_INDEX_ARRAY)
+
+GENE_ID_BY_NAME_SCHEMA = scidbpy.schema.Schema.fromstring(
+    '<gene_id:string>[notused]')
+
+GENE_ID_EXISTS_QUERY = """
+  aggregate(
+    filter({gene_index_array}, gene_id = '{{gene_id}}'),
+    count(*))""".format(gene_index_array=GENE_INDEX_ARRAY)
+
+GENE_ID_EXISTS_SCHEMA = scidbpy.schema.Schema.fromstring(
+    '<count:int64>[notused]')
+
 TRANSCRIPT_LOOKUP_SCHEMA = scidbpy.schema.Schema.fromstring(
     TRANSCRIPT_SCHEMA.replace(
         '>',
@@ -720,6 +741,16 @@ VARIANT_MULTI_LOOKUP_QUERY = """
     variant_array=VARIANT_ARRAY)
 
 VARIANT_LOOKUP_SCHEMA = scidbpy.schema.Schema.fromstring(VARIANT_SCHEMA)
+
+VARIANT_CHROM_POS_BY_RSID_QUERY = """
+  project(
+    filter({variant_array}, rsid = {{rsid}}),
+    rsid)""".format(variant_array=VARIANT_ARRAY)
+
+VARIANT_CHROM_POS_BY_RSID_SCHEMA = scidbpy.schema.Schema.fromstring("""
+  <rsid:int64>
+  [chrom = 1:25:0:1;
+   pos   = 0:*:0:10000000]""")
 
 VARIANT_GENE_LOOKUP = """
   cross_join(

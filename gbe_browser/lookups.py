@@ -1,12 +1,30 @@
 import itertools
 import scidbpy
 
-
 import config
 import utils
 
 
-xoff = int(1e9)
+UNSUPPORTED_QUERIES = set((
+    'CMD1G',
+    'CMH9',
+    'CMPD4',
+    'ENSG00000155657',
+    'ENST00000342175',
+    'ENST00000342992',
+    'ENST00000359218',
+    'ENST00000460472',
+    'ENST00000589042',
+    'ENST00000591111',
+    'FLJ32040',
+    'LGMD2J',
+    'MYLK5',
+    'TMD',
+    'TTN',
+))
+
+XOFF = int(1e9)
+RSID_FORMAT = '{chrom}-{pos}-{ref}-{alt}'
 
 
 def numpy2dict(ar):
@@ -27,8 +45,11 @@ def format_variants(variants, add_ann=False, gene_id=None, transcript_id=None):
     for variant in variants:
         variant['rsid'] = ('rs{}'.format(variant['rsid'])
                            if variant['rsid'] else '.')
-        variant['variant_id'] = '{}-{}-{}-{}'.format(
-            variant['chrom'], variant['pos'], variant['ref'], variant['alt'])
+        variant['variant_id'] = RSID_FORMAT.format(
+            chrom=variant['chrom'],
+            pos=variant['pos'],
+            ref=variant['ref'],
+            alt=variant['alt'])
 
         anns = [dict(zip(config.VARIANT_CSQ, csq.split('|')))
                 for csq in variant['csq'].split(',')]
@@ -55,8 +76,8 @@ def format_variants(variants, add_ann=False, gene_id=None, transcript_id=None):
 
 def format_genes(genes):
     for gene in genes:
-        gene['xstart'] = gene['chrom'] * xoff + gene['start']
-        gene['xstop'] = gene['chrom'] * xoff + gene['stop']
+        gene['xstart'] = gene['chrom'] * XOFF + gene['start']
+        gene['xstop'] = gene['chrom'] * XOFF + gene['stop']
     return genes
 
 
@@ -126,7 +147,7 @@ def get_variant_icd(db, xpos):
     return numpy2dict(
         db.iquery(
             config.ICD_CHROM_POS_LOOKUP_QUERY.format(
-                chrom=int(xpos / xoff), pos=int(xpos % xoff)),
+                chrom=int(xpos / XOFF), pos=int(xpos % XOFF)),
             schema=config.ICD_X_INFO_SCHEMA,
             fetch=True))
 
@@ -204,6 +225,26 @@ def get_gene(db, gene_id):
             fetch=True))[0]
 
 
+def exists_gene_id(db, gene_id):
+    """
+    Search bar
+
+    MongoDB:
+      db.genes.find({'gene_id': 'ENSG00000107404'}, fields={'_id': False})
+
+    SciDB:
+      aggregate(
+        filter(gene_index, gene_id = 'ENSG00000198734'),
+        count(*));
+    """
+    return bool(
+        db.iquery(
+            config.GENE_ID_EXISTS_QUERY.format(gene_id=gene_id),
+            schema=config.GENE_ID_EXISTS_SCHEMA,
+            fetch=True,
+            atts_only=True)[0]['count']['val'])
+
+
 def get_genes_in_region(db, chrom, start, stop):
     """
     e.g.,
@@ -227,6 +268,34 @@ def get_genes_in_region(db, chrom, start, stop):
                 chrom=chrom, start=start, stop=stop),
             schema=config.GENE_LOOKUP_SCHEMA,
             fetch=True))
+
+
+def get_gene_id_by_name(db, gene_name):
+    """
+    Search bar
+
+    MondoDB:
+      db.genes.find_one({'gene_name': 'F5'},   fields={'_id': False})
+      db.genes.find_one({'other_names': 'F5'}, fields={'_id': False})
+
+    SciDB:
+      project(
+        cross_join(
+          gene_index,
+          filter(gene, gene_name = 'F5'),
+          gene_index.gene_idx,
+          gene.gene_idx),
+        gene_id);
+    """
+    # TODO other_names
+    res = db.iquery(
+        config.GENE_ID_BY_NAME_QUERY.format(gene_name=gene_name),
+        schema=config.GENE_ID_BY_NAME_SCHEMA,
+        fetch=True,
+        atts_only=True)
+    if not res:
+        return None
+    return res[0]['gene_id']['val']
 
 
 def get_transcript(db, transcript_id):
@@ -339,7 +408,7 @@ def get_variants_by_id(db, variant_ids):
     """
     chrom_pos_cond = ' or '.join(
         'chrom = {chrom} and pos = {pos}'.format(
-            chrom=int(xpos / xoff), pos=int(xpos % xoff))
+            chrom=int(xpos / XOFF), pos=int(xpos % XOFF))
         for xpos in variant_ids)
     variants = numpy2dict(
         db.iquery(
@@ -349,6 +418,36 @@ def get_variants_by_id(db, variant_ids):
             fetch=True))
     variants = format_variants(variants)
     return variants
+
+
+def get_variants_chrom_pos_by_rsid(db, rsid):
+    """
+    Search bar
+
+    MongoDB:
+      db.variants.find({'rsid': 'rs6025'}, fields={'_id': False}))
+
+    SciDB:
+      project(
+        filter(variant, rsid = 6025),
+        rsid);
+    """
+    if not rsid.startswith('rs'):
+        return None
+    rsid_int = None
+    try:
+        rsid_int = int(rsid.lstrip('rs'))
+    except Exception:
+        return None
+
+    res = db.iquery(
+        config.VARIANT_CHROM_POS_BY_RSID_QUERY.format(rsid=rsid_int),
+        schema=config.VARIANT_CHROM_POS_BY_RSID_SCHEMA,
+        fetch=True)
+    if not res:
+        return None
+
+    return res
 
 
 def get_variants_chrom_pos(db, chrom, start, stop=None):
@@ -414,7 +513,7 @@ def get_variant(db, xpos):
       between(vairant, 1, 39381448,
                        1, 39381448);
     """
-    return get_variant_chrom_pos(db, int(xpos / xoff), int(xpos % xoff))
+    return get_variant_chrom_pos(db, int(xpos / XOFF), int(xpos % XOFF))
 
 
 def get_variants_in_gene(db, gene_id):
@@ -537,9 +636,111 @@ def get_coverage_for_bases(db, xstart, xstop=None):
         xstop = xstart
     return numpy2dict(
         db.iquery(config.COVERAGE_LOOKUP_QUERY.format(
-            chrom_start=int(xstart / xoff), pos_start=int(xstart % xoff),
-            chrom_stop=int(xstop / xoff), pos_stop=int(xstop % xoff)),
+            chrom_start=int(xstart / XOFF), pos_start=int(xstart % XOFF),
+            chrom_stop=int(xstop / XOFF), pos_stop=int(xstop % XOFF)),
                 fetch=True))
+
+
+# -- -
+# -- - SEARCH BAR - --
+# -- -
+def get_awesomebar_suggestions(g, query):
+    """This generates autocomplete suggestions when user query is the
+    string that user types If it is the prefix for a gene, return list
+    of gene names
+
+    """
+    regex = re.compile('^' + re.escape(query), re.IGNORECASE)
+    results = [r for r in g.autocomplete_strings if regex.match(r)][:20]
+    return results
+
+
+def get_awesomebar_result(db, query):
+    """Similar to the above, but this is after a user types enter We need to
+    figure out what they meant - could be gene, variant, region, icd10
+
+    Return tuple of (datatype, identifier)
+    Where datatype is one of 'gene', 'variant', or 'region'
+    And identifier is one of:
+    - ensembl ID for gene
+    - variant ID string for variant (eg. 1-1000-A-T)
+    - region ID string for region (eg. 1-1000-2000)
+
+    Follow these steps:
+    - if query is an ensembl ID, return it
+    - if a gene symbol, return that gene's ensembl ID
+    - if an RSID, return that variant's string
+
+
+    Finally, note that we don't return the whole object here - only
+    it's identifier.  This could be important for performance later
+
+    """
+    query = query.strip()
+    (query_lower, query_upper) = (query.lower(), query.upper())
+    print 'Query: %s' % query
+
+    if query_upper in UNSUPPORTED_QUERIES:
+        return 'error', query
+
+    # Variant
+    variants = get_variants_chrom_pos_by_rsid(db, query_lower)
+    if variants:
+        if len(variants) == 1:
+            variant = variants[0]
+            variant_id = '{}-{}'.format(variant['chrom'], variant['pos'])
+            return 'variant', variant_id
+        else:
+            return 'dbsnp_variant_set', query_lower
+
+    # TODO
+    # variant = get_variants_from_dbsnp(db, query.lower())
+    # if variant:
+    #     return 'variant', variant[0]['variant_id']
+
+    gene_id = get_gene_id_by_name(db, query_upper)
+    if gene_id:
+        return 'gene', gene_id
+
+    # Ensembl formatted queries
+    if query_upper.startswith('ENS'):
+        # Gene
+        if exists_gene_id(db, query_upper):
+            return 'gene', query_upper
+
+        # Transcript
+        transcript = get_transcript(db, query_upper)
+        if transcript:
+            return 'transcript', transcript['transcript_id']
+
+    # ICD10 formatted queries
+    if query_upper.startswith('ICD'):
+        # ICD10
+        icd = get_icd(db, query_upper)
+        if icd:
+            return 'icd10', icd[0]['icd']
+
+    # From here on out, only region queries
+    if query_upper.startswith('CHR'):
+        query_upper = query_upper.lstrip('CHR')
+    # Region
+    m = R1.match(query_upper)
+    if m:
+        if int(m.group(3)) < int(m.group(2)):
+            return 'region', 'invalid'
+        return 'region', '{}-{}-{}'.format(m.group(1), m.group(2), m.group(3))
+    m = R2.match(query_upper)
+    if m:
+        return 'region', '{}-{}-{}'.format(m.group(1), m.group(2), m.group(2))
+    m = R3.match(query_upper)
+    if m:
+        return 'region', '{}'.format(m.group(1))
+    m = R4.match(query_upper)
+    if m:
+        return 'variant', '{}-{}-{}-{}'.format(
+            m.group(1), m.group(2), m.group(3), m.group(4))
+
+    return 'not_found', query
 
 
 if __name__ == '__main__':
