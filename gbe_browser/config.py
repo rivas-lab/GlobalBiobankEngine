@@ -467,7 +467,7 @@ VARIANT_STORE_QUERY = """
 
 VARIANT_GENE_ARRAY = 'variant_gene'
 VARIANT_GENE_SCHEMA = """
-  <noval: int8 not null>
+  <notused: int8 not null>
   [chrom    = 1:25:0:1;
    pos      = 0:*:0:10000000;
    gene_idx = 0:*:0:20]"""
@@ -480,7 +480,7 @@ VARIANT_GENE_STORE_QUERY = """
           aio_input('{{path}}', 'num_attributes=3'),
           chrom,   int64(a0),
           pos,     int64(a1),
-          noval,   int8(0)),
+          notused, int8(0)),
         {gene_index_array},
         a2,
         gene_idx),
@@ -492,7 +492,7 @@ VARIANT_GENE_STORE_QUERY = """
 
 VARIANT_TRANSCRIPT_ARRAY = 'variant_transcript'
 VARIANT_TRANSCRIPT_SCHEMA = """
-  <noval: int8 not null>
+  <notused: int8 not null>
   [chrom          = 1:25:0:1;
    pos            = 0:*:0:10000000;
    transcript_idx = 0:*:0:20]"""
@@ -506,7 +506,7 @@ VARIANT_TRANSCRIPT_STORE_QUERY = """
           chrom,         int64(a0),
           pos,           int64(a1),
           transcript_id, a2,
-          noval,         int8(0)) as INPUT,
+          notused,       int8(0)) as INPUT,
         {transcript_index_array},
         INPUT.transcript_id,
         transcript_idx),
