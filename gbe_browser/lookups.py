@@ -193,7 +193,8 @@ def get_icd_significant_variant(db, icd_id, cutoff=0.001):
         config.ICD_VARIANT_LOOKUP_QUERY.format(
             icd=icd_id, pdecimal=pdecimal),
         schema=config.VARIANT_X_ICD_X_INFO_SCHEMA,
-        fetch=True)))
+        fetch=True,
+        atts_only=True)))
 
 
 # -- -

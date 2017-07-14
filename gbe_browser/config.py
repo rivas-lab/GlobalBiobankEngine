@@ -621,7 +621,7 @@ ICD_X_INFO_SCHEMA = scidbpy.schema.Schema.fromstring(
                                       ICD_INFO_SCHEMA.index('>')])))
 
 ICD_VARIANT_LOOKUP_QUERY = """
-  cross_join(
+  equi_join(
     project({variant_array},
             rsid,
             ref,
@@ -639,16 +639,18 @@ ICD_VARIANT_LOOKUP_QUERY = """
         filter({icd_info_array}, icd = '{{icd}}'),
         {icd_array}.icd_idx,
         {icd_info_array}.icd_idx) as icd_join,
-    {variant_array}.chrom,
-    icd_join.chrom,
-    {variant_array}.pos,
-    icd_join.pos)""".format(
+    'left_names=chrom,pos',
+    'right_names=chrom,pos',
+    'algorithm=merge_right_first',
+    'keep_dimensions=1')""".format(
         icd_array=ICD_ARRAY,
         icd_info_array=ICD_INFO_ARRAY,
         variant_array=VARIANT_ARRAY)
 
 VARIANT_X_ICD_X_INFO_SCHEMA = scidbpy.schema.Schema.fromstring("""
-  <rsid:        int64,
+  <chrom:       int64 not null,
+   pos:         int64 not null,
+   rsid:        int64,
    ref:         string,
    alt:         string,
    filter:      string,
@@ -659,12 +661,12 @@ VARIANT_X_ICD_X_INFO_SCHEMA = scidbpy.schema.Schema.fromstring("""
    log10pvalue: double,
    icd:         string,
    Case:        int64,
-   Name:        string>
-  [chrom     = 1:25:0:1;
-   pos       = 0:*:0:10000000;
-   icd_idx   = 0:*:0:20;
-   pdecimal  = 0:3:0:1;
-   synthetic = 0:999:0:1000]""")
+   Name:        string,
+   icd_idx:     int64 not null,
+   pdecimal:    int64 not null,
+   synthetic:   int64 not null>
+  [notused0;
+   notused1]""")
 
 
 # -- -
