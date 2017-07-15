@@ -1,15 +1,15 @@
 {
     "dev": {
-        "profile_name": "tcg-dev", 
+        "profile_name": "tcg-dev",
         "s3_bucket": "zappa-83kyr78sf",
         "apigateway_enabled": false,
         "slim_handler": true,
         "events": [{
-            "function": "biobankengine.process",
+            "function": "biobankengine.run_mrp_lambda",
             "event_source": {
                   "arn":  "arn:aws:s3:::rivas-biobank-dev",
                   "events": [
-                    "s3:ObjectCreated:*" 
+                    "s3:ObjectCreated:*"
                   ]
                }
             }]
