@@ -107,6 +107,43 @@ def exists(db, array_name, attr_name, attr_val):
 # -- -
 # -- - ICD - --
 # -- -
+def get_icd_info(db, icd_id):
+    """
+    e.g.,
+    UI:
+      https://biobankengine.stanford.edu/coding/RH117
+
+    MongoDB:
+      db.icd_info.find({'icd': 'RH117'}, fields={'_id': False})
+
+    SciDB:
+      cross_join(icd_info,
+                 filter(icd_index, icd = 'RH117'),
+                 icd_info.icd_idx,
+                 icd_index.icd_idx);
+    """
+    return numpy2dict(
+        db.iquery(
+            config.ICD_LOOKUP_QUERY.format(icd=icd_id),
+            schema=config.ICD_X_INFO_SCHEMA,
+            fetch=True))
+
+
+def exists_icd(db, icd):
+    """
+    Search bar
+
+    MongoDB:
+      db.icd_info.find({'icd': 'RH141'}, fields={'_id': False})
+
+    SciDB:
+      aggregate(
+        filter(icd_info, icd = 'RH141'),
+        count(*));
+    """
+    return exists(db, config.ICD_INFO_ARRAY, 'icd', "'{}'".format(icd))
+
+
 def get_icd_significant(db, icd_id, cutoff=0.01):
     """
     e.g.,
@@ -129,28 +166,6 @@ def get_icd_significant(db, icd_id, cutoff=0.01):
         db.iquery(
             config.ICD_PVALUE_LOOKUP_QUERY.format(
                 icd=icd_id, pvalue=cutoff),
-            schema=config.ICD_X_INFO_SCHEMA,
-            fetch=True))
-
-
-def get_icd_info(db, icd_id):
-    """
-    e.g.,
-    UI:
-      https://biobankengine.stanford.edu/coding/RH117
-
-    MongoDB:
-      db.icd_info.find({'icd': 'RH117'}, fields={'_id': False})
-
-    SciDB:
-      cross_join(icd_info,
-                 filter(icd_index, icd = 'RH117'),
-                 icd_info.icd_idx,
-                 icd_index.icd_idx);
-    """
-    return numpy2dict(
-        db.iquery(
-            config.ICD_LOOKUP_QUERY.format(icd=icd_id),
             schema=config.ICD_X_INFO_SCHEMA,
             fetch=True))
 
@@ -756,9 +771,8 @@ def get_awesomebar_result(db, query):
     # ICD10 formatted queries
     if query_upper.startswith('ICD'):
         # ICD10
-        icd = get_icd(db, query_upper)
-        if icd:
-            return 'icd10', icd[0]['icd']
+        if exists_icd(db, query_upper):
+            return 'icd10', query_upper
 
     # From here on out, only region queries
     if query_upper.startswith('CHR'):
