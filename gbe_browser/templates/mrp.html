@@ -360,7 +360,7 @@ gene_data.forEach(function(data){
       <div class="panel-body">Clusters : {{ cluster_num }}</div>
     </div>
 
-{% if log10_bf > 0 %}
+{% if (log10_bf > 0) %}
   {% for n in num_figs %}
     <h2> Cluster {{ n[0] }} </h2> 
       <div id="cluster_{{ n[0] }}"></div>
