@@ -1,4 +1,5 @@
 import itertools
+import re
 import scidbpy
 
 import config
@@ -25,6 +26,12 @@ UNSUPPORTED_QUERIES = set((
 
 XOFF = int(1e9)
 RSID_FORMAT = '{chrom}-{pos}-{ref}-{alt}'
+
+# 1:1-1000
+REGION_RE1 = re.compile(r'^(\d+|X|Y|M|MT)\s*:\s*(\d+)-(\d+)$')
+REGION_RE2 = re.compile(r'^(\d+|X|Y|M|MT)\s*:\s*(\d+)$')
+REGION_RE3 = re.compile(r'^(\d+|X|Y|M|MT)$')
+REGION_RE4 = re.compile(r'^(\d+|X|Y|M|MT)\s*[-:]\s*(\d+)-([ATCG]+)-([ATCG]+)$')
 
 
 def numpy2dict(ar):
@@ -777,19 +784,20 @@ def get_awesomebar_result(db, query):
     # From here on out, only region queries
     if query_upper.startswith('CHR'):
         query_upper = query_upper.lstrip('CHR')
+
     # Region
-    m = R1.match(query_upper)
+    m = REGION_RE1.match(query_upper)
     if m:
         if int(m.group(3)) < int(m.group(2)):
             return 'region', 'invalid'
         return 'region', '{}-{}-{}'.format(m.group(1), m.group(2), m.group(3))
-    m = R2.match(query_upper)
+    m = REGION_RE2.match(query_upper)
     if m:
         return 'region', '{}-{}-{}'.format(m.group(1), m.group(2), m.group(2))
-    m = R3.match(query_upper)
+    m = REGION_RE3.match(query_upper)
     if m:
         return 'region', '{}'.format(m.group(1))
-    m = R4.match(query_upper)
+    m = REGION_RE4.match(query_upper)
     if m:
         return 'variant', '{}-{}-{}-{}'.format(
             m.group(1), m.group(2), m.group(3), m.group(4))
