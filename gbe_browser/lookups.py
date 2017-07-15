@@ -234,12 +234,14 @@ def get_icd_significant_variant(db, icd_id, cutoff=0.001):
         icd_join.pos);
     """
     pdecimal = config.ICD_PVALUE_MAP.get(cutoff, 0)
-    return format_variants(numpy2dict(db.iquery(
-        config.ICD_VARIANT_LOOKUP_QUERY.format(
-            icd=icd_id, pdecimal=pdecimal),
-        schema=config.VARIANT_X_ICD_X_INFO_SCHEMA,
-        fetch=True,
-        atts_only=True)))
+    return format_variants(
+        numpy2dict(
+            db.iquery(
+                config.ICD_VARIANT_LOOKUP_QUERY.format(
+                    icd=icd_id, pdecimal=pdecimal),
+                schema=config.VARIANT_X_ICD_X_INFO_SCHEMA,
+                fetch=True,
+                atts_only=True)))
 
 
 # -- -
@@ -810,14 +812,15 @@ if __name__ == '__main__':
 
     import pprint
     pp = pprint.PrettyPrinter(indent=2)
-    pp.pprint(get_icd_significant(db, 'RH117'))
-    pp.pprint(get_icd_info(db, 'RH117'))
-    pp.pprint(get_variant_icd(db, 1039381448))
-    pp.pprint(get_icd_significant_variant(db, 'RH117'))
-    pp.pprint(get_variants_by_id(db, (1039381448,)))
-    pp.pprint(get_variant(db, 1039381448))
     pp.pprint(get_gene(db, 'ENSG00000107404'))
+    pp.pprint(get_icd_info(db, 'RH117'))
+    pp.pprint(get_icd_significant(db, 'RH117'))
+    pp.pprint(get_icd_significant_variant(db, 'RH117'))
     pp.pprint(get_transcript(db, 'ENST00000378891'))
     pp.pprint(get_transcripts_in_gene(db, 'ENSG00000107404'))
+    pp.pprint(get_variant(db, 1039381448))
+    # pp.pprint(get_variant_chrom_pos(db, 19, 11210912)) # TODO
+    pp.pprint(get_variant_icd(db, 1039381448))
+    pp.pprint(get_variants_by_id(db, (1039381448,)))
     pp.pprint(get_variants_in_gene(db, 'ENSG00000107404'))
     pp.pprint(get_variants_in_transcript(db, 'ENST00000378891'))
