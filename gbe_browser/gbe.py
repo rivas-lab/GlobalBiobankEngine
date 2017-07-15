@@ -863,15 +863,13 @@ def variant_icd_page(variant_str):
     db = get_db()
     try:
         chrom, pos = variant_str.split('-')
-        pos = int(pos)
         # pos, ref, alt = get_minimal_representation(pos, ref, alt)
-        xpos = get_xpos(chrom, pos)
-        variant = lookups.get_variant_chrom_pos(db, chrom, pos)
+        variant = lookups.get_variant_ann_by_chrom_pos(db, chrom, pos)
         if variant is None:
             variant = {
                 'chrom': chrom,
                 'pos': pos,
-                'xpos': xpos
+                'xpos': get_xpos(chrom, int(pos))
             }
         consequences = None
         ordered_csqs = None
@@ -884,7 +882,7 @@ def variant_icd_page(variant_str):
                 annotation['HGVS'] = get_proper_hgvs(annotation)
                 consequences[annotation['major_consequence']][annotation['Gene']].append(annotation)
        # print(xpos)
-        icdstats = lookups.get_variant_icd(db, xpos)
+        icdstats = lookups.get_variant_icd(db, chrom, pos)
         indexes = []
         seend = {}
         for idx in range(0,len(icdstats)):

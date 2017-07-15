@@ -177,7 +177,7 @@ def get_icd_significant(db, icd_id, cutoff=0.01):
             fetch=True))
 
 
-def get_variant_icd(db, xpos):
+def get_variant_icd(db, chrom, pos):
     """
     e.g.,
     UI:
@@ -191,8 +191,7 @@ def get_variant_icd(db, xpos):
     """
     return numpy2dict(
         db.iquery(
-            config.ICD_CHROM_POS_LOOKUP_QUERY.format(
-                chrom=int(xpos / XOFF), pos=int(xpos % XOFF)),
+            config.ICD_CHROM_POS_LOOKUP_QUERY.format(chrom=chrom, pos=pos),
             schema=config.ICD_X_INFO_SCHEMA,
             fetch=True))
 
@@ -485,7 +484,7 @@ def get_variants_by_id(db, variant_ids):
     return variants
 
 
-def get_variants_chrom_pos_by_rsid(db, rsid):
+def get_variants_chrom_pos_by_rsid_limit2(db, rsid):
     """
     Search bar
 
@@ -493,9 +492,11 @@ def get_variants_chrom_pos_by_rsid(db, rsid):
       db.variants.find({'rsid': 'rs6025'}, fields={'_id': False}))
 
     SciDB:
-      project(
-        filter(variant, rsid = 6025),
-        rsid);
+      limit(
+        project(
+          filter(variant, rsid = 6025),
+          rsid),
+        2);
     """
     if not rsid.startswith('rs'):
         return None
@@ -540,7 +541,7 @@ def get_variants_chrom_pos(db, chrom, start, stop=None):
         add_ann=True)
 
 
-def get_variant_chrom_pos(db, chrom, start, stop=None):
+def get_variant_ann_by_chrom_pos(db, chrom, start):
     """
     e.g.,
     UI:
@@ -553,7 +554,13 @@ def get_variant_chrom_pos(db, chrom, start, stop=None):
       between(vairant, 1, 39381448,
                        1, 39381448);
     """
-    variants = get_variants_chrom_pos(db, chrom, start, stop)
+    variants = format_variants(
+        numpy2dict(
+            db.iquery(
+                config.VARIANT_LIMIT_QUERY.format(chrom=chrom, start=start),
+                schema=config.VARIANT_LIMIT_SCHEMA,
+                fetch=True)),
+        add_ann=True)
     variant = variants[0] if len(variants) else None
     if variant is None or 'rsid' not in variant:
         return variant
@@ -563,22 +570,6 @@ def get_variant_chrom_pos(db, chrom, start, stop=None):
         # if rsid:
         #     variant['rsid'] = 'rs%s' % rsid['rsid']
     return variant
-
-
-def get_variant(db, xpos):
-    """
-    e.g.,
-    UI:
-      https://biobankengine.stanford.edu/variant/1-39381448
-
-    MongoDB:
-      db.variants.find({'xpos': '1039381448'}, fields={'_id': False})
-
-    SciDB:
-      between(vairant, 1, 39381448,
-                       1, 39381448);
-    """
-    return get_variant_chrom_pos(db, int(xpos / XOFF), int(xpos % XOFF))
 
 
 def get_variants_in_gene(db, gene_id):
@@ -749,7 +740,7 @@ def get_awesomebar_result(db, query):
         return 'error', query
 
     # Variant
-    variants = get_variants_chrom_pos_by_rsid(db, query_lower)
+    variants = get_variants_chrom_pos_by_rsid_limit2(db, query_lower)
     if variants:
         if len(variants) == 1:
             variant = variants[0]

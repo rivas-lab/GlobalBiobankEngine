@@ -743,10 +743,34 @@ VARIANT_MULTI_LOOKUP_QUERY = """
 
 VARIANT_LOOKUP_SCHEMA = scidbpy.schema.Schema.fromstring(VARIANT_SCHEMA)
 
+VARIANT_LIMIT_QUERY = """
+  limit(
+    project(
+      between({variant_array}, {{chrom}}, {{start}},
+                               {{chrom}}, {{start}}),
+      rsid,
+      ref,
+      alt,
+      filter,
+      csq),
+    1)""".format(
+    variant_array=VARIANT_ARRAY)
+
+VARIANT_LIMIT_SCHEMA = scidbpy.schema.Schema.fromstring("""
+  <rsid:         int64,
+   ref:          string,
+   alt:          string,
+   filter:       string,
+   csq:          string>
+  [chrom = 1:25:0:1;
+   pos   = 0:*:0:10000000]""")
+
 VARIANT_CHROM_POS_BY_RSID_QUERY = """
-  project(
-    filter({variant_array}, rsid = {{rsid}}),
-    rsid)""".format(variant_array=VARIANT_ARRAY)
+  limit(
+    project(
+      filter({variant_array}, rsid = {{rsid}}),
+      rsid),
+    2)""".format(variant_array=VARIANT_ARRAY)
 
 VARIANT_CHROM_POS_BY_RSID_SCHEMA = scidbpy.schema.Schema.fromstring("""
   <rsid:int64>
