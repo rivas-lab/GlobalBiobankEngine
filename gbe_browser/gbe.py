@@ -1588,7 +1588,7 @@ def mrp(key):
             for j in range(5, len(var_info)):
                 variant["%s" % (j-4)] = var_info[j]
             if float(var_info[5]) >= .99:
-                        continue
+                        pass
             nullmembership.append(float(var_info[5]))
             variants.append(variant)
         idxnewarr = [b[0] for b in sorted(enumerate(nullmembership),key=lambda i:i[1], reverse = True)]
