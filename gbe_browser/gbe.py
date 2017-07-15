@@ -123,12 +123,13 @@ app.config.update(dict(
 GENE_CACHE_DIR = os.path.join(os.path.dirname(__file__), 'gene_cache')
 GENES_TO_CACHE = {l.strip('\n') for l in open(os.path.join(os.path.dirname(__file__), 'genes_to_cache.txt'))}
 
-def connect_db():
-    """
-    Connects to the specific database.
-    """
-    return scidbpy.connect(app.config.get('SCIDB_URL', None))
+DB = scidbpy.connect(app.config.get('SCIDB_URL', None))
 
+# def connect_db():
+#     """Connects to the specific database.
+#
+#     """
+#     return scidbpy.connect(app.config.get('SCIDB_URL', None))
 
 def parse_tabix_file_subset(tabix_filenames, subset_i, subset_n, record_parser):
     """
@@ -624,13 +625,14 @@ def precalculate_metrics():
 
 
 def get_db():
-    """
-    Opens a new database connection if there is none yet for the
+    """Opens a new database connection if there is none yet for the
     current application context.
-v    """
-    if not hasattr(g, 'db_conn'):
-        g.db_conn = connect_db()
-    return g.db_conn
+
+    """
+    # if not hasattr(g, 'db_conn'):
+    #     g.db_conn = connect_db()
+    # return g.db_conn
+    return DB
 
 def run_graph():
     key = str(random.getrandbits(128))
