@@ -81,6 +81,29 @@ def format_genes(genes):
     return genes
 
 
+def exists(db, array_name, attr_name, attr_val):
+    """
+    Search bar
+
+    MongoDB:
+      db.genes.find({'gene_id': 'ENSG00000107404'}, fields={'_id': False})
+
+    SciDB:
+      aggregate(
+        filter(gene_index, gene_id = 'ENSG00000198734'),
+        count(*));
+    """
+    return bool(
+        db.iquery(
+            config.EXISTS_QUERY.format(
+                array_name=array_name,
+                attr_name=attr_name,
+                attr_val=attr_val),
+            schema=config.EXISTS_SCHEMA,
+            fetch=True,
+            atts_only=True)[0]['count']['val'])
+
+
 # -- -
 # -- - ICD - --
 # -- -
@@ -238,12 +261,10 @@ def exists_gene_id(db, gene_id):
         filter(gene_index, gene_id = 'ENSG00000198734'),
         count(*));
     """
-    return bool(
-        db.iquery(
-            config.GENE_ID_EXISTS_QUERY.format(gene_id=gene_id),
-            schema=config.GENE_ID_EXISTS_SCHEMA,
-            fetch=True,
-            atts_only=True)[0]['count']['val'])
+    return exists(db,
+                  config.GENE_INDEX_ARRAY,
+                  'gene_id',
+                  "'{}'".format(gene_id))
 
 
 def get_genes_in_region(db, chrom, start, stop):
@@ -334,6 +355,25 @@ def get_transcript(db, transcript_id):
         atts_only=True,
         schema=config.GENE_INDEX_SCHEMA)[0]['gene_id']['val']
     return res
+
+
+def exists_transcript_id(db, transcript_id):
+    """
+    Search bar
+
+    MongoDB:
+      db.transcripts.find({'transcript_id': 'ENST00000450546'},
+                          fields={'_id': False})
+
+    SciDB:
+      aggregate(
+        filter(transcript_index, transcript_id = 'ENST00000450546'),
+        count(*));
+    """
+    return exists(db,
+                  config.TRANSCRIPT_INDEX_ARRAY,
+                  'transcript_id',
+                  "'{}'".format(transcript_id))
 
 
 def get_transcripts_in_gene(db, gene_id):
@@ -710,9 +750,8 @@ def get_awesomebar_result(db, query):
             return 'gene', query_upper
 
         # Transcript
-        transcript = get_transcript(db, query_upper)
-        if transcript:
-            return 'transcript', transcript['transcript_id']
+        if exists_transcript_id(db, query_upper):
+            return 'transcript', query_upper
 
     # ICD10 formatted queries
     if query_upper.startswith('ICD'):

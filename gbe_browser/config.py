@@ -581,6 +581,13 @@ LOOKUP_QUERY = """
     {main_array}.{idx_attr},
     {index_array}.{idx_attr})"""
 
+EXISTS_QUERY = """
+  aggregate(
+    filter({array_name}, {attr_name} = {attr_val}),
+    count(*))"""
+
+EXISTS_SCHEMA = scidbpy.schema.Schema.fromstring('<count:int64>[notused]')
+
 # -- -
 # -- - Lookup: ICD - --
 # -- -
@@ -700,14 +707,6 @@ GENE_ID_BY_NAME_QUERY = """
 
 GENE_ID_BY_NAME_SCHEMA = scidbpy.schema.Schema.fromstring(
     '<gene_id:string>[notused]')
-
-GENE_ID_EXISTS_QUERY = """
-  aggregate(
-    filter({gene_index_array}, gene_id = '{{gene_id}}'),
-    count(*))""".format(gene_index_array=GENE_INDEX_ARRAY)
-
-GENE_ID_EXISTS_SCHEMA = scidbpy.schema.Schema.fromstring(
-    '<count:int64>[notused]')
 
 TRANSCRIPT_LOOKUP_SCHEMA = scidbpy.schema.Schema.fromstring(
     TRANSCRIPT_SCHEMA.replace(
