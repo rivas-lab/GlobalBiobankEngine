@@ -573,7 +573,6 @@ COVERAGE_STORE_QUERY = """
 # == =
 # == = LOOKUP = ==
 # == =
-
 LOOKUP_QUERY = """
   cross_join(
     {main_array},
@@ -591,14 +590,11 @@ EXISTS_SCHEMA = scidbpy.schema.Schema.fromstring('<count:int64>[notused]')
 # -- -
 # -- - Lookup: ICD - --
 # -- -
-ICD_LOOKUP_QUERY = """
-  cross_join(
-    {icd_array},
-    filter({icd_info_array}, icd = '{{icd}}'),
-    {icd_array}.icd_idx,
-    {icd_info_array}.icd_idx)""".format(
-        icd_array=ICD_ARRAY,
-        icd_info_array=ICD_INFO_ARRAY)
+ICD_INFO_MAP_QUERY = 'project({icd_info_array}, icd, Name)'.format(
+    icd_info_array=ICD_INFO_ARRAY)
+
+ICD_INFO_MAP_SCHEMA = scidbpy.schema.Schema.fromstring("""
+  <icd:string, Name:string>[notused]""")
 
 ICD_PVALUE_LOOKUP_QUERY = """
   filter(

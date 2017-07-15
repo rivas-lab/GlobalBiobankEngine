@@ -125,6 +125,7 @@ GENE_CACHE_DIR = os.path.join(os.path.dirname(__file__), 'gene_cache')
 GENES_TO_CACHE = {l.strip('\n') for l in open(os.path.join(os.path.dirname(__file__), 'genes_to_cache.txt'))}
 
 DB = scidbpy.connect(app.config.get('SCIDB_URL', None))
+ICD_NAME_MAP = lookups.get_icd_name_map(DB)
 
 # def connect_db():
 #     """Connects to the specific database.
@@ -1277,13 +1278,13 @@ def get_gene_page_content(gene_id):
         return redirect(url_for('login'))
     db = get_db()
     try:
-        gene = lookups.get_gene(db, gene_id)
-        if gene is None:
-            abort(404)
         cache_key = 't-gene-{}'.format(gene_id)
         t = cache.get(cache_key)
         if t is None:
-           # print(gene_id)
+            gene = lookups.get_gene(db, gene_id)
+            if gene is None:
+                abort(404)
+            #print(gene_id)
             variants_in_gene = lookups.get_variants_in_gene(db, gene_id)
             transcripts_in_gene = lookups.get_transcripts_in_gene(db, gene_id)
             #print(variants_in_gene)
@@ -1294,31 +1295,19 @@ def get_gene_page_content(gene_id):
             coverage_stats = lookups.get_coverage_for_transcript(db, transcript['xstart'] - EXON_PADDING, transcript['xstop'] + EXON_PADDING)
             add_transcript_coordinate_to_variants(db, variants_in_transcript, transcript_id)
 
-
             #print("\n\n\n\nVariants in gene")
             #print(variants_in_gene[0])
 
             # Add minicd info
-            for i in range(0,len(variants_in_gene)):
-                variants_in_gene[i]["minicd_info"] = "info_not_found"
-                icd_code = variants_in_gene[i]["minicd"]
-                icd10info = lookups.get_icd_info(db, icd_code)
-
-                if len(icd10info) > 0:
-
-                    if "Name" in icd10info[0].keys():
-                        names = icd10info[0]["Name"]
-                        names = names.split()
-                        names = "&nbsp;".join(names)
-                        variants_in_gene[i]["minicd_info"] = names
+            for variant in variants_in_gene:
+                variant["minicd_info"] = ICD_NAME_MAP.get(variant["minicd"],
+                                                          "info_not_found")
 
             #print ("Transcripts in gene")
             #print(transcripts_in_gene)
 
             #print ("Variants in transcript")
             #print (variants_in_transcript)
-
-
 
             t = render_template(
                 'gene.html',

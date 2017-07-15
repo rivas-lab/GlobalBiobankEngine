@@ -114,7 +114,7 @@ def exists(db, array_name, attr_name, attr_val):
 # -- -
 # -- - ICD - --
 # -- -
-def get_icd_info(db, icd_id):
+def get_icd_name_map(db):
     """
     e.g.,
     UI:
@@ -124,16 +124,13 @@ def get_icd_info(db, icd_id):
       db.icd_info.find({'icd': 'RH117'}, fields={'_id': False})
 
     SciDB:
-      cross_join(icd_info,
-                 filter(icd_index, icd = 'RH117'),
-                 icd_info.icd_idx,
-                 icd_index.icd_idx);
+      project(icd_info, icd, Name);
     """
-    return numpy2dict(
-        db.iquery(
-            config.ICD_LOOKUP_QUERY.format(icd=icd_id),
-            schema=config.ICD_X_INFO_SCHEMA,
-            fetch=True))
+    return dict((i['icd']['val'], '&nbsp;'.join(i['Name']['val'].split()))
+                for i in db.iquery(config.ICD_INFO_MAP_QUERY,
+                                   schema=config.ICD_INFO_MAP_SCHEMA,
+                                   fetch=True,
+                                   atts_only=True))
 
 
 def exists_icd(db, icd):
@@ -820,7 +817,7 @@ if __name__ == '__main__':
     pp.pprint(get_gene(db, 'ENSG00000107404'))
     pp.pprint(get_gene_id_by_name(db, 'F5'))
     pp.pprint(get_genes_in_region(db, 1, 39381448, 39382448))
-    pp.pprint(get_icd_info(db, 'RH117'))
+    pp.pprint(get_icd_name_map(db))
     pp.pprint(get_icd_significant(db, 'RH117'))
     pp.pprint(get_icd_significant_variant(db, 'RH117'))
     pp.pprint(get_transcript(db, 'ENST00000378891'))
