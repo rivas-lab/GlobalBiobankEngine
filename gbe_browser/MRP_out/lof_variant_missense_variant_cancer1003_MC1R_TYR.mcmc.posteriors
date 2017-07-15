@@ -1,0 +1,63 @@
+16-89986432-C-T	missense_variant	rs200215218	MC1R	MC1R:missense_variant:rs200215218	1.0	0.0	0.0
+16-89986049-T-C	missense_variant	.	MC1R	MC1R:missense_variant:.	1.0	0.0	0.0
+16-89985940-G-A	missense_variant	rs2228479	MC1R	MC1R:missense_variant:rs2228479	0.851485148515	0.148514851485	0.0
+16-89986583-G-A	missense_variant	.	MC1R	MC1R:missense_variant:.	0.168316831683	0.019801980198	0.811881188119
+16-89986202-T-TC	frameshift_variant', 'lof_variant	.	MC1R	MC1R:frameshift_variant', 'lof_variant:.	1.0	0.0	0.0
+16-89986334-G-A	missense_variant	.	MC1R	MC1R:missense_variant:.	1.0	0.0	0.0
+16-89986091-G-A	missense_variant	rs11547464	MC1R	MC1R:missense_variant:rs11547464	0.584158415842	0.039603960396	0.376237623762
+16-89986546-G-C	missense_variant	rs1805009	MC1R	MC1R:missense_variant:rs1805009	0.0	0.0	1.0
+16-89986304-G-A	missense_variant	.	MC1R	MC1R:missense_variant:.	1.0	0.0	0.0
+16-89985844-G-T	missense_variant	rs1805005	MC1R	MC1R:missense_variant:rs1805005	1.0	0.0	0.0
+16-89986117-C-T	missense_variant	.	MC1R	MC1R:missense_variant:.	0.0	0.0	1.0
+16-89986122-C-A	lof_variant', 'stop_gained	rs201326893	MC1R	MC1R:lof_variant', 'stop_gained:rs201326893	1.0	0.0	0.0
+16-89985998-C-T	missense_variant	rs201489928	MC1R	MC1R:missense_variant:rs201489928	1.0	0.0	0.0
+16-89986527-C-G	missense_variant	.	MC1R	MC1R:missense_variant:.	1.0	0.0	0.0
+16-89986144-C-T	missense_variant	rs1805008	MC1R	MC1R:missense_variant:rs1805008	0.891089108911	0.108910891089	0.0
+16-89986531-T-C	missense_variant	.	MC1R	MC1R:missense_variant:.	1.0	0.0	0.0
+16-89986025-T-C	missense_variant	rs33932559	MC1R	MC1R:missense_variant:rs33932559	1.0	0.0	0.0
+16-89986154-G-A	missense_variant	rs885479	MC1R	MC1R:missense_variant:rs885479	1.0	0.0	0.0
+16-89986030-G-A	missense_variant	rs201192930	MC1R	MC1R:missense_variant:rs201192930	1.0	0.0	0.0
+16-89986161-T-TG	frameshift_variant', 'lof_variant	.	MC1R	MC1R:frameshift_variant', 'lof_variant:.	1.0	0.0	0.0
+16-89986418-TC-T	frameshift_variant', 'lof_variant	.	MC1R	MC1R:frameshift_variant', 'lof_variant:.	1.0	0.0	0.0
+16-89985913-T-C	missense_variant	rs34474212	MC1R	MC1R:missense_variant:rs34474212	1.0	0.0	0.0
+16-89985918-C-A	missense_variant	rs1805006	MC1R	MC1R:missense_variant:rs1805006	0.990099009901	0.00990099009901	0.0
+16-89986303-C-T	missense_variant	rs200000734	MC1R	MC1R:missense_variant:rs200000734	1.0	0.0	0.0
+11-88911362-C-T	missense_variant	.	TYR	TYR:missense_variant:.	1.0	0.0	0.0
+11-88911363-C-T	missense_variant	rs28940876	TYR	TYR:missense_variant:rs28940876	0.910891089109	0.0594059405941	0.029702970297
+11-88911878-G-A	missense_variant	rs61754369	TYR	TYR:missense_variant:rs61754369	1.0	0.0	0.0
+11-88911242-G-A	missense_variant	.	TYR	TYR:missense_variant:.	1.0	0.0	0.0
+11-88911245-G-A	missense_variant	rs200960909	TYR	TYR:missense_variant:rs200960909	1.0	0.0	0.0
+11-88911376-T-A	lof_variant', 'stop_gained	.	TYR	TYR:lof_variant', 'stop_gained:.	1.0	0.0	0.0
+11-88911122-A-G	missense_variant', 'start_lost	rs28940881	TYR	TYR:missense_variant', 'start_lost:rs28940881	1.0	0.0	0.0
+11-88911747-C-T	missense_variant	.	TYR	TYR:missense_variant:.	1.0	0.0	0.0
+11-88911770-C-T	missense_variant	.	TYR	TYR:missense_variant:.	0.980198019802	0.019801980198	0.0
+11-88911771-G-A	missense_variant	rs61754365	TYR	TYR:missense_variant:rs61754365	1.0	0.0	0.0
+11-89018021-G-A	missense_variant	rs61754393	TYR	TYR:missense_variant:rs61754393	1.0	0.0	0.0
+11-88911654-G-A	lof_variant', 'stop_gained	rs61754360	TYR	TYR:lof_variant', 'stop_gained:rs61754360	1.0	0.0	0.0
+11-88961065-A-T	missense_variant	rs61754386	TYR	TYR:missense_variant:rs61754386	1.0	0.0	0.0
+11-88924465-C-A	missense_variant	rs142170797	TYR	TYR:missense_variant:rs142170797	0.980198019802	0.019801980198	0.0
+11-88911798-CAGG-C	inframe_deletion', 'missense_variant	rs61754366	TYR	TYR:inframe_deletion', 'missense_variant:rs61754366	1.0	0.0	0.0
+11-89028411-T-TT	frameshift_variant', 'lof_variant	rs61754399	TYR	TYR:frameshift_variant', 'lof_variant:rs61754399	1.0	0.0	0.0
+11-88961116-CT-C	frameshift_variant', 'lof_variant	rs62645913	TYR	TYR:frameshift_variant', 'lof_variant:rs62645913	1.0	0.0	0.0
+11-88961100-C-A	missense_variant	rs62645910	TYR	TYR:missense_variant:rs62645910	1.0	0.0	0.0
+11-88961101-G-A	missense_variant	rs62645911	TYR	TYR:missense_variant:rs62645911	1.0	0.0	0.0
+11-88911182-C-T	missense_variant	rs61753178	TYR	TYR:missense_variant:rs61753178	1.0	0.0	0.0
+11-88911696-C-A	missense_variant	rs1042602	TYR	TYR:missense_variant:rs1042602	1.0	0.0	0.0
+11-88924373-G-T	missense_variant	rs104894314	TYR	TYR:missense_variant:rs104894314	0.930693069307	0.0693069306931	0.0
+11-88911446-G-A	missense_variant	rs61753253	TYR	TYR:missense_variant:rs61753253	1.0	0.0	0.0
+11-88911575-C-T	missense_variant	rs145513733	TYR	TYR:missense_variant:rs145513733	1.0	0.0	0.0
+11-88911836-C-T	missense_variant	.	TYR	TYR:missense_variant:.	1.0	0.0	0.0
+11-88911837-G-A	missense_variant	rs36006590	TYR	TYR:missense_variant:rs36006590	1.0	0.0	0.0
+11-88924382-C-T	lof_variant', 'stop_gained	rs62645904	TYR	TYR:lof_variant', 'stop_gained:rs62645904	1.0	0.0	0.0
+11-88911456-GCA-G	frameshift_variant', 'lof_variant	rs61753254	TYR	TYR:frameshift_variant', 'lof_variant:rs61753254	1.0	0.0	0.0
+11-88961122-C-G	missense_variant	rs62645914	TYR	TYR:missense_variant:rs62645914	1.0	0.0	0.0
+11-89017960-C-T	lof_variant', 'stop_gained	rs62645917	TYR	TYR:lof_variant', 'stop_gained:rs62645917	1.0	0.0	0.0
+11-89017961-G-A	missense_variant	rs1126809	TYR	TYR:missense_variant:rs1126809	0.0	1.0	0.0
+11-89018092-G-A	missense_variant	rs62645922	TYR	TYR:missense_variant:rs62645922	1.0	0.0	0.0
+11-89017965-G-T	missense_variant	rs62645919	TYR	TYR:missense_variant:rs62645919	1.0	0.0	0.0
+11-89018098-G-A	missense_variant	rs62645923	TYR	TYR:missense_variant:rs62645923	1.0	0.0	0.0
+11-88911350-C-T	missense_variant	rs61753184	TYR	TYR:missense_variant:rs61753184	0.970297029703	0.029702970297	0.0
+11-88911351-G-A	missense_variant	rs61753185	TYR	TYR:missense_variant:rs61753185	1.0	0.0	0.0
+11-89028444-T-TC	frameshift_variant', 'lof_variant	.	TYR	TYR:frameshift_variant', 'lof_variant:.	1.0	0.0	0.0
+11-89018108-A-G	missense_variant	.	TYR	TYR:missense_variant:.	1.0	0.0	0.0
+11-89028477-G-C	missense_variant	rs200780850	TYR	TYR:missense_variant:rs200780850	1.0	0.0	0.0
