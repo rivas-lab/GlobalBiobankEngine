@@ -36,7 +36,7 @@ def numpy2dict(ar):
         dict(
             (de[0],
              el[de[0]]['val'] if isinstance(de[1], list) else el[de[0]])
-            for de in ar.dtype.descr if de[0] != 'noval'
+            for de in ar.dtype.descr if de[0] != 'notused'
         )
         for el in ar]
 
