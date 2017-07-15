@@ -1290,10 +1290,13 @@ def get_gene_page_content(gene_id):
             #print(variants_in_gene)
             # Get some canonical transcript and corresponding info
             transcript_id = gene['canonical_transcript']
-            transcript = lookups.get_transcript(db, transcript_id)
-            variants_in_transcript = lookups.get_variants_in_transcript(db, transcript_id)
-            coverage_stats = lookups.get_coverage_for_transcript(db, transcript['xstart'] - EXON_PADDING, transcript['xstop'] + EXON_PADDING)
-            add_transcript_coordinate_to_variants(db, variants_in_transcript, transcript_id)
+            transcript = lookups.get_transcript(db, transcript_id, gene_id)
+            variants_in_transcript = lookups.get_variants_by_transcript_idx(
+                db, transcript_id, transcript['transcript_idx'])
+            coverage_stats = lookups.get_coverage_for_transcript(
+                db, transcript['xstart'] - EXON_PADDING, transcript['xstop'] + EXON_PADDING)
+            add_transcript_coordinate_to_variants(
+                db, variants_in_transcript, transcript_id, transcript['exons'])
 
             #print("\n\n\n\nVariants in gene")
             #print(variants_in_gene[0])

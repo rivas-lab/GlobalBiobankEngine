@@ -348,7 +348,7 @@ def get_gene_id_by_name(db, gene_name):
     return res[0]['gene_id']['val']
 
 
-def get_transcript(db, transcript_id):
+def get_transcript(db, transcript_id, gene_id=None):
     """
     e.g.,
     UI:
@@ -373,15 +373,16 @@ def get_transcript(db, transcript_id):
                     id_val=transcript_id,
                     idx_attr='transcript_idx'),
                 schema=config.TRANSCRIPT_LOOKUP_SCHEMA,
-                fetch=True)))[0]
+                fetch=True)[:1]))[0]
     res['exons'] = get_exons_in_transcript(db, transcript_id)
-    res['gene_id'] = db.iquery(
-        'between({gene_index_array}, {gene_idx}, {gene_idx})'.format(
-            gene_index_array=config.GENE_INDEX_ARRAY,
-            gene_idx=res['gene_idx']),
-        fetch=True,
-        atts_only=True,
-        schema=config.GENE_INDEX_SCHEMA)[0]['gene_id']['val']
+    if gene_id is None:
+        res['gene_id'] = db.iquery(
+            config.GENE_INDEX_LOOKUP_QUERY.format(gene_idx=res['gene_idx']),
+            fetch=True,
+            atts_only=True,
+            schema=config.GENE_INDEX_SCHEMA)[0]['gene_id']['val']
+    else:
+        res['gene_id'] = gene_id
     return res
 
 
@@ -634,7 +635,37 @@ def get_variants_in_transcript(db, transcript_id):
             db.iquery(
                 config.VARIANT_TRANSCRIPT_LOOKUP.format(
                     transcript_id=transcript_id),
-                schema=config.VARIANT_X_TRANSCRIPT_INDEX_SCHEMA,
+                schema=config.VARIANT_X_TRANSCRIPT_X_INDEX_SCHEMA,
+                fetch=True)),
+        transcript_id=transcript_id)
+
+
+def get_variants_by_transcript_idx(db, transcript_id, transcript_idx):
+    """
+    e.g.,
+    UI:
+      https://biobankengine.stanford.edu/gene/ENSG00000107404
+
+    MongoDB:
+      db.variants.find({'transcripts': 'ENST00000378891'},
+                       fields={'_id': False})
+
+    SciDB:
+      cross_join(
+        variant,
+        between(variant_transcript, null, null, 3694,
+                                    null, null, 3694),
+        variant.chrom,
+        variant_transcript.chrom,
+        variant.pos,
+        variant_transcript.pos);
+    """
+    return format_variants(
+        numpy2dict(
+            db.iquery(
+                config.VARIANT_TRANSCRIPT_IDX_LOOKUP.format(
+                    transcript_idx=transcript_idx),
+                schema=config.VARIANT_X_TRANSCRIPT_SCHEMA,
                 fetch=True)),
         transcript_id=transcript_id)
 
@@ -826,6 +857,7 @@ if __name__ == '__main__':
     # pp.pprint(get_variant_chrom_pos(db, 19, 11210912)) # TODO
     pp.pprint(get_variant_icd(db, 1, 39381448))
     pp.pprint(get_variants_by_id(db, (1039381448,)))
+    pp.pprint(get_variants_by_transcript_idx(db, 'ENST00000378891', 3694))
     pp.pprint(get_variants_chrom_pos_by_rsid_limit2(db, 'rs6025'))
     pp.pprint(get_variants_chrom_pos(db, 1, 39381448))
     pp.pprint(get_variants_in_gene(db, 'ENSG00000107404'))

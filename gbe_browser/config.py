@@ -699,6 +699,9 @@ VARIANT_X_ICD_X_INFO_SCHEMA = scidbpy.schema.Schema.fromstring("""
 # -- -
 # -- - Lookup: GENE - --
 # -- -
+GENE_INDEX_LOOKUP_QUERY = """
+  between({gene_index_array}, {{gene_idx}}, {{gene_idx}})""".format(
+      gene_index_array=GENE_INDEX_ARRAY)
 
 GENE_BETWEEN_QUERY = """
   cross_join(
@@ -841,7 +844,7 @@ VARIANT_X_GENE_INDEX_SCHEMA = scidbpy.schema.Schema.fromstring(
                                        GENE_INDEX_SCHEMA.index('<') + 1:
                                        GENE_INDEX_SCHEMA.index('>')]))))
 
-VARIANT_X_TRANSCRIPT_INDEX_SCHEMA = scidbpy.schema.Schema.fromstring(
+VARIANT_X_TRANSCRIPT_X_INDEX_SCHEMA = scidbpy.schema.Schema.fromstring(
     VARIANT_TRANSCRIPT_SCHEMA.replace(
         '<',
         '<{},'.format(
@@ -852,6 +855,26 @@ VARIANT_X_TRANSCRIPT_INDEX_SCHEMA = scidbpy.schema.Schema.fromstring(
                                    TRANSCRIPT_INDEX_SCHEMA[
                                        TRANSCRIPT_INDEX_SCHEMA.index('<') + 1:
                                        TRANSCRIPT_INDEX_SCHEMA.index('>')]))))
+
+VARIANT_TRANSCRIPT_IDX_LOOKUP = """
+  cross_join(
+    {variant_array},
+    between(
+      {variant_transcript_array}, null, null, {{transcript_idx}},
+                                  null, null, {{transcript_idx}}),
+    {variant_array}.chrom,
+    variant_transcript.chrom,
+    {variant_array}.pos,
+    variant_transcript.pos)""".format(
+        variant_array=VARIANT_ARRAY,
+        variant_transcript_array=VARIANT_TRANSCRIPT_ARRAY)
+
+VARIANT_X_TRANSCRIPT_SCHEMA = scidbpy.schema.Schema.fromstring(
+    VARIANT_TRANSCRIPT_SCHEMA.replace(
+        '<',
+        '<{},'.format(
+            VARIANT_SCHEMA[VARIANT_SCHEMA.index('<') + 1:
+                           VARIANT_SCHEMA.index('>')])))
 
 VARIANT_CSQ = ('Allele',
                'Consequence',
