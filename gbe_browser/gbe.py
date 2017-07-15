@@ -649,7 +649,7 @@ def run_mrp(lof=True, missense=True, genes=None, fdr=5, phenidarr = ['ICD1462','
     if genes != None:
         # Find variants with the given annotation
         b = models.QueryGenome(category=annotations)
-        key = '_'.join(annotations) + '_' + '_'.join(phenidarr) + '_' + '_'.join(genes)
+        key = 't-mrp-' + '_'.join(annotations) + '_' + '_'.join(phenidarr) + '_' + '_'.join(genes)
         # Generate relevant files
         betas, se, pvalues, annotations, protein_annotations, variant_ids, icd, gene_return, rsids, alts, allele_frequencies = b.query_genome(genes,phenidarr)
         numpy.save('s3/' + key + '.betas', betas)
