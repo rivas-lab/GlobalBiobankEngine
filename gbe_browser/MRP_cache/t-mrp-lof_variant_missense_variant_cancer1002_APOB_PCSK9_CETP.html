@@ -1,11 +1,161 @@
 
-{% extends "layout.html" %}
-{% block body %}
+<!doctype html>
+
+<style>
+
+
+.footer {
+
+    height: auto;
+    text-align: center;
+
+    position: fixed;
+    bottom: 0%;
+    min-width: 100%;
+
+
+
+}
+
+
+
+</style>
+
+<head>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico" />
+    <title>Global Biobank Engine</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel=stylesheet type=text/css href="/static/genome.css">
+    <link rel=stylesheet type=text/css href="/static/typeaheadjs.css">
+    <link rel=stylesheet type=text/css href="/static/css/font-awesome.min.css">
+
+    <script type="text/javascript" src="/static/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="/static/bootstrap.min.js"></script>
+
+    <script type="text/javascript" src="/static/typeahead.bundle.min.js"></script>
+
+    <script type="text/javascript" src="/static/jquery.tablesorter.min.js"></script>
+    <script type="text/javascript" src="/static/jquery.tablesorter.pager.js"></script>
+    <link rel=stylesheet type=text/css href="/static/theme.default.css">
+    <script type="text/javascript" src="/static/underscore-min.js"></script>
+
+    <link rel=stylesheet type=text/css href="/static/bootstrap.min.css">
+    <link rel=stylesheet type=text/css href="/static/style.css">
+
+    <script type="text/javascript" src="/static/d3.v3.min.js"></script>
+    <script type="text/javascript" src="/static/index.js"></script>
+    <script type="text/javascript" src="/static/exac.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css">
+
+<!-- Latest compiled and minified JavaScript -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-68395741-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+    <script type="text/javascript">
+        number_of_samples = 60706;
+        release_number = 0.3;
+        number_of_samples_full = 91796;
+        $(document).ready(function() {
+            $('.number_samples').html(Number(number_of_samples).toLocaleString('en'));
+            $('.number_samples_full').html(Number(number_of_samples_full).toLocaleString('en'));
+            $('.release_number').html(Number(release_number).toLocaleString('en'));
+        });
+        $(function() {
+            var bestPictures = new Bloodhound({
+              datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+              queryTokenizer: Bloodhound.tokenizers.whitespace,
+              remote: '/autocomplete/%QUERY'
+            });
+
+            bestPictures.initialize();
+
+            $('.awesomebar').typeahead(
+                {
+                    autoselect: true,
+                },
+                {
+                    name: 'best-pictures',
+                    displayKey: 'value',
+                    source: bestPictures.ttAdapter(),
+                }
+            );
+            $('.awesomebar').bind('typeahead:selected', function(obj, datum) {
+                window.location.href = '/awesome?query=' + datum.value;
+            });
+        });
+    </script>
+
+
+</head>
+<body>
+<nav class="navbar navbar-default" role="navigation" style="background: #8C1515;">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle pull-right" data-toggle="collapse" data-target="#navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/" style="color: white; font-weight: bold; float: left; font-size: 15px;">Global Biobank Engine</a>
+            <div class="col-xs-5" id="navbar_form_container">
+                <form action="/awesome" class="navbar-form" role="search">
+                    <div class="form-group" id="navbar-awesomebar">
+                        <input type="submit" style="display: none;"/>
+                        <input id="navbar-searchbox-input" name="query" class="form-control awesomebar" type="text" placeholder="Gene, transcript, variant, or region"/>
+                        <input type="submit" style="position: absolute; left: -9999px"/>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/about" style="color: white; font-weight: bold;">About</a></li>
+                <li><a href="/downloads" style="color: white; font-weight: bold;">Downloads</a></li>
+                <li><a href="/terms" style="color: white; font-weight: bold;">Terms</a></li>
+                <li><a href="/contact" style="color: white; font-weight: bold;">Contact</a></li>
+                <li><a href="/faq" style="color: white; font-weight: bold;">FAQ</a></li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     <script type="text/javascript">
-        window.plot_data = {{ plot_data|tojson|safe }};
-        window.gene_data = {{ gene_data|tojson|safe }};
-        window.fdr_data = {{ fdr_data|tojson|safe }};
+        window.plot_data = [[]];
+        window.gene_data = [[{"0": "1.00", "gene": "APOB"}, {"0": "1.00", "gene": "PCSK9"}, {"0": "1.00", "gene": "CETP"}]];
+        window.fdr_data = [];
     </script>
 
 
@@ -101,11 +251,11 @@ body {
 <h1>Summary</h1>
  <div class="panel panel-primary">
       <div class="panel-heading">Aggregate</div>
-      <div class="panel-body">For the analysis you explored the log10 Bayes Factor for non-zero effect cluster is {{ log10_bf }}. After applying the mixture model to the data we have evidence of {{cluster_num}} cluster(s). </p></div>
+      <div class="panel-body">For the analysis you explored the log10 Bayes Factor for non-zero effect cluster is -4.52. After applying the mixture model to the data we have evidence of 1 cluster(s). </p></div>
     </div>
  <div class="panel panel-primary">
       <div class="panel-heading">Variants</div>
- <div class="panel-body">At false discovery rate (FDR) control of {{fdr}}: {% for fdr_var in fdr_data %}<a href="../variant/{{ fdr_var.split('-')[0] + '-' + fdr_var.split('-')[1] }}"> {{ fdr_var }}</a>{% endfor %}.</div>
+ <div class="panel-body">At false discovery rate (FDR) of 0.01 we have .</div>
 </div>
 
 <script>
@@ -160,7 +310,7 @@ plot_data.forEach(function(data){
     d.total = d.ages[d.ages.length-1].y1;
   });
 
-//  data.sort(function(a, b) { return b.total - a.total; });
+  data.sort(function(a, b) { return b.total - a.total; });
 
   y.domain(data.map(function(d) { return d.variant + ":" + d.varid; }));
   x.domain([0, d3.max(data, function(d) { return d.total; })]);
@@ -352,33 +502,33 @@ gene_data.forEach(function(data){
         //num_figs = 2
     </script>
 
-  	  {% if num_figs %}
+  	  
 <!--- <h1> Cluster Effect Size Estimates </h1> -->
 <div class="panel panel-info">
       <div class="panel-heading">Model summary</div>
-      <div class="panel-body"> Log10 Bayes Factor : {{ log10_bf }}</div>
-      <div class="panel-body">Clusters : {{ cluster_num }}</div>
+      <div class="panel-body"> Log10 Bayes Factor : -4.52</div>
+      <div class="panel-body">Clusters : 1</div>
     </div>
 
-  {% for n in num_figs %}
-    <h2> Cluster {{ n[0] }} </h2> 
-      <div id="cluster_{{ n[0] }}"></div>
+  
+    <h2> Cluster 0 </h2> 
+      <div id="cluster_0"></div>
 <div class="svg-container">
 <script>
 
 //var data = [["A",0.012], ["B",-0.025], ["C",0.008], ["D",0.023], ["E",-0.009], ["F", 0.005]];
-//console.log({{ n[1]|tojson|safe }});
-var data = {{ n[1]|tojson|safe }};
+//console.log([["cancer1002", 0.0, 0.0, 0.0]]);
+var data = [["cancer1002", 0.0, 0.0, 0.0]];
 console.log(data);
 
 
 
-d3.select("#cluster_".concat("{{ n[0] }}"))
+d3.select("#cluster_".concat("0"))
   .datum(data)
     .call(columnChart()
-      .width(1200)
+      .width(960)
       .height(500)
-      .x(function(d, i) { return d[0]; })
+      .x(function(d, i) { return String(d[0]); })
      // .x(function(d, i) { return i; })
       .y(function(d, i) { return d[1]; }));
 
@@ -569,12 +719,16 @@ function columnChart() {
 
 </script>
 
-  {% endfor %}
+  
 
-	   {% endif %}
+	   
 
 
 </div>
 </div>
 
-{% endblock %}
+
+
+
+
+</body>
