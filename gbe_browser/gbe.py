@@ -1588,11 +1588,11 @@ def mrp(key):
             for j in range(5, len(var_info)):
                 variant["%s" % (j-4)] = var_info[j]
             if float(var_info[5]) >= .99:
-                        pass
+                        continue
             nullmembership.append(float(var_info[5]))
             variants.append(variant)
         idxnewarr = [b[0] for b in sorted(enumerate(nullmembership),key=lambda i:i[1], reverse = True)]
-        variants = [variants[i] for i in idxnewarr]
+        variants = [variants[idxnewarr[i]] for i in range(0,len(idxnewarr))]
         admixture_data.append(variants)
     with open("./MRP_out/"+key+".mcmc.gene.posteriors", "r") as inFile:
         admixture_datagene = []
