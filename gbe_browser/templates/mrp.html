@@ -160,7 +160,7 @@ plot_data.forEach(function(data){
     d.total = d.ages[d.ages.length-1].y1;
   });
 
-  data.sort(function(a, b) { return b.total - a.total; });
+//  data.sort(function(a, b) { return b.total - a.total; });
 
   y.domain(data.map(function(d) { return d.variant + ":" + d.varid; }));
   x.domain([0, d3.max(data, function(d) { return d.total; })]);
