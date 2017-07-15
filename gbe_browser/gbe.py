@@ -652,6 +652,17 @@ def run_mrp(lof=True, missense=True, genes=None, fdr=5, phenidarr = ['ICD1462','
         key = '_'.join(annotations) + '_' + '_'.join(phenidarr) + '_' + '_'.join(genes)
         # Generate relevant files
         betas, se, pvalues, annotations, protein_annotations, variant_ids, icd, gene_return, rsids, alts, allele_frequencies = b.query_genome(genes,phenidarr)
+        numpy.save('s3/' + key + '.betas', betas)
+        numpy.save('s3/' + key + '.se', se)
+        numpy.save('s3/' + key + '.pvalues', pvalues)
+        numpy.save('s3/' + key + '.annotations', annotations)
+        numpy.save('s3/' + key + '.protein_annotations', protein_annotations)
+        numpy.save('s3/' + key + '.variant_ids', variant_ids)
+        numpy.save('s3/' + key + '.icd', icd)
+        numpy.save('s3/' + key + '.gene_return', gene_return)
+        numpy.save('s3/' + key + '.rsids', rsids)
+        numpy.save('s3/' + key + '.alts', alts)
+        numpy.save('s3/' + key + '.allele_frequencies', allele_frequencies)
         # Reshape betas from genome query
         C = numpy.matlib.eye(betas.shape[1])
         annotvec = [str(annotations[i].strip('"').strip('[').strip(']').strip("'")) for i in range(0,len(annotations))]
@@ -1177,15 +1188,11 @@ def runMRP_page():
         functionfdr = request.form['functionfdr']
         functionfdr = str(functionfdr)
         functionphen = request.form.getlist('phenotypes[]')
-      #  print(functionphen)
         phenidarr = []
         for phenname in functionphen:
             phenidarr.append(str(phenname))
-       # print(phenidarr)
         fdr = functionfdr.strip('[')
         fdr = fdr.strip(']')
-       # print("fdrhtml",fdr)
-       # print("functionfdr",functionfdr)
         if "missense_variant" in function:
             missense = True
         if "lof_variant" in function:
@@ -1232,12 +1239,25 @@ def runMRP_page():
             genes[i] = genes[i].rstrip()
             if len(genes[i]) == 0:
                 genes.pop(i)
-        #print(genes)
-        # Run MRP function
-        [key,lbf,clusterval, genedat] = run_mrp(lof=lof, missense=missense, genes=genes, fdr=fdr, phenidarr=phenidarr)
-        # Send results of MRP function to mrp page
-
-        return redirect('/mrp/%s' % key)
+        # Caching the page 
+        annotations = []
+        # Add in the selected annotations to the category list 
+        if lof:
+            annotations.append('lof_variant')
+        if missense:
+            annotations.append('missense_variant')
+        key = '_'.join(annotations) + '_' + '_'.join(phenidarr) + '_' + '_'.join(genes)
+        cache_key = 't-mrp-{}'.format(key)
+        # if not cached 
+        if t is None:
+            if os.path.exists(os.path.join('MRP_cache','{}.html'.format(cache_key))):
+                return  open(os.path.join('MRP_cache','{}.html'.format(cache_key))).read()
+            elif os.path.exists(os.path.join("MRP_out/",key,".mcmc.posteriors")):
+                pass
+            else:
+                [key,lbf,clusterval, genedat] = run_mrp(lof=lof, missense=missense, genes=genes, fdr=fdr, phenidarr=phenidarr)
+        print("REndering mrp page: %s" % cache_key)        # Send results of MRP function to mrp page
+        return redirect('/mrp/%s' % cache_key)
 
 
     form = LoginForm()
@@ -1578,12 +1598,10 @@ def mrp(key):
             geneid = gene_info[0]
             gene = {}
             gene["gene"] = geneid
-           # print(len(gene_info))
             for j in range(1, int((len(gene_info)-1)/3)+1):
                 gene["%s" % (j-1)] = gene_info[j]
             genes.append(gene)
         admixture_datagene.append(genes)
-   # print("admixturedatagene",admixture_datagene)
     with open("./MRP_out/" + key + ".lbf","r") as inFile:
         for line in inFile.readlines():
             line = line.strip()
@@ -1597,7 +1615,6 @@ def mrp(key):
         header = header.split('\t')
         for j in range(1,len(header)):
             if j % 3 == 1:
-#                headerarr.append(j)
                 headeritem = header[j].decode('utf8').replace(" ","")
                 headeritem = headeritem.rstrip(header[j][-3:])
                 headerarr.append(headeritem)
@@ -1614,7 +1631,6 @@ def mrp(key):
                     headeritem = header[j].decode('utf8').replace(" ","")
                     headeritem = headeritem.rstrip(header[j][-3:])
                     tmp.append(headeritem.encode("ascii"))
-                   # print(headeritem)
                     tmp.append(float(clust_info[j]))
                 if j % 3 == 2:
                     tmp.append(float(clust_info[j]))
@@ -1630,7 +1646,7 @@ def mrp(key):
         line = line.split()
         fdr_data.append(line[0])
     try:
-        return render_template(
+        t = render_template(
             'mrp.html',
             plot_data=admixture_data,
             gene_data=admixture_datagene,
@@ -1641,6 +1657,11 @@ def mrp(key):
             fdr_data=fdr_data
    #         phenid_arr=headerarr
             )
+        cache.set(key, t, timeout = 0)
+        f = io.open(os.path.join('MRP_cache','{}.html'.format(str(key))), 'w', encoding="utf-8")
+        f.write(t)
+        f.close()
+        return t
     except Exception as e:
         print('Failed: %s' % e)
         abort(404)
