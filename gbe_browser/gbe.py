@@ -1248,6 +1248,7 @@ def runMRP_page():
             annotations.append('missense_variant')
         key = '_'.join(annotations) + '_' + '_'.join(phenidarr) + '_' + '_'.join(genes)
         cache_key = 't-mrp-{}'.format(key)
+        t = cache.get(cache_key)
         # if not cached 
         if t is None:
             if os.path.exists(os.path.join('MRP_cache','{}.html'.format(cache_key))):
