@@ -703,8 +703,8 @@ def run_mrp(lof=True, missense=True, genes=None, fdr=5, phenidarr = ['ICD1462','
         lbfout.write(str(lbf))
         lbfout.close()
         clustvalue = 1
-        if lbf > 1 and (lbf - lbf2) > 1 and lbf2 > 1:
-#        if lbf > 1:
+#        if lbf > 1 and (lbf - lbf2) > 1 and lbf2 > 0:
+        if lbf > 1:
             [BIC, AIC, genedat] = mrpmm(betas,se, C, annotvec, gene_return, rsids, variant_ids,clustminval,key,C, numpy.linalg.inv(C), icd, fdr=fdr, niter=201,burn=100,thinning=1,verbose=True, outpath = './MRP_out/', protectivescan=True)
             print("log bayes factor: ",lbf)
             clustvalue = clustminval
