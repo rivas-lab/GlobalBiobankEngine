@@ -1,6 +1,7 @@
 from __future__ import division
 import sys
 import itertools
+import io
 import json
 import os
 import pymongo
@@ -1566,6 +1567,9 @@ def metapage(key):
 def mrp(key):
     if not check_credentials():
         return redirect(url_for('login'))
+    t = cache.get(key)
+    if t is not None:
+        return t
     db = get_db()
     with open("./MRP_out/"+key+".mcmc.posteriors", "r") as inFile:
         probabilities = []
