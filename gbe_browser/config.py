@@ -34,7 +34,7 @@ QT_GLOB = os.path.join(
 ICD_INFO_FILE = os.path.join(GBE_DATA_PATH, 'icdstats', 'icdinfo.txt')
 
 ICD_INFO_ARRAY = 'icd_info'
-ICD_INFO_SCHEMA = '<icd:string, Case:int64, Name:string>[icd_idx = 0:*:0:20]'
+ICD_INFO_SCHEMA = '<icd:string, Case:int64, Name:string>[icd_idx = 0:*:0:80]'
 
 ICD_ARRAY = 'icd'
 ICD_SCHEMA = """
@@ -47,7 +47,7 @@ ICD_SCHEMA = """
    log10pvalue: double,
    l95or:       double,
    u95or:       double>
-  [icd_idx   = 0:*:0:20;
+  [icd_idx   = 0:*:0:80;
    chrom     = 1:25:0:1;
    pos       = 0:*:0:10000000;
    pdecimal  = 0:3:0:1;
