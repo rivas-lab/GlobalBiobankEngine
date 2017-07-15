@@ -187,7 +187,14 @@ def get_variant_icd(db, chrom, pos):
       db.icd.find({'xpos': '1039381448'}, fields={'_id': False})
 
     SciDB:
-      between(icd, null, 1, 39381448, null, null, 1, 39381448, null);
+      equi_join(
+        between(icd, null, 1, 39381448, null,
+                     null, 1, 39381448, null),
+        icd_info,
+        'left_names=icd_idx',
+        'right_names=icd_idx',
+        'keep_dimensions=1',
+        'algorithm=hash_replicate_right');
     """
     return numpy2dict(
         db.iquery(
@@ -210,7 +217,7 @@ def get_icd_significant_variant(db, icd_id, cutoff=0.001):
       db.variants.find({'xpos': '1039381448'}, fields={'_id': False})
 
     SciDB:
-      cross_join(
+      equi_join(
         project(variant,
                 rsid,
                 ref,
@@ -228,10 +235,10 @@ def get_icd_significant_variant(db, icd_id, cutoff=0.001):
             filter(icd_info, icd = 'RH117'),
             icd.icd_idx,
             icd_info.icd_idx) as icd_join,
-        variant.chrom,
-        icd_join.chrom,
-        variant.pos,
-        icd_join.pos);
+        'left_names=chrom,pos',
+        'right_names=chrom,pos',
+        'keep_dimensions=1',
+        'algorithm=merge_right_first');
     """
     pdecimal = config.ICD_PVALUE_MAP.get(cutoff, 0)
     return format_variants(
