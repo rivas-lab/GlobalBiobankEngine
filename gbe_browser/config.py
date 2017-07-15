@@ -611,21 +611,45 @@ ICD_PVALUE_LOOKUP_QUERY = """
         icd_array=ICD_ARRAY,
         icd_info_array=ICD_INFO_ARRAY)
 
-ICD_CHROM_POS_LOOKUP_QUERY = """
-  cross_join(
-    between({icd_array}, null, {{chrom}}, {{pos}}, null, null,
-                         null, {{chrom}}, {{pos}}, null, null),
-    {icd_info_array},
-    {icd_array}.icd_idx,
-    {icd_info_array}.icd_idx)""".format(
-        icd_array=ICD_ARRAY,
-        icd_info_array=ICD_INFO_ARRAY)
-
 ICD_X_INFO_SCHEMA = scidbpy.schema.Schema.fromstring(
     ICD_SCHEMA.replace(
         '>',
         ',{}>'.format(ICD_INFO_SCHEMA[ICD_INFO_SCHEMA.index('<') + 1:
                                       ICD_INFO_SCHEMA.index('>')])))
+
+
+ICD_CHROM_POS_LOOKUP_QUERY = """
+  equi_join(
+    between({icd_array}, null, {{chrom}}, {{pos}}, null, null,
+                         null, {{chrom}}, {{pos}}, null, null),
+    {icd_info_array},
+    'left_names=icd_idx',
+    'right_names=icd_idx',
+    'keep_dimensions=1',
+    'algorithm=hash_replicate_right')""".format(
+        icd_array=ICD_ARRAY,
+        icd_info_array=ICD_INFO_ARRAY)
+
+ICD_CHROM_POS_LOOKUP_SCHEMA = scidbpy.schema.Schema.fromstring("""
+  <icd_idx:     int64 not null,
+   icdind:      int64,
+   affyid:      string,
+   or_val:      double,
+   se:          double,
+   pvalue:      double,
+   lor:         double,
+   log10pvalue: double,
+   l95or:       double,
+   u95or:       double,
+   chrom:       int64 not null,
+   pos:         int64 not null,
+   pdecimal:    int64 not null,
+   synthetic:   int64 not null,
+   icd:         string,
+   Case:        int64,
+   Name:        string>
+  [notused0;
+   notused1]""")
 
 ICD_VARIANT_LOOKUP_QUERY = """
   equi_join(
@@ -648,8 +672,8 @@ ICD_VARIANT_LOOKUP_QUERY = """
         {icd_info_array}.icd_idx) as icd_join,
     'left_names=chrom,pos',
     'right_names=chrom,pos',
-    'algorithm=merge_right_first',
-    'keep_dimensions=1')""".format(
+    'keep_dimensions=1',
+    'algorithm=merge_right_first')""".format(
         icd_array=ICD_ARRAY,
         icd_info_array=ICD_INFO_ARRAY,
         variant_array=VARIANT_ARRAY)

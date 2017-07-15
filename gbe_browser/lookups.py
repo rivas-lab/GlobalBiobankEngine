@@ -192,8 +192,9 @@ def get_variant_icd(db, chrom, pos):
     return numpy2dict(
         db.iquery(
             config.ICD_CHROM_POS_LOOKUP_QUERY.format(chrom=chrom, pos=pos),
-            schema=config.ICD_X_INFO_SCHEMA,
-            fetch=True))
+            schema=config.ICD_CHROM_POS_LOOKUP_SCHEMA,
+            fetch=True,
+            atts_only=True))
 
 
 def get_icd_significant_variant(db, icd_id, cutoff=0.001):
