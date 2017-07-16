@@ -286,7 +286,6 @@ GENE_SCHEMA = """
    chrom          = 1:25:0:1;
    start          = 0:*:0:10000000;
    stop           = 0:*:0:10000000]"""
-GENE_SCHEMA_OBJ = scidbpy.schema.Schema.fromstring(GENE_SCHEMA)
 
 GENE_STORE_QUERY = """
   store(
@@ -754,9 +753,19 @@ GENE_IDX_SCHEMA = scidbpy.schema.Schema.fromstring(
                                 TRANSCRIPT_INDEX_SCHEMA.index('>')])))
 
 GENE_REGION_QUERY = """
-  between({gene_array}, null, null, {{chrom}}, null    , {{start}},
-                        null, null, {{chrom}}, {{stop}}, null)""".format(
-                            gene_array=GENE_ARRAY)
+  cross_join(
+    between({gene_array}, null, null, {{chrom}}, null    , {{start}},
+                          null, null, {{chrom}}, {{stop}}, null),
+    {gene_index_array},
+    {gene_array}.gene_idx,
+    {gene_index_array}.gene_idx)""".format(gene_array=GENE_ARRAY,
+                                           gene_index_array=GENE_INDEX_ARRAY)
+
+GENE_REGION_SCHEMA = scidbpy.schema.Schema.fromstring(
+    GENE_SCHEMA.replace(
+        '>',
+        ',{}>'.format(GENE_INDEX_SCHEMA[GENE_INDEX_SCHEMA.index('<') + 1:
+                                        GENE_INDEX_SCHEMA.index('>')])))
 
 GENE_ID_BY_NAME_QUERY = """
   project(

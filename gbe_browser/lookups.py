@@ -350,14 +350,17 @@ def get_genes_in_region(db, chrom, start, stop):
                      'xstop' : {'$gte': 1650727514}}, fields={'_id': False})
 
     SciDB:
-      between(gene, null, 16, null,     50727514,
-                    null, 16, 50766988, null);
+      cross_join(between(gene, null, 16, null,     50727514,
+                               null, 16, 50766988, null),
+                 gene_index,
+                 gene.gene_idx,
+                 gene_index.gene_idx);
     """
     return numpy2dict(
         db.iquery(
             config.GENE_REGION_QUERY.format(
                 chrom=chrom, start=start, stop=stop),
-            schema=config.GENE_SCHEMA_OBJ,
+            schema=config.GENE_REGION_SCHEMA,
             fetch=True))
 
 
