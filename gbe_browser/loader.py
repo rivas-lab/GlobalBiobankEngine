@@ -190,21 +190,6 @@ class Loader:
         logger.info('Pipe:return code:%s', pipe.poll())
         logger.info('Array:%s', config.GENE_INDEX_ARRAY)
 
-    def store_dbnsfp(self):
-        self.store(config.DBNSFP_FILE,
-                   config.DBNSFP_STORE_QUERY,
-                   config.DBNSFP_ARRAY)
-
-    def store_canonical(self):
-        self.store(config.CANONICAL_FILE,
-                   config.CANONICAL_STORE_QUERY,
-                   config.CANONICAL_ARRAY)
-
-    def store_omim(self):
-        self.store(config.OMIM_FILE,
-                   config.OMIM_STORE_QUERY,
-                   config.OMIM_ARRAY)
-
     def store_transcript_index(self):
         fifo_name = self.fifo_names[0]
         pipe = Loader.make_pipe(
@@ -220,6 +205,21 @@ class Loader:
         logger.info('Query:done')
         logger.info('Pipe:return code:%s', pipe.poll())
         logger.info('Array:%s', config.TRANSCRIPT_INDEX_ARRAY)
+
+    def store_dbnsfp(self):
+        self.store(config.DBNSFP_FILE,
+                   config.DBNSFP_STORE_QUERY,
+                   config.DBNSFP_ARRAY)
+
+    def store_canonical(self):
+        self.store(config.CANONICAL_FILE,
+                   config.CANONICAL_STORE_QUERY,
+                   config.CANONICAL_ARRAY)
+
+    def store_omim(self):
+        self.store(config.OMIM_FILE,
+                   config.OMIM_STORE_QUERY,
+                   config.OMIM_ARRAY)
 
     def store_gene(self):
         fifo_name = self.fifo_names[0]
@@ -441,10 +441,10 @@ if __name__ == '__main__':
     loader.insert_qt()
 
     loader.store_gene_index()
+    loader.store_transcript_index()
     loader.store_dbnsfp()
     loader.store_canonical()
     loader.store_omim()
-    loader.store_transcript_index()
     loader.store_gene()
     loader.store_transcript()
     loader.store_exon()

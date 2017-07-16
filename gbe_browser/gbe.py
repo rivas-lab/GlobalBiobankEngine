@@ -1281,22 +1281,32 @@ def get_gene_page_content(gene_id):
         cache_key = 't-gene-{}'.format(gene_id)
         t = cache.get(cache_key)
         if t is None:
-            gene = lookups.get_gene(db, gene_id)
+            gene = lookups.get_gene_by_id(db, gene_id)
             if gene is None:
                 abort(404)
             #print(gene_id)
-            variants_in_gene = lookups.get_variants_in_gene(db, gene_id)
-            transcripts_in_gene = lookups.get_transcripts_in_gene(db, gene_id)
+            gene_idx = gene['gene_idx']
+
+            variants_in_gene = lookups.get_variants_by_gene_idx(db, gene_idx, gene_id)
+
+            transcripts_in_gene = lookups.get_transcripts_by_gene_idx(db, gene_idx)
+
             #print(variants_in_gene)
             # Get some canonical transcript and corresponding info
+
             transcript_id = gene['canonical_transcript']
-            transcript = lookups.get_transcript(db, transcript_id, gene_id)
+            transcript_idx = gene['transcript_idx']
+            transcript = lookups.get_transcript_by_idx(db, transcript_idx)
+            transcript['transcript_id'] = transcript_id
+            transcript['exons'] = lookups.get_exons(db, transcript_idx)
+
             variants_in_transcript = lookups.get_variants_by_transcript_idx(
-                db, transcript_id, transcript['transcript_idx'])
+                db, transcript_idx, transcript_id)
+
             coverage_stats = lookups.get_coverage_for_transcript(
                 db, transcript['xstart'] - EXON_PADDING, transcript['xstop'] + EXON_PADDING)
-            add_transcript_coordinate_to_variants(
-                db, variants_in_transcript, transcript_id, transcript['exons'])
+
+            add_transcript_coordinate_to_variants(variants_in_transcript, transcript)
 
             #print("\n\n\n\nVariants in gene")
             #print(variants_in_gene[0])
@@ -1335,19 +1345,24 @@ def transcript_page(transcript_id):
         return redirect(url_for('login'))
     db = get_db()
     try:
-        transcript = lookups.get_transcript(db, transcript_id)
-
         cache_key = 't-transcript-{}'.format(transcript_id)
         t = cache.get(cache_key)
         if t is None:
+            transcript = lookups.get_transcript_gene(db, transcript_id)
+            transcript_idx = transcript['transcript_idx']
+            transcript['exons'] = lookups.get_exons(db, transcript_idx)
 
-            gene = lookups.get_gene(db, transcript['gene_id'])
-            gene['transcripts'] = lookups.get_transcripts_in_gene(db, transcript['gene_id'])
-            variants_in_transcript = lookups.get_variants_in_transcript(db, transcript_id)
+            gene_idx = transcript['gene_idx']
+            gene = lookups.get_gene_by_idx(db, gene_idx)
+            gene['transcripts'] = lookups.get_transcripts_id_by_gene_idx(db, gene_idx)
 
-            coverage_stats = lookups.get_coverage_for_transcript(db, transcript['xstart'] - EXON_PADDING, transcript['xstop'] + EXON_PADDING)
+            variants_in_transcript = lookups.get_variants_by_transcript_idx(
+                db, transcript_idx, transcript_id)
 
-            add_transcript_coordinate_to_variants(db, variants_in_transcript, transcript_id)
+            coverage_stats = lookups.get_coverage_for_transcript(
+                db, transcript['xstart'] - EXON_PADDING, transcript['xstop'] + EXON_PADDING)
+
+            add_transcript_coordinate_to_variants(variants_in_transcript, transcript)
 
             t = render_template(
                 'transcript.html',
@@ -1503,7 +1518,7 @@ def text_page():
     query = request.args.get('text')
     datatype, identifier = lookups.get_awesomebar_result(db, query)
     if datatype in ['gene', 'transcript']:
-        gene = lookups.get_gene(db, identifier)
+        gene = lookups.get_gene_by_id(db, identifier)
         link = "http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr%(chrom)s%%3A%(start)s-%(stop)s" % gene
         output = '''Searched for %s. Found %s.
 %s; Canonical: %s.

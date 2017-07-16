@@ -14,7 +14,7 @@ METRICS = [
 ]
 
 
-def add_transcript_coordinate_to_variants(db, variant_list, transcript_id, exons=None):
+def add_transcript_coordinate_to_variants(variant_list, transcript):
     """
     Each variant has a 'xpos' and 'pos' positional attributes.
     This method takes a list of variants and adds a third position: the "transcript coordinates".
@@ -39,11 +39,9 @@ def add_transcript_coordinate_to_variants(db, variant_list, transcript_id, exons
     Edits variant_list in place; no return val
     """
 
+    transcript_id = transcript['transcript_id']
     # make sure exons is sorted by (start, end)
-    if exons is None:
-        import lookups
-        exons = lookups.get_exons_in_transcript(db, transcript_id)
-    exons = sorted(exons, key=itemgetter('start', 'stop'))
+    exons = sorted(transcript['exons'], key=itemgetter('start', 'stop'))
 
     # offset from start of base for exon in ith position (so first item in this list is always 0)
     exon_offsets = [0 for i in range(len(exons))]

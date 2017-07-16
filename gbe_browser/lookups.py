@@ -34,9 +34,21 @@ REGION_RE3 = re.compile(r'^(\d+|X|Y|M|MT)$')
 REGION_RE4 = re.compile(r'^(\d+|X|Y|M|MT)\s*[-:]\s*(\d+)-([ATCG]+)-([ATCG]+)$')
 
 
-def numpy2dict(ar):
-    """Convert SciDB NumPy array result to Python dictionary and populate
+def numpy2dict0(ar):
+    """Convert SciDB NumPy record result to Python dictionary and populate
     nullable attributes with values (discards null codes).
+
+    """
+    el = ar[0]
+    return dict(
+        (de[0],
+         el[de[0]]['val'] if isinstance(de[1], list) else el[de[0]])
+        for de in ar.dtype.descr if de[0] != 'notused')
+
+
+def numpy2dict(ar):
+    """Convert SciDB NumPy array result to a list of Python dictionary and
+    populate nullable attributes with values (discards null codes).
 
     """
     return [
@@ -81,10 +93,15 @@ def format_variants(variants, add_ann=False, gene_id=None, transcript_id=None):
     return variants
 
 
+def format_gene(gene):
+    gene['xstart'] = gene['chrom'] * XOFF + gene['start']
+    gene['xstop'] = gene['chrom'] * XOFF + gene['stop']
+    return gene
+
+
 def format_genes(genes):
     for gene in genes:
-        gene['xstart'] = gene['chrom'] * XOFF + gene['start']
-        gene['xstop'] = gene['chrom'] * XOFF + gene['stop']
+        format_gene(gene)
     return genes
 
 
@@ -251,7 +268,7 @@ def get_icd_significant_variant(db, icd_id, cutoff=0.001):
 # -- -
 # -- - GENE - --
 # -- -
-def get_gene(db, gene_id):
+def get_gene_by_id(db, gene_id):
     """
     e.g.,
     UI:
@@ -261,20 +278,22 @@ def get_gene(db, gene_id):
       db.genes.find({'gene_id': 'ENSG00000107404'}, fields={'_id': False})
 
     SciDB:
-      cross_join(gene,
-                 filter(gene_index, gene_id = 'ENSG00000107404'),
-                 gene.gene_idx,
-                 gene_index.gene_idx);
+      cross_join(
+        cross_join(gene,
+                   filter(gene_index, gene_id = 'ENSG00000107404'),
+                   gene.gene_idx,
+                   gene_index.gene_idx),
+        transcript_index,
+        gene.transcript_idx,
+        transcript_index.transcript_idx)
     """
-    return numpy2dict(
+    res = numpy2dict0(
         db.iquery(
-            config.LOOKUP_QUERY.format(main_array=config.GENE_ARRAY,
-                                       index_array=config.GENE_INDEX_ARRAY,
-                                       id_attr='gene_id',
-                                       id_val=gene_id,
-                                       idx_attr='gene_idx'),
+            config.GENE_LOOKUP_QUERY.format(gene_id=gene_id),
             schema=config.GENE_LOOKUP_SCHEMA,
-            fetch=True))[0]
+            fetch=True))
+    res['canonical_transcript'] = res['transcript_id']
+    return res
 
 
 def exists_gene_id(db, gene_id):
@@ -293,6 +312,31 @@ def exists_gene_id(db, gene_id):
                   config.GENE_INDEX_ARRAY,
                   'gene_id',
                   "'{}'".format(gene_id))
+
+
+def get_gene_by_idx(db, gene_idx):
+    """
+    e.g.,
+    UI:
+      https://biobankengine.stanford.edu/transcript/ENST00000458200
+
+    MongoDB:
+      db.genes.find({'gene_id': 'ENSG00000107404'}, fields={'_id': False})
+
+    SciDB:
+      cross_join(between(gene, 173, null, null, null, null,
+                               173, null, null, null, null),
+                 transcript_index,
+                 gene.transcript_idx,
+                 transcript_index.transcript_idx);
+    """
+    res = numpy2dict0(
+        db.iquery(
+            config.GENE_IDX_QUERY.format(gene_idx=gene_idx),
+            schema=config.GENE_IDX_SCHEMA,
+            fetch=True))
+    res['canonical_transcript'] = res['transcript_id']
+    return res
 
 
 def get_genes_in_region(db, chrom, start, stop):
@@ -314,9 +358,9 @@ def get_genes_in_region(db, chrom, start, stop):
     """
     return numpy2dict(
         db.iquery(
-            config.GENE_BETWEEN_QUERY.format(
+            config.GENE_REGION_QUERY.format(
                 chrom=chrom, start=start, stop=stop),
-            schema=config.GENE_LOOKUP_SCHEMA,
+            schema=config.GENE_REGION_SCHEMA,
             fetch=True))
 
 
@@ -348,7 +392,7 @@ def get_gene_id_by_name(db, gene_name):
     return res[0]['gene_id']['val']
 
 
-def get_transcript(db, transcript_id, gene_id=None):
+def get_transcript_by_idx(db, transcript_idx):
     """
     e.g.,
     UI:
@@ -359,31 +403,18 @@ def get_transcript(db, transcript_id, gene_id=None):
                           fields={'_id': False})
 
     SciDB:
-      cross_join(transcript,
-                 filter(transcript_index, transcript_id = 'ENST00000378891'),
-                 transcript.transcript_idx,
-                 transcript_index.transcript_idx);
+      between(transcript, null, 3694, null, null, null, null,
+                          null, 3694, null, null, null, null);
     """
-    res = format_genes(numpy2dict(
+    return format_gene(
+        numpy2dict0(
             db.iquery(
-                config.LOOKUP_QUERY.format(
-                    main_array=config.TRANSCRIPT_ARRAY,
-                    index_array=config.TRANSCRIPT_INDEX_ARRAY,
-                    id_attr='transcript_id',
-                    id_val=transcript_id,
-                    idx_attr='transcript_idx'),
-                schema=config.TRANSCRIPT_LOOKUP_SCHEMA,
-                fetch=True)[:1]))[0]
-    res['exons'] = get_exons_in_transcript(db, transcript_id)
-    if gene_id is None:
-        res['gene_id'] = db.iquery(
-            config.GENE_INDEX_LOOKUP_QUERY.format(gene_idx=res['gene_idx']),
-            fetch=True,
-            atts_only=True,
-            schema=config.GENE_INDEX_SCHEMA_OBJ)[0]['gene_id']['val']
-    else:
-        res['gene_id'] = gene_id
-    return res
+                config.TRANSCRIPT_OR_EXON_BETWEEN_QUERY.format(
+                    array_name=config.TRANSCRIPT_ARRAY,
+                    gene_idx='null',
+                    transcript_idx=transcript_idx),
+                schema=config.TRANSCRIPT_SCHEMA_OBJ,
+                fetch=True)))
 
 
 def exists_transcript_id(db, transcript_id):
@@ -405,7 +436,38 @@ def exists_transcript_id(db, transcript_id):
                   "'{}'".format(transcript_id))
 
 
-def get_transcripts_in_gene(db, gene_id):
+def get_transcript_gene(db, transcript_id):
+    """
+    e.g.,
+    UI:
+      https://biobankengine.stanford.edu/gene/ENSG00000107404
+
+    MongoDB:
+      db.transcripts.find({'transcript_id': 'ENST00000378891'},
+                          fields={'_id': False})
+
+    SciDB:
+      cross_join(
+        cross_join(
+          transcript,
+          filter(transcript_index, transcript_id = 'ENST00000378891'),
+          transcript.transcript_idx,
+          transcript_index.transcript_idx),
+        gene_index,
+        transcript.gene_idx,
+        gene_index.gene_idx);
+    """
+    res = format_gene(
+        numpy2dict0(
+            db.iquery(
+                config.TRANSCRIPT_GENE_LOOKUP.format(
+                    transcript_id=transcript_id),
+                schema=config.TRANSCRIPT_GENE_SCHEMA,
+                fetch=True)))
+    return res
+
+
+def get_transcripts_by_gene_idx(db, gene_idx):
     """
     e.g.,
     UI:
@@ -416,23 +478,45 @@ def get_transcripts_in_gene(db, gene_id):
                           fields={'_id': False})
 
     SciDB:
-      cross_join(transcript,
-                 filter(gene_index, gene_id = 'ENSG00000107404'),
-                 transcript.gene_idx,
-                 gene_index.gene_idx);
+      between(transcript, 173, null, null, null, null, null,
+                          173, null, null, null, null, null);
     """
     return numpy2dict(
         db.iquery(
-            config.LOOKUP_QUERY.format(main_array=config.TRANSCRIPT_ARRAY,
-                                       index_array=config.GENE_INDEX_ARRAY,
-                                       id_attr='gene_id',
-                                       id_val=gene_id,
-                                       idx_attr='gene_idx'),
-            schema=config.TRANSCRIPT_GENE_LOOKUP_SCHEMA,
+            config.TRANSCRIPT_OR_EXON_BETWEEN_QUERY.format(
+                array_name=config.TRANSCRIPT_ARRAY,
+                gene_idx=gene_idx,
+                transcript_idx='null'),
+            schema=config.TRANSCRIPT_SCHEMA_OBJ,
             fetch=True))
 
 
-def get_exons_in_transcript(db, transcript_id):
+def get_transcripts_id_by_gene_idx(db, gene_idx):
+    """
+    e.g.,
+    UI:
+      https://biobankengine.stanford.edu/gene/ENSG00000107404
+
+    MongoDB:
+      db.transcripts.find({'gene_id': 'ENSG00000107404'},
+                          fields={'_id': False})
+
+    SciDB:
+      cross_join(
+        between(transcript, 173, null, null, null, null, null,
+                            173, null, null, null, null, null),
+        transcript_index,
+        transcript.transcript_idx,
+        transcript_index.transcript_idx);
+    """
+    return numpy2dict(
+        db.iquery(
+            config.TRANSCRIPT_ID_LOOKUP.format(gene_idx=gene_idx),
+            schema=config.TRANSCRIPT_ID_SCHEMA,
+            fetch=True))
+
+
+def get_exons(db, transcript_idx):
     """
     e.g.,
     UI:
@@ -444,20 +528,16 @@ def get_exons_in_transcript(db, transcript_id):
                     fields={'_id': False})
 
     SciDB:
-      cross_join(exon,
-                 filter(transcript_index, transcript_id = 'ENST00000378891'),
-                 exon.transcript_idx,
-                 transcript_index.transcript_idx);
+      between(exon, null, 3694, null, null, null, null,
+                    null, 3694, null, null, null, null);
     """
     return numpy2dict(
         db.iquery(
-            config.LOOKUP_QUERY.format(
-                main_array=config.EXON_ARRAY,
-                index_array=config.TRANSCRIPT_INDEX_ARRAY,
-                id_attr='transcript_id',
-                id_val=transcript_id,
-                idx_attr='transcript_idx'),
-            schema=config.EXON_TRANSCRIPT_LOOKUP_SCHEMA,
+            config.TRANSCRIPT_OR_EXON_BETWEEN_QUERY.format(
+                array_name=config.EXON_ARRAY,
+                gene_idx='null',
+                transcript_idx=transcript_idx),
+            schema=config.EXON_SCHEMA_OBJ,
             fetch=True))
 
 
@@ -578,7 +658,7 @@ def get_variant_ann_by_chrom_pos(db, chrom, start):
     return variant
 
 
-def get_variants_in_gene(db, gene_id):
+def get_variants_by_gene_idx(db, gene_idx, gene_id):
     """
     e.g.,
     UI:
@@ -589,20 +669,18 @@ def get_variants_in_gene(db, gene_id):
 
     SciDB:
       cross_join(variant,
-                 cross_join(variant_gene,
-                            filter(gene_index, gene_id = 'ENSG00000107404'),
-                            variant_gene.gene_idx,
-                            gene_index.gene_idx) as variant_gene_index,
+                 between(variant_gene, null, null, 173,
+                                       null, null, 173),
                  variant.chrom,
-                 variant_gene_index.chrom,
+                 variant_gene.chrom,
                  variant.pos,
-                 variant_gene_index.pos);
+                 variant_gene.pos);
     """
     return format_variants(
         numpy2dict(
             db.iquery(
-                config.VARIANT_GENE_LOOKUP.format(gene_id=gene_id),
-                schema=config.VARIANT_X_GENE_INDEX_SCHEMA,
+                config.VARIANT_GENE_LOOKUP.format(gene_idx=gene_idx),
+                schema=config.VARIANT_GENE_SCHEMA,
                 fetch=True)),
         gene_id=gene_id)
 
@@ -640,7 +718,7 @@ def get_variants_in_transcript(db, transcript_id):
         transcript_id=transcript_id)
 
 
-def get_variants_by_transcript_idx(db, transcript_id, transcript_idx):
+def get_variants_by_transcript_idx(db, transcript_idx, transcript_id):
     """
     e.g.,
     UI:
@@ -722,15 +800,19 @@ def get_coverage_for_bases(db, xstart, xstop=None):
 
     SciDB:
       between(coverage, 16, 50727514,
-                        16,  50766988);
+                        16, 50766988);
     """
     if xstop is None:
         xstop = xstart
     return numpy2dict(
-        db.iquery(config.COVERAGE_LOOKUP_QUERY.format(
-            chrom_start=int(xstart / XOFF), pos_start=int(xstart % XOFF),
-            chrom_stop=int(xstop / XOFF), pos_stop=int(xstop % XOFF)),
-                fetch=True))
+        db.iquery(
+            config.COVERAGE_LOOKUP_QUERY.format(
+                chrom_start=int(xstart / XOFF),
+                pos_start=int(xstart % XOFF),
+                chrom_stop=int(xstop / XOFF),
+                pos_stop=int(xstop % XOFF)),
+            schema=config.COVERAGE_SCHEMA_OBJ,
+            fetch=True))
 
 
 # -- -
@@ -844,22 +926,25 @@ if __name__ == '__main__':
     pp.pprint(exists_transcript_id(db, 'ENST00000378891'))
     pp.pprint(get_coverage_for_bases(db, 1039381448))
     pp.pprint(get_coverage_for_transcript(db, 1039381448))
-    pp.pprint(get_exons_in_transcript(db, 'ENST00000378891'))
-    pp.pprint(get_gene(db, 'ENSG00000107404'))
+    pp.pprint(get_exons(db, 3694))
+    pp.pprint(get_gene_by_id(db, 'ENSG00000107404'))
+    pp.pprint(get_gene_by_idx(db, 173))
     pp.pprint(get_gene_id_by_name(db, 'F5'))
     pp.pprint(get_genes_in_region(db, 1, 39381448, 39382448))
     pp.pprint(get_icd_name_map(db))
     pp.pprint(get_icd_significant(db, 'RH117'))
     pp.pprint(get_icd_significant_variant(db, 'RH117'))
-    pp.pprint(get_transcript(db, 'ENST00000378891'))
-    pp.pprint(get_transcripts_in_gene(db, 'ENSG00000107404'))
+    pp.pprint(get_transcript_gene(db, 'ENST00000378891'))
+    pp.pprint(get_transcript_by_idx(db, 3694))
+    pp.pprint(get_transcripts_by_gene_idx(db, 173))
+    pp.pprint(get_transcripts_id_by_gene_idx(db, 173))
     pp.pprint(get_variant_ann_by_chrom_pos(db, 1, 39381448))
     # pp.pprint(get_variant_chrom_pos(db, 19, 11210912)) # TODO
     pp.pprint(get_variant_icd(db, 1, 39381448))
     pp.pprint(get_variants_by_id(db, (1039381448,)))
-    pp.pprint(get_variants_by_transcript_idx(db, 'ENST00000378891', 3694))
+    pp.pprint(get_variants_by_gene_idx(db, 173, 'ENSG00000107404'))
+    pp.pprint(get_variants_by_transcript_idx(db, 3694, 'ENST00000378891'))
     pp.pprint(get_variants_chrom_pos_by_rsid_limit2(db, 'rs6025'))
     pp.pprint(get_variants_chrom_pos(db, 1, 39381448))
-    pp.pprint(get_variants_in_gene(db, 'ENSG00000107404'))
     pp.pprint(get_variants_in_region(db, 1, 39381448, 39382448))
     pp.pprint(get_variants_in_transcript(db, 'ENST00000378891'))
