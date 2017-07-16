@@ -183,6 +183,7 @@ OMIM_FILE = os.path.join(GBE_DATA_PATH, 'omim_info.txt.gz')
 
 GENE_INDEX_ARRAY = 'gene_index'
 GENE_INDEX_SCHEMA = '<gene_id: string>[gene_idx = 0:*:0:20]'
+GENE_INDEX_SCHEMA_OBJ = scidbpy.schema.Schema.fromstring(GENE_INDEX_SCHEMA)
 
 GENE_INDEX_STORE_QUERY = """
   store(

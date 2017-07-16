@@ -380,7 +380,7 @@ def get_transcript(db, transcript_id, gene_id=None):
             config.GENE_INDEX_LOOKUP_QUERY.format(gene_idx=res['gene_idx']),
             fetch=True,
             atts_only=True,
-            schema=config.GENE_INDEX_SCHEMA)[0]['gene_id']['val']
+            schema=config.GENE_INDEX_SCHEMA_OBJ)[0]['gene_id']['val']
     else:
         res['gene_id'] = gene_id
     return res
