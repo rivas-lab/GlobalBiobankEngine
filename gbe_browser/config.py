@@ -599,11 +599,13 @@ DBSNP_STORE_QUERY = """
   store(
     redimension(
       apply(
-        filter(
-          aio_input('{{path}}', 'num_attributes=3'),
-          a1 <> 'PAR'),
+        aio_input('{{path}}', 'num_attributes=3'),
         rsid,  int64(a0),
-        chrom, int64(rsub(a1, 's/T+$//g')),
+        chrom, iif(a1 = 'X',
+                   23,
+                   iif(a1 = 'Y',
+                       24,
+                       dcast(a1, int64(null)))),
         pos,   int64(a2) + 1),
       {dbsnp_schema}),
     {dbsnp_array})""".format(dbsnp_schema=DBSNP_SCHEMA,
