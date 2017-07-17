@@ -157,9 +157,10 @@ class Loader:
         icd_idx_cond = 'null'
         icdind_cond = 'null'
         for (inst, file_name) in zip(range(len(file_names)), file_names):
-            (prefix, suffix, intadd) = Loader.get_icd_parts(file_name)
+            (prefix, suffix, intadd, ind) = Loader.get_icd_parts(file_name)
 
-            icd_idx = self.icd_idx_map[Loader.get_icd(prefix, suffix, intadd)]
+            icd_idx = self.icd_idx_map[
+                Loader.get_icd(prefix, suffix, intadd, ind)]
             icd_idx_cond = ('iif(src_instance_id = {inst}, ' +
                             '{icd_idx}, {prev})').format(
                                 inst=inst, icd_idx=icd_idx, prev=icd_idx_cond)
@@ -167,7 +168,7 @@ class Loader:
             icdind_cond = ('iif(src_instance_id = {inst}, ' +
                            '\'{val}\', {prev})').format(
                                inst=inst,
-                               val=str(intadd) + suffix,
+                               val=str(intadd) + ind,
                                prev=icdind_cond)
         return (icd_idx_cond, icdind_cond)
 
@@ -370,22 +371,30 @@ class Loader:
             prefix = 'HC'
             intadd = 70
         elif 'MED' in name:
-            prefix = 'HC'
+            prefix = 'MED'
             intadd = 80
 
         # Figure out suffix
-        suffix = parts[1].split(
-                '_')[0].strip()[1:].strip(
-                    'RH').strip(
-                        'FH').strip(
-                            'cancer').strip(
-                                'HC').split(
-                                    '_FH2')[0]
+        ind = parts[1].split(
+            '_')[0].strip()[1:].strip(
+                'RH').strip(
+                    'FH').strip(
+                        'cancer').strip(
+                            'HC').split(
+                                '_FH2')[0]
 
-        return (prefix, suffix, intadd)
+        suffix = parts[1].strip(
+            'RH').strip(
+                'FH').strip(
+                    'MED').strip(
+                        'cancer').strip(
+                            'HC').split(
+                                '_FH2')[0]
+
+        return (prefix, suffix, intadd, ind)
 
     @staticmethod
-    def get_icd(prefix, suffix, intadd):
+    def get_icd(prefix, suffix, intadd, ind):
         return prefix + suffix
 
     @staticmethod
