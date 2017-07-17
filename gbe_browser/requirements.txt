@@ -14,6 +14,4 @@ flask_errormail
 flask_wtf
 scipy
 rpy2
-profilehooks==1.9.0
-#rstan
 profilehooks
