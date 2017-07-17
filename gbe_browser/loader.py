@@ -315,6 +315,19 @@ class Loader:
         logger.info('Pipe:return code:%s', pipe.poll())
         logger.info('Array:%s', config.COVERAGE_ARRAY)
 
+    # -- -
+    # -- - DBSNP - --
+    # -- -
+    def store_dbsnp(self):
+        fifo_name = self.fifo_names[0]
+        pipe = Loader.make_pipe(config.DBSNP_FILE, fifo_name)
+
+        logger.info('Query:running...')
+        self.db.iquery(config.DBSNP_STORE_QUERY.format(path=fifo_name))
+        logger.info('Query:done')
+        logger.info('Pipe:return code:%s', pipe.poll())
+        logger.info('Array:%s', config.DBSNP_ARRAY)
+
     # -- - - --
     def remove_arrays(self):
         if not Loader.confirm('Remove and recreate arrays'):
@@ -463,3 +476,4 @@ if __name__ == '__main__':
     loader.store_variant_transcript()
 
     loader.store_coverage()
+    loader.store_dbsnp()

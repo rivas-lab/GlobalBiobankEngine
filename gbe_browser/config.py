@@ -582,6 +582,34 @@ COVERAGE_STORE_QUERY = """
                                 coverage_array_schema=COVERAGE_SCHEMA)
 
 
+# -- -
+# -- - Load: DBSNP - --
+# -- -
+DBSNP_FILE = os.path.join(GBE_DATA_PATH, 'dbsnp150.txt.gz')
+
+DBSNP_ARRAY = 'dbsnp'
+DBSNP_SCHEMA = """
+  <rsid: int64>
+  [chrom     = 1:25:0:1;
+   pos       = 0:*:0:10000000;
+   synthetic = 0:999:0:1000]"""
+DBSNP_SCHEMA_OBJ = scidbpy.schema.Schema.fromstring(DBSNP_SCHEMA)
+
+DBSNP_STORE_QUERY = """
+  store(
+    redimension(
+      apply(
+        filter(
+          aio_input('{{path}}', 'num_attributes=3'),
+          a1 <> 'PAR'),
+        rsid,  int64(a0),
+        chrom, int64(rsub(a1, 's/T+$//g')),
+        pos,   int64(a2) + 1),
+      {dbsnp_schema}),
+    {dbsnp_array})""".format(dbsnp_schema=DBSNP_SCHEMA,
+                             dbsnp_array=DBSNP_ARRAY)
+
+
 # == =
 # == = LOOKUP = ==
 # == =
@@ -1015,3 +1043,13 @@ COVERAGE_LOOKUP_QUERY = """
   between({coverage_array}, {{chrom_start}}, {{pos_start}},
                             {{chrom_stop}},  {{pos_stop}})""".format(
                                 coverage_array=COVERAGE_ARRAY)
+
+
+# -- -
+# -- - Lookup: DBSNP - --
+# -- -
+DBSNP_LOOKUP_QUERY = """
+  limit(
+    between({dbsnp_array}, {{chrom}}, {{pos}}, 0,
+                           {{chrom}}, {{pos}}, 0),
+    1)""".format(dbsnp_array=DBSNP_ARRAY)

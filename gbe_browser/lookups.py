@@ -651,10 +651,9 @@ def get_variant_ann_by_chrom_pos(db, chrom, start):
     if variant is None or 'rsid' not in variant:
         return variant
     if variant['rsid'] == '.' or variant['rsid'] is None:
-        raise NotImplementedError()  # TODO
-        # rsid = db.dbsnp.find_one({'xpos': xpos})
-        # if rsid:
-        #     variant['rsid'] = 'rs%s' % rsid['rsid']
+        rsid = get_dbsnp(db, chrom, start)
+        if rsid:
+            variant['rsid'] = 'rs%s' % rsid['rsid']
     return variant
 
 
@@ -813,6 +812,34 @@ def get_coverage_for_bases(db, xstart, xstop=None):
                 pos_stop=int(xstop % XOFF)),
             schema=config.COVERAGE_SCHEMA_OBJ,
             fetch=True))
+
+
+# -- -
+# -- - DBSNP - --
+# -- -
+def get_dbsnp(db, chrom, pos):
+    """
+    e.g.,
+    UI:
+      https://biobankengine.stanford.edu/variant/1-39381448
+
+    MongoDB:
+      db.dbsnp.find_one({'xpos': '1039381448'})
+
+    SciDB:
+      limit(
+        between(dbsnp, 1, 39381448,
+                       1, 39381448),
+        1)
+    """
+    res = db.iquery(
+        config.DBSNP_LOOKUP_QUERY.format(chrom=chrom, pos=pos),
+        schema=config.DBSNP_SCHEMA_OBJ,
+        fetch=True,
+        atts_only=True)
+    if not res:
+        return None
+    return res[0]['rsid']['val']
 
 
 # -- -
