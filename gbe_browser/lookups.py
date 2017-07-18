@@ -653,7 +653,7 @@ def get_variant_ann_by_chrom_pos(db, chrom, start):
     if variant['rsid'] == '.' or variant['rsid'] is None:
         rsid = get_dbsnp(db, chrom, start)
         if rsid:
-            variant['rsid'] = 'rs%s' % rsid['rsid']
+            variant['rsid'] = 'rs{}'.format(rsid)
     return variant
 
 
