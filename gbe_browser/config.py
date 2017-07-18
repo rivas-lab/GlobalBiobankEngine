@@ -658,8 +658,9 @@ ICD_X_INFO_SCHEMA = scidbpy.schema.Schema.fromstring(
 
 ICD_CHROM_POS_LOOKUP_QUERY = """
   equi_join(
-    between({icd_array}, null, {{chrom}}, {{pos}}, null, null,
-                         null, {{chrom}}, {{pos}}, null, null),
+    between({icd_array},
+            null, {{chrom}}, {{pos}}, null, null,
+            null, {{chrom}}, {{pos}}, null, null),
     {icd_info_array},
     'left_names=icd_idx',
     'right_names=icd_idx',
@@ -700,8 +701,9 @@ ICD_VARIANT_LOOKUP_QUERY = """
             csq),
     cross_join(
         project(
-          between({icd_array}, null, null, null, {{pdecimal}}, null,
-                               null, null, null, null,         null),
+          between({icd_array},
+                  null, null, null, {{pdecimal}}, null,
+                  null, null, null, null, null),
           or_val,
           pvalue,
           log10pvalue),
@@ -769,8 +771,9 @@ GENE_LOOKUP_SCHEMA = scidbpy.schema.Schema.fromstring(
 
 GENE_IDX_QUERY = """
   cross_join(
-    between({gene_array}, {{gene_idx}}, null, null, null, null,
-                          {{gene_idx}}, null, null, null, null),
+    between({gene_array},
+            {{gene_idx}}, null, null, null, null,
+            {{gene_idx}}, null, null, null, null),
     {transcript_index_array},
     {gene_array}.transcript_idx,
     {transcript_index_array}.transcript_idx)""".format(
@@ -784,8 +787,9 @@ GENE_IDX_SCHEMA = scidbpy.schema.Schema.fromstring(
 
 GENE_REGION_QUERY = """
   cross_join(
-    between({gene_array}, null, null, {{chrom}}, null    , {{start}},
-                          null, null, {{chrom}}, {{stop}}, null),
+    between({gene_array},
+            null, null, {{chrom}}, null, {{start}},
+            null, null, {{chrom}}, {{stop}}, null),
     {gene_index_array},
     {gene_array}.gene_idx,
     {gene_index_array}.gene_idx)""".format(gene_array=GENE_ARRAY,
@@ -817,9 +821,9 @@ TRANSCRIPT_OR_EXON_BETWEEN_QUERY = """
 
 TRANSCRIPT_ID_LOOKUP = """
   cross_join(
-    between(
-      {transcript_array}, {{gene_idx}}, null, null, null, null, null,
-                          {{gene_idx}}, null, null, null, null, null),
+    between({transcript_array},
+            {{gene_idx}}, null, null, null, null, null,
+            {{gene_idx}}, null, null, null, null, null),
     {transcript_index_array},
     {transcript_array}.transcript_idx,
     {transcript_index_array}.transcript_idx)""".format(
@@ -859,8 +863,9 @@ TRANSCRIPT_GENE_SCHEMA = scidbpy.schema.Schema.fromstring(
 # -- - Lookup: VARIANT - --
 # -- -
 VARIANT_LOOKUP_QUERY = """
-  between({variant_array}, {{chrom}}, {{start}},
-                           {{chrom}}, {{stop}})""".format(
+  between({variant_array},
+          {{chrom}}, {{start}},
+          {{chrom}}, {{stop}})""".format(
     variant_array=VARIANT_ARRAY)
 
 VARIANT_MULTI_LOOKUP_QUERY = """
@@ -872,8 +877,9 @@ VARIANT_LOOKUP_SCHEMA = scidbpy.schema.Schema.fromstring(VARIANT_SCHEMA)
 VARIANT_LIMIT_QUERY = """
   limit(
     project(
-      between({variant_array}, {{chrom}}, {{start}},
-                               {{chrom}}, {{start}}),
+      between({variant_array},
+              {{chrom}}, {{start}},
+              {{chrom}}, {{start}}),
       rsid,
       ref,
       alt,
@@ -906,8 +912,9 @@ VARIANT_CHROM_POS_BY_RSID_SCHEMA = scidbpy.schema.Schema.fromstring("""
 VARIANT_GENE_LOOKUP = """
   cross_join(
     {variant_array},
-    between({variant_gene_array}, null, null, {{gene_idx}},
-                                  null, null, {{gene_idx}}),
+    between({variant_gene_array},
+            null, null, {{gene_idx}},
+            null, null, {{gene_idx}}),
     {variant_array}.chrom,
     {variant_gene_array}.chrom,
     {variant_array}.pos,
@@ -953,9 +960,9 @@ VARIANT_X_TRANSCRIPT_X_INDEX_SCHEMA = scidbpy.schema.Schema.fromstring(
 VARIANT_TRANSCRIPT_IDX_LOOKUP = """
   cross_join(
     {variant_array},
-    between(
-      {variant_transcript_array}, null, null, {{transcript_idx}},
-                                  null, null, {{transcript_idx}}),
+    between({variant_transcript_array},
+            null, null, {{transcript_idx}},
+            null, null, {{transcript_idx}}),
     {variant_array}.chrom,
     variant_transcript.chrom,
     {variant_array}.pos,
@@ -1042,8 +1049,9 @@ VARIANT_CSQ = ('Allele',
 # -- - Lookup: COVERAGE - --
 # -- -
 COVERAGE_LOOKUP_QUERY = """
-  between({coverage_array}, {{chrom_start}}, {{pos_start}},
-                            {{chrom_stop}},  {{pos_stop}})""".format(
+  between({coverage_array},
+          {{chrom_start}}, {{pos_start}},
+          {{chrom_stop}}, {{pos_stop}})""".format(
                                 coverage_array=COVERAGE_ARRAY)
 
 
@@ -1052,6 +1060,7 @@ COVERAGE_LOOKUP_QUERY = """
 # -- -
 DBSNP_LOOKUP_QUERY = """
   limit(
-    between({dbsnp_array}, {{chrom}}, {{pos}}, 0,
-                           {{chrom}}, {{pos}}, 0),
+    between({dbsnp_array},
+            {{chrom}}, {{pos}}, 0,
+            {{chrom}}, {{pos}}, 0),
     1)""".format(dbsnp_array=DBSNP_ARRAY)
