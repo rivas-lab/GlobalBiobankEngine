@@ -1,7 +1,7 @@
 {
     "dev": {
         "profile_name": "tcg-dev",
-        "s3_bucket": "zappa-83kyr78sf",
+        "s3_bucket": "zappa-qltpks4ox",
         "apigateway_enabled": false,
         "slim_handler": true,
         "events": [{
