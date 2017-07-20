@@ -182,7 +182,7 @@ DBNSFP_FILE = os.path.join(GBE_DATA_PATH, 'dbNSFP2.6_gene.gz')
 OMIM_FILE = os.path.join(GBE_DATA_PATH, 'omim_info.txt.gz')
 
 GENE_INDEX_ARRAY = 'gene_index'
-GENE_INDEX_SCHEMA = '<gene_id: string>[gene_idx = 0:*:0:20]'
+GENE_INDEX_SCHEMA = '<gene_id: string>[gene_idx = 0:*:0:10000]'
 GENE_INDEX_SCHEMA_OBJ = scidbpy.schema.Schema.fromstring(GENE_INDEX_SCHEMA)
 
 GENE_INDEX_STORE_QUERY = """
@@ -198,7 +198,7 @@ GENE_INDEX_STORE_QUERY = """
 
 TRANSCRIPT_INDEX_ARRAY = 'transcript_index'
 TRANSCRIPT_INDEX_SCHEMA = """
-  <transcript_id:string>[transcript_idx = 0:*:0:20]"""
+  <transcript_id:string>[transcript_idx = 0:*:0:10000]"""
 
 TRANSCRIPT_INDEX_STORE_QUERY = """
   store(
@@ -213,7 +213,7 @@ TRANSCRIPT_INDEX_STORE_QUERY = """
         transcript_index_array=TRANSCRIPT_INDEX_ARRAY)
 
 DBNSFP_ARRAY = 'dbnsfp'
-DBNSFP_SCHEMA = '<full_gene_name: string>[gene_idx = 0:*:0:20]'
+DBNSFP_SCHEMA = '<full_gene_name: string>[gene_idx = 0:*:0:10000]'
 
 DBNSFP_STORE_QUERY = """
   store(
@@ -235,7 +235,7 @@ DBNSFP_STORE_QUERY = """
 CANONICAL_ARRAY = 'canonical'
 CANONICAL_SCHEMA = """
   <transcript_idx: int64>
-  [gene_idx = 0:*:0:20]"""
+  [gene_idx = 0:*:0:10000]"""
 
 CANONICAL_STORE_QUERY = """
   store(
@@ -256,7 +256,7 @@ CANONICAL_STORE_QUERY = """
                                  canonical_array=CANONICAL_ARRAY)
 
 OMIM_ARRAY = 'omim'
-OMIM_SCHEMA = '<omim_accession: string>[gene_idx = 0:*:0:20]'
+OMIM_SCHEMA = '<omim_accession: string>[gene_idx = 0:*:0:10000]'
 
 OMIM_STORE_QUERY = """
   store(
@@ -277,15 +277,15 @@ OMIM_STORE_QUERY = """
 
 GENE_ARRAY = 'gene'
 GENE_SCHEMA = """
-  <gene_name:            string,
-   strand:               string,
-   full_gene_name:       string,
-   omim_accession:       string>
-  [gene_idx       = 0:*:0:20;
-   transcript_idx = 0:*:0:20;
-   chrom          = 1:25:0:1;
-   start          = 0:*:0:10000000;
-   stop           = 0:*:0:10000000]"""
+  <gene_name:      string,
+   strand:         string,
+   full_gene_name: string,
+   omim_accession: string,
+   transcript_idx: int64,
+   chrom:          int64,
+   start:          int64,
+   stop:           int64>
+  [gene_idx       = 0:*:0:10000]"""
 
 GENE_STORE_QUERY = """
   store(
@@ -318,7 +318,7 @@ GENE_STORE_QUERY = """
                chrom:     int64,
                start:     int64,
                stop:      int64>
-              [gene_idx = 0:*:0:20]),
+              [gene_idx = 0:*:0:10000]),
 
             merge({dbnsfp_array},
                   project(apply({gene_index_array}, empty, string(null)),
@@ -748,66 +748,91 @@ GENE_INDEX_LOOKUP_QUERY = """
       gene_index_array=GENE_INDEX_ARRAY)
 
 GENE_LOOKUP_QUERY = """
-  cross_join(
-    cross_join({gene_array},
-               filter({gene_index_array}, gene_id = '{{gene_id}}'),
-               {gene_array}.gene_idx,
-               {gene_index_array}.gene_idx),
+  equi_join(
+    equi_join({gene_array},
+              filter({gene_index_array}, gene_id = '{{gene_id}}'),
+              'left_names=gene_idx',
+              'right_names=gene_idx',
+              'algorithm=hash_replicate_right'),
     {transcript_index_array},
-    {gene_array}.transcript_idx,
-    {transcript_index_array}.transcript_idx)""".format(
+    'left_names=transcript_idx',
+    'right_names=transcript_idx',
+    'algorithm=hash_replicate_right')""".format(
         gene_array=GENE_ARRAY,
         gene_index_array=GENE_INDEX_ARRAY,
         transcript_index_array=TRANSCRIPT_INDEX_ARRAY)
 
-GENE_LOOKUP_SCHEMA = scidbpy.schema.Schema.fromstring(
-    GENE_SCHEMA.replace(
-        '>',
-        ',{},{}>'.format(
-            GENE_INDEX_SCHEMA[GENE_INDEX_SCHEMA.index('<') + 1:
-                              GENE_INDEX_SCHEMA.index('>')],
-            TRANSCRIPT_INDEX_SCHEMA[TRANSCRIPT_INDEX_SCHEMA.index('<') + 1:
-                                    TRANSCRIPT_INDEX_SCHEMA.index('>')])))
+GENE_LOOKUP_SCHEMA = scidbpy.schema.Schema.fromstring("""
+  <transcript_idx: int64,
+   gene_idx:       int64 not null,
+   gene_name:      string,
+   strand:         string,
+   full_gene_name: string,
+   omim_accession: string,
+   chrom:          int64,
+   start:          int64,
+   stop:           int64,
+   gene_id:        string,
+   transcript_id:  string>
+  [notused0;
+   notused1]""")
 
 GENE_IDX_QUERY = """
-  cross_join(
-    between({gene_array},
-            {{gene_idx}}, null, null, null, null,
-            {{gene_idx}}, null, null, null, null),
+  equi_join(
+    between({gene_array}, {{gene_idx}}, {{gene_idx}}),
     {transcript_index_array},
-    {gene_array}.transcript_idx,
-    {transcript_index_array}.transcript_idx)""".format(
+    'left_names=transcript_idx',
+    'right_names=transcript_idx',
+    'algorithm=hash_replicate_right')""".format(
         gene_array=GENE_ARRAY,
         transcript_index_array=TRANSCRIPT_INDEX_ARRAY)
 
-GENE_IDX_SCHEMA = scidbpy.schema.Schema.fromstring(
-    GENE_SCHEMA.replace('>', ',{}>'.format(
-        TRANSCRIPT_INDEX_SCHEMA[TRANSCRIPT_INDEX_SCHEMA.index('<') + 1:
-                                TRANSCRIPT_INDEX_SCHEMA.index('>')])))
+GENE_IDX_SCHEMA = scidbpy.schema.Schema.fromstring("""
+  <transcript_idx: int64,
+   gene_name:      string,
+   strand:         string,
+   full_gene_name: string,
+   omim_accession: string,
+   chrom:          int64,
+   start:          int64,
+   stop:           int64,
+   transcript_id:  string>
+  [notused0;
+   notused1]""")
 
 GENE_REGION_QUERY = """
-  cross_join(
-    between({gene_array},
-            null, null, {{chrom}}, null, {{start}},
-            null, null, {{chrom}}, {{stop}}, null),
+  equi_join(
+    filter({gene_array},
+           chrom = {{chrom}} and start <= {{stop}} and stop >= {{start}}),
     {gene_index_array},
-    {gene_array}.gene_idx,
-    {gene_index_array}.gene_idx)""".format(gene_array=GENE_ARRAY,
-                                           gene_index_array=GENE_INDEX_ARRAY)
+    'left_names=gene_idx',
+    'right_names=gene_idx',
+    'algorithm=hash_replicate_right')""".format(
+        gene_array=GENE_ARRAY,
+        gene_index_array=GENE_INDEX_ARRAY)
 
-GENE_REGION_SCHEMA = scidbpy.schema.Schema.fromstring(
-    GENE_SCHEMA.replace(
-        '>',
-        ',{}>'.format(GENE_INDEX_SCHEMA[GENE_INDEX_SCHEMA.index('<') + 1:
-                                        GENE_INDEX_SCHEMA.index('>')])))
+GENE_REGION_SCHEMA = scidbpy.schema.Schema.fromstring("""
+ <gene_idx:       int64 not null,
+  gene_name:      string,
+  strand:         string,
+  full_gene_name: string,
+  omim_accession: string,
+  transcript_idx: int64,
+  chrom:          int64,
+  start:          int64,
+  stop:           int64,
+  gene_id:string>
+ [notused0;
+  notused1]""")
 
 GENE_ID_BY_NAME_QUERY = """
   project(
-    cross_join(
-      {gene_index_array},
+    equi_join(
       filter({gene_array}, gene_name = '{{gene_name}}'),
-      {gene_index_array}.gene_idx,
-      {gene_array}.gene_idx),
+      {gene_index_array},
+      'left_names=gene_idx',
+      'right_names=gene_idx',
+      'algorithm=hash_replicate_right'),
     gene_id)""".format(gene_array=GENE_ARRAY,
                        gene_index_array=GENE_INDEX_ARRAY)
 

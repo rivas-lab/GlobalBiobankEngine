@@ -278,20 +278,24 @@ def get_gene_by_id(db, gene_id):
       db.genes.find({'gene_id': 'ENSG00000107404'}, fields={'_id': False})
 
     SciDB:
-      cross_join(
-        cross_join(gene,
-                   filter(gene_index, gene_id = 'ENSG00000107404'),
-                   gene.gene_idx,
-                   gene_index.gene_idx),
+      equi_join(
+        equi_join(
+            gene,
+            filter(gene_index, gene_id = 'ENSG00000107404'),
+            'left_names=gene_idx',
+            'right_names=gene_idx',
+            'algorithm=hash_replicate_right'),
         transcript_index,
-        gene.transcript_idx,
-        transcript_index.transcript_idx)
+        'left_names=transcript_idx',
+        'right_names=transcript_idx',
+        'algorithm=hash_replicate_right');
     """
     res = numpy2dict0(
         db.iquery(
             config.GENE_LOOKUP_QUERY.format(gene_id=gene_id),
             schema=config.GENE_LOOKUP_SCHEMA,
-            fetch=True))
+            fetch=True,
+            atts_only=True))
     res['canonical_transcript'] = res['transcript_id']
     return res
 
@@ -324,17 +328,19 @@ def get_gene_by_idx(db, gene_idx):
       db.genes.find({'gene_id': 'ENSG00000107404'}, fields={'_id': False})
 
     SciDB:
-      cross_join(between(gene, 173, null, null, null, null,
-                               173, null, null, null, null),
-                 transcript_index,
-                 gene.transcript_idx,
-                 transcript_index.transcript_idx);
+      equi_join(
+        between(gene, 173, 173),
+        transcript_index,
+        'left_names=transcript_idx',
+        'right_names=transcript_idx',
+        'algorithm=hash_replicate_right');
     """
     res = numpy2dict0(
         db.iquery(
             config.GENE_IDX_QUERY.format(gene_idx=gene_idx),
             schema=config.GENE_IDX_SCHEMA,
-            fetch=True))
+            fetch=True,
+            atts_only=True))
     res['canonical_transcript'] = res['transcript_id']
     return res
 
@@ -350,18 +356,21 @@ def get_genes_in_region(db, chrom, start, stop):
                      'xstop' : {'$gte': 1650727514}}, fields={'_id': False})
 
     SciDB:
-      cross_join(between(gene, null, 16, null,     50727514,
-                               null, 16, 50766988, null),
-                 gene_index,
-                 gene.gene_idx,
-                 gene_index.gene_idx);
+      equi_join(
+        filter(gene,
+               chrom = 16 and start <= 50766988 and stop >= 50727514),
+        gene_index,
+        'left_names=gene_idx',
+        'right_names=gene_idx',
+        'algorithm=hash_replicate_right');
     """
     return numpy2dict(
         db.iquery(
             config.GENE_REGION_QUERY.format(
                 chrom=chrom, start=start, stop=stop),
             schema=config.GENE_REGION_SCHEMA,
-            fetch=True))
+            fetch=True,
+            atts_only=True))
 
 
 def get_gene_id_by_name(db, gene_name):
@@ -374,11 +383,12 @@ def get_gene_id_by_name(db, gene_name):
 
     SciDB:
       project(
-        cross_join(
-          gene_index,
+        equi_join(
           filter(gene, gene_name = 'F5'),
-          gene_index.gene_idx,
-          gene.gene_idx),
+          gene_index,
+          'left_names=gene_idx',
+          'right_names=gene_idx',
+          'algorithm=hash_replicate_right'),
         gene_id);
     """
     # TODO other_names
