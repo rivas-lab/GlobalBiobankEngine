@@ -413,14 +413,13 @@ def get_transcript_by_idx(db, transcript_idx):
                           fields={'_id': False})
 
     SciDB:
-      between(transcript, null, 3694, null, null, null, null,
-                          null, 3694, null, null, null, null);
+      between(transcript, null, 3694,
+                          null, 3694);
     """
     return format_gene(
         numpy2dict0(
             db.iquery(
-                config.TRANSCRIPT_OR_EXON_BETWEEN_QUERY.format(
-                    array_name=config.TRANSCRIPT_ARRAY,
+                config.TRANSCRIPT_IDX_LOOKUP.format(
                     gene_idx='null',
                     transcript_idx=transcript_idx),
                 schema=config.TRANSCRIPT_SCHEMA_OBJ,
@@ -488,13 +487,12 @@ def get_transcripts_by_gene_idx(db, gene_idx):
                           fields={'_id': False})
 
     SciDB:
-      between(transcript, 173, null, null, null, null, null,
-                          173, null, null, null, null, null);
+      between(transcript, 173, null,
+                          173, null);
     """
     return numpy2dict(
         db.iquery(
-            config.TRANSCRIPT_OR_EXON_BETWEEN_QUERY.format(
-                array_name=config.TRANSCRIPT_ARRAY,
+            config.TRANSCRIPT_IDX_LOOKUP.format(
                 gene_idx=gene_idx,
                 transcript_idx='null'),
             schema=config.TRANSCRIPT_SCHEMA_OBJ,
@@ -513,8 +511,8 @@ def get_transcripts_id_by_gene_idx(db, gene_idx):
 
     SciDB:
       cross_join(
-        between(transcript, 173, null, null, null, null, null,
-                            173, null, null, null, null, null),
+        between(transcript, 173, null,
+                            173, null),
         transcript_index,
         transcript.transcript_idx,
         transcript_index.transcript_idx);

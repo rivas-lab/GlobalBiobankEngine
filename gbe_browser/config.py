@@ -233,9 +233,7 @@ DBNSFP_STORE_QUERY = """
                               dbnsfp_array=DBNSFP_ARRAY)
 
 CANONICAL_ARRAY = 'canonical'
-CANONICAL_SCHEMA = """
-  <transcript_idx: int64>
-  [gene_idx = 0:*:0:10000]"""
+CANONICAL_SCHEMA = '<transcript_idx: int64>[gene_idx = 0:*:0:10000]'
 
 CANONICAL_STORE_QUERY = """
   store(
@@ -339,13 +337,12 @@ GENE_STORE_QUERY = """
 
 TRANSCRIPT_ARRAY = 'transcript'
 TRANSCRIPT_SCHEMA = """
-  <strand: string>
-  [gene_idx       = 0:*:0:20;
-   transcript_idx = 0:*:0:20;
-   chrom          = 1:25:0:1;
-   start          = 0:*:0:10000000;
-   stop           = 0:*:0:10000000;
-   synthetic      = 0:199:0:200]"""
+  <strand: string,
+   chrom:  int64,
+   start:  int64,
+   stop:   int64>
+  [gene_idx       = 0:*:0:10000;
+   transcript_idx = 0:*:0:10000]"""
 TRANSCRIPT_SCHEMA_OBJ = scidbpy.schema.Schema.fromstring(TRANSCRIPT_SCHEMA)
 
 TRANSCRIPT_STORE_QUERY = """
@@ -844,11 +841,18 @@ TRANSCRIPT_OR_EXON_BETWEEN_QUERY = """
           {gene_idx}, {transcript_idx}, null, null, null, null,
           {gene_idx}, {transcript_idx}, null, null, null, null)"""
 
+TRANSCRIPT_IDX_LOOKUP = """
+  between({transcript_array},
+          {{gene_idx}}, {{transcript_idx}},
+          {{gene_idx}}, {{transcript_idx}})""".format(
+              transcript_array=TRANSCRIPT_ARRAY)
+
+
 TRANSCRIPT_ID_LOOKUP = """
   cross_join(
     between({transcript_array},
-            {{gene_idx}}, null, null, null, null, null,
-            {{gene_idx}}, null, null, null, null, null),
+            {{gene_idx}}, null,
+            {{gene_idx}}, null),
     {transcript_index_array},
     {transcript_array}.transcript_idx,
     {transcript_index_array}.transcript_idx)""".format(
