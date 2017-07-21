@@ -1043,3 +1043,20 @@ DBSNP_LOOKUP_QUERY = """
             {{chrom}}, {{pos}}, 0,
             {{chrom}}, {{pos}}, 0),
     1)""".format(dbsnp_array=DBSNP_ARRAY)
+
+DBSNP_VARIANT_LOOKUP_QUERY = """
+  equi_join(
+    filter({dbsnp_array}, rsid = {{rsid}}),
+    project({variant_array}, rsid),
+    'left_names=chrom,pos',
+    'right_names=chrom,pos',
+    'algorithm=hash_replicate_left')""".format(dbsnp_array=DBSNP_ARRAY,
+                                               variant_array=VARIANT_ARRAY)
+
+DBSNP_VARIANT_LOOKUP_SCHEMA = scidbpy.schema.Schema.fromstring("""
+  <chrom:  int64 not null,
+   pos:    int64 not null,
+   rsid:   int64,
+   rsid_1: int64>
+  [notused0;
+   notused1]""")

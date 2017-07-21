@@ -635,7 +635,6 @@ def get_variants_by_transcript_idx(db, transcript_idx, transcript_id):
         variant.pos,
         variant_transcript.pos);
     """
-    print(transcript_id)
     return format_variants(
         numpy2dict(
             db.iquery(
@@ -750,6 +749,44 @@ def get_dbsnp(db, chrom, pos):
     return res[0]['rsid']['val']
 
 
+def get_variants_from_dbsnp(db, rsid):
+    """
+    e.g.,
+    UI:
+      https://biobankengine.stanford.edu/awesome?query=rs771157073
+
+    MongoDB:
+      db.dbsnp.find_one({'rsid': rsid})
+      db.variants.find({'xpos': {'$lte': position['xpos'],
+                                 '$gte': position['xpos']}},
+                       fields={'_id': False})
+
+    SciDB:
+      equi_join(
+        filter(dbsnp, rsid = 771157073),
+        project(variant, rsid),
+        'left_names=chrom,pos',
+        'right_names=chrom,pos',
+        'algorithm=hash_replicate_left');
+    """
+    if not rsid.startswith('rs'):
+        return None
+    rsid_int = None
+    try:
+        rsid_int = int(rsid.lstrip('rs'))
+    except Exception:
+        return None
+
+    res = db.iquery(
+        config.DBSNP_VARIANT_LOOKUP_QUERY.format(rsid=rsid_int),
+        schema=config.DBSNP_VARIANT_LOOKUP_SCHEMA,
+        fetch=True,
+        atts_only=True)
+    if not res:
+        return None
+    return '{}-{}'.format(*res[0])
+
+
 # -- -
 # -- - SEARCH BAR - --
 # -- -
@@ -802,10 +839,9 @@ def get_awesomebar_result(db, query):
         else:
             return 'dbsnp_variant_set', query_lower
 
-    # TODO
-    # variant = get_variants_from_dbsnp(db, query.lower())
-    # if variant:
-    #     return 'variant', variant[0]['variant_id']
+    variant_id = get_variants_from_dbsnp(db, query.lower())
+    if variant_id:
+        return 'variant', variant_id
 
     gene_id = get_gene_id_by_name(db, query_upper)
     if gene_id:
@@ -894,6 +930,7 @@ def run_all():
 
     # # /awesome -> gbe.awesome()
     pp.pprint(get_variants_chrom_pos_by_rsid_limit2(db, 'rs6025'))
+    pp.pprint(get_variants_from_dbsnp(db, 'rs771157073'))
     pp.pprint(get_gene_id_by_name(db, 'F5'))
     pp.pprint(exists_gene_id(db, 'ENSG00000107404'))
     pp.pprint(exists_transcript_id(db, 'ENST00000378891'))
