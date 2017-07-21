@@ -165,32 +165,6 @@ def exists_icd(db, icd):
     return exists(db, config.ICD_INFO_ARRAY, 'icd', "'{}'".format(icd))
 
 
-def get_icd_significant(db, icd_id, cutoff=0.01):
-    """
-    e.g.,
-    UI:
-      https://biobankengine.stanford.edu/coding/RH117
-
-    MongoDB:
-      db.icd.find({'icd': 'RH117', 'stats.pvalue': {'$lt': 0.01}},
-                  fields={'_id': false})
-
-    SciDB:
-      filter(
-        cross_join(icd,
-                   filter(icd_index, icd = 'RH117'),
-                   icd.icd_idx,
-                   icd_index.icd_idx),
-        pvalue < 0.01);
-    """
-    return numpy2dict(
-        db.iquery(
-            config.ICD_PVALUE_LOOKUP_QUERY.format(
-                icd=icd_id, pvalue=cutoff),
-            schema=config.ICD_X_INFO_SCHEMA,
-            fetch=True))
-
-
 def get_variant_icd(db, chrom, pos):
     """
     e.g.,
@@ -552,32 +526,6 @@ def get_exons(db, transcript_idx):
 # -- -
 # -- - VARIANT - --
 # -- -
-def get_variants_by_id(db, variant_ids):
-    """
-    e.g.,
-    UI:
-      https://biobankengine.stanford.edu/coding/RH117
-
-    MongoDB:
-      db.variants.find({'xpos': '1039381448'}, fields={'_id': False})
-
-    SciDB:
-      filter(variant, chrom = 1 and pos = 39381448); -- or chrom = ...
-    """
-    chrom_pos_cond = ' or '.join(
-        'chrom = {chrom} and pos = {pos}'.format(
-            chrom=int(xpos / XOFF), pos=int(xpos % XOFF))
-        for xpos in variant_ids)
-    variants = numpy2dict(
-        db.iquery(
-            config.VARIANT_MULTI_LOOKUP_QUERY.format(
-                chrom_pos_cond=chrom_pos_cond),
-            schema=config.VARIANT_LOOKUP_SCHEMA,
-            fetch=True))
-    variants = format_variants(variants)
-    return variants
-
-
 def get_variants_chrom_pos_by_rsid_limit2(db, rsid):
     """
     Search bar
@@ -608,31 +556,6 @@ def get_variants_chrom_pos_by_rsid_limit2(db, rsid):
         return None
 
     return res
-
-
-def get_variants_chrom_pos(db, chrom, start, stop=None):
-    """
-    e.g.,
-    UI:
-      https://biobankengine.stanford.edu/variant/1-39381448
-
-    MongoDB:
-      db.variants.find({'xpos': '1039381448'}, fields={'_id': False})
-
-    SciDB:
-      between(vairant, 1, 39381448,
-                       1, 39381448);
-    """
-    if stop is None:
-        stop = start
-    return format_variants(
-        numpy2dict(
-            db.iquery(
-                config.VARIANT_LOOKUP_QUERY.format(
-                    chrom=chrom, start=start, stop=stop),
-                schema=config.VARIANT_LOOKUP_SCHEMA,
-                fetch=True)),
-        add_ann=True)
 
 
 def get_variant_ann_by_chrom_pos(db, chrom, start):
@@ -692,39 +615,6 @@ def get_variants_by_gene_idx(db, gene_idx, gene_id):
         gene_id=gene_id)
 
 
-def get_variants_in_transcript(db, transcript_id):
-    """
-    e.g.,
-    UI:
-      https://biobankengine.stanford.edu/gene/ENSG00000107404
-
-    MongoDB:
-      db.variants.find({'transcripts': 'ENST00000378891'},
-                       fields={'_id': False})
-
-    SciDB:
-      cross_join(
-        variant,
-        cross_join(
-          variant_transcript,
-          filter(transcript_index, transcript_id = 'ENST00000378891'),
-          variant_transcript.transcript_idx,
-          transcript_index.transcript_idx) as variant_transcript_index,
-        variant.chrom,
-        variant_transcript_index.chrom,
-        variant.pos,
-        variant_transcript_index.pos);
-    """
-    return format_variants(
-        numpy2dict(
-            db.iquery(
-                config.VARIANT_TRANSCRIPT_LOOKUP.format(
-                    transcript_id=transcript_id),
-                schema=config.VARIANT_X_TRANSCRIPT_X_INDEX_SCHEMA,
-                fetch=True)),
-        transcript_id=transcript_id)
-
-
 def get_variants_by_transcript_idx(db, transcript_idx, transcript_id):
     """
     e.g.,
@@ -745,6 +635,7 @@ def get_variants_by_transcript_idx(db, transcript_idx, transcript_id):
         variant.pos,
         variant_transcript.pos);
     """
+    print(transcript_id)
     return format_variants(
         numpy2dict(
             db.iquery(
@@ -770,7 +661,16 @@ def get_variants_in_region(db, chrom, start, stop):
                        16, 50766988);
     """
     # TODO add SEARCH_LIMIT
-    return get_variants_chrom_pos(db, chrom, start, stop)
+    if stop is None:
+        stop = start
+    return format_variants(
+        numpy2dict(
+            db.iquery(
+                config.VARIANT_LOOKUP_QUERY.format(
+                    chrom=chrom, start=start, stop=stop),
+                schema=config.VARIANT_LOOKUP_SCHEMA,
+                fetch=True)),
+        add_ann=True)
 
 
 # -- -
@@ -952,33 +852,49 @@ def get_awesomebar_result(db, query):
 
 
 if __name__ == '__main__':
-    db = scidbpy.connect()
-
     import pprint
     pp = pprint.PrettyPrinter(indent=2)
-    pp.pprint(exists_gene_id(db, 'ENSG00000107404'))
-    pp.pprint(exists_icd(db, 'RH117'))
-    pp.pprint(exists_transcript_id(db, 'ENST00000378891'))
-    pp.pprint(get_coverage_for_bases(db, 1039381448))
-    pp.pprint(get_coverage_for_transcript(db, 1039381448))
-    pp.pprint(get_exons(db, 3694))
-    pp.pprint(get_gene_by_id(db, 'ENSG00000107404'))
-    pp.pprint(get_gene_by_idx(db, 173))
-    pp.pprint(get_gene_id_by_name(db, 'F5'))
-    pp.pprint(get_genes_in_region(db, 1, 39381448, 39382448))
+    db = scidbpy.connect()
+
     pp.pprint(get_icd_name_map(db))
-    pp.pprint(get_icd_significant(db, 'RH117'))
-    pp.pprint(get_icd_significant_variant(db, 'RH117'))
-    pp.pprint(get_transcript_by_idx(db, 3694))
-    pp.pprint(get_transcript_gene(db, 'ENST00000378891'))
-    pp.pprint(get_transcripts_by_gene_idx(db, 173))
-    pp.pprint(get_transcripts_id_by_gene_idx(db, 173))
-    pp.pprint(get_variant_ann_by_chrom_pos(db, 19, 11210912))
-    pp.pprint(get_variant_icd(db, 1, 39381448))
+
+    # /coding/RH141 -> gbe.icd_page()
+    pp.pprint(get_icd_significant_variant(db, 'RH141'))
+
+    # /variant/1-169519049 -> gbe.variant_icd_page()
+    pp.pprint(get_variant_ann_by_chrom_pos(db, 1, 169519049))
+    pp.pprint(get_variant_icd(db, 1, 169519049))
+
+    # /gene/ENSG00000107404 -> gbe.gene_page()
+    pp.pprint(get_gene_by_id(db, 'ENSG00000107404'))
     pp.pprint(get_variants_by_gene_idx(db, 173, 'ENSG00000107404'))
-    pp.pprint(get_variants_by_id(db, (1039381448,)))
+    pp.pprint(get_transcripts_by_gene_idx(db, 173))
+    pp.pprint(get_transcript_by_idx(db, 3694))
+    pp.pprint(get_exons(db, 3694))
     pp.pprint(get_variants_by_transcript_idx(db, 3694, 'ENST00000378891'))
-    pp.pprint(get_variants_chrom_pos(db, 1, 39381448))
+    pp.pprint(get_coverage_for_transcript(db, 1001270607, 1001284543))
+
+    # /transcript/ENST00000289248 -> gbe.transcript_page()
+    pp.pprint(get_transcript_gene(db, 'ENST00000289248'))
+    pp.pprint(get_exons(db, 304))
+    pp.pprint(get_gene_by_idx(db, 842))
+    pp.pprint(get_transcripts_id_by_gene_idx(db, 842))
+    pp.pprint(get_variants_by_transcript_idx(db, 304, 'ENST00000289248'))
+    pp.pprint(get_coverage_for_transcript(db, 1039351919, 1039392560))
+
+    # /region/1-28052491-28089634 -> gbe.region_page()
+    pp.pprint(get_genes_in_region(db, 1, 28052491, 28089634))
+    pp.pprint(get_variants_in_region(db, 1, 28052491, 28089634))
+    pp.pprint(get_coverage_for_bases(db, 1028052491, 1028089634))
+
+    # /region/16-50727514-50766988 -> gbe.region_page()
+    pp.pprint(get_genes_in_region(db, 16, 50727514, 50766988))
+    pp.pprint(get_variants_in_region(db, 16, 50727514, 50766988))
+    pp.pprint(get_coverage_for_bases(db, 16050727514, 16050766988))
+
+    # /awesome -> gbe.awesome()
     pp.pprint(get_variants_chrom_pos_by_rsid_limit2(db, 'rs6025'))
-    pp.pprint(get_variants_in_region(db, 1, 39381448, 39382448))
-    pp.pprint(get_variants_in_transcript(db, 'ENST00000378891'))
+    pp.pprint(get_gene_id_by_name(db, 'F5'))
+    pp.pprint(exists_gene_id(db, 'ENSG00000107404'))
+    pp.pprint(exists_transcript_id(db, 'ENST00000378891'))
+    pp.pprint(exists_icd(db, 'RH117'))

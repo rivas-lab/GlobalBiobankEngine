@@ -635,24 +635,6 @@ ICD_INFO_MAP_QUERY = 'project({icd_info_array}, icd, Name)'.format(
 ICD_INFO_MAP_SCHEMA = scidbpy.schema.Schema.fromstring("""
   <icd:string, Name:string>[notused]""")
 
-ICD_PVALUE_LOOKUP_QUERY = """
-  filter(
-    cross_join(
-      {icd_array},
-      filter({icd_info_array}, icd = '{{icd}}'),
-      {icd_array}.icd_idx,
-      {icd_info_array}.icd_idx),
-    pvalue < {{pvalue}})""".format(
-        icd_array=ICD_ARRAY,
-        icd_info_array=ICD_INFO_ARRAY)
-
-ICD_X_INFO_SCHEMA = scidbpy.schema.Schema.fromstring(
-    ICD_SCHEMA.replace(
-        '>',
-        ',{}>'.format(ICD_INFO_SCHEMA[ICD_INFO_SCHEMA.index('<') + 1:
-                                      ICD_INFO_SCHEMA.index('>')])))
-
-
 ICD_CHROM_POS_LOOKUP_QUERY = """
   equi_join(
     between({icd_array},
@@ -897,10 +879,6 @@ VARIANT_LOOKUP_QUERY = """
           {{chrom}}, {{stop}})""".format(
     variant_array=VARIANT_ARRAY)
 
-VARIANT_MULTI_LOOKUP_QUERY = """
-  filter({variant_array}, {{chrom_pos_cond}})""".format(
-    variant_array=VARIANT_ARRAY)
-
 VARIANT_LOOKUP_SCHEMA = scidbpy.schema.Schema.fromstring(VARIANT_SCHEMA)
 
 VARIANT_LIMIT_QUERY = """
@@ -951,40 +929,12 @@ VARIANT_GENE_LOOKUP = """
         variant_array=VARIANT_ARRAY,
         variant_gene_array=VARIANT_GENE_ARRAY)
 
-VARIANT_TRANSCRIPT_LOOKUP = """
-  cross_join(
-    {variant_array},
-    cross_join(
-      {variant_transcript_array},
-      filter({transcript_index_array}, transcript_id = '{{transcript_id}}'),
-      {variant_transcript_array}.transcript_idx,
-      {transcript_index_array}.transcript_idx) as variant_transcript_index,
-    {variant_array}.chrom,
-    variant_transcript_index.chrom,
-    {variant_array}.pos,
-    variant_transcript_index.pos)""".format(
-        variant_array=VARIANT_ARRAY,
-        variant_transcript_array=VARIANT_TRANSCRIPT_ARRAY,
-        transcript_index_array=TRANSCRIPT_INDEX_ARRAY)
-
 VARIANT_GENE_SCHEMA = scidbpy.schema.Schema.fromstring(
     VARIANT_GENE_SCHEMA.replace(
         '<',
         '<{},'.format(
             VARIANT_SCHEMA[VARIANT_SCHEMA.index('<') + 1:
                            VARIANT_SCHEMA.index('>')])))
-
-VARIANT_X_TRANSCRIPT_X_INDEX_SCHEMA = scidbpy.schema.Schema.fromstring(
-    VARIANT_TRANSCRIPT_SCHEMA.replace(
-        '<',
-        '<{},'.format(
-            VARIANT_SCHEMA[VARIANT_SCHEMA.index('<') + 1:
-                           VARIANT_SCHEMA.index('>')]).replace(
-                               '>',
-                               ',{}>'.format(
-                                   TRANSCRIPT_INDEX_SCHEMA[
-                                       TRANSCRIPT_INDEX_SCHEMA.index('<') + 1:
-                                       TRANSCRIPT_INDEX_SCHEMA.index('>')]))))
 
 VARIANT_TRANSCRIPT_IDX_LOOKUP = """
   cross_join(
