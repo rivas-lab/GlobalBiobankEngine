@@ -897,7 +897,7 @@ def run_all():
     pp.pprint(get_gene_id_by_name(db, 'F5'))
     pp.pprint(exists_gene_id(db, 'ENSG00000107404'))
     pp.pprint(exists_transcript_id(db, 'ENST00000378891'))
-    pp.pprint(exists_icd(db, 'RH117'))
+    pp.pprint(exists_icd(db, 'RH141'))
 
 
 if __name__ == '__main__':
