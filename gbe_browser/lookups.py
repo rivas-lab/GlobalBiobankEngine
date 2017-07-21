@@ -851,7 +851,7 @@ def get_awesomebar_result(db, query):
     return 'not_found', query
 
 
-if __name__ == '__main__':
+def run_all():
     import pprint
     pp = pprint.PrettyPrinter(indent=2)
     db = scidbpy.connect()
@@ -892,9 +892,19 @@ if __name__ == '__main__':
     pp.pprint(get_variants_in_region(db, 16, 50727514, 50766988))
     pp.pprint(get_coverage_for_bases(db, 16050727514, 16050766988))
 
-    # /awesome -> gbe.awesome()
+    # # /awesome -> gbe.awesome()
     pp.pprint(get_variants_chrom_pos_by_rsid_limit2(db, 'rs6025'))
     pp.pprint(get_gene_id_by_name(db, 'F5'))
     pp.pprint(exists_gene_id(db, 'ENSG00000107404'))
     pp.pprint(exists_transcript_id(db, 'ENST00000378891'))
     pp.pprint(exists_icd(db, 'RH117'))
+
+
+if __name__ == '__main__':
+    import timeit
+    import sys
+
+    sys.stderr.write('{}\n'.format(
+        timeit.timeit('run_all()',
+                      setup='from __main__ import run_all',
+                      number=1)))
