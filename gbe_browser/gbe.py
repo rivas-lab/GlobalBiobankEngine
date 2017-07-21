@@ -1695,7 +1695,7 @@ def get_acess_token():
 # Function to check Google Login Credentials for current session
 def check_credentials():
     # Debugging.  Sick of logging in and getting redirected
-    if True:
+    if app.debug:
        return True
     access_token = session.get('access_token')
     if access_token is None:
