@@ -886,8 +886,9 @@ def get_awesomebar_result(db, query):
     return 'not_found', query
 
 
-def run_all():
+def print_all():
     import pprint
+
     pp = pprint.PrettyPrinter(indent=2)
     db = scidbpy.connect()
 
@@ -936,11 +937,200 @@ def run_all():
     pp.pprint(exists_icd(db, 'RH141'))
 
 
-if __name__ == '__main__':
-    import timeit
-    import sys
+def time_all():
+    import timer
 
-    sys.stderr.write('{}\n'.format(
-        timeit.timeit('run_all()',
-                      setup='from __main__ import run_all',
-                      number=1)))
+    db = None
+
+    #
+    # init
+    #
+    tm_loc = 0
+    with timer.Timer() as t:
+        db = scidbpy.connect()
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'connect'))
+    tm_loc += t.msecs
+
+    with timer.Timer() as t:
+        get_icd_name_map(db)
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_icd_name_map'))
+    tm_loc += t.msecs
+    print('     -----\n{:8.2f}ms\t{}\n'.format(tm_loc, 'init'))
+
+    #
+    # /coding/RH141 -> gbe.icd_page()
+    #
+    with timer.Timer() as t:
+        get_icd_significant_variant(db, 'RH141')
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_icd_significant_variant'))
+    print('     -----\n{:8.2f}ms\t{}\n'.format(t.msecs, '/coding/'))
+
+    #
+    # /variant/1-169519049 -> gbe.variant_icd_page()
+    #
+    tm_loc = 0
+    with timer.Timer() as t:
+        get_variant_ann_by_chrom_pos(db, 1, 169519049)
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_variant_ann_by_chrom_pos'))
+    tm_loc += t.msecs
+
+    with timer.Timer() as t:
+        get_variant_icd(db, 1, 169519049)
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_variant_icd'))
+    tm_loc += t.msecs
+    print('     -----\n{:8.2f}ms\t{}\n'.format(tm_loc, '/variant/'))
+
+    #
+    # /gene/ENSG00000107404 -> gbe.gene_page()
+    #
+    tm_loc = 0
+    with timer.Timer() as t:
+        get_gene_by_id(db, 'ENSG00000107404')
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_gene_by_id'))
+    tm_loc += t.msecs
+
+    with timer.Timer() as t:
+        get_variants_by_gene_idx(db, 173, 'ENSG00000107404')
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_variants_by_gene_idx'))
+    tm_loc += t.msecs
+
+    with timer.Timer() as t:
+        get_transcripts_by_gene_idx(db, 173)
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_transcripts_by_gene_idx'))
+    tm_loc += t.msecs
+
+    with timer.Timer() as t:
+        get_transcript_by_idx(db, 3694)
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_transcript_by_idx'))
+    tm_loc += t.msecs
+
+    with timer.Timer() as t:
+        get_exons(db, 3694)
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_exons'))
+    tm_loc += t.msecs
+
+    with timer.Timer() as t:
+        get_variants_by_transcript_idx(db, 3694, 'ENST00000378891')
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_variants_by_transcript_idx'))
+    tm_loc += t.msecs
+
+    with timer.Timer() as t:
+        get_coverage_for_transcript(db, 1001270607, 1001284543)
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_coverage_for_transcript'))
+    tm_loc += t.msecs
+    print('     -----\n{:8.2f}ms\t{}\n'.format(tm_loc, '/gene/'))
+
+    #
+    # /transcript/ENST00000289248 -> gbe.transcript_page()
+    #
+    tm_loc = 0
+    with timer.Timer() as t:
+        get_transcript_gene(db, 'ENST00000289248')
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_transcript_gene'))
+    tm_loc += t.msecs
+
+    with timer.Timer() as t:
+        get_exons(db, 304)
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_exons'))
+    tm_loc += t.msecs
+
+    with timer.Timer() as t:
+        get_gene_by_idx(db, 842)
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_gene_by_idx'))
+    tm_loc += t.msecs
+
+    with timer.Timer() as t:
+        get_transcripts_id_by_gene_idx(db, 842)
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_transcripts_id_by_gene_idx'))
+    tm_loc += t.msecs
+
+    with timer.Timer() as t:
+        get_variants_by_transcript_idx(db, 304, 'ENST00000289248')
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_variants_by_transcript_idx'))
+    tm_loc += t.msecs
+
+    with timer.Timer() as t:
+        get_coverage_for_transcript(db, 1039351919, 1039392560)
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_coverage_for_transcript'))
+    tm_loc += t.msecs
+    print('     -----\n{:8.2f}ms\t{}\n'.format(tm_loc, '/transcript/'))
+
+    #
+    # /region/1-28052491-28089634 -> gbe.region_page()
+    #
+    tm_loc = 0
+    with timer.Timer() as t:
+        get_genes_in_region(db, 1, 28052491, 28089634)
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_genes_in_region'))
+    tm_loc += t.msecs
+
+    with timer.Timer() as t:
+        get_variants_in_region(db, 1, 28052491, 28089634)
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_variants_in_region'))
+    tm_loc += t.msecs
+
+    with timer.Timer() as t:
+        get_coverage_for_bases(db, 1028052491, 1028089634)
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_coverage_for_bases'))
+    tm_loc += t.msecs
+    print('     -----\n{:8.2f}ms\t{}\n'.format(tm_loc, '/region/'))
+
+    #
+    # /region/16-50727514-50766988 -> gbe.region_page()
+    #
+    tm_loc = 0
+    with timer.Timer() as t:
+        get_genes_in_region(db, 16, 50727514, 50766988)
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_genes_in_region'))
+    tm_loc += t.msecs
+
+    with timer.Timer() as t:
+        get_variants_in_region(db, 16, 50727514, 50766988)
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_variants_in_region'))
+    tm_loc += t.msecs
+
+    with timer.Timer() as t:
+        get_coverage_for_bases(db, 16050727514, 16050766988)
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_coverage_for_bases'))
+    tm_loc += t.msecs
+    print('     -----\n{:8.2f}ms\t{}\n'.format(tm_loc, '/region/'))
+
+    #
+    # /awesome -> gbe.awesome()
+    #
+    tm_loc = 0
+    with timer.Timer() as t:
+        get_variants_chrom_pos_by_rsid_limit2(db, 'rs6025')
+    print('{:8.2f}ms\t{}'.format(t.msecs,
+                                 'get_variants_chrom_pos_by_rsid_limit2'))
+    tm_loc += t.msecs
+
+    with timer.Timer() as t:
+        get_variants_from_dbsnp(db, 'rs771157073')
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_variants_from_dbsnp'))
+    tm_loc += t.msecs
+
+    with timer.Timer() as t:
+        get_gene_id_by_name(db, 'F5')
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_gene_id_by_name'))
+    tm_loc += t.msecs
+
+    with timer.Timer() as t:
+        exists_gene_id(db, 'ENSG00000107404')
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_gene_id_by_name'))
+    tm_loc += t.msecs
+
+    with timer.Timer() as t:
+        exists_transcript_id(db, 'ENST00000378891')
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_gene_id_by_name'))
+    tm_loc += t.msecs
+
+    with timer.Timer() as t:
+        exists_icd(db, 'RH141')
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_gene_id_by_name'))
+    tm_loc += t.msecs
+    print('     -----\n{:8.2f}ms\t{}\n'.format(tm_loc, '/awesome'))
+
+
+if __name__ == '__main__':
+    print_all()
