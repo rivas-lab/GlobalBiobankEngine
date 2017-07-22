@@ -253,6 +253,39 @@ def get_icd_significant_variant(db, icd_id, cutoff=0.001):
 # -- -
 # -- - GENE - --
 # -- -
+def get_gene_by_gene_names(db, gene_names=None):
+    """
+    SciDB:
+      equi_join(
+        gene,
+        gene_index,
+        'left_names=gene_idx',
+        'right_names=gene_idx',
+        'algorithm=hash_replicate_right');
+
+      equi_join(
+        filter(gene, gene_name = 'RP11-126K1.9' or gene_name='RP4-621B10.8'),
+        gene_index,
+        'left_names=gene_idx',
+        'right_names=gene_idx',
+        'algorithm=hash_replicate_right');
+    """
+    if gene_names:
+        query = config.GENE_FILTER_QUERY.format(
+            gene_array_filter='filter({gene_array}, {cond})'.format(
+                gene_array=config.GENE_ARRAY,
+                cond=' or '.join(
+                    "gene_name = '{}'".format(g) for g in gene_names)))
+    else:
+        query = config.GENE_FILTER_QUERY.format(
+            gene_array_filter=config.GENE_ARRAY)
+    return db.iquery(
+        query,
+        schema=config.GENE_FILTER_SCHEMA,
+        fetch=True,
+        atts_only=True)
+
+
 def get_gene_by_id(db, gene_id):
     """
     e.g.,
@@ -946,6 +979,10 @@ def print_all():
     pp.pprint(exists_gene_id(db, 'ENSG00000107404'))
     pp.pprint(exists_transcript_id(db, 'ENST00000378891'))
     pp.pprint(exists_icd(db, 'RH141'))
+
+    # models
+    pp.pprint(get_gene_by_gene_names(db))
+    pp.pprint(get_gene_by_gene_names(db, ('RP11-126K1.9',)))
 
 
 def time_all():

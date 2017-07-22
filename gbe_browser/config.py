@@ -739,6 +739,29 @@ VARIANT_X_ICD_X_INFO_SCHEMA = scidbpy.schema.Schema.fromstring("""
 # -- -
 # -- - Lookup: GENE - --
 # -- -
+GENE_FILTER_QUERY = """
+  equi_join(
+    {{gene_array_filter}},
+    {gene_index_array},
+    'left_names=gene_idx',
+    'right_names=gene_idx',
+    'algorithm=hash_replicate_right')""".format(
+        gene_index_array=GENE_INDEX_ARRAY)
+
+GENE_FILTER_SCHEMA = scidbpy.schema.Schema.fromstring("""
+  <gene_idx:       int64 not null,
+   gene_name:      string,
+   strand:         string,
+   full_gene_name: string,
+   omim_accession: string,
+   transcript_idx: int64,
+   chrom:          int64,
+   start:          int64,
+   stop:           int64,
+   gene_id:        string>
+  [notused0;
+   notused1]""")
+
 GENE_INDEX_LOOKUP_QUERY = """
   between({gene_index_array}, {{gene_idx}}, {{gene_idx}})""".format(
       gene_index_array=GENE_INDEX_ARRAY)
