@@ -943,7 +943,7 @@ def print_all():
 
     # /variant/1-169519049 -> gbe.variant_icd_page()
     pp.pprint(get_variant_ann_by_chrom_pos(db, 1, 169519049))
-    pp.pprint(get_variant_icd(db, 1, 169519049))
+    pp.pprint(get_icd_by_chrom_pos(db, 1, 169519049))
 
     # /gene/ENSG00000107404 -> gbe.gene_page()
     pp.pprint(get_gene_by_id(db, 'ENSG00000107404'))
@@ -1023,8 +1023,8 @@ def time_all():
     tm_loc += t.msecs
 
     with timer.Timer() as t:
-        get_variant_icd(db, 1, 169519049)
-    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_variant_icd'))
+        get_icd_by_chrom_pos(db, 1, 169519049)
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_icd_by_chrom_pos'))
     tm_loc += t.msecs
     print('     -----\n{:8.2f}ms\t{}\n'.format(tm_loc, '/variant/'))
 
