@@ -1076,26 +1076,6 @@ def time_all():
     print('     -----\n{:8.2f}ms\t{}\n'.format(tm_loc, '/region/'))
 
     #
-    # /region/16-50727514-50766988 -> gbe.region_page()
-    #
-    tm_loc = 0
-    with timer.Timer() as t:
-        get_genes_in_region(db, 16, 50727514, 50766988)
-    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_genes_in_region'))
-    tm_loc += t.msecs
-
-    with timer.Timer() as t:
-        get_variants_in_region(db, 16, 50727514, 50766988)
-    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_variants_in_region'))
-    tm_loc += t.msecs
-
-    with timer.Timer() as t:
-        get_coverage_for_bases(db, 16050727514, 16050766988)
-    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_coverage_for_bases'))
-    tm_loc += t.msecs
-    print('     -----\n{:8.2f}ms\t{}\n'.format(tm_loc, '/region/'))
-
-    #
     # /awesome -> gbe.awesome()
     #
     tm_loc = 0
