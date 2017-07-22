@@ -1117,17 +1117,17 @@ def time_all():
 
     with timer.Timer() as t:
         exists_gene_id(db, 'ENSG00000107404')
-    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_gene_id_by_name'))
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'exists_gene_id'))
     tm_loc += t.msecs
 
     with timer.Timer() as t:
         exists_transcript_id(db, 'ENST00000378891')
-    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_gene_id_by_name'))
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'exists_transcript_id'))
     tm_loc += t.msecs
 
     with timer.Timer() as t:
         exists_icd(db, 'RH141')
-    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_gene_id_by_name'))
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'exists_icd'))
     tm_loc += t.msecs
     print('     -----\n{:8.2f}ms\t{}\n'.format(tm_loc, '/awesome'))
 
