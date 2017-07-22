@@ -58,7 +58,7 @@ class Loader:
                 logger.info('QC:file:%s lines:%d skip:%d',
                             rec['file'], len(lines), skip)
 
-        # TODO fix when upload_data=list() implemented
+        # TODO fix when upload_data=list() implemented in SciDB-Py
         self.db.input(upload_data=numpy.array(qc)).store(config.QC_ARRAY)
         logger.info('Array:%s records:%d', config.QC_ARRAY, len(qc))
 
