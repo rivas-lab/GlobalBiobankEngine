@@ -24,7 +24,6 @@ UNSUPPORTED_QUERIES = set((
     'TTN',
 ))
 
-XOFF = int(1e9)
 RSID_FORMAT = '{chrom}-{pos}-{ref}-{alt}'
 
 # 1:1-1000
@@ -94,8 +93,8 @@ def format_variants(variants, add_ann=False, gene_id=None, transcript_id=None):
 
 
 def format_gene(gene):
-    gene['xstart'] = gene['chrom'] * XOFF + gene['start']
-    gene['xstop'] = gene['chrom'] * XOFF + gene['stop']
+    gene['xstart'] = gene['chrom'] * config.XOFF + gene['start']
+    gene['xstop'] = gene['chrom'] * config.XOFF + gene['stop']
     return gene
 
 
@@ -165,7 +164,7 @@ def exists_icd(db, icd):
     return exists(db, config.ICD_INFO_ARRAY, 'icd', "'{}'".format(icd))
 
 
-def get_variant_icd(db, chrom, pos):
+def get_icd_by_chrom_pos(db, chrom, start, stop=None, icd=None):
     """
     e.g.,
     UI:
@@ -184,9 +183,21 @@ def get_variant_icd(db, chrom, pos):
         'keep_dimensions=1',
         'algorithm=hash_replicate_right');
     """
+    if not stop:
+        stop = start
+    if not icd:
+        icd_info_filter = config.ICD_INFO_ARRAY
+    else:
+        icd_info_filter = 'filter({icd_info_array}, {cond})'.format(
+            icd_info_array=config.ICD_INFO_ARRAY,
+            cond=' or '.join("icd = '{}'".format(i) for i in icd))
     return numpy2dict(
         db.iquery(
-            config.ICD_CHROM_POS_LOOKUP_QUERY.format(chrom=chrom, pos=pos),
+            config.ICD_CHROM_POS_LOOKUP_QUERY.format(
+                icd_info_filter=config.ICD_INFO_ARRAY,
+                chrom=chrom,
+                start=start,
+                stop=stop),
             schema=config.ICD_CHROM_POS_LOOKUP_SCHEMA,
             fetch=True,
             atts_only=True))
@@ -713,10 +724,10 @@ def get_coverage_for_bases(db, xstart, xstop=None):
     return numpy2dict(
         db.iquery(
             config.COVERAGE_LOOKUP_QUERY.format(
-                chrom_start=int(xstart / XOFF),
-                pos_start=int(xstart % XOFF),
-                chrom_stop=int(xstop / XOFF),
-                pos_stop=int(xstop % XOFF)),
+                chrom_start=int(xstart / config.XOFF),
+                pos_start=int(xstart % config.XOFF),
+                chrom_stop=int(xstop / config.XOFF),
+                pos_stop=int(xstop % config.XOFF)),
             schema=config.COVERAGE_SCHEMA_OBJ,
             fetch=True))
 
@@ -928,7 +939,7 @@ def print_all():
     pp.pprint(get_variants_in_region(db, 16, 50727514, 50766988))
     pp.pprint(get_coverage_for_bases(db, 16050727514, 16050766988))
 
-    # # /awesome -> gbe.awesome()
+    # /awesome -> gbe.awesome()
     pp.pprint(get_variants_chrom_pos_by_rsid_limit2(db, 'rs6025'))
     pp.pprint(get_variants_from_dbsnp(db, 'rs771157073'))
     pp.pprint(get_gene_id_by_name(db, 'F5'))

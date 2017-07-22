@@ -2,6 +2,8 @@ import os
 import scidbpy
 
 
+XOFF = int(1e9)
+
 # == =
 # == = Load = ==
 # == =
@@ -655,15 +657,13 @@ ICD_INFO_MAP_SCHEMA = scidbpy.schema.Schema.fromstring("""
 ICD_CHROM_POS_LOOKUP_QUERY = """
   equi_join(
     between({icd_array},
-            null, {{chrom}}, {{pos}}, null, null,
-            null, {{chrom}}, {{pos}}, null, null),
-    {icd_info_array},
+            null, {{chrom}}, {{start}}, null, null,
+            null, {{chrom}}, {{stop}}, null, null),
+    {{icd_info_filter}},
     'left_names=icd_idx',
     'right_names=icd_idx',
     'keep_dimensions=1',
-    'algorithm=hash_replicate_right')""".format(
-        icd_array=ICD_ARRAY,
-        icd_info_array=ICD_INFO_ARRAY)
+    'algorithm=hash_replicate_right')""".format(icd_array=ICD_ARRAY)
 
 ICD_CHROM_POS_LOOKUP_SCHEMA = scidbpy.schema.Schema.fromstring("""
   <icd_idx:     int64 not null,

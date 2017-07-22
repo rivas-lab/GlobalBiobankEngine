@@ -895,7 +895,7 @@ def variant_icd_page(variant_str):
                 annotation['HGVS'] = get_proper_hgvs(annotation)
                 consequences[annotation['major_consequence']][annotation['Gene']].append(annotation)
        # print(xpos)
-        icdstats = lookups.get_variant_icd(db, chrom, pos)
+        icdstats = lookups.get_icd_by_chrom_pos(db, chrom, pos)
         indexes = []
         seend = {}
         for idx in range(0,len(icdstats)):
