@@ -107,8 +107,8 @@ app.config.update(dict(
     BASE_COVERAGE_FILES=glob.glob(os.path.join(os.path.dirname(__file__), GBE_FILES_DIRECTORY, 'coverage', 'Panel2016.*.coverage.txt.gz')),
     BASE_ICDSTATS_FILES=glob.glob(os.path.join(os.path.dirname(__file__), GBE_FILES_DIRECTORY, 'icdstats', 'Panel*.icdstats.txt.gz')),
     ICD_INFO_FILE=os.path.join(os.path.dirname(__file__), GBE_FILES_DIRECTORY, 'icdstats', 'icdinfo.txt'),
-    ICD_STATS_FILES=glob.glob(os.path.join(os.path.dirname(__file__), GBE_FILES_DIRECTORY, 'icdassoc','hybrid','c*.hybrid.rewrite.gz')),
-    QT_STATS_FILES=glob.glob(os.path.join(os.path.dirname(__file__), GBE_FILES_DIRECTORY, 'icdassoc','hybrid','c*.linear.rewrite.gz')),
+    ICD_STATS_FILES=glob.glob(os.path.join(os.path.dirname(__file__), GBE_FILES_DIRECTORY, 'icdassoc','hybrid','*c*.hybrid.rewrite.gz')),
+    QT_STATS_FILES=glob.glob(os.path.join(os.path.dirname(__file__), GBE_FILES_DIRECTORY, 'icdassoc','hybrid','*c*.linear.rewrite.gz')),
     DBNSFP_FILE=os.path.join(os.path.dirname(__file__), GBE_FILES_DIRECTORY, 'dbNSFP2.6_gene.gz'),
     # This is not supported in GBE, We have dbsnp150
     # How to get a snp141.txt.bgz file:
@@ -676,7 +676,7 @@ def run_mrp(lof=True, missense=True, genes=None, fdr=5, phenidarr = ['ICD1462','
         cmax = 4
         fail = 0
         for tmpc in range(1,cmax+1):
-            [BIC, AIC, genedat] = mrpmm(betas,se, C, annotvec, gene_return, rsids, variant_ids,tmpc,key,C, numpy.linalg.inv(C),icd, fdr=fdr, niter=51,burn=10,thinning=1,verbose=True, outpath = './MRP_out/')
+            [BIC, AIC, genedat] = mrpmm(betas,se, C, annotvec, gene_return, rsids, variant_ids,tmpc,key,C, numpy.linalg.inv(C),icd, fdr=fdr, niter=151,burn=50,thinning=1,verbose=True, outpath = './MRP_out/')
             if tmpc > 2 and BIC > bicarr[len(bicarr)-1]:
                 fail += 1
             if fail >= 2:
@@ -703,16 +703,17 @@ def run_mrp(lof=True, missense=True, genes=None, fdr=5, phenidarr = ['ICD1462','
         lbfout.write(str(lbf))
         lbfout.close()
         clustvalue = 1
-#        if lbf > 1 and (lbf - lbf2) > 1 and lbf2 > 0:
-        if lbf > 1:
-            [BIC, AIC, genedat] = mrpmm(betas,se, C, annotvec, gene_return, rsids, variant_ids,clustminval,key,C, numpy.linalg.inv(C), icd, fdr=fdr, niter=201,burn=100,thinning=1,verbose=True, outpath = './MRP_out/', protectivescan=True)
+        if lbf > 1 and (lbf - lbf2) > 1 and lbf2 > 0:
+#        if lbf > 1:
+            [BIC, AIC, genedat] = mrpmm(betas,se, C, annotvec, gene_return, rsids, variant_ids,clustminval,key,C, numpy.linalg.inv(C), icd, fdr=fdr, niter=2001,burn=500,thinning=1,verbose=True, outpath = './MRP_out/', protectivescan=True)
             print("log bayes factor: ",lbf)
             clustvalue = clustminval
         elif lbf2 > 1:
             clustminval = 2
-            [BIC, AIC, genedat] = mrpmm(betas,se, C, annotvec, gene_return, rsids, variant_ids,clustminval,key,C, numpy.linalg.inv(C), icd, fdr=fdr, niter=201,burn=100,thinning=1,verbose=True, outpath = './MRP_out/', protectivescan=True)
+            [BIC, AIC, genedat] = mrpmm(betas,se, C, annotvec, gene_return, rsids, variant_ids,clustminval,key,C, numpy.linalg.inv(C), icd, fdr=fdr, niter=2001,burn=500,thinning=1,verbose=True, outpath = './MRP_out/', protectivescan=True)
             print("log bayes factor: ",lbf)
             clustvalue = clustminval
+            lbf = lbf2
         else:
             [BIC, AIC, genedat] = mrpmm(betas,se, C, annotvec, gene_return, rsids, variant_ids,1,key,C, numpy.linalg.inv(C), icd, fdr=fdr, niter=51,burn=10,thinning=1,verbose=True, outpath = './MRP_out/', protectivescan=True)
         print(bicarr)

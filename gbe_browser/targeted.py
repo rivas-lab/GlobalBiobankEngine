@@ -231,8 +231,8 @@ def mrpmm(betas,ses,vymat,annotvec,genevec,protvec,chroffvec,clusters,fout,Rphen
                 for tmptidx in range(0, k):
                     if np.sqrt(scales[iter-1,annotidx])*bc[iter-1,deltam[iter,varidx],tmptidx] >= maxlor:
                         protadverse = 1
-                        if np.sqrt(scales[iter-1,annotidx])*bc[iter-1,deltam[iter,varidx],tmptidx] < -.1:
-                            protbool = 1
+                    if np.sqrt(scales[iter-1,annotidx])*bc[iter-1,deltam[iter,varidx],tmptidx] < -.05:
+                        protbool = 1
                 if protbool == 1 and protadverse == 0:
                     protind[iter,varidx] = 1
         # d) Update b_c using a Gibbs update from a Gaussian distribution
