@@ -743,7 +743,7 @@ GENE_INDEX_LOOKUP_QUERY = """
   between({gene_index_array}, {{gene_idx}}, {{gene_idx}})""".format(
       gene_index_array=GENE_INDEX_ARRAY)
 
-GENE_LOOKUP_QUERY = """
+GENE_TRANSCRIPT_BY_ID_QUERY = """
   equi_join(
     equi_join({gene_array},
               filter({gene_index_array}, gene_id = '{{gene_id}}'),
@@ -758,7 +758,7 @@ GENE_LOOKUP_QUERY = """
         gene_index_array=GENE_INDEX_ARRAY,
         transcript_index_array=TRANSCRIPT_INDEX_ARRAY)
 
-GENE_LOOKUP_SCHEMA = scidbpy.schema.Schema.fromstring("""
+GENE_TRANSCRIPT_BY_ID_SCHEMA = scidbpy.schema.Schema.fromstring("""
   <transcript_idx: int64,
    gene_idx:       int64 not null,
    gene_name:      string,
@@ -773,7 +773,7 @@ GENE_LOOKUP_SCHEMA = scidbpy.schema.Schema.fromstring("""
   [notused0;
    notused1]""")
 
-GENE_IDX_QUERY = """
+GENE_TRANSCRIPT_BY_IDX_QUERY = """
   equi_join(
     between({gene_array}, {{gene_idx}}, {{gene_idx}}),
     {transcript_index_array},
@@ -783,7 +783,7 @@ GENE_IDX_QUERY = """
         gene_array=GENE_ARRAY,
         transcript_index_array=TRANSCRIPT_INDEX_ARRAY)
 
-GENE_IDX_SCHEMA = scidbpy.schema.Schema.fromstring("""
+GENE_TRANSCRIPT_BY_IDX_SCHEMA = scidbpy.schema.Schema.fromstring("""
   <transcript_idx: int64,
    gene_name:      string,
    strand:         string,

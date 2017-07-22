@@ -277,8 +277,8 @@ def get_gene_by_id(db, gene_id):
     """
     res = numpy2dict0(
         db.iquery(
-            config.GENE_LOOKUP_QUERY.format(gene_id=gene_id),
-            schema=config.GENE_LOOKUP_SCHEMA,
+            config.GENE_TRANSCRIPT_BY_ID_QUERY.format(gene_id=gene_id),
+            schema=config.GENE_TRANSCRIPT_BY_ID_SCHEMA,
             fetch=True,
             atts_only=True))
     res['canonical_transcript'] = res['transcript_id']
@@ -322,8 +322,8 @@ def get_gene_by_idx(db, gene_idx):
     """
     res = numpy2dict0(
         db.iquery(
-            config.GENE_IDX_QUERY.format(gene_idx=gene_idx),
-            schema=config.GENE_IDX_SCHEMA,
+            config.GENE_TRANSCRIPT_BY_IDX_QUERY.format(gene_idx=gene_idx),
+            schema=config.GENE_TRANSCRIPT_BY_IDX_SCHEMA,
             fetch=True,
             atts_only=True))
     res['canonical_transcript'] = res['transcript_id']
