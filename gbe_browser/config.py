@@ -27,9 +27,9 @@ QC_ARRAY = 'qc'
 # -- - Load: ICD - --
 # -- -
 ICD_GLOB = os.path.join(
-    GBE_DATA_PATH, 'icdassoc', 'hybrid', 'c*.hybrid.rewrite.gz')
+    GBE_DATA_PATH, 'icdassoc', 'hybrid', '*c*.hybrid.rewrite.gz')
 QT_GLOB = os.path.join(
-    GBE_DATA_PATH, 'icdassoc', 'hybrid', 'c*.linear.rewrite.gz')
+    GBE_DATA_PATH, 'icdassoc', 'hybrid', '*c*.linear.rewrite.gz')
 
 ICD_INFO_FILE = os.path.join(GBE_DATA_PATH, 'icdstats', 'icdinfo.txt')
 
