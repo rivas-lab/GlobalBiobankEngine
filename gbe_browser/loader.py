@@ -323,10 +323,17 @@ class Loader:
         pipe = Loader.make_pipe(config.DBSNP_FILE, fifo_name)
 
         logger.info('Query:running...')
-        self.db.iquery(config.DBSNP_STORE_QUERY.format(path=fifo_name))
+        self.db.iquery(
+            config.DBSNP_BY_RSID_STORE_QUERY.format(path=fifo_name))
         logger.info('Query:done')
         logger.info('Pipe:return code:%s', pipe.poll())
-        logger.info('Array:%s', config.DBSNP_ARRAY)
+        logger.info('Array:%s', config.DBSNP_BY_RSID_ARRAY)
+
+        logger.info('Query:running...')
+        self.db.iquery(
+            config.DBSNP_BY_CHROM_POS_STORE_QUERY.format(path=fifo_name))
+        logger.info('Query:done')
+        logger.info('Array:%s', config.DBSNP_BY_CHROM_POS_ARRAY)
 
     # -- - - --
     def remove_arrays(self):
@@ -346,7 +353,9 @@ class Loader:
                       config.VARIANT_ARRAY,
                       config.VARIANT_GENE_ARRAY,
                       config.VARIANT_TRANSCRIPT_ARRAY,
-                      config.COVERAGE_ARRAY):
+                      config.COVERAGE_ARRAY,
+                      config.DBSNP_BY_RSID_ARRAY,
+                      config.DBSNP_BY_CHROM_POS_ARRAY):
             try:
                 self.db.remove(array)
             except:

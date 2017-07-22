@@ -734,14 +734,12 @@ def get_dbsnp(db, chrom, pos):
       db.dbsnp.find_one({'xpos': '1039381448'})
 
     SciDB:
-      limit(
-        between(dbsnp, 1, 39381448,
-                       1, 39381448),
-        1)
+      between(dbsnp, 1, 39381448,
+                     1, 39381448),
     """
     res = db.iquery(
         config.DBSNP_LOOKUP_QUERY.format(chrom=chrom, pos=pos),
-        schema=config.DBSNP_SCHEMA_OBJ,
+        schema=config.DBSNP_BY_CHROM_POS_SCHEMA_OBJ,
         fetch=True,
         atts_only=True)
     if not res:
@@ -784,7 +782,8 @@ def get_variants_from_dbsnp(db, rsid):
         atts_only=True)
     if not res:
         return None
-    return '{}-{}'.format(*res[0])
+    res0 = res[0]
+    return '{}-{}'.format(res0['chrom']['val'], res0['pos']['val'])
 
 
 # -- -

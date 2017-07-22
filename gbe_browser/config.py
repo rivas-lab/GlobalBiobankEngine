@@ -584,15 +584,13 @@ COVERAGE_STORE_QUERY = """
 # -- -
 DBSNP_FILE = os.path.join(GBE_DATA_PATH, 'dbsnp150.txt.gz')
 
-DBSNP_ARRAY = 'dbsnp'
-DBSNP_SCHEMA = """
-  <rsid: int64>
-  [chrom     = 1:25:0:1;
-   pos       = 0:*:0:10000000;
-   synthetic = 0:999:0:1000]"""
-DBSNP_SCHEMA_OBJ = scidbpy.schema.Schema.fromstring(DBSNP_SCHEMA)
+DBSNP_BY_RSID_ARRAY = 'dbsnp_by_rsid'
+DBSNP_BY_RSID_SCHEMA = """
+  <chrom: int64,
+   pos:   int64>
+  [rsid = 0:*:0:1000000]"""
 
-DBSNP_STORE_QUERY = """
+DBSNP_BY_RSID_STORE_QUERY = """
   store(
     redimension(
       apply(
@@ -602,11 +600,30 @@ DBSNP_STORE_QUERY = """
                    23,
                    iif(a1 = 'Y',
                        24,
-                       dcast(a1, int64(null)))),
+                       dcast(a1, int64(0)))),
         pos,   int64(a2) + 1),
-      {dbsnp_schema}),
-    {dbsnp_array})""".format(dbsnp_schema=DBSNP_SCHEMA,
-                             dbsnp_array=DBSNP_ARRAY)
+      {dbsnp_by_rsid_schema}),
+    {dbsnp_by_rsid_array})""".format(
+        dbsnp_by_rsid_schema=DBSNP_BY_RSID_SCHEMA,
+        dbsnp_by_rsid_array=DBSNP_BY_RSID_ARRAY)
+
+DBSNP_BY_CHROM_POS_ARRAY = 'dbsnp_by_chrom_pos'
+DBSNP_BY_CHROM_POS_SCHEMA = """
+  <rsid: int64>
+  [chrom = 1:25:0:1;
+   pos   = 0:*:0:10000000]"""
+DBSNP_BY_CHROM_POS_SCHEMA_OBJ = scidbpy.schema.Schema.fromstring(
+    DBSNP_BY_CHROM_POS_SCHEMA)
+
+DBSNP_BY_CHROM_POS_STORE_QUERY = """
+  store(
+    redimension({dbsnp_by_rsid_array},
+                {dbsnp_by_chrom_pos_schema},
+                false),
+    {dbsnp_by_chrom_pos_array})""".format(
+        dbsnp_by_rsid_array=DBSNP_BY_RSID_ARRAY,
+        dbsnp_by_chrom_pos_schema=DBSNP_BY_CHROM_POS_SCHEMA,
+        dbsnp_by_chrom_pos_array=DBSNP_BY_CHROM_POS_ARRAY)
 
 
 # == =
@@ -1038,25 +1055,24 @@ COVERAGE_LOOKUP_QUERY = """
 # -- - Lookup: DBSNP - --
 # -- -
 DBSNP_LOOKUP_QUERY = """
-  limit(
-    between({dbsnp_array},
-            {{chrom}}, {{pos}}, 0,
-            {{chrom}}, {{pos}}, 0),
-    1)""".format(dbsnp_array=DBSNP_ARRAY)
+  between({dbsnp_by_chrom_pos_array},
+          {{chrom}}, {{pos}},
+          {{chrom}}, {{pos}})""".format(
+              dbsnp_by_chrom_pos_array=DBSNP_BY_CHROM_POS_ARRAY)
 
 DBSNP_VARIANT_LOOKUP_QUERY = """
   equi_join(
-    filter({dbsnp_array}, rsid = {{rsid}}),
+    between({dbsnp_by_rsid_array}, {{rsid}}, {{rsid}}),
     project({variant_array}, rsid),
     'left_names=chrom,pos',
     'right_names=chrom,pos',
-    'algorithm=hash_replicate_left')""".format(dbsnp_array=DBSNP_ARRAY,
-                                               variant_array=VARIANT_ARRAY)
+    'algorithm=hash_replicate_left')""".format(
+        dbsnp_by_rsid_array=DBSNP_BY_RSID_ARRAY,
+        variant_array=VARIANT_ARRAY)
 
 DBSNP_VARIANT_LOOKUP_SCHEMA = scidbpy.schema.Schema.fromstring("""
-  <chrom:  int64 not null,
-   pos:    int64 not null,
-   rsid:   int64,
-   rsid_1: int64>
+  <chrom:  int64,
+   pos:    int64,
+   rsid:   int64>
   [notused0;
    notused1]""")
