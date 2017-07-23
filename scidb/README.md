@@ -86,7 +86,7 @@ Remove and recreate arrays, confirm with "y":
 Running `loader.py` drops all arrays and load all the data files. To load individual arrays, one can individual functions of the `Loader` class like this:
 
 ```bash
-/opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$python -c 'import loader; loader.Loader().store_dbsnp()'
+/opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$ python -c 'import loader; loader.Loader().store_dbsnp()'
 make_fifo:FIFO:/tmp/tmp4FEOze/fifo
 make_fifo:FIFO:/tmp/tmp7TaW3p/fifo
 make_pipe:Spawn:zcat /opt/biobankengine/GlobalBioBankEngineRepo/gbe_data/dbsnp150.txt.gz > /tmp/tmp4FEOze/fifo pid:3173
@@ -108,11 +108,11 @@ index arrays are reloaded.
 For example, to reload the `icdinfo.txt` file, run:
 
 ```bash
-$python -c 'import loader; loader.Loader().insert_icd_info()'
+$ python -c 'import loader; loader.Loader().insert_icd_info()'
 ```
 
 For example, to reload variants file, run:
 
 ```bash
-$python -c 'import loader; l = loader.Loader(); l.store_variant(); l.store_variant_gene(); l.store_variant_transcript()'
+$ python -c 'import loader; l = loader.Loader(); l.store_variant(); l.store_variant_gene(); l.store_variant_transcript()'
 ```
