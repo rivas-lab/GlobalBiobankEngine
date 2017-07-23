@@ -133,8 +133,8 @@ if __name__ == '__main__':
 ```
 
 Because of the dependencies between index (e.g., `gene_index`) and
-data (e.g., `gene`) it is required to reload the data arrays when the
-index arrays are reloaded.
+data (e.g., `gene`) arrays, it is required to reload the data arrays
+when the index arrays are reloaded.
 
 For example, to reload the `icdinfo.txt` file, run:
 
