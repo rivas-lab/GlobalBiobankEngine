@@ -111,7 +111,7 @@ For example, to reload the `icdinfo.txt` file, run:
 $ python -c 'import loader; loader.Loader().insert_icd_info()'
 ```
 
-For example, to reload variants file, run:
+For example, to reload the variants file, run:
 
 ```bash
 $ python -c 'import loader; l = loader.Loader(); l.store_variant(); l.store_variant_gene(); l.store_variant_transcript()'
