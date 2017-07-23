@@ -5,7 +5,7 @@
 1. Git status:
 
 ```bash
-rvernica@biobankenginedev:/opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$ git status
+/opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$ git status
 On branch scidb
 Your branch is up-to-date with 'origin/scidb'.
 
@@ -23,13 +23,13 @@ Untracked files:
 2. Git stash, pull, and pop
 
 ```bash
-rvernica@biobankenginedev:/opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$ git stash
+/opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$ git stash
 Saved working directory and index state WIP on scidb: 15fc939 Remove second region example from timing function
 HEAD is now at 15fc939 Remove second region example from timing function
 ```
 
 ```bash
-rvernica@biobankenginedev:/opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$ git pull
+/opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$ git pull
 remote: Counting objects: 5, done.
 remote: Compressing objects: 100% (3/3), done.
 remote: Total 5 (delta 1), reused 5 (delta 1), pack-reused 0
@@ -40,7 +40,7 @@ Already up-to-date.
 ```
 
 ```bash
-rvernica@biobankenginedev:/opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$ git stash pop
+/opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$ git stash pop
 On branch scidb
 Your branch is up-to-date with 'origin/scidb'.
 
@@ -58,14 +58,14 @@ Untracked files:
 ## Restart Flask
 
 ```bash
-rvernica@biobankenginedev:/opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$ docker-compose restart flask
+/opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$ docker-compose restart flask
 Restarting biobankengine_flask_1 ... done
 ```
 
 ## Load Data
 
 ```bash
-rvernica@biobankenginedev:/opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$ python loader.py
+/opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$ python loader.py
 _new_conn:Starting new HTTP connection (1): localhost
 _new_conn:Starting new HTTP connection (1): localhost
 _new_conn:Starting new HTTP connection (1): localhost
@@ -86,7 +86,7 @@ Remove and recreate arrays, confirm with "y":
 Running `loader.py` drops all arrays and load all the data files. To load individual arrays, one can individual functions of the `Loader` class like this:
 
 ```bash
-rvernica@biobankenginedev:/opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$python -c 'import loader; loader.Loader().store_dbsnp()'
+/opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$python -c 'import loader; loader.Loader().store_dbsnp()'
 make_fifo:FIFO:/tmp/tmp4FEOze/fifo
 make_fifo:FIFO:/tmp/tmp7TaW3p/fifo
 make_pipe:Spawn:zcat /opt/biobankengine/GlobalBioBankEngineRepo/gbe_data/dbsnp150.txt.gz > /tmp/tmp4FEOze/fifo pid:3173
