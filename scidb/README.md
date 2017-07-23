@@ -80,3 +80,39 @@ make_fifo:FIFO:/tmp/tmpMIBk_A/fifo
 make_fifo:FIFO:/tmp/tmpqywPu0/fifo
 Remove and recreate arrays, confirm with "y":
 ```
+
+### Load Individual Arrays
+
+Running `loader.py` drops all arrays and load all the data files. To load individual arrays, one can individual functions of the `Loader` class like this:
+
+```bash
+rvernica@biobankenginedev:/opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$python -c 'import loader; loader.Loader().store_dbsnp()'
+make_fifo:FIFO:/tmp/tmp4FEOze/fifo
+make_fifo:FIFO:/tmp/tmp7TaW3p/fifo
+make_pipe:Spawn:zcat /opt/biobankengine/GlobalBioBankEngineRepo/gbe_data/dbsnp150.txt.gz > /tmp/tmp4FEOze/fifo pid:3173
+store_dbsnp:Query:running...
+store_dbsnp:Query:done
+store_dbsnp:Pipe:return code:0
+store_dbsnp:Array:dbsnp_by_rsid
+store_dbsnp:Query:running...
+store_dbsnp:Query:done
+store_dbsnp:Array:dbsnp_by_chrom_pos
+remove_fifo:Remove:/tmp/tmp4FEOze/fifo
+remove_fifo:Remove:/tmp/tmp7TaW3p/fifo
+```
+
+Because of the dependencies between index (e.g., `gene_index`) and
+data (e.g., `gene`) it is required to reload the data arrays when the
+index arrays are reloaded.
+
+For example, to reload the `icdinfo.txt` file, run:
+
+```bash
+$python -c 'import loader; loader.Loader().insert_icd_info()'
+```
+
+For example, to reload variants file, run:
+
+```bash
+$python -c 'import loader; l = loader.Loader(); l.store_variant(); l.store_variant_gene(); l.store_variant_transcript()'
+```
