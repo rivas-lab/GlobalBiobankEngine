@@ -83,7 +83,7 @@ Remove and recreate arrays, confirm with "y":
 
 ### Load Individual Arrays
 
-Running `loader.py` drops all arrays and load all the data files. To load individual arrays, one can individual functions of the `Loader` class like this:
+Running `loader.py` drops all arrays and load all the data files. To load individual arrays, one can call individual functions of the `Loader` class like this:
 
 ```bash
 /opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$ python -c 'import loader; loader.Loader().store_dbsnp()'
@@ -99,6 +99,37 @@ store_dbsnp:Query:done
 store_dbsnp:Array:dbsnp_by_chrom_pos
 remove_fifo:Remove:/tmp/tmp4FEOze/fifo
 remove_fifo:Remove:/tmp/tmp7TaW3p/fifo
+```
+
+For the list of functions available see the `loader.py` file:
+
+```bash
+/opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$ tail -25 loader.py
+if __name__ == '__main__':
+    loader = Loader()
+    loader.remove_arrays()
+
+    loader.store_qc()
+    loader.store_icd_info()
+    loader.insert_icd_info()
+    loader.insert_icd()
+    loader.insert_qt()
+
+    loader.store_gene_index()
+    loader.store_transcript_index()
+    loader.store_dbnsfp()
+    loader.store_canonical()
+    loader.store_omim()
+    loader.store_gene()
+    loader.store_transcript()
+    loader.store_exon()
+
+    loader.store_variant()
+    loader.store_variant_gene()
+    loader.store_variant_transcript()
+
+    loader.store_coverage()
+    loader.store_dbsnp()
 ```
 
 Because of the dependencies between index (e.g., `gene_index`) and
