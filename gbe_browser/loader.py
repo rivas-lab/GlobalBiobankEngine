@@ -71,6 +71,12 @@ class Loader:
                                    glob.iglob(config.ICD_GLOB),
                                    glob.iglob(config.QT_GLOB))))
 
+        if not icd_lst:
+            raise Exception('No ICD files found. ' +
+                            'Patterns used:\n{}\n{}'.format(
+                                config.ICD_GLOB,
+                                config.QT_GLOB))
+
         self.icd_idx_map = dict(zip(icd_lst, range(len(icd_lst))))
         self.db.iquery(config.ICD_INFO_STORE_QUERY,
                        upload_data=StringIO.StringIO('\n'.join(icd_lst)))
