@@ -147,3 +147,17 @@ For example, to reload the variants file, run:
 ```bash
 $ python -c 'import loader; l = loader.Loader(); l.store_variant(); l.store_variant_gene(); l.store_variant_transcript()'
 ```
+
+### Update Input File Names
+
+The input file names and file name patterns are located in
+`config.py`. The variable names used end with `_FILE`, `_FILES`, or
+`_GLOB`. For example the ICD file patterns are set in `ICD_GLOB` and
+`QT_GLOB` variables, e.g.:
+
+```python
+ICD_GLOB = os.path.join(
+    GBE_DATA_PATH, 'icdassoc', 'hybrid', '*c*.hybrid.rewritewna.gz')
+QT_GLOB = os.path.join(
+    GBE_DATA_PATH, 'icdassoc', 'hybrid', '*c*.linear.rewritewna.gz')
+```
