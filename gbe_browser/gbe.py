@@ -107,8 +107,8 @@ app.config.update(dict(
     BASE_COVERAGE_FILES=glob.glob(os.path.join(os.path.dirname(__file__), GBE_FILES_DIRECTORY, 'coverage', 'Panel2016.*.coverage.txt.gz')),
     BASE_ICDSTATS_FILES=glob.glob(os.path.join(os.path.dirname(__file__), GBE_FILES_DIRECTORY, 'icdstats', 'Panel*.icdstats.txt.gz')),
     ICD_INFO_FILE=os.path.join(os.path.dirname(__file__), GBE_FILES_DIRECTORY, 'icdstats', 'icdinfo.txt'),
-    ICD_STATS_FILES=glob.glob(os.path.join(os.path.dirname(__file__), GBE_FILES_DIRECTORY, 'icdassoc','hybrid','*c*.hybrid.rewrite.gz')),
-    QT_STATS_FILES=glob.glob(os.path.join(os.path.dirname(__file__), GBE_FILES_DIRECTORY, 'icdassoc','hybrid','*c*.linear.rewrite.gz')),
+    ICD_STATS_FILES=glob.glob(os.path.join(os.path.dirname(__file__), GBE_FILES_DIRECTORY, 'icdassoc','hybrid','*c*.hybrid.rewritewna.gz')),
+    QT_STATS_FILES=glob.glob(os.path.join(os.path.dirname(__file__), GBE_FILES_DIRECTORY, 'icdassoc','hybrid','*c*.linear.rewritewna.gz')),
     DBNSFP_FILE=os.path.join(os.path.dirname(__file__), GBE_FILES_DIRECTORY, 'dbNSFP2.6_gene.gz'),
     # This is not supported in GBE, We have dbsnp150
     # How to get a snp141.txt.bgz file:
