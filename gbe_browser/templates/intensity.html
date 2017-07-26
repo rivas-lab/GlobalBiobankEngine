@@ -3,13 +3,78 @@
     <!-- Render context vars in JS here -->
     <script type="text/javascript">
         window.affy = {{ affy|tojson|safe }};
+
+	// JS function to switch vertical tabs
+	// adapted from 
+	//  https://www.w3schools.com/howto/howto_js_vertical_tabs.asp
+	function openBatch(evt, batchName) {
+	    var i, tabcontent, tablinks;
+	    tabcontent = document.getElementsByClassName("tabcontent");
+	    for (i = 0; i < tabcontent.length; i++) {
+        	tabcontent[i].style.display = "none";
+	    }
+	    tablinks = document.getElementsByClassName("tablinks");
+	    for (i = 0; i < tablinks.length; i++) {
+        	tablinks[i].className = tablinks[i].className.replace(" active", "");
+	    }
+	    document.getElementById(batchName).style.display = "block";
+	    evt.currentTarget.className += " active";
+	}
+
     </script>
       		    
+    <style>                        
 
-    <style>
-                        h3{background-color:#826aa5;color:#fff;padding:3px;}
-                        h3 span{float:right;font-size:28px;font-weight:normal;padding:1px;}
-                        h3 span a{color:#fff;text-decoration:none;}
+	h3{background-color:#826aa5;color:#fff;padding:3px;}
+
+	h3 span{float:right;font-size:28px;font-weight:normal;padding:1px;}
+
+	h3 span a{color:#fff;text-decoration:none;}
+
+	/* CSS style settings for vertical tabs */
+	/* Style the tab */
+	div.tab {
+	    float: left;
+	    border: 1px solid #ccc;
+	    background-color: #f1f1f1;
+	    width: 25%;
+	    height: 300px;
+	}
+
+	/* Style the buttons inside the tab */
+	div.tab button {
+	    display: block;
+	    background-color: inherit;
+	    color: black;
+	    padding: 22px 16px;
+	    width: 100%;
+	    border: none;
+	    outline: none;
+	    text-align: left;
+	    cursor: pointer;
+	    transition: 0.3s;
+	    font-size: 17px;
+	}
+
+	/* Change background color of buttons on hover */
+	div.tab button:hover {
+	    background-color: #ddd;
+	}
+
+	/* Create an active/current "tab button" class */
+	div.tab button.active {
+	    background-color: #ccc;
+	}
+
+	/* Style the tab content */
+	.tabcontent {
+	    float: left;
+	    padding: 0px 12px;
+	    border: 1px solid #ccc;
+	    width: 70%;
+	    border-left: none;
+	    height: 80%;
+	}
 
                 </style>
     </style>
@@ -17,24 +82,476 @@
     <div class="container">
         <div class="row">
 	<h1><span class="hidden-xs">Variant: <a href="/variant/{{ variant.chrom }}-{{ variant.pos }}">{{ variant.chrom }}:{{ variant.pos }}</a></span></h1>
-  <hr/>
-  </div>
+  	<hr/>
+  	</div>
      
         <dl class="dl-horizontal" style="margin-bottom: 0px;">
-        <dt>Affy ID:</dt>
-            				<dd>{{ affy }} </dd> 
-            				</dl>
+        	<dt>Affy ID:</dt>
+		<dd>{{ affy }} </dd> 
+	</dl>
             				
-  </div>
-  <div style="display: flex; justify-content: center;">
-     
-            				
-     <img src="/static/images/png/{{affy}}.All.png" height=40% width=40% align="middle"> </img>
+    </div>
 
+    <div class="tab">
+	<!-- the first element comes with defaultOpen id -->
+	<button class="tablinks" onclick="openBatch(event, 'redacted')" id="defaultOpen">redacted</button>
 
-                
-    </div>     
-         
-    
-     
+	<!-- the following batches generated from template 
+
+	<button class="tablinks" onclick="openBatch(event, '__BATCH__')">__BATCH__</button>
+
+	shell $ while read b; do echo "<button class=\"tablinks\" onclick=\"openBatch(event, '$b')\">$b</button>" ; done < <(cat /scratch/PI/mrivas/ukbb/24983/int_evoker-lite_16698/int_evoker-lite_input_16698/ukb_snp_posterior.batch )
+
+	-->
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b001')">Batch_b001</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b002')">Batch_b002</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b003')">Batch_b003</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b004')">Batch_b004</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b005')">Batch_b005</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b006')">Batch_b006</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b007')">Batch_b007</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b008')">Batch_b008</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b009')">Batch_b009</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b010')">Batch_b010</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b011')">Batch_b011</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b012')">Batch_b012</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b013')">Batch_b013</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b014')">Batch_b014</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b015')">Batch_b015</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b016')">Batch_b016</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b017')">Batch_b017</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b018')">Batch_b018</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b019')">Batch_b019</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b020')">Batch_b020</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b021')">Batch_b021</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b022')">Batch_b022</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b023')">Batch_b023</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b024')">Batch_b024</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b025')">Batch_b025</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b026')">Batch_b026</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b027')">Batch_b027</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b028')">Batch_b028</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b029')">Batch_b029</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b030')">Batch_b030</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b031')">Batch_b031</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b032')">Batch_b032</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b033')">Batch_b033</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b034')">Batch_b034</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b035')">Batch_b035</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b036')">Batch_b036</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b037')">Batch_b037</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b038')">Batch_b038</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b039')">Batch_b039</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b040')">Batch_b040</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b041')">Batch_b041</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b042')">Batch_b042</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b043')">Batch_b043</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b044')">Batch_b044</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b045')">Batch_b045</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b046')">Batch_b046</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b047')">Batch_b047</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b048')">Batch_b048</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b049')">Batch_b049</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b050')">Batch_b050</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b051')">Batch_b051</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b052')">Batch_b052</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b053')">Batch_b053</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b054')">Batch_b054</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b055')">Batch_b055</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b056')">Batch_b056</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b057')">Batch_b057</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b058')">Batch_b058</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b059')">Batch_b059</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b060')">Batch_b060</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b061')">Batch_b061</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b062')">Batch_b062</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b063')">Batch_b063</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b064')">Batch_b064</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b065')">Batch_b065</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b066')">Batch_b066</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b067')">Batch_b067</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b068')">Batch_b068</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b069')">Batch_b069</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b070')">Batch_b070</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b071')">Batch_b071</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b072')">Batch_b072</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b073')">Batch_b073</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b074')">Batch_b074</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b075')">Batch_b075</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b076')">Batch_b076</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b077')">Batch_b077</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b078')">Batch_b078</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b079')">Batch_b079</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b080')">Batch_b080</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b081')">Batch_b081</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b082')">Batch_b082</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b083')">Batch_b083</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b084')">Batch_b084</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b085')">Batch_b085</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b086')">Batch_b086</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b087')">Batch_b087</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b088')">Batch_b088</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b089')">Batch_b089</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b090')">Batch_b090</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b091')">Batch_b091</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b092')">Batch_b092</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b093')">Batch_b093</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b094')">Batch_b094</button>
+        <button class="tablinks" onclick="openBatch(event, 'Batch_b095')">Batch_b095</button>
+        <button class="tablinks" onclick="openBatch(event, 'UKBiLEVEAX_b1')">UKBiLEVEAX_b1</button>
+        <button class="tablinks" onclick="openBatch(event, 'UKBiLEVEAX_b2')">UKBiLEVEAX_b2</button>
+        <button class="tablinks" onclick="openBatch(event, 'UKBiLEVEAX_b3')">UKBiLEVEAX_b3</button>
+        <button class="tablinks" onclick="openBatch(event, 'UKBiLEVEAX_b4')">UKBiLEVEAX_b4</button>
+        <button class="tablinks" onclick="openBatch(event, 'UKBiLEVEAX_b5')">UKBiLEVEAX_b5</button>
+        <button class="tablinks" onclick="openBatch(event, 'UKBiLEVEAX_b6')">UKBiLEVEAX_b6</button>
+        <button class="tablinks" onclick="openBatch(event, 'UKBiLEVEAX_b7')">UKBiLEVEAX_b7</button>
+        <button class="tablinks" onclick="openBatch(event, 'UKBiLEVEAX_b8')">UKBiLEVEAX_b8</button>
+        <button class="tablinks" onclick="openBatch(event, 'UKBiLEVEAX_b9')">UKBiLEVEAX_b9</button>
+        <button class="tablinks" onclick="openBatch(event, 'UKBiLEVEAX_b10')">UKBiLEVEAX_b10</button>
+        <button class="tablinks" onclick="openBatch(event, 'UKBiLEVEAX_b11')">UKBiLEVEAX_b11</button>
+    </div>
+
+    <!-- render the tab content -->
+    <div id="redacted" class="tabcontent" style="display: flex; justify-content: center;">
+	<h3>redacted</h3>
+	<img src="/static/images/png/{{affy}}/{{affy}}_redacted-img.png" align="middle"> </img>
+    </div>
+
+    <!-- tab contents generated from script
+
+	shell $ while read b; do echo "    <div id=\"$b\" class=\"tabcontent\" style=\"display: flex; justify-content: center;\">" ; echo "      <h3>Affy ID: {{ affy }}; batch: $b</h3>" ; echo "      <img src=\"/static/images/png/{{affy}}/{{affy}}_${b}-img.png\" align=\"middle\"> </img>" ; echo "    </div>" ; done < <(cat /scratch/PI/mrivas/ukbb/24983/int_evoker-lite_16698/int_evoker-lite_input_16698/ukb_snp_posterior.batch )
+	 -->
+
+    <div id="Batch_b001" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b001-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b002" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b002-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b003" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b003-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b004" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b004-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b005" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b005-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b006" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b006-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b007" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b007-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b008" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b008-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b009" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b009-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b010" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b010-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b011" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b011-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b012" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b012-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b013" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b013-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b014" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b014-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b015" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b015-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b016" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b016-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b017" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b017-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b018" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b018-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b019" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b019-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b020" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b020-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b021" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b021-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b022" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b022-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b023" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b023-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b024" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b024-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b025" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b025-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b026" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b026-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b027" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b027-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b028" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b028-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b029" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b029-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b030" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b030-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b031" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b031-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b032" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b032-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b033" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b033-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b034" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b034-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b035" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b035-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b036" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b036-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b037" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b037-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b038" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b038-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b039" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b039-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b040" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b040-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b041" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b041-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b042" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b042-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b043" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b043-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b044" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b044-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b045" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b045-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b046" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b046-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b047" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b047-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b048" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b048-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b049" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b049-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b050" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b050-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b051" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b051-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b052" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b052-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b053" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b053-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b054" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b054-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b055" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b055-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b056" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b056-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b057" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b057-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b058" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b058-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b059" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b059-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b060" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b060-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b061" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b061-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b062" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b062-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b063" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b063-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b064" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b064-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b065" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b065-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b066" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b066-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b067" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b067-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b068" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b068-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b069" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b069-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b070" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b070-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b071" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b071-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b072" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b072-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b073" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b073-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b074" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b074-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b075" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b075-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b076" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b076-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b077" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b077-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b078" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b078-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b079" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b079-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b080" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b080-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b081" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b081-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b082" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b082-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b083" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b083-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b084" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b084-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b085" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b085-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b086" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b086-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b087" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b087-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b088" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b088-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b089" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b089-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b090" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b090-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b091" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b091-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b092" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b092-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b093" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b093-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b094" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b094-img.png" align="middle"> </img>
+    </div>
+    <div id="Batch_b095" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_Batch_b095-img.png" align="middle"> </img>
+    </div>
+    <div id="UKBiLEVEAX_b1" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_UKBiLEVEAX_b1-img.png" align="middle"> </img>
+    </div>
+    <div id="UKBiLEVEAX_b2" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_UKBiLEVEAX_b2-img.png" align="middle"> </img>
+    </div>
+    <div id="UKBiLEVEAX_b3" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_UKBiLEVEAX_b3-img.png" align="middle"> </img>
+    </div>
+    <div id="UKBiLEVEAX_b4" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_UKBiLEVEAX_b4-img.png" align="middle"> </img>
+    </div>
+    <div id="UKBiLEVEAX_b5" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_UKBiLEVEAX_b5-img.png" align="middle"> </img>
+    </div>
+    <div id="UKBiLEVEAX_b6" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_UKBiLEVEAX_b6-img.png" align="middle"> </img>
+    </div>
+    <div id="UKBiLEVEAX_b7" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_UKBiLEVEAX_b7-img.png" align="middle"> </img>
+    </div>
+    <div id="UKBiLEVEAX_b8" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_UKBiLEVEAX_b8-img.png" align="middle"> </img>
+    </div>
+    <div id="UKBiLEVEAX_b9" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_UKBiLEVEAX_b9-img.png" align="middle"> </img>
+    </div>
+    <div id="UKBiLEVEAX_b10" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_UKBiLEVEAX_b10-img.png" align="middle"> </img>
+    </div>
+    <div id="UKBiLEVEAX_b11" class="tabcontent" style="display: flex; justify-content: center;">
+      <img src="/static/images/png/{{affy}}/{{affy}}_UKBiLEVEAX_b11-img.png" align="middle"> </img>
+    </div>
+
+    <!-- Greg's code for single batch
+    <div style="display: flex; justify-content: center;">
+    <img src="/static/images/png/{{affy}}.All.png" height=40% width=40% align="middle"> </img>
+    </div>
+    -->     
+ 
+
+    <script type="text/javascript">
+	// Get the element with id="defaultOpen" and click on it
+	document.getElementById("defaultOpen").click();
+    </script>
+
+             
 {% endblock %}
