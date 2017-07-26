@@ -203,7 +203,7 @@ def get_icd_by_chrom_pos(db, chrom, start, stop=None, icd=None):
             atts_only=True))
 
 
-def get_icd_significant_variant(db, icd_id, cutoff=0.001):
+def get_icd_variant_by_icd_id_pvalue(db, icd_id, pvalue=0.001):
     """
     e.g.,
     UI:
@@ -239,7 +239,7 @@ def get_icd_significant_variant(db, icd_id, cutoff=0.001):
         'keep_dimensions=1',
         'algorithm=merge_right_first');
     """
-    pdecimal = config.ICD_PVALUE_MAP.get(cutoff, 0)
+    pdecimal = config.ICD_PVALUE_MAP.get(pvalue, 0)
     return format_variants(
         numpy2dict(
             db.iquery(
@@ -939,7 +939,7 @@ def print_all():
     pp.pprint(get_icd_name_map(db))
 
     # /coding/RH141 -> gbe.icd_page()
-    pp.pprint(get_icd_significant_variant(db, 'RH141'))
+    pp.pprint(get_icd_variant_by_icd_id_pvalue(db, 'RH141'))
 
     # /variant/1-169519049 -> gbe.variant_icd_page()
     pp.pprint(get_variant_ann_by_chrom_pos(db, 1, 169519049))
@@ -1009,8 +1009,8 @@ def time_all():
     # /coding/RH141 -> gbe.icd_page()
     #
     with timer.Timer() as t:
-        get_icd_significant_variant(db, 'RH141')
-    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_icd_significant_variant'))
+        get_icd_variant_by_icd_id_pvalue(db, 'RH141')
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_icd_variant_by_icd_id_pvalue'))
     print('     -----\n{:8.2f}ms\t{}\n'.format(t.msecs, '/coding/'))
 
     #
