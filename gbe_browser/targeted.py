@@ -25,7 +25,6 @@ logger = logging.getLogger('Log')
 from scipy import stats 
 from scipy.stats import multivariate_normal
 import random
-from profilehooks import profile
 
 def is_pos_def(x):
     i = 0
@@ -36,7 +35,6 @@ def is_pos_def(x):
        return False
 
 # return BIC -2*log(p(Data | theta that maximizes C, Mc)) + vc log(n) : vc is the number of parameters (K+J)*(C-1), K is the number of phenotypes, J is the number of genes, C is the number of clusters
-@profile
 def mrpmm(betas,ses,vymat,annotvec,genevec,protvec,chroffvec,clusters,fout,Rphen,Rpheninv,phenidarr, Rphenuse=True, fdr=.05, niter=1000,burn=100,thinning=1,verbose=True, protectivescan = False, outpath='/Users/mrivas/', maxlor = 0.693):
     print("Running MCMC algorithm...")
     print(sys.flags.optimize)
@@ -231,8 +229,8 @@ def mrpmm(betas,ses,vymat,annotvec,genevec,protvec,chroffvec,clusters,fout,Rphen
                 for tmptidx in range(0, k):
                     if np.sqrt(scales[iter-1,annotidx])*bc[iter-1,deltam[iter,varidx],tmptidx] >= maxlor:
                         protadverse = 1
-                        if np.sqrt(scales[iter-1,annotidx])*bc[iter-1,deltam[iter,varidx],tmptidx] < -.1:
-                            protbool = 1
+                    if np.sqrt(scales[iter-1,annotidx])*bc[iter-1,deltam[iter,varidx],tmptidx] < -.05:
+                        protbool = 1
                 if protbool == 1 and protadverse == 0:
                     protind[iter,varidx] = 1
         # d) Update b_c using a Gibbs update from a Gaussian distribution

@@ -316,7 +316,7 @@ function filterFunction8() {
                 <div class="row" style="font-size: 16px;">
 	  <div class="col-md-8">
 <h3 align="center">Genetic Association Results</h3>
-        <p><b>Note: </b>We present summary statistic results from the UK Biobank hospital in-patient health-related outcomes summary information data (<a href="biobank.ctsu.ox.ac.uk/showcase/field.cgi?id=41202">Data-Field 41202</a>); computational grouping of phenotypes with cancer (<a href="http://biobank.ctsu.ox.ac.uk/crystal/label.cgi?id=100092">Category 100092</a>) registry, death registry data (<a href="http://biobank.ctsu.ox.ac.uk/crystal/label.cgi?id=100093">Category 100093</a>), algorithmically-defined outcomes (<a href="http://biobank.ctsu.ox.ac.uk/crystal/label.cgi?id=42">Category 42</a>), and verbal questionnaire data (<a href="http://biobank.ctsu.ox.ac.uk/crystal/label.cgi?id=100071">Category 100071</a>); and manually curated grouping of phenotypes.</p>
+        <p><b>Note: </b>We present summary statistic results from the UK Biobank hospital in-patient health-related outcomes summary information data (<a href="http://biobank.ctsu.ox.ac.uk/showcase/field.cgi?id=41202">Data-Field 41202</a>); computational grouping of phenotypes with cancer (<a href="http://biobank.ctsu.ox.ac.uk/crystal/label.cgi?id=100092">Category 100092</a>) registry, death registry data (<a href="http://biobank.ctsu.ox.ac.uk/crystal/label.cgi?id=100093">Category 100093</a>), algorithmically-defined outcomes (<a href="http://biobank.ctsu.ox.ac.uk/crystal/label.cgi?id=42">Category 42</a>), and verbal questionnaire data (<a href="http://biobank.ctsu.ox.ac.uk/crystal/label.cgi?id=100071">Category 100071</a>); and manually curated grouping of phenotypes.</p>
    <p>
 
 <h3 align="left">Browseable phenotypes</h3>
@@ -327,53 +327,79 @@ function filterFunction8() {
 <button onclick="myFunction()" class="button">Cancer</button>
   <div id="myDropdown" class="dropdown-content">
     <input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()">
-<a class="dropdown-item" href="coding/cancer1003">skin cancer (6250)</a>
-<a class="dropdown-item" href="coding/cancer1060">non-melanoma skin cancer (5478)</a>
-<a class="dropdown-item" href="coding/cancer1002">breast cancer (3556)</a>
-<a class="dropdown-item" href="coding/cancer1044">prostate cancer (2203)</a>
-<a class="dropdown-item" href="coding/cancer1037">female genital tract cancer (1683)</a>
-<a class="dropdown-item" href="coding/cancer1020">large bowel cancer/colorectal cancer (1478)</a>
-<a class="dropdown-item" href="coding/cancer1059">malignant melanoma (1343)</a>
-<a class="dropdown-item" href="coding/cancer1038">male genital tract cancer (1184)</a>
-<a class="dropdown-item" href="coding/cancer1022">colon cancer/sigmoid cancer (1092)</a>
-<a class="dropdown-item" href="coding/cancer1041">cervical cancer (978)</a>
-<a class="dropdown-item" href="coding/cancer1084">respiratory / intrathoracic cancer (951)</a>
-<a class="dropdown-item" href="coding/cancer1001">lung cancer (800)</a>
-<a class="dropdown-item" href="coding/cancer1035">bladder cancer (698)</a>
-<a class="dropdown-item" href="coding/cancer1023">rectal cancer (694)</a>
-<a class="dropdown-item" href="coding/cancer1047">lymphoma (620)</a>
-<a class="dropdown-item" href="coding/cancer1085">bone metastases / bony secondaries (603)</a>
-<a class="dropdown-item" href="coding/cancer1040">uterine/endometrial cancer (534)</a>
-<a class="dropdown-item" href="coding/cancer1053">non-hodgkins lymphoma (486)</a>
-<a class="dropdown-item" href="coding/cancer1039">ovarian cancer (388)</a>
-<a class="dropdown-item" href="coding/cancer1034">kidney/renal cell cancer (372)</a>
-<a class="dropdown-item" href="coding/cancer1048">leukaemia (281)</a>
-<a class="dropdown-item" href="coding/cancer1045">testicular cancer (245)</a>
-<a class="dropdown-item" href="coding/cancer1017">oesophageal cancer (245)</a>
-<a class="dropdown-item" href="coding/cancer1004">cancer of lip/mouth/pharynx/oral cavity (226)</a>
-<a class="dropdown-item" href="coding/cancer1018">stomach cancer (214)</a>
-<a class="dropdown-item" href="coding/cancer1026">pancreas cancer (209)</a>
-<a class="dropdown-item" href="coding/cancer1055">chronic lymphocytic (198)</a>
-<a class="dropdown-item" href="coding/cancer1032">brain cancer / primary malignant brain tumour (188)</a>
-<a class="dropdown-item" href="coding/cancer1065">thyroid cancer (180)</a>
-<a class="dropdown-item" href="coding/cancer1024">liver/hepatocellular cancer (173)</a>
-<a class="dropdown-item" href="coding/cancer1050">multiple myeloma (155)</a>
-<a class="dropdown-item" href="coding/cancer1052">hodgkins lymphoma / hodgkins disease (144)</a>
-<a class="dropdown-item" href="coding/cancer1056">chronic myeloid (143)</a>
-<a class="dropdown-item" href="coding/cancer1006">larynx/throat cancer (132)</a>
-<a class="dropdown-item" href="coding/cancer1019">small intestine/small bowel cancer (122)</a>
-<a class="dropdown-item" href="coding/cancer1011">tongue cancer (110)</a>
-<a class="dropdown-item" href="coding/cancer1074">acute myeloid leukaemia (99)</a>
-<a class="dropdown-item" href="coding/cancer1068">sarcoma/fibrosarcoma (87)</a>
-<a class="dropdown-item" href="coding/cancer1025">gallbladder/bile duct cancer (82)</a>
-<a class="dropdown-item" href="coding/cancer1030">eye and/or adnexal cancer (78)</a>
-<a class="dropdown-item" href="coding/cancer1077">mouth cancer (69)</a>
-<a class="dropdown-item" href="coding/cancer1063">primary bone cancer (64)</a>
-<a class="dropdown-item" href="coding/cancer1064">mesothelioma (61)</a>
+<a class="dropdown-item" href="coding/cancer1003"> skin cancer (19170)</a>
+<a class="dropdown-item" href="coding/cancer1060"> non-melanoma skin cancer (16791)</a>
+<a class="dropdown-item" href="coding/cancer1002"> breast cancer (11243)</a>
+<a class="dropdown-item" href="coding/cancer1044"> prostate cancer (6460)</a>
+<a class="dropdown-item" href="coding/cancer1037"> female genital tract cancer (4947)</a>
+<a class="dropdown-item" href="coding/cancer1020"> large bowel cancer/colorectal cancer (4382)</a>
+<a class="dropdown-item" href="coding/cancer1059"> malignant melanoma (4099)</a>
+<a class="dropdown-item" href="coding/cancer1038"> male genital tract cancer (3449)</a>
+<a class="dropdown-item" href="coding/cancer1022"> colon cancer/sigmoid cancer (3251)</a>
+<a class="dropdown-item" href="coding/cancer1041"> cervical cancer (2815)</a>
+<a class="dropdown-item" href="coding/cancer1084"> respiratory / intrathoracic cancer (2392)</a>
+<a class="dropdown-item" href="coding/cancer1023"> rectal cancer (2026)</a>
+<a class="dropdown-item" href="coding/cancer1035"> bladder cancer (1997)</a>
+<a class="dropdown-item" href="coding/cancer1001"> lung cancer (1981)</a>
+<a class="dropdown-item" href="coding/cancer1047"> lymphoma (1852)</a>
+<a class="dropdown-item" href="coding/cancer1085"> bone metastases / bony secondaries (1780)</a>
+<a class="dropdown-item" href="coding/cancer1040"> uterine/endometrial cancer (1610)</a>
+<a class="dropdown-item" href="coding/cancer1053"> non-hodgkins lymphoma (1429)</a>
+<a class="dropdown-item" href="coding/cancer1039"> ovarian cancer (1208)</a>
+<a class="dropdown-item" href="coding/cancer1034"> kidney/renal cell cancer (1093)</a>
+<a class="dropdown-item" href="coding/cancer1048"> leukaemia (870)</a>
+<a class="dropdown-item" href="coding/cancer1045"> testicular cancer (678)</a>
+<a class="dropdown-item" href="coding/cancer1017"> oesophageal cancer (667)</a>
+<a class="dropdown-item" href="coding/cancer1004"> cancer of lip/mouth/pharynx/oral cavity (659)</a>
+<a class="dropdown-item" href="coding/cancer1055"> chronic lymphocytic (596)</a>
+<a class="dropdown-item" href="coding/cancer1026"> pancreas cancer (593)</a>
+<a class="dropdown-item" href="coding/cancer1018"> stomach cancer (568)</a>
+<a class="dropdown-item" href="coding/cancer1032"> brain cancer / primary malignant brain tumour (555)</a>
+<a class="dropdown-item" href="coding/cancer1065"> thyroid cancer (513)</a>
+<a class="dropdown-item" href="coding/cancer1050"> multiple myeloma (501)</a>
+<a class="dropdown-item" href="coding/cancer1024"> liver/hepatocellular cancer (437)</a>
+<a class="dropdown-item" href="coding/cancer1052"> hodgkins lymphoma / hodgkins disease (432)</a>
+<a class="dropdown-item" href="coding/cancer1056"> chronic myeloid (413)</a>
+<a class="dropdown-item" href="coding/cancer1006"> larynx/throat cancer (362)</a>
+<a class="dropdown-item" href="coding/cancer1019"> small intestine/small bowel cancer (329)</a>
+<a class="dropdown-item" href="coding/cancer1011"> tongue cancer (317)</a>
+<a class="dropdown-item" href="coding/cancer1074"> acute myeloid leukaemia (288)</a>
+<a class="dropdown-item" href="coding/cancer1068"> sarcoma/fibrosarcoma (236)</a>
+<a class="dropdown-item" href="coding/cancer1030"> eye and/or adnexal cancer (213)</a>
+<a class="dropdown-item" href="coding/cancer1063"> primary bone cancer (208)</a>
+<a class="dropdown-item" href="coding/cancer1025"> gallbladder/bile duct cancer (203)</a>
+<a class="dropdown-item" href="coding/cancer1077"> mouth cancer (197)</a>
+<a class="dropdown-item" href="coding/cancer1064"> mesothelioma (181)</a>
+<a class="dropdown-item" href="coding/cancer1043"> vulval cancer (131)</a>
+<a class="dropdown-item" href="coding/cancer1015"> parotid gland cancer (127)</a>
+<a class="dropdown-item" href="coding/cancer1005"> salivary gland cancer (121)</a>
+<a class="dropdown-item" href="coding/cancer1086"> appendix cancer (99)</a>
+<a class="dropdown-item" href="coding/cancer1079"> oropharynx / oropharyngeal cancer (79)</a>
+<a class="dropdown-item" href="coding/cancer1036"> other cancer of urinary tract (74)</a>
+<a class="dropdown-item" href="coding/cancer1046"> penis cancer (67)</a>
+<a class="dropdown-item" href="coding/cancer1007"> nasal cavity cancer (62)</a>
+<a class="dropdown-item" href="coding/cancer1033"> spinal cord or cranial nerve cancer (59)</a>
+<a class="dropdown-item" href="coding/cancer1010"> lip cancer (59)</a>
+<a class="dropdown-item" href="coding/cancer1042"> vaginal cancer (58)</a>
+<a class="dropdown-item" href="coding/cancer1067"> adrenal cancer (55)</a>
+<a class="dropdown-item" href="coding/cancer1082"> heart / mediastinum cancer (51)</a>
+<a class="dropdown-item" href="coding/cancer1012"> gum cancer (47)</a>
+<a class="dropdown-item" href="coding/cancer1031"> meningeal cancer / malignant meningioma (46)</a>
+<a class="dropdown-item" href="coding/cancer1087"> fallopian tube cancer (44)</a>
+<a class="dropdown-item" href="coding/cancer1029"> peripheral nerve/autonomic nerve cancer (37)</a>
+<a class="dropdown-item" href="coding/cancer1081"> thymus cancer / malignant thymoma (26)</a>
+<a class="dropdown-item" href="coding/cancer1009"> sinus cancer (26)</a>
+<a class="dropdown-item" href="coding/cancer1066"> parathyroid cancer (24)</a>
+<a class="dropdown-item" href="coding/cancer1051"> myelofibrosis or myelodysplasia (19)</a>
+<a class="dropdown-item" href="coding/cancer1088"> malignant insulinoma (16)</a>
+<a class="dropdown-item" href="coding/cancer1008"> ear cancer (16)</a>
+<a class="dropdown-item" href="coding/cancer1080"> trachea cancer (15)</a>
+<a class="dropdown-item" href="coding/cancer1075"> retinoblastoma (12)</a>
+<a class="dropdown-item" href="coding/cancer1076"> kaposis sarcoma (10)</a>
 </div>
 </div>
 </div>
-
+<!--
 <div class="btn-group" role="group">
 <div class="dropdown" align="center">
 <button onclick="myFunction2()" class="button dropdown-toggle" data-toggle="dropdown">Common diseases</button>
@@ -427,22 +453,22 @@ function filterFunction8() {
 </div>
 </div>
 </div>
-
+-->
 <div class="btn-group" role="group">
 <div class="dropdown" align="center">
 <button onclick="myFunction3()" class="button dropdown-toggle" data-toggle="dropdown">Family History</button>
   <div id="myDropdown3" class="dropdown-content">
     <input type="text" placeholder="Search.." id="myInput3" onkeyup="filterFunction3()">
-<a class="dropdown-item" href="coding/FH1065">high blood pressure (91063)</a>
-<a class="dropdown-item" href="coding/FH1001">lung cancer (55698)</a>
-<a class="dropdown-item" href="coding/FH1220">diabetes (38169)</a>
-<a class="dropdown-item" href="coding/FH1113">chronic bronchitis/emphysema (36413)</a>
-<a class="dropdown-item" href="coding/FH1019">bowel cancer (33362)</a>
-<a class="dropdown-item" href="coding/FH1002">breast cancer (27618)</a>
-<a class="dropdown-item" href="coding/FH1286">severe depression (24788)</a>
-<a class="dropdown-item" href="coding/FH1263">Alzheimer's disease/dementia (22909)</a>
-<a class="dropdown-item" href="coding/FH1044">prostate cancer (15241)</a>
-<a class="dropdown-item" href="coding/FH1262">Parkinson's disease (9688)</a>
+<a class="dropdown-item" href="coding/FH1065"> High blood pressure (199068)</a>
+<a class="dropdown-item" href="coding/FH1001"> Lung cancer (123832)</a>
+<a class="dropdown-item" href="coding/FH1220"> Diabetes (79177)</a>
+<a class="dropdown-item" href="coding/FH1113"> Chronic bronchitis/emphysema (78578)</a>
+<a class="dropdown-item" href="coding/FH1019"> Bowel cancer (74244)</a>
+<a class="dropdown-item" href="coding/FH1002"> Breast cancer (62401)</a>
+<a class="dropdown-item" href="coding/FH1286"> Severe depression (54576)</a>
+<a class="dropdown-item" href="coding/FH1263"> Alzheimer's disease/dementia (51794)</a>
+<a class="dropdown-item" href="coding/FH1044"> Prostate cancer (34359)</a>
+<a class="dropdown-item" href="coding/FH1262"> Parkinson's disease (21755)</a>
 </div>
 </div>
 </div>
@@ -452,327 +478,456 @@ function filterFunction8() {
 <button onclick="myFunction6()" class="button">Verbal and ICD disease grouping</button>
   <div id="myDropdown6" class="dropdown-content">
     <input type="text" placeholder="Search.." id="myInput6" onkeyup="filterFunction6()">
-<a class="dropdown-item" href="coding/HC111">essential hypertension (30491)</a>
-<a class="dropdown-item" href="coding/HC153">asthma (21217)</a>
-<a class="dropdown-item" href="coding/HC37">high cholesterol (20478)</a>
-<a class="dropdown-item" href="coding/HC154">osteoarthritis (13560)</a>
-<a class="dropdown-item" href="coding/HC430">depression (9493)</a>
-<a class="dropdown-item" href="coding/HC39">hayfever/allergic rhinitis (9064)</a>
-<a class="dropdown-item" href="coding/HC199">inguinal hernia (6134)</a>
-<a class="dropdown-item" href="coding/HC367">cholecystitis (6022)</a>
-<a class="dropdown-item" href="coding/HC268">atrial fibrillation (5689)</a>
-<a class="dropdown-item" href="coding/HC292">atrial flutter (5474)</a>
-<a class="dropdown-item" href="coding/HC306">irritable bowel syndrome (5113)</a>
-<a class="dropdown-item" href="coding/HC69">dyspepsia / indigestion (4701)</a>
-<a class="dropdown-item" href="coding/HC212">chronic obstructive airways disease/copd (4513)</a>
-<a class="dropdown-item" href="coding/HC281">respiratory infection (4267)</a>
-<a class="dropdown-item" href="coding/HC412">back pain (4259)</a>
-<a class="dropdown-item" href="coding/HC179">osteoporosis (4188)</a>
-<a class="dropdown-item" href="coding/HC220">constipation (4165)</a>
-<a class="dropdown-item" href="coding/HC185">joint pain (3642)</a>
-<a class="dropdown-item" href="coding/HC320">deep venous thrombosis (dvt) (3030)</a>
-<a class="dropdown-item" href="coding/HC112">cellulitis (2951)</a>
-<a class="dropdown-item" href="coding/HC246">gout (2941)</a>
-<a class="dropdown-item" href="coding/HC75">stroke (2784)</a>
-<a class="dropdown-item" href="coding/HC150">back problem (2748)</a>
-<a class="dropdown-item" href="coding/HC399">glaucoma (2682)</a>
-<a class="dropdown-item" href="coding/HC57">prolapsed disc/slipped disc (2639)</a>
-<a class="dropdown-item" href="coding/HC370">appendicitis (2527)</a>
-<a class="dropdown-item" href="coding/HC5">bronchitis (2412)</a>
-<a class="dropdown-item" href="coding/HC156">sciatica (2407)</a>
-<a class="dropdown-item" href="coding/HC227">uterine fibroids (2385)</a>
-<a class="dropdown-item" href="coding/HC122">endometriosis (2361)</a>
-<a class="dropdown-item" href="coding/HC59">pulmonary embolism +/- dvt (2248)</a>
-<a class="dropdown-item" href="coding/HC282">anxiety/panic attacks (2208)</a>
-<a class="dropdown-item" href="coding/HC404">subdural haemorrhage/haematoma (2066)</a>
-<a class="dropdown-item" href="coding/HC390">pleural effusion (2061)</a>
-<a class="dropdown-item" href="coding/HC198">sleep apnoea (2051)</a>
-<a class="dropdown-item" href="coding/HC50">fracture radius (1998)</a>
-<a class="dropdown-item" href="coding/HC425">cervical spondylosis (1992)</a>
-<a class="dropdown-item" href="coding/HC244">diverticular disease/diverticulitis (1790)</a>
-<a class="dropdown-item" href="coding/HC19">umbilical hernia (1601)</a>
-<a class="dropdown-item" href="coding/HC360">spinal stenosis (1450)</a>
-<a class="dropdown-item" href="coding/HC192">allergy or anaphylactic reaction to drug (1443)</a>
-<a class="dropdown-item" href="coding/HC103">whooping cough / pertussis (1430)</a>
-<a class="dropdown-item" href="coding/HC16">spine arthritis/spondylitis (1409)</a>
-<a class="dropdown-item" href="coding/HC363">headaches (not migraine) (1382)</a>
-<a class="dropdown-item" href="coding/HC415">ear/vestibular disorder (1375)</a>
-<a class="dropdown-item" href="coding/HC359">transient ischaemic attack (tia) (1309)</a>
-<a class="dropdown-item" href="coding/HC283">muscle/soft tissue problem (1303)</a>
-<a class="dropdown-item" href="coding/HC273">ovarian cyst or cysts (1299)</a>
-<a class="dropdown-item" href="coding/HC200">muscle or soft tissue injuries (1254)</a>
-<a class="dropdown-item" href="coding/HC271">type 2 diabetes (1248)</a>
-<a class="dropdown-item" href="coding/HC414">svt / supraventricular tachycardia (1216)</a>
-<a class="dropdown-item" href="coding/HC343">retinal detachment (1215)</a>
-<a class="dropdown-item" href="coding/HC89">eye/eyelid problem (1170)</a>
-<a class="dropdown-item" href="coding/HC43">peritonitis (1150)</a>
-<a class="dropdown-item" href="coding/HC242">allergy/hypersensitivity/anaphylaxis (1106)</a>
-<a class="dropdown-item" href="coding/HC12">tonsiltis (1101)</a>
-<a class="dropdown-item" href="coding/HC313">benign breast lump (1058)</a>
-<a class="dropdown-item" href="coding/HC248">pancreatitis (1019)</a>
-<a class="dropdown-item" href="coding/HC188">respiratory failure (995)</a>
-<a class="dropdown-item" href="coding/HC194">bronchiectasis (958)</a>
-<a class="dropdown-item" href="coding/HC148">bursitis (918)</a>
-<a class="dropdown-item" href="coding/HC119">malabsorption/coeliac disease (905)</a>
-<a class="dropdown-item" href="coding/HC110">vaginal prolapse/uterine prolapse (859)</a>
-<a class="dropdown-item" href="coding/HC102">joint disorder (843)</a>
-<a class="dropdown-item" href="coding/HC23">fracture tibia (829)</a>
-<a class="dropdown-item" href="coding/HC437">urinary frequency / incontinence (800)</a>
-<a class="dropdown-item" href="coding/HC324">fracture upper arm / humerus / elbow (798)</a>
-<a class="dropdown-item" href="coding/HC277">helicobacter pylori (792)</a>
-<a class="dropdown-item" href="coding/HC82">crohns disease (789)</a>
-<a class="dropdown-item" href="coding/HC381">allergy or anaphylactic reaction to food (775)</a>
-<a class="dropdown-item" href="coding/HC429">gall bladder disease (765)</a>
-<a class="dropdown-item" href="coding/HC380">pleurisy (765)</a>
-<a class="dropdown-item" href="coding/HC403">meningitis (737)</a>
-<a class="dropdown-item" href="coding/HC438">aortic stenosis (735)</a>
-<a class="dropdown-item" href="coding/HC99">stomach disorder (732)</a>
-<a class="dropdown-item" href="coding/HC314">fracture finger (668)</a>
-<a class="dropdown-item" href="coding/HC201">fracture ulna (667)</a>
-<a class="dropdown-item" href="coding/HC255">multiple sclerosis (665)</a>
-<a class="dropdown-item" href="coding/HC333">chronic fatigue syndrome (661)</a>
-<a class="dropdown-item" href="coding/HC61">bone disorder (657)</a>
-<a class="dropdown-item" href="coding/HC276">polymyalgia rheumatica (617)</a>
-<a class="dropdown-item" href="coding/HC177">other demyelinating disease (not multiple sclerosis) (600)</a>
-<a class="dropdown-item" href="coding/HC355">tinnitus / tiniitis (593)</a>
-<a class="dropdown-item" href="coding/HC408">nasal/sinus disorder (591)</a>
-<a class="dropdown-item" href="coding/HC378">aortic aneurysm rupture (589)</a>
-<a class="dropdown-item" href="coding/HC245">ankylosing spondylitis (574)</a>
-<a class="dropdown-item" href="coding/HC431">fibromyalgia (550)</a>
-<a class="dropdown-item" href="coding/HC361">heart/cardiac problem (530)</a>
-<a class="dropdown-item" href="coding/HC252">subarachnoid haemorrhage (514)</a>
-<a class="dropdown-item" href="coding/HC18">trapped nerve/compressed nerve (507)</a>
-<a class="dropdown-item" href="coding/HC308">pernicious anaemia (484)</a>
-<a class="dropdown-item" href="coding/HC326">colitis/not crohns or ulcerative colitis (474)</a>
-<a class="dropdown-item" href="coding/HC34">mania/bipolar disorder/manic depression (472)</a>
-<a class="dropdown-item" href="coding/HC180">fracture wrist / colles fracture (472)</a>
-<a class="dropdown-item" href="coding/HC115">menorrhagia (unknown cause) (470)</a>
-<a class="dropdown-item" href="coding/HC160">pneumothorax (465)</a>
-<a class="dropdown-item" href="coding/HC113">parkinsons disease (461)</a>
-<a class="dropdown-item" href="coding/HC6">osteopenia (456)</a>
-<a class="dropdown-item" href="coding/HC311">uterine polyps (450)</a>
-<a class="dropdown-item" href="coding/HC315">osteomyelitis (445)</a>
-<a class="dropdown-item" href="coding/HC170">prostatitis (438)</a>
-<a class="dropdown-item" href="coding/HC238">bile duct obstruction/ascending cholangitis (425)</a>
-<a class="dropdown-item" href="coding/HC372">fracture rib (410)</a>
-<a class="dropdown-item" href="coding/HC256">miscarriage (410)</a>
-<a class="dropdown-item" href="coding/HC222">thyroid problem (not cancer) (398)</a>
-<a class="dropdown-item" href="coding/HC134">ureteric obstruction/hydronephrosis (393)</a>
-<a class="dropdown-item" href="coding/HC312">labyrinthitis (388)</a>
-<a class="dropdown-item" href="coding/HC54">pulmonary fibrosis (377)</a>
-<a class="dropdown-item" href="coding/HC317">fracture fibula (373)</a>
-<a class="dropdown-item" href="coding/HC210">bph / benign prostatic hypertrophy (353)</a>
-<a class="dropdown-item" href="coding/HC127">tennis elbow / lateral epicondylitis (331)</a>
-<a class="dropdown-item" href="coding/HC169">vertigo (324)</a>
-<a class="dropdown-item" href="coding/HC209">epicondylitis (301)</a>
-<a class="dropdown-item" href="coding/HC44">liver/biliary/pancreas problem (299)</a>
-<a class="dropdown-item" href="coding/HC413">dry eyes (288)</a>
-<a class="dropdown-item" href="coding/HC236">gastritis/gastric erosions (277)</a>
-<a class="dropdown-item" href="coding/HC400">fracture clavicle / collar bone (276)</a>
-<a class="dropdown-item" href="coding/HC354">abdominal hernia (272)</a>
-<a class="dropdown-item" href="coding/HC197">alcohol dependency (271)</a>
-<a class="dropdown-item" href="coding/HC189">pericardial effusion (271)</a>
-<a class="dropdown-item" href="coding/HC374">peripheral neuropathy (262)</a>
-<a class="dropdown-item" href="coding/HC208">gynaecological disorder (not cancer) (258)</a>
-<a class="dropdown-item" href="coding/HC349">femoral hernia (256)</a>
-<a class="dropdown-item" href="coding/HC319">polycystic ovaries/polycystic ovarian syndrome (253)</a>
-<a class="dropdown-item" href="coding/HC152">sjogren's syndrome/sicca syndrome (249)</a>
-<a class="dropdown-item" href="coding/HC239">retinal problem (248)</a>
-<a class="dropdown-item" href="coding/HC323">fracture nose (244)</a>
-<a class="dropdown-item" href="coding/HC28">abnormal smear (cervix) (243)</a>
-<a class="dropdown-item" href="coding/HC133">blepharitis / eyelid infection (243)</a>
-<a class="dropdown-item" href="coding/HC106">polycythaemia vera (243)</a>
-<a class="dropdown-item" href="coding/HC269">nervous breakdown (239)</a>
-<a class="dropdown-item" href="coding/HC38">fracture patella / knee (237)</a>
-<a class="dropdown-item" href="coding/HC157">burns (236)</a>
-<a class="dropdown-item" href="coding/HC339">cerebral aneurysm (231)</a>
-<a class="dropdown-item" href="coding/HC2">testicular problems (not cancer) (228)</a>
-<a class="dropdown-item" href="coding/HC207">lymphoedema (225)</a>
-<a class="dropdown-item" href="coding/HC74">fracture toe (224)</a>
-<a class="dropdown-item" href="coding/HC55">malaria (224)</a>
-<a class="dropdown-item" href="coding/HC309">fracture metatarsal (217)</a>
-<a class="dropdown-item" href="coding/HC249">mitral valve prolapse (213)</a>
-<a class="dropdown-item" href="coding/HC278">throat or larynx disorder (210)</a>
-<a class="dropdown-item" href="coding/HC335">trigemminal neuralgia (200)</a>
-<a class="dropdown-item" href="coding/HC427">raynaud's phenomenon/disease (194)</a>
-<a class="dropdown-item" href="coding/HC126">spinal cord disorder (193)</a>
-<a class="dropdown-item" href="coding/HC368">interstitial lung disease (192)</a>
-<a class="dropdown-item" href="coding/HC270">disorder or pituitary gland (192)</a>
-<a class="dropdown-item" href="coding/HC100">sclerosing cholangitis (190)</a>
-<a class="dropdown-item" href="coding/HC64">bell's palsy/facial nerve palsy (188)</a>
-<a class="dropdown-item" href="coding/HC392">vocal cord polyp (178)</a>
-<a class="dropdown-item" href="coding/HC264">mrsa / methicillin resistant staphylococcus aureus (177)</a>
-<a class="dropdown-item" href="coding/HC7">fracture thumb (176)</a>
-<a class="dropdown-item" href="coding/HC303">thyroiditis (173)</a>
-<a class="dropdown-item" href="coding/HC279">menopausal symptoms / menopause (172)</a>
-<a class="dropdown-item" href="coding/HC88">otosclerosis (169)</a>
-<a class="dropdown-item" href="coding/HC405">insomnia (165)</a>
-<a class="dropdown-item" href="coding/HC145">shingles (162)</a>
-<a class="dropdown-item" href="coding/HC98">hypopituitarism (159)</a>
-<a class="dropdown-item" href="coding/HC280">thyroid goitre (159)</a>
-<a class="dropdown-item" href="coding/HC135">neck problem/injury (158)</a>
-<a class="dropdown-item" href="coding/HC328">non-infective hepatitis (155)</a>
-<a class="dropdown-item" href="coding/HC48">jaundice (unknown cause) (153)</a>
-<a class="dropdown-item" href="coding/HC24">giant cell/temporal arteritis (153)</a>
-<a class="dropdown-item" href="coding/HC214">post-natal depression (153)</a>
-<a class="dropdown-item" href="coding/HC445">post-traumatic stress disorder (152)</a>
-<a class="dropdown-item" href="coding/HC92">disc problem (149)</a>
-<a class="dropdown-item" href="coding/HC386">psychological/psychiatric problem (148)</a>
-<a class="dropdown-item" href="coding/HC254">pericarditis (146)</a>
-<a class="dropdown-item" href="coding/HC202">leg claudication/ intermittent claudication (146)</a>
-<a class="dropdown-item" href="coding/HC20">type 1 diabetes (146)</a>
-<a class="dropdown-item" href="coding/HC71">sick sinus syndrome (140)</a>
-<a class="dropdown-item" href="coding/HC41">polio / poliomyelitis (140)</a>
-<a class="dropdown-item" href="coding/HC14">retinal artery/vein occlusion (138)</a>
-<a class="dropdown-item" href="coding/HC304">tendonitis / tendinitis / tenosynovitis (137)</a>
-<a class="dropdown-item" href="coding/HC101">hereditary/genetic haematological disorder (137)</a>
-<a class="dropdown-item" href="coding/HC347">clotting disorder/excessive bleeding (136)</a>
-<a class="dropdown-item" href="coding/HC295">macular degeneration (136)</a>
-<a class="dropdown-item" href="coding/HC375">hiv/aids (134)</a>
-<a class="dropdown-item" href="coding/HC141">low platelets/platelet disorder (129)</a>
-<a class="dropdown-item" href="coding/HC121">breast disease (not cancer) (129)</a>
-<a class="dropdown-item" href="coding/HC125">fracture vertebra / crush fracture / vertebral collapse (128)</a>
-<a class="dropdown-item" href="coding/HC331">renal failure not requiring dialysis (127)</a>
-<a class="dropdown-item" href="coding/HC94">septicaemia / sepsis (125)</a>
-<a class="dropdown-item" href="coding/HC247">monoclonal gammopathy/not myeloma (121)</a>
-<a class="dropdown-item" href="coding/HC51">dupuytren's contracture (120)</a>
-<a class="dropdown-item" href="coding/HC350">erectile dysfunction / impotence (120)</a>
-<a class="dropdown-item" href="coding/HC224">benign / essential tremor (120)</a>
-<a class="dropdown-item" href="coding/HC346">acute infective polyneuritis/guillain-barre syndrome (116)</a>
-<a class="dropdown-item" href="coding/HC17">cervical intra-epithelial neoplasia (cin) / precancerous cells cervix (114)</a>
-<a class="dropdown-item" href="coding/HC142">oesophageal disorder (113)</a>
-<a class="dropdown-item" href="coding/HC143">allergy to house dust mite (112)</a>
-<a class="dropdown-item" href="coding/HC117">pelvic inflammatory disease/ pid (109)</a>
-<a class="dropdown-item" href="coding/HC342">dysmenorrhoea / dysmenorrhea (108)</a>
-<a class="dropdown-item" href="coding/HC96">primary biliary cirrhosis (107)</a>
-<a class="dropdown-item" href="coding/HC284">pyloric stenosis (105)</a>
-<a class="dropdown-item" href="coding/HC162">contact dermatitis (104)</a>
-<a class="dropdown-item" href="coding/HC441">motor neurone disease (102)</a>
-<a class="dropdown-item" href="coding/HC211">pituitary adenoma/tumour (102)</a>
-<a class="dropdown-item" href="coding/HC446">hypertension (36733)</a>
-<a class="dropdown-item" href="coding/HC447">hiatus hernia (14078)</a>
-<a class="dropdown-item" href="coding/HC448">other joint disorder (10611)</a>
-<a class="dropdown-item" href="coding/HC449">gastro-oesophageal reflux (gord) / gastric reflux (10300)</a>
-<a class="dropdown-item" href="coding/HC450">diabetes (7437)</a>
-<a class="dropdown-item" href="coding/HC451">haemorrhoids / piles (6807)</a>
-<a class="dropdown-item" href="coding/HC452">cataract (6509)</a>
-<a class="dropdown-item" href="coding/HC453">hypothyroidism/myxoedema (6667)</a>
-<a class="dropdown-item" href="coding/HC454">angina (6586)</a>
-<a class="dropdown-item" href="coding/HC455">anaemia (5405)</a>
-<a class="dropdown-item" href="coding/HC456">arthritis (nos) (5307)</a>
-<a class="dropdown-item" href="coding/HC457">cholelithiasis/gall stones (5146)</a>
-<a class="dropdown-item" href="coding/HC458">pneumonia (4452)</a>
-<a class="dropdown-item" href="coding/HC459">heart attack/myocardial infarction (4319)</a>
-<a class="dropdown-item" href="coding/HC460">migraine (3886)</a>
-<a class="dropdown-item" href="coding/HC461">urinary tract infection/kidney infection (3972)</a>
-<a class="dropdown-item" href="coding/HC462">eczema/dermatitis (3985)</a>
-<a class="dropdown-item" href="coding/HC463">varicose veins (3337)</a>
-<a class="dropdown-item" href="coding/HC464">oesophagitis/barretts oesophagus (3344)</a>
-<a class="dropdown-item" href="coding/HC465">iron deficiency anaemia (2710)</a>
-<a class="dropdown-item" href="coding/HC466">carpal tunnel syndrome (2849)</a>
-<a class="dropdown-item" href="coding/HC467">renal/kidney failure (2485)</a>
-<a class="dropdown-item" href="coding/HC468">fracture forearm / wrist (1965)</a>
-<a class="dropdown-item" href="coding/HC469">fracture lower leg / ankle (2075)</a>
-<a class="dropdown-item" href="coding/HC470">rheumatoid arthritis (1949)</a>
-<a class="dropdown-item" href="coding/HC471">emphysema/chronic bronchitis (2306)</a>
-<a class="dropdown-item" href="coding/HC472">psoriasis (1730)</a>
-<a class="dropdown-item" href="coding/HC473">enlarged prostate (1754)</a>
-<a class="dropdown-item" href="coding/HC474">heart failure/pulmonary odema (1704)</a>
-<a class="dropdown-item" href="coding/HC475">nasal polyps (1578)</a>
-<a class="dropdown-item" href="coding/HC476">head injury (1524)</a>
-<a class="dropdown-item" href="coding/HC477">chronic sinusitis (1471)</a>
-<a class="dropdown-item" href="coding/HC478">synovitis (1471)</a>
-<a class="dropdown-item" href="coding/HC479">epilepsy (1478)</a>
-<a class="dropdown-item" href="coding/HC480">inflammatory bowel disease (1349)</a>
-<a class="dropdown-item" href="coding/HC481">hyperthyroidism/thyrotoxicosis (1239)</a>
-<a class="dropdown-item" href="coding/HC482">duodenal ulcer (1245)</a>
-<a class="dropdown-item" href="coding/HC483">peripheral vascular disease (1289)</a>
-<a class="dropdown-item" href="coding/HC484">bowel / intestinal obstruction (1274)</a>
-<a class="dropdown-item" href="coding/HC485">ulcerative colitis (1122)</a>
-<a class="dropdown-item" href="coding/HC486">disc degeneration (989)</a>
-<a class="dropdown-item" href="coding/HC487">anal fissure (924)</a>
-<a class="dropdown-item" href="coding/HC488">cystitis (941)</a>
-<a class="dropdown-item" href="coding/HC489">kidney stone/ureter stone/bladder stone (934)</a>
-<a class="dropdown-item" href="coding/HC490">connective tissue disorder (817)</a>
-<a class="dropdown-item" href="coding/HC491">gastric/stomach ulcers (855)</a>
-<a class="dropdown-item" href="coding/HC492">fracture hand (821)</a>
-<a class="dropdown-item" href="coding/HC493">fracture shoulder / scapula (801)</a>
-<a class="dropdown-item" href="coding/HC494">chickenpox (847)</a>
-<a class="dropdown-item" href="coding/HC495">heart valve problem/heart murmur (822)</a>
-<a class="dropdown-item" href="coding/HC496">fracture neck of femur / hip (796)</a>
-<a class="dropdown-item" href="coding/HC497">fracture skull / head (680)</a>
-<a class="dropdown-item" href="coding/HC498">bladder problem (not cancer) (693)</a>
-<a class="dropdown-item" href="coding/HC499">measles / morbillivirus (747)</a>
-<a class="dropdown-item" href="coding/HC500">tuberculosis (tb) (598)</a>
-<a class="dropdown-item" href="coding/HC501">cerebral palsy (640)</a>
-<a class="dropdown-item" href="coding/HC502">heart arrhythmia (673)</a>
-<a class="dropdown-item" href="coding/HC503">emphysema (697)</a>
-<a class="dropdown-item" href="coding/HC504">fracture sternum (553)</a>
-<a class="dropdown-item" href="coding/HC505">other renal/kidney problem (487)</a>
-<a class="dropdown-item" href="coding/HC506">spontaneous pneumothorax/recurrent pneumothorax (419)</a>
-<a class="dropdown-item" href="coding/HC507">gestational hypertension/pre-eclampsia (447)</a>
-<a class="dropdown-item" href="coding/HC508">other neurological problem (477)</a>
-<a class="dropdown-item" href="coding/HC509">breast cysts (431)</a>
-<a class="dropdown-item" href="coding/HC510">cardiomyopathy (468)</a>
-<a class="dropdown-item" href="coding/HC511">hepatitis (380)</a>
-<a class="dropdown-item" href="coding/HC512">female infertility (377)</a>
-<a class="dropdown-item" href="coding/HC513">fracture pelvis (408)</a>
-<a class="dropdown-item" href="coding/HC514">fracture foot (469)</a>
-<a class="dropdown-item" href="coding/HC515">stress (418)</a>
-<a class="dropdown-item" href="coding/HC516">meniere's disease (374)</a>
-<a class="dropdown-item" href="coding/HC517">aortic aneurysm (492)</a>
-<a class="dropdown-item" href="coding/HC518">mumps / epidemic parotitis (429)</a>
-<a class="dropdown-item" href="coding/HC519">urticaria (365)</a>
-<a class="dropdown-item" href="coding/HC520">aortic dissection (480)</a>
-<a class="dropdown-item" href="coding/HC521">nephritis (373)</a>
-<a class="dropdown-item" href="coding/HC522">hypertrophic cardiomyopathy (hcm / hocm) (393)</a>
-<a class="dropdown-item" href="coding/HC523">scoliosis (367)</a>
-<a class="dropdown-item" href="coding/HC524">rectal or colon adenoma/polyps (363)</a>
-<a class="dropdown-item" href="coding/HC525">rheumatic fever (334)</a>
-<a class="dropdown-item" href="coding/HC526">rectal prolapse (329)</a>
-<a class="dropdown-item" href="coding/HC527">psoriatic arthropathy (315)</a>
-<a class="dropdown-item" href="coding/HC528">anorexia/bulimia/other eating disorder (312)</a>
-<a class="dropdown-item" href="coding/HC529">sarcoidosis (307)</a>
-<a class="dropdown-item" href="coding/HC530">diabetic eye disease (258)</a>
-<a class="dropdown-item" href="coding/HC531">rosacea (295)</a>
-<a class="dropdown-item" href="coding/HC532">alcoholic liver disease / alcoholic cirrhosis (300)</a>
-<a class="dropdown-item" href="coding/HC533">arterial embolism (296)</a>
-<a class="dropdown-item" href="coding/HC534">infective/viral hepatitis (214)</a>
-<a class="dropdown-item" href="coding/HC535">schizophrenia (225)</a>
-<a class="dropdown-item" href="coding/HC536">peptic ulcer (233)</a>
-<a class="dropdown-item" href="coding/HC537">hyperparathyroidism (236)</a>
-<a class="dropdown-item" href="coding/HC538">irregular heart beat (221)</a>
-<a class="dropdown-item" href="coding/HC539">spinal injury (207)</a>
-<a class="dropdown-item" href="coding/HC540">disorder of adrenal gland (233)</a>
-<a class="dropdown-item" href="coding/HC541">rubella / german measles (235)</a>
-<a class="dropdown-item" href="coding/HC542">lichen planus (203)</a>
-<a class="dropdown-item" href="coding/HC543">prostate problem (not cancer) (195)</a>
-<a class="dropdown-item" href="coding/HC544">ectopic pregnancy (179)</a>
-<a class="dropdown-item" href="coding/HC545">other respiratory problems (205)</a>
-<a class="dropdown-item" href="coding/HC546">infectious mononucleosis / glandular fever / epstein barr virus (ebv) (189)</a>
-<a class="dropdown-item" href="coding/HC547">systemic lupus erythematosis/sle (174)</a>
-<a class="dropdown-item" href="coding/HC548">blistering/desquamating skin disorder (177)</a>
-<a class="dropdown-item" href="coding/HC549">scarlet fever / scarlatina (181)</a>
-<a class="dropdown-item" href="coding/HC550">eye trauma (167)</a>
-<a class="dropdown-item" href="coding/HC551">other abdominal problem (176)</a>
-<a class="dropdown-item" href="coding/HC552">oesophageal varicies (163)</a>
-<a class="dropdown-item" href="coding/HC553">encephalitis (133)</a>
-<a class="dropdown-item" href="coding/HC554">parathyroid gland problem (not cancer) (135)</a>
-<a class="dropdown-item" href="coding/HC555">herpes simplex (115)</a>
-<a class="dropdown-item" href="coding/HC556">aplastic anaemia (131)</a>
-<a class="dropdown-item" href="coding/HC557">breast fibroadenoma (125)</a>
-<a class="dropdown-item" href="coding/HC558">fracture shaft of femur (116)</a>
-<a class="dropdown-item" href="coding/HC559">eye infection (113)</a>
-<a class="dropdown-item" href="coding/HC560">polycystic kidney (104)</a>
-<a class="dropdown-item" href="coding/HC561">brain abscess/intracranial abscess (109)</a>
-<a class="dropdown-item" href="coding/HC562">food intolerance (110)</a>
-<a class="dropdown-item" href="coding/HC563">fracture neck / cervical fracture (99)</a>
-<a class="dropdown-item" href="coding/HC564">acne/acne vulgaris (106)</a>
+<a class="dropdown-item" href="coding/HC215"> hypertension (107407)</a>
+<a class="dropdown-item" href="coding/HC273"> essential hypertension (64234)</a>
+<a class="dropdown-item" href="coding/HC382"> asthma (43626)</a>
+<a class="dropdown-item" href="coding/HC269"> high cholesterol (43054)</a>
+<a class="dropdown-item" href="coding/HC310"> hiatus hernia (41260)</a>
+<a class="dropdown-item" href="coding/HC285"> other joint disorder (31606)</a>
+<a class="dropdown-item" href="coding/HC164"> gastro-oesophageal reflux (gord) / gastric reflux (30231)</a>
+<a class="dropdown-item" href="coding/HC376"> osteoarthritis (29946)</a>
+<a class="dropdown-item" href="coding/HC49"> hayfever/allergic rhinitis (20724)</a>
+<a class="dropdown-item" href="coding/HC41"> depression (20461)</a>
+<a class="dropdown-item" href="coding/HC221"> diabetes (20440)</a>
+<a class="dropdown-item" href="coding/HC61"> haemorrhoids / piles (19958)</a>
+<a class="dropdown-item" href="coding/HC219"> hypothyroidism/myxoedema (19920)</a>
+<a class="dropdown-item" href="coding/HC25"> cataract (19448)</a>
+<a class="dropdown-item" href="coding/HC132"> angina (18473)</a>
+<a class="dropdown-item" href="coding/HC125"> anaemia (15944)</a>
+<a class="dropdown-item" href="coding/HC78"> arthritis (nos) (15332)</a>
+<a class="dropdown-item" href="coding/HC188"> cholelithiasis/gall stones (14940)</a>
+<!--<a class="dropdown-item" href="coding/HC43"> unclassifiable (14357)</a>-->
+<a class="dropdown-item" href="coding/HC243"> inguinal hernia (14042)</a>
+<a class="dropdown-item" href="coding/HC225"> cholecystitis (12963)</a>
+<a class="dropdown-item" href="coding/HC281"> atrial fibrillation (12665)</a>
+<a class="dropdown-item" href="coding/HC36"> pneumonia (12614)</a>
+<a class="dropdown-item" href="coding/HC440"> atrial flutter (12186)</a>
+<a class="dropdown-item" href="coding/HC86"> migraine (12180)</a>
+<a class="dropdown-item" href="coding/HC326"> heart attack/myocardial infarction (12138)</a>
+<a class="dropdown-item" href="coding/HC261"> eczema/dermatitis (11643)</a>
+<a class="dropdown-item" href="coding/HC64"> irritable bowel syndrome (11556)</a>
+<a class="dropdown-item" href="coding/HC404"> urinary tract infection/kidney infection (11509)</a>
+<a class="dropdown-item" href="coding/HC401"> varicose veins (10153)</a>
+<a class="dropdown-item" href="coding/HC316"> dyspepsia / indigestion (10003)</a>
+<a class="dropdown-item" href="coding/HC60"> oesophagitis/barretts oesophagus (9528)</a>
+<a class="dropdown-item" href="coding/HC22"> osteoporosis (9135)</a>
+<a class="dropdown-item" href="coding/HC7"> back pain (8709)</a>
+<a class="dropdown-item" href="coding/HC118"> constipation (8691)</a>
+<a class="dropdown-item" href="coding/HC362"> respiratory infection (8173)</a>
+<a class="dropdown-item" href="coding/HC295"> carpal tunnel syndrome (8152)</a>
+<a class="dropdown-item" href="coding/HC179"> iron deficiency anaemia (7811)</a>
+<a class="dropdown-item" href="coding/HC153"> joint pain (7726)</a>
+<a class="dropdown-item" href="coding/HC442"> chronic obstructive airways disease/copd (7287)</a>
+<a class="dropdown-item" href="coding/HC294"> renal/kidney failure (7081)</a>
+<a class="dropdown-item" href="coding/HC166"> deep venous thrombosis (dvt) (6929)</a>
+<a class="dropdown-item" href="coding/HC328"> gout (6278)</a>
+<a class="dropdown-item" href="coding/HC185"> cellulitis (6168)</a>
+<a class="dropdown-item" href="coding/HC83"> fracture forearm / wrist (6014)</a>
+<a class="dropdown-item" href="coding/HC237"> back problem (5950)</a>
+<a class="dropdown-item" href="coding/HC176"> prolapsed disc/slipped disc (5942)</a>
+<a class="dropdown-item" href="coding/HC339"> fracture lower leg / ankle (5881)</a>
+<a class="dropdown-item" href="coding/HC276"> glaucoma (5863)</a>
+<a class="dropdown-item" href="coding/HC110"> stroke (5783)</a>
+<a class="dropdown-item" href="coding/HC106"> emphysema/chronic bronchitis (5601)</a>
+<a class="dropdown-item" href="coding/HC430"> rheumatoid arthritis (5587)</a>
+<a class="dropdown-item" href="coding/HC79"> appendicitis (5533)</a>
+<a class="dropdown-item" href="coding/HC31"> uterine fibroids (5417)</a>
+<a class="dropdown-item" href="coding/HC205"> endometriosis (5391)</a>
+<a class="dropdown-item" href="coding/HC15"> sciatica (5152)</a>
+<a class="dropdown-item" href="coding/HC85"> enlarged prostate (5078)</a>
+<a class="dropdown-item" href="coding/HC38"> psoriasis (5074)</a>
+<a class="dropdown-item" href="coding/HC371"> bronchitis (4987)</a>
+<a class="dropdown-item" href="coding/HC135"> anxiety/panic attacks (4986)</a>
+<a class="dropdown-item" href="coding/HC203"> pulmonary embolism +/- dvt (4968)</a>
+<a class="dropdown-item" href="coding/HC299"> heart failure/pulmonary odema (4657)</a>
+<a class="dropdown-item" href="coding/HC156"> nasal polyps (4608)</a>
+<a class="dropdown-item" href="coding/HC57"> fracture radius (4584)</a>
+<a class="dropdown-item" href="coding/HC239"> subdural haemorrhage/haematoma (4451)</a>
+<a class="dropdown-item" href="coding/HC323"> head injury (4399)</a>
+<a class="dropdown-item" href="coding/HC298"> chronic sinusitis (4395)</a>
+<a class="dropdown-item" href="coding/HC146"> pleural effusion (4391)</a>
+<a class="dropdown-item" href="coding/HC418"> cervical spondylosis (4317)</a>
+<a class="dropdown-item" href="coding/HC142"> synovitis (4303)</a>
+<a class="dropdown-item" href="coding/HC437"> epilepsy (4210)</a>
+<a class="dropdown-item" href="coding/HC364"> sleep apnoea (4082)</a>
+<a class="dropdown-item" href="coding/HC262"> diverticular disease/diverticulitis (4036)</a>
+<a class="dropdown-item" href="coding/HC95"> inflammatory bowel disease (3783)</a>
+<a class="dropdown-item" href="coding/HC55"> hyperthyroidism/thyrotoxicosis (3647)</a>
+<a class="dropdown-item" href="coding/HC357"> duodenal ulcer (3621)</a>
+<a class="dropdown-item" href="coding/HC1"> bowel / intestinal obstruction (3599)</a>
+<a class="dropdown-item" href="coding/HC385"> peripheral vascular disease (3517)</a>
+<a class="dropdown-item" href="coding/HC77"> allergy or anaphylactic reaction to drug (3397)</a>
+<a class="dropdown-item" href="coding/HC274"> umbilical hernia (3311)</a>
+<a class="dropdown-item" href="coding/HC302"> retinal detachment (3247)</a>
+<a class="dropdown-item" href="coding/HC201"> ulcerative colitis (3147)</a>
+<a class="dropdown-item" href="coding/HC402"> spinal stenosis (3114)</a>
+<a class="dropdown-item" href="coding/HC435"> ear/vestibular disorder (3088)</a>
+<a class="dropdown-item" href="coding/HC158"> spine arthritis/spondylitis (3031)</a>
+<a class="dropdown-item" href="coding/HC119"> disc degeneration (2984)</a>
+<a class="dropdown-item" href="coding/HC443"> headaches (not migraine) (2974)</a>
+<a class="dropdown-item" href="coding/HC282"> whooping cough / pertussis (2964)</a>
+<a class="dropdown-item" href="coding/HC123"> muscle/soft tissue problem (2836)</a>
+<a class="dropdown-item" href="coding/HC427"> ovarian cyst or cysts (2831)</a>
+<a class="dropdown-item" href="coding/HC400"> transient ischaemic attack (tia) (2828)</a>
+<a class="dropdown-item" href="coding/HC129"> muscle or soft tissue injuries (2822)</a>
+<a class="dropdown-item" href="coding/HC374"> kidney stone/ureter stone/bladder stone (2812)</a>
+<a class="dropdown-item" href="coding/HC133"> anal fissure (2721)</a>
+<a class="dropdown-item" href="coding/HC283"> cystitis (2713)</a>
+<a class="dropdown-item" href="coding/HC6"> eye/eyelid problem (2698)</a>
+<a class="dropdown-item" href="coding/HC131"> svt / supraventricular tachycardia (2653)</a>
+<a class="dropdown-item" href="coding/HC331"> tonsiltis (2608)</a>
+<a class="dropdown-item" href="coding/HC121"> peritonitis (2585)</a>
+<a class="dropdown-item" href="coding/HC136"> connective tissue disorder (2515)</a>
+<a class="dropdown-item" href="coding/HC366"> allergy/hypersensitivity/anaphylaxis (2491)</a>
+<a class="dropdown-item" href="coding/HC144"> chickenpox (2458)</a>
+<a class="dropdown-item" href="coding/HC314"> fracture hand (2438)</a>
+<a class="dropdown-item" href="coding/HC396"> fracture shoulder / scapula (2429)</a>
+<a class="dropdown-item" href="coding/HC209"> gastric/stomach ulcers (2408)</a>
+<a class="dropdown-item" href="coding/HC165"> type 2 diabetes (2389)</a>
+<a class="dropdown-item" href="coding/HC58"> benign breast lump (2354)</a>
+<a class="dropdown-item" href="coding/HC406"> fracture neck of femur / hip (2335)</a>
+<a class="dropdown-item" href="coding/HC231"> heart valve problem/heart murmur (2326)</a>
+<a class="dropdown-item" href="coding/HC311"> measles / morbillivirus (2120)</a>
+<a class="dropdown-item" href="coding/HC392"> pancreatitis (2106)</a>
+<a class="dropdown-item" href="coding/HC303"> malabsorption/coeliac disease (2094)</a>
+<a class="dropdown-item" href="coding/HC395"> bladder problem (not cancer) (2066)</a>
+<a class="dropdown-item" href="coding/HC405"> vaginal prolapse/uterine prolapse (2041)</a>
+<a class="dropdown-item" href="coding/HC424"> fracture skull / head (2012)</a>
+<a class="dropdown-item" href="coding/HC28"> bronchiectasis (1939)</a>
+<a class="dropdown-item" href="coding/HC204"> bursitis (1929)</a>
+<a class="dropdown-item" href="coding/HC193"> heart arrhythmia (1884)</a>
+<a class="dropdown-item" href="coding/HC155"> joint disorder (1861)</a>
+<a class="dropdown-item" href="coding/HC82"> cerebral palsy (1844)</a>
+<a class="dropdown-item" href="coding/HC423"> respiratory failure (1819)</a>
+<a class="dropdown-item" href="coding/HC200"> fracture tibia (1811)</a>
+<a class="dropdown-item" href="coding/HC140"> urinary frequency / incontinence (1767)</a>
+<a class="dropdown-item" href="coding/HC290"> fracture upper arm / humerus / elbow (1749)</a>
+<a class="dropdown-item" href="coding/HC62"> tuberculosis (tb) (1739)</a>
+<a class="dropdown-item" href="coding/HC322"> crohns disease (1652)</a>
+<a class="dropdown-item" href="coding/HC320"> meningitis (1640)</a>
+<a class="dropdown-item" href="coding/HC8"> gall bladder disease (1639)</a>
+<a class="dropdown-item" href="coding/HC34"> pleurisy (1627)</a>
+<a class="dropdown-item" href="coding/HC234"> allergy or anaphylactic reaction to food (1621)</a>
+<a class="dropdown-item" href="coding/HC259"> aortic stenosis (1593)</a>
+<a class="dropdown-item" href="coding/HC334"> fracture sternum (1587)</a>
+<a class="dropdown-item" href="coding/HC431"> emphysema (1581)</a>
+<a class="dropdown-item" href="coding/HC98"> stomach disorder (1570)</a>
+<a class="dropdown-item" href="coding/HC386"> helicobacter pylori (1564)</a>
+<a class="dropdown-item" href="coding/HC72"> chronic fatigue syndrome (1559)</a>
+<a class="dropdown-item" href="coding/HC32"> other renal/kidney problem (1502)</a>
+<a class="dropdown-item" href="coding/HC240"> fracture finger (1498)</a>
+<a class="dropdown-item" href="coding/HC380"> fracture ulna (1485)</a>
+<a class="dropdown-item" href="coding/HC151"> multiple sclerosis (1467)</a>
+<a class="dropdown-item" href="coding/HC134"> bone disorder (1459)</a>
+<a class="dropdown-item" href="coding/HC96"> polymyalgia rheumatica (1421)</a>
+<a class="dropdown-item" href="coding/HC109"> gestational hypertension/pre-eclampsia (1418)</a>
+<a class="dropdown-item" href="coding/HC353"> other neurological problem (1406)</a>
+<a class="dropdown-item" href="coding/HC42"> spontaneous pneumothorax/recurrent pneumothorax (1398)</a>
+<a class="dropdown-item" href="coding/HC139"> breast cysts (1398)</a>
+<a class="dropdown-item" href="coding/HC116"> tinnitus / tiniitis (1369)</a>
+<a class="dropdown-item" href="coding/HC263"> nasal/sinus disorder (1327)</a>
+<a class="dropdown-item" href="coding/HC414"> cardiomyopathy (1309)</a>
+<a class="dropdown-item" href="coding/HC76"> fracture foot (1270)</a>
+<a class="dropdown-item" href="coding/HC223"> fracture pelvis (1269)</a>
+<a class="dropdown-item" href="coding/HC45"> mumps / epidemic parotitis (1228)</a>
+<a class="dropdown-item" href="coding/HC178"> stress (1216)</a>
+<a class="dropdown-item" href="coding/HC415"> aortic aneurysm (1210)</a>
+<a class="dropdown-item" href="coding/HC253"> meniere's disease (1199)</a>
+<a class="dropdown-item" href="coding/HC52"> aortic dissection (1186)</a>
+<a class="dropdown-item" href="coding/HC74"> female infertility (1185)</a>
+<a class="dropdown-item" href="coding/HC422"> ankylosing spondylitis (1184)</a>
+<a class="dropdown-item" href="coding/HC346"> fibromyalgia (1166)</a>
+<a class="dropdown-item" href="coding/HC88"> heart/cardiac problem (1148)</a>
+<a class="dropdown-item" href="coding/HC216"> pneumothorax (1143)</a>
+<a class="dropdown-item" href="coding/HC438"> hepatitis (1138)</a>
+<a class="dropdown-item" href="coding/HC389"> urticaria (1125)</a>
+<a class="dropdown-item" href="coding/HC254"> uterine polyps (1122)</a>
+<a class="dropdown-item" href="coding/HC340"> menorrhagia (unknown cause) (1112)</a>
+<a class="dropdown-item" href="coding/HC398"> fracture wrist / colles fracture (1096)</a>
+<a class="dropdown-item" href="coding/HC308"> hypertrophic cardiomyopathy (hcm / hocm) (1096)</a>
+<a class="dropdown-item" href="coding/HC307"> colitis/not crohns or ulcerative colitis (1095)</a>
+<a class="dropdown-item" href="coding/HC255"> subarachnoid haemorrhage (1091)</a>
+<a class="dropdown-item" href="coding/HC184"> aortic aneurysm rupture (1085)</a>
+<a class="dropdown-item" href="coding/HC202"> trapped nerve/compressed nerve (1084)</a>
+<a class="dropdown-item" href="coding/HC206"> parkinsons disease (1082)</a>
+<a class="dropdown-item" href="coding/HC182"> osteopenia (1063)</a>
+<a class="dropdown-item" href="coding/HC4"> nephritis (1061)</a>
+<a class="dropdown-item" href="coding/HC16"> rectal or colon adenoma/polyps (1057)</a>
+<a class="dropdown-item" href="coding/HC169"> pernicious anaemia (1048)</a>
+<a class="dropdown-item" href="coding/HC0"> scoliosis (1047)</a>
+<a class="dropdown-item" href="coding/HC149"> rheumatic fever (1011)</a>
+<a class="dropdown-item" href="coding/HC161"> prostatitis (984)</a>
+<a class="dropdown-item" href="coding/HC44"> bile duct obstruction/ascending cholangitis (980)</a>
+<a class="dropdown-item" href="coding/HC107"> miscarriage (978)</a>
+<a class="dropdown-item" href="coding/HC355"> rectal prolapse (965)</a>
+<a class="dropdown-item" href="coding/HC233"> mania/bipolar disorder/manic depression (958)</a>
+<a class="dropdown-item" href="coding/HC91"> psoriatic arthropathy (954)</a>
+<a class="dropdown-item" href="coding/HC104"> osteomyelitis (948)</a>
+<a class="dropdown-item" href="coding/HC361"> anorexia/bulimia/other eating disorder (902)</a>
+<a class="dropdown-item" href="coding/HC180"> thyroid problem (not cancer) (894)</a>
+<a class="dropdown-item" href="coding/HC150"> rosacea (880)</a>
+<a class="dropdown-item" href="coding/HC195"> ureteric obstruction/hydronephrosis (870)</a>
+<a class="dropdown-item" href="coding/HC373"> fracture rib (853)</a>
+<a class="dropdown-item" href="coding/HC170"> sarcoidosis (841)</a>
+<a class="dropdown-item" href="coding/HC260"> fracture fibula (798)</a>
+<a class="dropdown-item" href="coding/HC222"> arterial embolism (782)</a>
+<a class="dropdown-item" href="coding/HC171"> alcoholic liver disease / alcoholic cirrhosis (778)</a>
+<a class="dropdown-item" href="coding/HC196"> labyrinthitis (764)</a>
+<a class="dropdown-item" href="coding/HC84"> pulmonary fibrosis (748)</a>
+<a class="dropdown-item" href="coding/HC17"> diabetic eye disease (728)</a>
+<a class="dropdown-item" href="coding/HC267"> tennis elbow / lateral epicondylitis (725)</a>
+<a class="dropdown-item" href="coding/HC383"> bph / benign prostatic hypertrophy (720)</a>
+<a class="dropdown-item" href="coding/HC102"> vertigo (712)</a>
+<a class="dropdown-item" href="coding/HC379"> infective/viral hepatitis (709)</a>
+<a class="dropdown-item" href="coding/HC198"> hyperparathyroidism (699)</a>
+<a class="dropdown-item" href="coding/HC113"> irregular heart beat (689)</a>
+<a class="dropdown-item" href="coding/HC53"> spinal injury (683)</a>
+<a class="dropdown-item" href="coding/HC93"> dry eyes (672)</a>
+<a class="dropdown-item" href="coding/HC54"> peptic ulcer (662)</a>
+<a class="dropdown-item" href="coding/HC271"> epicondylitis (655)</a>
+<a class="dropdown-item" href="coding/HC194"> liver/biliary/pancreas problem (640)</a>
+<a class="dropdown-item" href="coding/HC224"> rubella / german measles (638)</a>
+<a class="dropdown-item" href="coding/HC143"> retinal problem (601)</a>
+<a class="dropdown-item" href="coding/HC257"> femoral hernia (597)</a>
+<a class="dropdown-item" href="coding/HC342"> prostate problem (not cancer) (594)</a>
+<a class="dropdown-item" href="coding/HC363"> fracture clavicle / collar bone (591)</a>
+<a class="dropdown-item" href="coding/HC68"> disorder of adrenal gland (588)</a>
+<a class="dropdown-item" href="coding/HC287"> infectious mononucleosis / glandular fever / epstein barr virus (ebv) (588)</a>
+<a class="dropdown-item" href="coding/HC39"> lichen planus (586)</a>
+<a class="dropdown-item" href="coding/HC370"> other respiratory problems (585)</a>
+<a class="dropdown-item" href="coding/HC275"> gastritis/gastric erosions (573)</a>
+<a class="dropdown-item" href="coding/HC246"> schizophrenia (568)</a>
+<a class="dropdown-item" href="coding/HC280"> peripheral neuropathy (567)</a>
+<a class="dropdown-item" href="coding/HC172"> gynaecological disorder (not cancer) (562)</a>
+<a class="dropdown-item" href="coding/HC117"> abdominal hernia (557)</a>
+<a class="dropdown-item" href="coding/HC397"> scarlet fever / scarlatina (555)</a>
+<a class="dropdown-item" href="coding/HC321"> sjogren's syndrome/sicca syndrome (555)</a>
+<a class="dropdown-item" href="coding/HC101"> eye trauma (536)</a>
+<a class="dropdown-item" href="coding/HC114"> pericardial effusion (531)</a>
+<a class="dropdown-item" href="coding/HC40"> nervous breakdown (530)</a>
+<a class="dropdown-item" href="coding/HC232"> abnormal smear (cervix) (527)</a>
+<a class="dropdown-item" href="coding/HC347"> blistering/desquamating skin disorder (525)</a>
+<a class="dropdown-item" href="coding/HC284"> fracture nose (522)</a>
+<a class="dropdown-item" href="coding/HC351"> blepharitis / eyelid infection (519)</a>
+<a class="dropdown-item" href="coding/HC433"> lymphoedema (516)</a>
+<a class="dropdown-item" href="coding/HC3"> ectopic pregnancy (514)</a>
+<a class="dropdown-item" href="coding/HC293"> fracture patella / knee (511)</a>
+<a class="dropdown-item" href="coding/HC291"> polycystic ovaries/polycystic ovarian syndrome (511)</a>
+<a class="dropdown-item" href="coding/HC12"> testicular problems (not cancer) (492)</a>
+<a class="dropdown-item" href="coding/HC432"> mitral valve prolapse (487)</a>
+<a class="dropdown-item" href="coding/HC69"> polycythaemia vera (482)</a>
+<a class="dropdown-item" href="coding/HC421"> other abdominal problem (478)</a>
+<a class="dropdown-item" href="coding/HC375"> alcohol dependency (477)</a>
+<a class="dropdown-item" href="coding/HC278"> cerebral aneurysm (477)</a>
+<a class="dropdown-item" href="coding/HC256"> fracture toe (476)</a>
+<a class="dropdown-item" href="coding/HC352"> systemic lupus erythematosis/sle (474)</a>
+<a class="dropdown-item" href="coding/HC327"> fracture metatarsal (461)</a>
+<a class="dropdown-item" href="coding/HC445"> oesophageal varicies (456)</a>
+<a class="dropdown-item" href="coding/HC390"> trigemminal neuralgia (447)</a>
+<a class="dropdown-item" href="coding/HC384"> throat or larynx disorder (423)</a>
+<a class="dropdown-item" href="coding/HC47"> malaria (421)</a>
+<a class="dropdown-item" href="coding/HC417"> sclerosing cholangitis (420)</a>
+<a class="dropdown-item" href="coding/HC167"> raynaud's phenomenon/disease (410)</a>
+<a class="dropdown-item" href="coding/HC208"> parathyroid gland problem (not cancer) (400)</a>
+<a class="dropdown-item" href="coding/HC270"> encephalitis (398)</a>
+<a class="dropdown-item" href="coding/HC105"> shingles (391)</a>
+<a class="dropdown-item" href="coding/HC122"> disorder or pituitary gland (390)</a>
+<a class="dropdown-item" href="coding/HC33"> spinal cord disorder (389)</a>
+<a class="dropdown-item" href="coding/HC59"> thyroiditis (388)</a>
+<a class="dropdown-item" href="coding/HC220"> interstitial lung disease (380)</a>
+<a class="dropdown-item" href="coding/HC173"> fracture shaft of femur (373)</a>
+<a class="dropdown-item" href="coding/HC419"> otosclerosis (368)</a>
+<a class="dropdown-item" href="coding/HC296"> fracture thumb (367)</a>
+<a class="dropdown-item" href="coding/HC48"> aplastic anaemia (366)</a>
+<a class="dropdown-item" href="coding/HC317"> breast fibroadenoma (365)</a>
+<a class="dropdown-item" href="coding/HC338"> giant cell/temporal arteritis (360)</a>
+<a class="dropdown-item" href="coding/HC226"> herpes simplex (359)</a>
+<a class="dropdown-item" href="coding/HC277"> menopausal symptoms / menopause (357)</a>
+<a class="dropdown-item" href="coding/HC210"> non-infective hepatitis (354)</a>
+<a class="dropdown-item" href="coding/HC306"> insomnia (348)</a>
+<a class="dropdown-item" href="coding/HC344"> post-natal depression (346)</a>
+<a class="dropdown-item" href="coding/HC103"> thyroid goitre (346)</a>
+<a class="dropdown-item" href="coding/HC35"> sick sinus syndrome (344)</a>
+<a class="dropdown-item" href="coding/HC408"> polio / poliomyelitis (343)</a>
+<a class="dropdown-item" href="coding/HC348"> bell's palsy/facial nerve palsy (338)</a>
+<a class="dropdown-item" href="coding/HC157"> jaundice (unknown cause) (338)</a>
+<a class="dropdown-item" href="coding/HC181"> eye infection (337)</a>
+<a class="dropdown-item" href="coding/HC318"> vocal cord polyp (336)</a>
+<a class="dropdown-item" href="coding/HC217"> neck problem/injury (332)</a>
+<a class="dropdown-item" href="coding/HC441"> hypopituitarism (327)</a>
+<a class="dropdown-item" href="coding/HC197"> clotting disorder/excessive bleeding (327)</a>
+<a class="dropdown-item" href="coding/HC177"> dupuytren's contracture (326)</a>
+<a class="dropdown-item" href="coding/HC89"> food intolerance (321)</a>
+<a class="dropdown-item" href="coding/HC420"> psychological/psychiatric problem (320)</a>
+<a class="dropdown-item" href="coding/HC230"> disc problem (320)</a>
+<a class="dropdown-item" href="coding/HC304"> burns N/A (319)</a>
+<a class="dropdown-item" href="coding/HC162"> brain abscess/intracranial abscess (316)</a>
+<a class="dropdown-item" href="coding/HC315"> fracture neck / cervical fracture (315)</a>
+<a class="dropdown-item" href="coding/HC24"> mrsa / methicillin resistant staphylococcus aureus (314)</a>
+<a class="dropdown-item" href="coding/HC332"> post-traumatic stress disorder (309)</a>
+<a class="dropdown-item" href="coding/HC247"> breast disease (not cancer) (308)</a>
+<a class="dropdown-item" href="coding/HC126"> polycystic kidney (308)</a>
+<a class="dropdown-item" href="coding/HC356"> retinal artery/vein occlusion (307)</a>
+<a class="dropdown-item" href="coding/HC337"> type 1 diabetes (307)</a>
+<a class="dropdown-item" href="coding/HC242"> pericarditis (297)</a>
+<a class="dropdown-item" href="coding/HC412"> tendonitis / tendinitis / tenosynovitis (295)</a>
+<a class="dropdown-item" href="coding/HC14"> fracture vertebra / crush fracture / vertebral collapse (294)</a>
+<a class="dropdown-item" href="coding/HC5"> myositis/myopathy (292)</a>
+<a class="dropdown-item" href="coding/HC51"> paraplegia (292)</a>
+<a class="dropdown-item" href="coding/HC436"> acne/acne vulgaris (292)</a>
+<a class="dropdown-item" href="coding/HC413"> hereditary/genetic haematological disorder (291)</a>
+<a class="dropdown-item" href="coding/HC434"> macular degeneration (283)</a>
+<a class="dropdown-item" href="coding/HC428"> low platelets/platelet disorder (280)</a>
+<a class="dropdown-item" href="coding/HC248"> allergy to house dust mite (278)</a>
+<a class="dropdown-item" href="coding/HC9"> renal failure not requiring dialysis (270)</a>
+<a class="dropdown-item" href="coding/HC250"> acute infective polyneuritis/guillain-barre syndrome (269)</a>
+<a class="dropdown-item" href="coding/HC410"> cervical intra-epithelial neoplasia (cin) / precancerous cells cervix (268)</a>
+<a class="dropdown-item" href="coding/HC252"> leg claudication/ intermittent claudication (265)</a>
+<a class="dropdown-item" href="coding/HC300"> benign / essential tremor (258)</a>
+<a class="dropdown-item" href="coding/HC154"> pelvic inflammatory disease/ pid (254)</a>
+<a class="dropdown-item" href="coding/HC10"> dysmenorrhoea / dysmenorrhea (249)</a>
+<a class="dropdown-item" href="coding/HC11"> septicaemia / sepsis (246)</a>
+<a class="dropdown-item" href="coding/HC212"> oesophageal disorder (242)</a>
+<a class="dropdown-item" href="coding/HC429"> hiv/aids (241)</a>
+<a class="dropdown-item" href="coding/HC251"> liver failure/cirrhosis (241)</a>
+<a class="dropdown-item" href="coding/HC227"> erectile dysfunction / impotence (241)</a>
+<a class="dropdown-item" href="coding/HC313"> primary biliary cirrhosis (240)</a>
+<a class="dropdown-item" href="coding/HC391"> pyloric stenosis (228)</a>
+<a class="dropdown-item" href="coding/HC292"> vasculitis (227)</a>
+<a class="dropdown-item" href="coding/HC218"> motor neurone disease (221)</a>
+<a class="dropdown-item" href="coding/HC56"> monoclonal gammopathy/not myeloma (219)</a>
+<a class="dropdown-item" href="coding/HC63"> pituitary adenoma/tumour (218)</a>
+<a class="dropdown-item" href="coding/HC268"> varicose ulcer (215)</a>
+<a class="dropdown-item" href="coding/HC241"> cranial nerve problem/palsy (206)</a>
+<a class="dropdown-item" href="coding/HC191"> peripheral nerve injury (205)</a>
+<a class="dropdown-item" href="coding/HC359"> adrenocortical insufficiency/addison's disease (203)</a>
+<a class="dropdown-item" href="coding/HC330"> myasthenia gravis (202)</a>
+<a class="dropdown-item" href="coding/HC115"> contact dermatitis (202)</a>
+<a class="dropdown-item" href="coding/HC124"> undescended testicle (199)</a>
+<a class="dropdown-item" href="coding/HC358"> optic neuritis (196)</a>
+<a class="dropdown-item" href="coding/HC324"> obsessive compulsive disorder (ocd) (195)</a>
+<a class="dropdown-item" href="coding/HC21"> mitral valve disease (195)</a>
+<a class="dropdown-item" href="coding/HC130"> housemaid's knee (prepatellar bursitis) (194)</a>
+<a class="dropdown-item" href="coding/HC264"> hepatitis a (193)</a>
+<a class="dropdown-item" href="coding/HC128"> peripheral nerve disorder (192)</a>
+<a class="dropdown-item" href="coding/HC90"> myasthenia gravis (187)</a>
+<a class="dropdown-item" href="coding/HC87"> spina bifida (187)</a>
+<a class="dropdown-item" href="coding/HC163"> scleroderma/systemic sclerosis (187)</a>
+<a class="dropdown-item" href="coding/HC369"> gestational diabetes (182)</a>
+<a class="dropdown-item" href="coding/HC213"> pericardial problem (179)</a>
+<a class="dropdown-item" href="coding/HC444"> fracture jaw (174)</a>
+<a class="dropdown-item" href="coding/HC286"> plantar fascitis (174)</a>
+<a class="dropdown-item" href="coding/HC26"> iritis (166)</a>
+<a class="dropdown-item" href="coding/HC2"> myocarditis (165)</a>
+<a class="dropdown-item" href="coding/HC152"> deliberate self-harm/suicide attempt (161)</a>
+<a class="dropdown-item" href="coding/HC341"> fracture face / orbit / eye socket (159)</a>
+<a class="dropdown-item" href="coding/HC46"> renal failure requiring dialysis (156)</a>
+<a class="dropdown-item" href="coding/HC289"> vitiligo (155)</a>
+<a class="dropdown-item" href="coding/HC309"> brain haemorrhage (150)</a>
+<a class="dropdown-item" href="coding/HC305"> mitral stenosis (145)</a>
+<a class="dropdown-item" href="coding/HC13"> lichen sclerosis (139)</a>
+<a class="dropdown-item" href="coding/HC168"> cervical polyps (136)</a>
+<a class="dropdown-item" href="coding/HC301"> asbestosis (133)</a>
+<a class="dropdown-item" href="coding/HC329"> benign neuroma (132)</a>
+<a class="dropdown-item" href="coding/HC249"> hepatitis c (132)</a>
+<a class="dropdown-item" href="coding/HC312"> wegners granulmatosis (131)</a>
+<a class="dropdown-item" href="coding/HC27"> gastrointestinal bleeding (127)</a>
+<a class="dropdown-item" href="coding/HC288"> alopecia / hair loss (120)</a>
+<a class="dropdown-item" href="coding/HC394"> mitral regurgitation / incompetence (119)</a>
+<a class="dropdown-item" href="coding/HC100"> gastroenteritis/dysentry (118)</a>
+<a class="dropdown-item" href="coding/HC325"> chronic/degenerative neurological problem (112)</a>
+<a class="dropdown-item" href="coding/HC187"> chronic laryngitis (111)</a>
+<a class="dropdown-item" href="coding/HC160"> fibrocystic disease (109)</a>
+<a class="dropdown-item" href="coding/HC388"> diabetic neuropathy/ulcers (108)</a>
+<a class="dropdown-item" href="coding/HC229"> chronic skin ulcers (105)</a>
+<a class="dropdown-item" href="coding/HC112"> pyelonephritis (105)</a>
+<a class="dropdown-item" href="coding/HC92"> allergy to elastoplast (100)</a>
+<a class="dropdown-item" href="coding/HC81"> essential thrombocytosis (100)</a>
+<a class="dropdown-item" href="coding/HC67"> hepatitis b (100)</a>
+<a class="dropdown-item" href="coding/HC333"> lung abscess (98)</a>
+<a class="dropdown-item" href="coding/HC319"> cushings syndrome (97)</a>
+<a class="dropdown-item" href="coding/HC127"> hydatiform mole (94)</a>
+<a class="dropdown-item" href="coding/HC99"> neutropenia/lymphopenia (92)</a>
+<a class="dropdown-item" href="coding/HC345"> neurological injury/trauma (92)</a>
+<a class="dropdown-item" href="coding/HC111"> meningioma / benign meningeal tumour (92)</a>
+<a class="dropdown-item" href="coding/HC94"> dementia/alzheimers/cognitive impairment (90)</a>
+<a class="dropdown-item" href="coding/HC37"> parathyroid hyperplasia/adenoma (90)</a>
+<a class="dropdown-item" href="coding/HC30"> aortic regurgitation / incompetence (90)</a>
+<a class="dropdown-item" href="coding/HC18"> pemphigoid/pemphigus (86)</a>
+<a class="dropdown-item" href="coding/HC368"> diabetes insipidus (85)</a>
+<a class="dropdown-item" href="coding/HC350"> hyperprolactinaemia (85)</a>
+<a class="dropdown-item" href="coding/HC377"> oesophageal stricture (83)</a>
+<a class="dropdown-item" href="coding/HC360"> grave's disease (81)</a>
+<a class="dropdown-item" href="coding/HC238"> acromegaly (81)</a>
+<a class="dropdown-item" href="coding/HC20"> cervical erosion (81)</a>
+<a class="dropdown-item" href="coding/HC211"> dermatomyositis (79)</a>
+<a class="dropdown-item" href="coding/HC145"> thyroid radioablation therapy (77)</a>
+<a class="dropdown-item" href="coding/HC189"> hyperaldosteronism/conn's syndrome (72)</a>
+<a class="dropdown-item" href="coding/HC174"> haemochromatosis (72)</a>
+<a class="dropdown-item" href="coding/HC399"> incisional hernia (71)</a>
+<a class="dropdown-item" href="coding/HC73"> dermatopolymyositis (69)</a>
+<a class="dropdown-item" href="coding/HC23"> fibrosing alveolitis/unspecified alveolitis (69)</a>
+<a class="dropdown-item" href="coding/HC393"> allergy to nickel (66)</a>
+<a class="dropdown-item" href="coding/HC387"> polymyositis (66)</a>
+<a class="dropdown-item" href="coding/HC190"> scrotal problem (not cancer) (66)</a>
+<a class="dropdown-item" href="coding/HC137"> anal problem (66)</a>
+<a class="dropdown-item" href="coding/HC411"> thalassaemia (64)</a>
+<a class="dropdown-item" href="coding/HC207"> soft tissue inflammation (64)</a>
+<a class="dropdown-item" href="coding/HC381"> venous thromboembolic disease (63)</a>
+<a class="dropdown-item" href="coding/HC236"> ovarian problem (61)</a>
+<a class="dropdown-item" href="coding/HC97"> pleural plaques (not known asbestosis) (58)</a>
+<a class="dropdown-item" href="coding/HC147"> diphtheria (58)</a>
+<a class="dropdown-item" href="coding/HC409"> male infertility (56)</a>
+<a class="dropdown-item" href="coding/HC148"> wolff parkinson white / wpw syndrome (56)</a>
+<a class="dropdown-item" href="coding/HC66"> myelofibrosis (54)</a>
+<a class="dropdown-item" href="coding/HC372"> uterine problem (52)</a>
+<a class="dropdown-item" href="coding/HC244"> carcinoid syndrome/tumour (52)</a>
+<a class="dropdown-item" href="coding/HC279"> myeloproliferative disorder (51)</a>
+<a class="dropdown-item" href="coding/HC354"> kidney nephropathy (50)</a>
+<a class="dropdown-item" href="coding/HC192"> bowel / intestinal perforation (50)</a>
+<a class="dropdown-item" href="coding/HC235"> other demyelinating disease (49)</a>
+<a class="dropdown-item" href="coding/HC343"> glomerulnephritis (47)</a>
+<a class="dropdown-item" href="coding/HC228"> infection of nervous system (43)</a>
+<a class="dropdown-item" href="coding/HC186"> paget's disease (43)</a>
+<a class="dropdown-item" href="coding/HC349"> bowen's disease (42)</a>
+<a class="dropdown-item" href="coding/HC336"> iga nephropathy (42)</a>
+<a class="dropdown-item" href="coding/HC138"> polyartertis nodosa (42)</a>
+<a class="dropdown-item" href="coding/HC407"> pancreatic disease (39)</a>
+<a class="dropdown-item" href="coding/HC70"> aortic valve disease (38)</a>
+<a class="dropdown-item" href="coding/HC367"> other substance abuse/dependency (37)</a>
+<a class="dropdown-item" href="coding/HC258"> haemophilia (37)</a>
+<a class="dropdown-item" href="coding/HC199"> cervical problem (35)</a>
+<a class="dropdown-item" href="coding/HC272"> stevens johnson syndrome (32)</a>
+<a class="dropdown-item" href="coding/HC416"> retinitis pigmentosa (31)</a>
+<a class="dropdown-item" href="coding/HC120"> typhoid fever (29)</a>
+<a class="dropdown-item" href="coding/HC425"> adrenal tumour (28)</a>
+<a class="dropdown-item" href="coding/HC365"> schistosomiasis/bilharzia (27)</a>
+<a class="dropdown-item" href="coding/HC297"> dengue fever (24)</a>
+<a class="dropdown-item" href="coding/HC183"> spinal abscess (22)</a>
+<a class="dropdown-item" href="coding/HC141"> antiphospholipid syndrome (22)</a>
+<a class="dropdown-item" href="coding/HC159"> opioid dependency (20)</a>
+<a class="dropdown-item" href="coding/HC265"> bowel / intestinal infarction (19)</a>
+<a class="dropdown-item" href="coding/HC245"> bile duct disease (18)</a>
+<a class="dropdown-item" href="coding/HC214"> empyema (18)</a>
+<a class="dropdown-item" href="coding/HC266"> other venous/lymphatic disease (17)</a>
+<a class="dropdown-item" href="coding/HC80"> sickle cell disease (16)</a>
+<a class="dropdown-item" href="coding/HC75"> alpha-1 antitrypsin deficiency (15)</a>
+<a class="dropdown-item" href="coding/HC175"> ischaemic stroke (15)</a>
+<a class="dropdown-item" href="coding/HC19"> phaeochromocytoma (14)</a>
+<a class="dropdown-item" href="coding/HC108"> giardia / giardiasis (14)</a>
+<a class="dropdown-item" href="coding/HC71"> microscopic polyarteritis (13)</a>
+<a class="dropdown-item" href="coding/HC378"> diabetic nephropathy (11)</a>
+<a class="dropdown-item" href="coding/HC439"> hepatitis e (8)</a>
+<a class="dropdown-item" href="coding/HC50"> chlamydia (7)</a>
+<a class="dropdown-item" href="coding/HC29"> yellow fever (7)</a>
+<a class="dropdown-item" href="coding/HC403"> varicella zoster virus (4)</a>
+<a class="dropdown-item" href="coding/HC335"> pancytopenia (4)</a>
+<a class="dropdown-item" href="coding/HC65"> hepatitis d (0)</a>
 </div>
 </div>
 </div>
 
-
+<!--
 
 <div class="btn-group" role="group">
 <div class="dropdown" align="center">
@@ -1073,10 +1228,11 @@ function filterFunction8() {
 <a class="dropdown-item" href="coding/MED292">timolol_0.25%_eye_drops (102)</a>
 <a class="dropdown-item" href="coding/MED293">syndol_tablet (101)</a>
 <a class="dropdown-item" href="coding/MED294">etoricoxib (100)</a>
-<a class="dropdown-item" href="coding/MED295">etodolac (100)</a>-->
+<a class="dropdown-item" href="coding/MED295">etodolac (100)</a>
 </div>
 </div>
 </div>
+-->
 </div>
 
  <h3 align="center"> <a href="/about" style="color: black;">Terms of use</a></h3>
@@ -1090,6 +1246,7 @@ function filterFunction8() {
 
               <div class="col-md-4">
                 <h3 align="center">Recent News</h3>
+		<h4>July 24, 2017</h4> - Initial support for 337,000 individuals in UK Biobank
 		<h4>July 10, 2017</h4> - Added support for HWE filtering and cancer phenotypes
 		<h4>July 7, 2017</h4> - Added support for region search (phenotype tooltips soon)
 		<h4>July 2, 2017</h4> - Quality control of variants

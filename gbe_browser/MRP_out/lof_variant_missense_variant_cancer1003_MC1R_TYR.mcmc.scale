@@ -1,0 +1,5 @@
+0	inframe_deletion', 'missense_variant	2.59	0.58	7.89
+1	missense_variant	0.38	0.36	0.40
+2	missense_variant', 'start_lost	1.82	0.48	5.98
+3	lof_variant', 'stop_gained	1.18	0.61	2.55
+4	frameshift_variant', 'lof_variant	1.00	0.46	2.33

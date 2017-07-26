@@ -1,6 +1,7 @@
 from __future__ import division
 import sys
 import itertools
+import io
 import json
 import os
 import pymongo
@@ -105,8 +106,8 @@ app.config.update(dict(
     BASE_COVERAGE_FILES=glob.glob(os.path.join(os.path.dirname(__file__), GBE_FILES_DIRECTORY, 'coverage', 'Panel2016.*.coverage.txt.gz')),
     BASE_ICDSTATS_FILES=glob.glob(os.path.join(os.path.dirname(__file__), GBE_FILES_DIRECTORY, 'icdstats', 'Panel*.icdstats.txt.gz')),
     ICD_INFO_FILE=os.path.join(os.path.dirname(__file__), GBE_FILES_DIRECTORY, 'icdstats', 'icdinfo.txt'),
-    ICD_STATS_FILES=glob.glob(os.path.join(os.path.dirname(__file__), GBE_FILES_DIRECTORY, 'icdassoc','hybrid','c*.hybrid.rewrite.gz')),
-    QT_STATS_FILES=glob.glob(os.path.join(os.path.dirname(__file__), GBE_FILES_DIRECTORY, 'icdassoc','hybrid','c*.linear.rewrite.gz')),
+    ICD_STATS_FILES=glob.glob(os.path.join(os.path.dirname(__file__), GBE_FILES_DIRECTORY, 'icdassoc','hybrid','*c*.hybrid.rewritewna.gz')),
+    QT_STATS_FILES=glob.glob(os.path.join(os.path.dirname(__file__), GBE_FILES_DIRECTORY, 'icdassoc','hybrid','*c*.linear.rewritewna.gz')),
     DBNSFP_FILE=os.path.join(os.path.dirname(__file__), GBE_FILES_DIRECTORY, 'dbNSFP2.6_gene.gz'),
     # This is not supported in GBE, We have dbsnp150
     # How to get a snp141.txt.bgz file:
@@ -649,9 +650,20 @@ def run_mrp(lof=True, missense=True, genes=None, fdr=5, phenidarr = ['ICD1462','
     if genes != None:
         # Find variants with the given annotation
         b = models.QueryGenome(category=annotations)
-        key = '_'.join(annotations) + '_' + '_'.join(phenidarr) + '_' + '_'.join(genes)
+        key = 't-mrp-' + '_'.join(annotations) + '_' + '_'.join(phenidarr) + '_' + '_'.join(genes)
         # Generate relevant files
         betas, se, pvalues, annotations, protein_annotations, variant_ids, icd, gene_return, rsids, alts, allele_frequencies = b.query_genome(genes,phenidarr)
+        numpy.save('s3/' + key + '.betas', betas)
+        numpy.save('s3/' + key + '.se', se)
+        numpy.save('s3/' + key + '.pvalues', pvalues)
+        numpy.save('s3/' + key + '.annotations', annotations)
+        numpy.save('s3/' + key + '.protein_annotations', protein_annotations)
+        numpy.save('s3/' + key + '.variant_ids', variant_ids)
+        numpy.save('s3/' + key + '.icd', icd)
+        numpy.save('s3/' + key + '.gene_return', gene_return)
+        numpy.save('s3/' + key + '.rsids', rsids)
+        numpy.save('s3/' + key + '.alts', alts)
+        numpy.save('s3/' + key + '.allele_frequencies', allele_frequencies)
         # Reshape betas from genome query
         C = numpy.matlib.eye(betas.shape[1])
         annotvec = [str(annotations[i].strip('"').strip('[').strip(']').strip("'")) for i in range(0,len(annotations))]
@@ -661,7 +673,7 @@ def run_mrp(lof=True, missense=True, genes=None, fdr=5, phenidarr = ['ICD1462','
         cmax = 4
         fail = 0
         for tmpc in range(1,cmax+1):
-            [BIC, AIC, genedat] = mrpmm(betas,se, C, annotvec, gene_return, rsids, variant_ids,tmpc,key,C, numpy.linalg.inv(C),icd, fdr=fdr, niter=51,burn=10,thinning=1,verbose=True, outpath = './MRP_out/')
+            [BIC, AIC, genedat] = mrpmm(betas,se, C, annotvec, gene_return, rsids, variant_ids,tmpc,key,C, numpy.linalg.inv(C),icd, fdr=fdr, niter=151,burn=50,thinning=1,verbose=True, outpath = './MRP_out/')
             if tmpc > 2 and BIC > bicarr[len(bicarr)-1]:
                 fail += 1
             if fail >= 2:
@@ -688,16 +700,17 @@ def run_mrp(lof=True, missense=True, genes=None, fdr=5, phenidarr = ['ICD1462','
         lbfout.write(str(lbf))
         lbfout.close()
         clustvalue = 1
-        if lbf > 1 and (lbf - lbf2) > 1 and lbf2 > 1:
+        if lbf > 1 and (lbf - lbf2) > 1 and lbf2 > 0:
 #        if lbf > 1:
-            [BIC, AIC, genedat] = mrpmm(betas,se, C, annotvec, gene_return, rsids, variant_ids,clustminval,key,C, numpy.linalg.inv(C), icd, fdr=fdr, niter=201,burn=100,thinning=1,verbose=True, outpath = './MRP_out/', protectivescan=True)
+            [BIC, AIC, genedat] = mrpmm(betas,se, C, annotvec, gene_return, rsids, variant_ids,clustminval,key,C, numpy.linalg.inv(C), icd, fdr=fdr, niter=2001,burn=500,thinning=1,verbose=True, outpath = './MRP_out/', protectivescan=True)
             print("log bayes factor: ",lbf)
             clustvalue = clustminval
         elif lbf2 > 1:
             clustminval = 2
-            [BIC, AIC, genedat] = mrpmm(betas,se, C, annotvec, gene_return, rsids, variant_ids,clustminval,key,C, numpy.linalg.inv(C), icd, fdr=fdr, niter=201,burn=100,thinning=1,verbose=True, outpath = './MRP_out/', protectivescan=True)
+            [BIC, AIC, genedat] = mrpmm(betas,se, C, annotvec, gene_return, rsids, variant_ids,clustminval,key,C, numpy.linalg.inv(C), icd, fdr=fdr, niter=2001,burn=500,thinning=1,verbose=True, outpath = './MRP_out/', protectivescan=True)
             print("log bayes factor: ",lbf)
             clustvalue = clustminval
+            lbf = lbf2
         else:
             [BIC, AIC, genedat] = mrpmm(betas,se, C, annotvec, gene_return, rsids, variant_ids,1,key,C, numpy.linalg.inv(C), icd, fdr=fdr, niter=51,burn=10,thinning=1,verbose=True, outpath = './MRP_out/', protectivescan=True)
         print(bicarr)
@@ -1177,15 +1190,11 @@ def runMRP_page():
         functionfdr = request.form['functionfdr']
         functionfdr = str(functionfdr)
         functionphen = request.form.getlist('phenotypes[]')
-      #  print(functionphen)
         phenidarr = []
         for phenname in functionphen:
             phenidarr.append(str(phenname))
-       # print(phenidarr)
         fdr = functionfdr.strip('[')
         fdr = fdr.strip(']')
-       # print("fdrhtml",fdr)
-       # print("functionfdr",functionfdr)
         if "missense_variant" in function:
             missense = True
         if "lof_variant" in function:
@@ -1232,12 +1241,26 @@ def runMRP_page():
             genes[i] = genes[i].rstrip()
             if len(genes[i]) == 0:
                 genes.pop(i)
-        #print(genes)
-        # Run MRP function
-        [key,lbf,clusterval, genedat] = run_mrp(lof=lof, missense=missense, genes=genes, fdr=fdr, phenidarr=phenidarr)
-        # Send results of MRP function to mrp page
-
-        return redirect('/mrp/%s' % key)
+        # Caching the page 
+        annotations = []
+        # Add in the selected annotations to the category list 
+        if lof:
+            annotations.append('lof_variant')
+        if missense:
+            annotations.append('missense_variant')
+        key = '_'.join(annotations) + '_' + '_'.join(phenidarr) + '_' + '_'.join(genes)
+        cache_key = 't-mrp-{}'.format(key)
+        t = cache.get(cache_key)
+        # if not cached 
+        if t is None:
+            if os.path.exists(os.path.join('MRP_cache','{}.html'.format(cache_key))):
+                return  open(os.path.join('MRP_cache','{}.html'.format(cache_key))).read()
+            elif os.path.exists(os.path.join("MRP_out/",key,".mcmc.posteriors")):
+                pass
+            else:
+                [key,lbf,clusterval, genedat] = run_mrp(lof=lof, missense=missense, genes=genes, fdr=fdr, phenidarr=phenidarr)
+        print("REndering mrp page: %s" % cache_key)        # Send results of MRP function to mrp page
+        return redirect('/mrp/%s' % cache_key)
 
 
     form = LoginForm()
@@ -1545,6 +1568,9 @@ def metapage(key):
 def mrp(key):
     if not check_credentials():
         return redirect(url_for('login'))
+    t = cache.get(key)
+    if t is not None:
+        return t
     db = get_db()
     with open("./MRP_out/"+key+".mcmc.posteriors", "r") as inFile:
         probabilities = []
@@ -1567,7 +1593,7 @@ def mrp(key):
             nullmembership.append(float(var_info[5]))
             variants.append(variant)
         idxnewarr = [b[0] for b in sorted(enumerate(nullmembership),key=lambda i:i[1], reverse = True)]
-        variants = [variants[i] for i in idxnewarr]
+        variants = [variants[idxnewarr[i]] for i in range(0,len(idxnewarr))]
         admixture_data.append(variants)
     with open("./MRP_out/"+key+".mcmc.gene.posteriors", "r") as inFile:
         admixture_datagene = []
@@ -1578,12 +1604,10 @@ def mrp(key):
             geneid = gene_info[0]
             gene = {}
             gene["gene"] = geneid
-           # print(len(gene_info))
             for j in range(1, int((len(gene_info)-1)/3)+1):
                 gene["%s" % (j-1)] = gene_info[j]
             genes.append(gene)
         admixture_datagene.append(genes)
-   # print("admixturedatagene",admixture_datagene)
     with open("./MRP_out/" + key + ".lbf","r") as inFile:
         for line in inFile.readlines():
             line = line.strip()
@@ -1597,7 +1621,6 @@ def mrp(key):
         header = header.split('\t')
         for j in range(1,len(header)):
             if j % 3 == 1:
-#                headerarr.append(j)
                 headeritem = header[j].decode('utf8').replace(" ","")
                 headeritem = headeritem.rstrip(header[j][-3:])
                 headerarr.append(headeritem)
@@ -1614,7 +1637,6 @@ def mrp(key):
                     headeritem = header[j].decode('utf8').replace(" ","")
                     headeritem = headeritem.rstrip(header[j][-3:])
                     tmp.append(headeritem.encode("ascii"))
-                   # print(headeritem)
                     tmp.append(float(clust_info[j]))
                 if j % 3 == 2:
                     tmp.append(float(clust_info[j]))
@@ -1630,7 +1652,7 @@ def mrp(key):
         line = line.split()
         fdr_data.append(line[0])
     try:
-        return render_template(
+        t = render_template(
             'mrp.html',
             plot_data=admixture_data,
             gene_data=admixture_datagene,
@@ -1641,6 +1663,11 @@ def mrp(key):
             fdr_data=fdr_data
    #         phenid_arr=headerarr
             )
+        cache.set(key, t, timeout = 0)
+        f = io.open(os.path.join('MRP_cache','{}.html'.format(str(key))), 'w', encoding="utf-8")
+        f.write(t)
+        f.close()
+        return t
     except Exception as e:
         print('Failed: %s' % e)
         abort(404)
