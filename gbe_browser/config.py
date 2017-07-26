@@ -731,7 +731,7 @@ ICD_VARIANT_SCAN_QUERY = """
           or_val,
           pvalue,
           log10pvalue),
-        {icd_info_array},
+        filter({icd_info_array}, Case >= 100),
         {icd_array}.icd_idx,
         {icd_info_array}.icd_idx) as icd_join,
     'left_names=chrom,pos',
