@@ -250,6 +250,50 @@ def get_icd_variant_by_icd_id_pvalue(db, icd_id, pvalue=0.001):
                 atts_only=True)))
 
 
+def get_icd_variant_by_pvalue(db, pvalue=0.001):
+    """
+    e.g.,
+    UI:
+      https://biobankengine.stanford.edu/target/1
+
+    MongoDB:
+      db.icd.find({'stats.pvalue': {'$lt': 0.01}}, fields={'_id': false})
+      db.variants.find({'xpos': '1039381448'}, fields={'_id': False})
+
+    SciDB:
+      equi_join(
+        project(variant,
+                rsid,
+                ref,
+                alt,
+                filter,
+                exac_nfe,
+                csq),
+        cross_join(
+            project(
+              between(icd, null, null, null, 1,    null,
+                           null, null, null, null, null),
+              or_val,
+              pvalue,
+              log10pvalue),
+            filter(icd_info, Cases >= 100),
+            icd.icd_idx,
+            icd_info.icd_idx) as icd_join,
+        'left_names=chrom,pos',
+        'right_names=chrom,pos',
+        'keep_dimensions=1',
+        'algorithm=merge_right_first');
+    """
+    pdecimal = config.ICD_PVALUE_MAP.get(pvalue, 0)
+    return format_variants(
+        numpy2dict(
+            db.iquery(
+                config.ICD_VARIANT_SCAN_QUERY.format(pdecimal=pdecimal),
+                schema=config.VARIANT_X_ICD_X_INFO_SCHEMA,
+                fetch=True,
+                atts_only=True)))
+
+
 # -- -
 # -- - GENE - --
 # -- -
@@ -980,6 +1024,9 @@ def print_all():
     pp.pprint(exists_transcript_id(db, 'ENST00000378891'))
     pp.pprint(exists_icd(db, 'RH141'))
 
+    # /target/1 -> gbe.target_page()
+    pp.pprint(get_icd_variant_by_pvalue(db))
+
     # models
     pp.pprint(get_gene_by_gene_names(db))
     pp.pprint(get_gene_by_gene_names(db, ('RP11-126K1.9',)))
@@ -1158,6 +1205,14 @@ def time_all():
     print('{:8.2f}ms\t{}'.format(t.msecs, 'exists_icd'))
     tm_loc += t.msecs
     print('     -----\n{:8.2f}ms\t{}\n'.format(tm_loc, '/awesome'))
+
+    #
+    # /target/1 -> gbe.target_page()
+    #
+    with timer.Timer() as t:
+        get_icd_variant_by_pvalue(db)
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_icd_variant_by_pvalue'))
+    print('     -----\n{:8.2f}ms\t{}\n'.format(t.msecs, '/target/1'))
 
 
 if __name__ == '__main__':

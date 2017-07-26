@@ -1004,18 +1004,24 @@ def target_page():
     try:
         passing = False
         cutoff = None
+
         for p in [.00001]:
-            vars = lookups.get_significant_prot(db, p, 0)
-            print(vars)
-            if len(vars) < 10000000000:
-                passing = True
-            if passing:
-                cutoff = p
+            icd = lookups.get_icd_variant_by_pvalue(db, p)
+            if len(icd):
                 break
-        variants = get_prot_variant_table(0,cutoff)
+
+        #     vars = lookups.get_significant_prot(db, p, 0)
+        #     print(vars)
+        #     if len(vars) < 10000000000:
+        #         passing = True
+        #     if passing:
+        #         cutoff = p
+        #         break
+        # variants = get_prot_variant_table(0,cutoff)
+
         return render_template(
             'target.html',
-            variants_in_gene = variants,
+            icd = icd,
             cutoff=cutoff
             )
     except Exception as e:

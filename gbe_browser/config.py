@@ -714,6 +714,34 @@ ICD_VARIANT_LOOKUP_QUERY = """
         icd_info_array=ICD_INFO_ARRAY,
         variant_array=VARIANT_ARRAY)
 
+ICD_VARIANT_SCAN_QUERY = """
+  equi_join(
+    project({variant_array},
+            rsid,
+            ref,
+            alt,
+            filter,
+            exac_nfe,
+            csq),
+    cross_join(
+        project(
+          between({icd_array},
+                  null, null, null, {{pdecimal}}, null,
+                  null, null, null, null, null),
+          or_val,
+          pvalue,
+          log10pvalue),
+        {icd_info_array},
+        {icd_array}.icd_idx,
+        {icd_info_array}.icd_idx) as icd_join,
+    'left_names=chrom,pos',
+    'right_names=chrom,pos',
+    'keep_dimensions=1',
+    'algorithm=merge_right_first')""".format(
+        icd_array=ICD_ARRAY,
+        icd_info_array=ICD_INFO_ARRAY,
+        variant_array=VARIANT_ARRAY)
+
 VARIANT_X_ICD_X_INFO_SCHEMA = scidbpy.schema.Schema.fromstring("""
   <chrom:       int64 not null,
    pos:         int64 not null,
