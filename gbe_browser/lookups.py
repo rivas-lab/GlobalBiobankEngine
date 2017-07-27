@@ -1205,7 +1205,7 @@ def time_all():
     #
     with timer.Timer() as t:
         get_icd_affyid(db, 723307)
-    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_icd_by_affyid'))
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_icd_affyid'))
     print('     -----\n{:8.2f}ms\t{}\n'.format(t.msecs, '/intensity/'))
 
     #
