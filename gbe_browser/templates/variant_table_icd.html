@@ -69,11 +69,11 @@
                 return csq_order_index[original_csq];
             },
             type: 'numeric'
-        });
+        }); 
         $("#variants_loading").hide();
         $("#variants_table_container").show();
     window.variants_template = _.template($('#variant-table-template').html());
-    $('#variants_table_container').html(variants_template({table_variants: icd}));
+    $('#variants_table_container').html(variants_template({table_variants: table_variants}));
         //define click event handler that re-renders the table using the selected population
           $("#variant_table").tablesorter({
           //  sortList: [[1,0], [2,0], [10,1]],
@@ -87,31 +87,31 @@
            // }
         });
 {#                .tablesorterPager({container: $("#pager"), positionFixed: false});#}
-{#        if (window.icd.length <= 10) {#}
+{#        if (window.table_variants.length <= 10) {#}
             $('#pager').hide();
 {#        }#}
 
               function get_af_category(d) {
-            if (!d.pvalue) {
+            if (!d.this_pvalue) {
                 return [0, '0'];
-            } else if (d.pvalue <= 1/1000000){
+            } else if (d.this_pvalue <= 1/1000000){ 
                 return [7, '<1e-6'];
-            } else if (d.pvalue <= 1/100000) {
+            } else if (d.this_pvalue <= 1/100000) {
                 return [6, '<1e-5'];
-            } else if (d.pvalue <= 1/10000) {
+            } else if (d.this_pvalue <= 1/10000) {
                 return [5, '1e-4-1e-5'];
-            } else if (d.pvalue <= 1/1000) {
+            } else if (d.this_pvalue <= 1/1000) {
                 return [4, '1e-3-1e-4'];
-            } else if (d.pvalue <= 1/100) {
+            } else if (d.this_pvalue <= 1/100) {
                 return [3, '0.01-0.001'];
-            } else if (d.pvalue <= 1/20) {
+            } else if (d.this_pvalue <= 1/20) {
                 return [2, '0.05-0.01'];
             } else {
                 return [1, '>0.05'];
-            }
+            } 
         }
-
-        var data = window.icd;
+        
+        var data = window.table_variants;
 
         var width = 50;
         var height = 15;
@@ -121,7 +121,7 @@
             .range([0, width]);
 
 
-        var svg;
+        var svg; 
         $.each(data, function(i, d) {
             d3.select('#variant_af_box_' + d.variant_id).attr("data-tooltip", "Shows minimum p-value \n on a discrete " +
                     "scale: \n <1e-6, <1e-5, \n <1e-4, <0.001, 0.01-0.001, \n 0.05-0.01, >0.05. \n This particular variant is \n " +
@@ -153,7 +153,7 @@
 
         });
 
-
+ 
 			       update_variants();
         $("#export_to_csv").on('click', function (event) {
             var output_name = window.page_name === undefined ? 'export' : window.page_name;
@@ -164,7 +164,7 @@
 			       $(document).ready(populate_variant_table);
 			        $('.pop_selector').on('click', function (event) {
               $('.pop_selector').addClass('active').not(event).removeClass('active');
-
+        
 			       populate_variant_table();
     });
 
@@ -185,3 +185,7 @@ $(document).ready(function() {
 <div id="variants_table_container" style="display: none;"></div>
 <div id="variants_table_empty" style="display: none;">No variants found.</div>
 {% endblock %}
+
+
+
+

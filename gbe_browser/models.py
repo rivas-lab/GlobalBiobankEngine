@@ -14,10 +14,7 @@ import utils
 import datetime
 import subprocess
 import os
-import scidbpy
-
-import config
-import lookups
+from pymongo import MongoClient
 
 """
 Main functional class
@@ -41,7 +38,8 @@ class QueryGenome(object):
         self.debug = debug
 
         # Set up database connection
-        self.db = scidbpy.connect()
+        client = MongoClient('mongodb', 27017)
+        self.db = client.gbe
 
     """
     Execute the query genome function using preset values for gene_names and icd_codes
@@ -175,25 +173,16 @@ class QueryGenome(object):
         if self.debug: print("Getting gene info")
         if not gene_names:
             if self.debug: print("No gene names passed.  Getting all genes.")
-            result = lookups.get_gene_by_gene_names(self.db)
+            result = self.db.genes.find(fields={'_id': False})
         else:
             if self.debug: print("Getting gene info for %s gene(s): %s" % (len(gene_names), ",".join(gene_names)))
-            result = lookups.get_gene_by_gene_names(self.db, gene_names)
-        if len(result) == 0:
+            result = self.db.genes.find({'gene_name': {'$in': gene_names}}, fields={'_id': False}) # todo
+        if result.count() == 0:
             print("No genes found!")
             exit()
         for r in result:
-            chrom = r['chrom']['val']
-            start = r['start']['val']
-            stop = r['stop']['val']
-            new_gene = Gene(gene_id=r['gene_id']['val'],
-                            name=r['gene_name']['val'],
-                            chr=chrom,
-                            start=start,
-                            stop=stop,
-                            xstart=chrom * config.XOFF + start,
-                            xstop=chrom * config.XOFF + stop,
-                            gene_idx=r['gene_idx'])
+            new_gene = Gene(gene_id=r['gene_id'], name=r['gene_name'], chr=r['chrom'], start=r['start'], stop=r['stop'],
+                            xstart=r['xstart'], xstop=r['xstop'])
             if self.debug: new_gene.print_gene()
             yield new_gene
 
@@ -204,8 +193,7 @@ class QueryGenome(object):
         gene: A Gene object
     """
     def get_gene_variants(self, gene):
-        raw_variants = lookups.get_variants_by_gene_idx(
-            self.db, gene.gene_idx, gene.gene_id)
+        raw_variants = lookups.get_variants_in_gene(self.db, gene.gene_id)
         for v in raw_variants:
             new_variant = Variant(v)
             if not self.category or new_variant.category in self.category:
@@ -241,16 +229,15 @@ class QueryGenome(object):
     def get_icd_data(self, gene, icd=None):
         if not icd:
             if self.debug: print("No ICD codes provided, fetching all.")
-            results = lookups.get_icd_by_chrom_pos(
-                self.db, gene.chr, gene.start, gene.stop)
+            results = self.db.icd.find({'xpos': {'$gte': gene.xstart, '$lte': gene.xstop}}, fields={'_id': False})
         else:
             if self.debug: print("Fetching ICD data for %s ICD code(s): %s" % (len(icd), ",".join(icd)))
-            results = lookups.get_icd_by_chrom_pos(
-                self.db, gene.chr, gene.start, gene.stop, icd)
+            results = self.db.icd.find({'xpos': {'$gte': gene.xstart, '$lte': gene.xstop},
+                                   'icd': {'$in': icd}},
+                                  fields={'_id': False})
         for r in results:
-            r['xpos'] = r['chrom'] * config.XOFF + r['pos']
             if r['xpos'] in gene.variants:
-                new_icd = ICD(icd=r['icd'], pvalue=r['pvalue'], lor=r['lor'], se=r['se'])
+                new_icd = ICD(icd=r['icd'], pvalue=r['stats'][0]['pvalue'], lor=r['stats'][0]['lor'], se=r['stats'][0]['se'])
                 gene.variants[r['xpos']].icd[r['icd']] = new_icd
 
 """
@@ -258,7 +245,7 @@ This Gene object stores all relevant information for each gene, including a dict
 Gene related functions should be added here.
 """
 class Gene(object):
-    def __init__(self, gene_id, name, chr, start, stop, xstart, xstop, gene_idx=None):
+    def __init__(self, gene_id, name, chr, start, stop, xstart, xstop):
         self.gene_id = gene_id
         self.name = name
         self.chr = chr
@@ -267,7 +254,6 @@ class Gene(object):
         self.xstart = xstart
         self.xstop = xstop
         self.variants = {}
-        self.gene_idx = gene_idx
 
     """
     Print a brief summary of the gene
@@ -318,8 +304,8 @@ class Variant(object):
             self.category = v['category']
         self.position = v['pos']
         self.rsid = v['rsid']
-        self.allele_freq = v['exac_nfe']  # !!!
-        self.xpos = v['chrom'] * config.XOFF + v['pos']
+        self.allele_freq = v['allele_freq']
+        self.xpos = v['xpos']
         if 'vep_annotations' in v:
             #self.vep_annotations = v['vep_annotations']
             for a in v['vep_annotations']:

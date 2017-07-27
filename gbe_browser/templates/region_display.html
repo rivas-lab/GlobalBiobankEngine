@@ -16,7 +16,7 @@ lower_gene_chart_height = 50 - gene_chart_margin_lower.top - gene_chart_margin_l
     gene_chart_height = 300 - gene_chart_margin.top - gene_chart_margin.bottom - lower_gene_chart_height - gene_chart_margin_lower.top - gene_chart_margin_lower.bottom;
 
 function region_chart(data, variant_data) {
-    var metric = 'log10pvalue';
+    var metric = '-log10pvalue';
 
     var x = d3.scale.linear()
         .domain([d3.min(data, function(d) { return d.pos; }), d3.max(data, function(d) { return d.pos; })])
@@ -178,8 +178,8 @@ function region_chart(data, variant_data) {
 }
 
 function change_region_chart_metric(data, metric, container) {
-    var max_cov = (metric == 'log10pvalue') ? 20 : 4;
-    var min_cov = (metric == 'log10pvalue') ? 0 : 0;
+    var max_cov = (metric == '-log10pvalue') ? 20 : 4;
+    var min_cov = (metric == '-log10pvalue') ? 0 : 0;
     var y = d3.scale.linear()
         .domain([min_cov, max_cov])
         .range([gene_chart_height, 0]);
@@ -212,7 +212,7 @@ $(document).ready(function() {
         $('.coverage_subcat_selectors').hide();
         if (v == 'covered') {
             $('#over_x_select_container').show();
-            v = $('#over_x_select').val().replace('X', '');
+            v = $('#over_x_select').val().replace('X', ''); 
         } else {
             $('#average_select_container').show();
             v = $("#average_select").val();
