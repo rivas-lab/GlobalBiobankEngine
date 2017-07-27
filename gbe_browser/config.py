@@ -55,6 +55,15 @@ ICD_SCHEMA = """
    pdecimal  = 0:3:0:1;
    synthetic = 0:999:0:1000]"""
 
+AFFYID_INDEX_ARRAY = 'affyid_index'
+AFFYID_INDEX_SCHEMA = '<affyid:string>[affyid_idx = 0:*:0:100000]'
+
+ICD_AFFYID_ARRAY = 'icd_affyid'
+ICD_AFFYID_SCHEMA = """
+  <chrom: int64,
+   pos:   int64>
+  [affyid_idx = 0:*:0:100000]"""
+
 ICD_PVALUE_MAP = dict(zip((.001, .0001, .00001), range(1, 4)))
 
 # TODO 10K limit
@@ -173,6 +182,34 @@ QT_INSERT_QUERY = """
     {icd_array})""".format(
         icd_array=ICD_ARRAY,
         qc_array=QC_ARRAY)
+
+AFFYID_INDEX_STORE_QUERY = """
+  store(
+    redimension(
+      unpack(
+        grouped_aggregate({icd_array}, count(*), affyid),
+        affyid_idx),
+      {affyid_index_schema}),
+    {affyid_index_array})""".format(icd_array=ICD_ARRAY,
+                                    affyid_index_array=AFFYID_INDEX_ARRAY,
+                                    affyid_index_schema=AFFYID_INDEX_SCHEMA)
+
+ICD_AFFYID_STORE_QUERY = """
+  store(
+    redimension(
+      equi_join(
+        project({icd_array}, affyid),
+        {affyid_index_array},
+        'left_names=affyid',
+        'right_names=affyid',
+        'keep_dimensions=1',
+        'algorithm=hash_replicate_right'),
+      {icd_affyid_schema},
+      false),
+    {icd_affyid_array})""".format(icd_array=ICD_ARRAY,
+                                  affyid_index_array=AFFYID_INDEX_ARRAY,
+                                  icd_affyid_schema=ICD_AFFYID_SCHEMA,
+                                  icd_affyid_array=ICD_AFFYID_ARRAY)
 
 
 # -- -
@@ -683,6 +720,24 @@ ICD_CHROM_POS_LOOKUP_SCHEMA = scidbpy.schema.Schema.fromstring("""
    icd:         string,
    Case:        int64,
    Name:        string>
+  [notused0;
+   notused1]""")
+
+ICD_AFFYID_LOOKUP_QUERY = """
+  equi_join(
+    {icd_affyid_array},
+    filter({affyid_index_array}, affyid = '{{affyid}}'),
+    'left_names=affyid_idx',
+    'right_names=affyid_idx',
+    'algorithm=hash_replicate_right')""".format(
+        icd_affyid_array=ICD_AFFYID_ARRAY,
+        affyid_index_array=AFFYID_INDEX_ARRAY)
+
+ICD_AFFYID_LOOKUP_SCHEMA = scidbpy.schema.Schema.fromstring("""
+  <affyid_idx: int64 not null,
+   chrom:      int64,
+   pos:        int64,
+   affyid:     string>
   [notused0;
    notused1]""")
 

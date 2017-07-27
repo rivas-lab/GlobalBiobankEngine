@@ -38,6 +38,8 @@ def numpy2dict0(ar):
     nullable attributes with values (discards null codes).
 
     """
+    if not len(ar):
+        return None
     el = ar[0]
     return dict(
         (de[0],
@@ -199,6 +201,31 @@ def get_icd_by_chrom_pos(db, chrom, start, stop=None, icd=None):
                 start=start,
                 stop=stop),
             schema=config.ICD_CHROM_POS_LOOKUP_SCHEMA,
+            fetch=True,
+            atts_only=True))
+
+
+def get_icd_affyid(db, affyid):
+    """
+    e.g.,
+    UI:
+      https://biobankengine.stanford.edu/intensity/723307
+
+    MongoDB:
+      db.icd.find_one({'affyid': '723307'}, fields={'_id': False})
+
+    SciDB:
+      equi_join(
+        icd_affyid,
+        filter(affyid_index, affyid = '723307'),
+        'left_names=affyid_idx',
+        'right_names=affyid_idx',
+        'algorithm=hash_replicate_right');
+    """
+    return numpy2dict0(
+        db.iquery(
+            config.ICD_AFFYID_LOOKUP_QUERY.format(affyid=affyid),
+            schema=config.ICD_AFFYID_LOOKUP_SCHEMA,
             fetch=True,
             atts_only=True))
 
@@ -1016,6 +1043,9 @@ def print_all():
     pp.pprint(get_variants_in_region(db, 16, 50727514, 50766988))
     pp.pprint(get_coverage_for_bases(db, 16050727514, 16050766988))
 
+    # /intensity/ -> gbe.intensity_page()
+    pp.pprint(get_icd_affyid(db, 723307))
+
     # /awesome -> gbe.awesome()
     pp.pprint(get_variants_chrom_pos_by_rsid_limit2(db, 'rs6025'))
     pp.pprint(get_variants_from_dbsnp(db, 'rs771157073'))
@@ -1025,7 +1055,7 @@ def print_all():
     pp.pprint(exists_icd(db, 'RH141'))
 
     # /target/1 -> gbe.target_page()
-    pp.pprint(get_icd_variant_by_pvalue(db))
+    # pp.pprint(get_icd_variant_by_pvalue(db))
 
     # models
     pp.pprint(get_gene_by_gene_names(db))
@@ -1169,6 +1199,14 @@ def time_all():
     print('{:8.2f}ms\t{}'.format(t.msecs, 'get_coverage_for_bases'))
     tm_loc += t.msecs
     print('     -----\n{:8.2f}ms\t{}\n'.format(tm_loc, '/region/'))
+
+    #
+    # /intensity/ -> gbe.intensity_page()
+    #
+    with timer.Timer() as t:
+        get_icd_affyid(db, 723307)
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_icd_by_affyid'))
+    print('     -----\n{:8.2f}ms\t{}\n'.format(t.msecs, '/intensity/'))
 
     #
     # /awesome -> gbe.awesome()

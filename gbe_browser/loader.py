@@ -178,6 +178,16 @@ class Loader:
                                prev=icdind_cond)
         return (icd_idx_cond, icdind_cond)
 
+    def store_affyid_index(self):
+        logger.info('Query:running...')
+        self.db.iquery(config.AFFYID_INDEX_STORE_QUERY)
+        logger.info('Array:%s', config.AFFYID_INDEX_ARRAY)
+
+    def store_icd_affyid(self):
+        logger.info('Query:running...')
+        self.db.iquery(config.ICD_AFFYID_STORE_QUERY)
+        logger.info('Array:%s', config.ICD_AFFYID_ARRAY)
+
     # -- -
     # -- - GENE - --
     # -- -
@@ -348,6 +358,8 @@ class Loader:
         for array in (config.QC_ARRAY,
                       config.ICD_INFO_ARRAY,
                       config.ICD_ARRAY,
+                      config.AFFYID_INDEX_ARRAY,
+                      config.ICD_AFFYID_ARRAY,
                       config.GENE_INDEX_ARRAY,
                       config.DBNSFP_ARRAY,
                       config.CANONICAL_ARRAY,
@@ -476,6 +488,8 @@ if __name__ == '__main__':
     loader.insert_icd_info()
     loader.insert_icd()
     loader.insert_qt()
+    loader.store_affyid_index()
+    loader.store_icd_affyid()
 
     loader.store_gene_index()
     loader.store_transcript_index()

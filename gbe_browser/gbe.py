@@ -1089,8 +1089,8 @@ def intensity_page(affy_str):
     db = get_db()
     try:
         print('Rendering Intensity page: %s' % affy_str)
-        variant = lookups.get_variant_affy(db, affy_str)
-       # print(variant)
+        variant = lookups.get_icd_affyid(db, affy_str)
+        # print(variant)
         return render_template(
             'intensity.html',
             affy=affy_str,
