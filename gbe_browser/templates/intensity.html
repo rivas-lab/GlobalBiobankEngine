@@ -95,6 +95,9 @@
     <div class="tab">
 	<!-- the first element comes with defaultOpen id -->
 
+	<!--
+	<button class="tablinks" onclick="openBatch(event, 'redacted')" id="defaultOpen">redacted</button>
+	-->
 
 	<!-- the following batches generated from template 
 
@@ -213,6 +216,13 @@
 
     <!-- render the tab content -->
  
+    <!--
+    <div id="redacted" class="tabcontent" style="display: flex; justify-content: center;">
+	<h3>redacted</h3>
+	<img src="/static/images/png/{{affy}}/{{affy}}_redacted-img.png" align="middle"> </img>
+    </div>
+    -->
+
     <!-- tab contents generated from script
 
 	shell $ while read b; do echo "    <div id=\"$b\" class=\"tabcontent\" style=\"display: flex; justify-content: center;\">" ; echo "      <h3>Affy ID: {{ affy }}; batch: $b</h3>" ; echo "      <img src=\"/static/images/png/{{affy}}/{{affy}}_${b}-img.png\" align=\"middle\"> </img>" ; echo "    </div>" ; done < <(cat /scratch/PI/mrivas/ukbb/24983/int_evoker-lite_16698/int_evoker-lite_input_16698/ukb_snp_posterior.batch )
