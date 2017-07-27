@@ -35,8 +35,6 @@ import logging
 from flask_wtf import Form
 from wtforms import StringField, BooleanField
 from wtforms.validators import DataRequired
-import scidbpy
-
 logging.basicConfig(stream=sys.stderr)
 sys.stderr.write("starting gbe.py")
 #from pycallgraph import PyCallGraph
@@ -95,8 +93,9 @@ EXON_PADDING = 50
 # Load default config and override config from an environment variable
 #test
 app.config.update(dict(
-    ## Set SCIDB_URL='http://localhost:8080' environment variable
-    # SCIDB_URL='http://localhost:8080',
+    DB_HOST='mongodb',
+    DB_PORT=27017, 
+    DB_NAME='gbe', 
     DEBUG=True,
     SECRET_KEY='development key',
     LOAD_DB_PARALLEL_PROCESSES = 8,  # contigs assigned to threads, so good to make this a factor of 24 (eg. 2,3,4,6,8)
@@ -124,14 +123,13 @@ app.config.update(dict(
 GENE_CACHE_DIR = os.path.join(os.path.dirname(__file__), 'gene_cache')
 GENES_TO_CACHE = {l.strip('\n') for l in open(os.path.join(os.path.dirname(__file__), 'genes_to_cache.txt'))}
 
-DB = scidbpy.connect(app.config.get('SCIDB_URL', None))
-ICD_NAME_MAP = lookups.get_icd_name_map(DB)
+def connect_db():
+    """
+    Connects to the specific database.
+    """
+    client = pymongo.MongoClient(host=app.config['DB_HOST'], port=app.config['DB_PORT'])
+    return client[app.config['DB_NAME']]
 
-# def connect_db():
-#     """Connects to the specific database.
-#
-#     """
-#     return scidbpy.connect(app.config.get('SCIDB_URL', None))
 
 def parse_tabix_file_subset(tabix_filenames, subset_i, subset_n, record_parser):
     """
@@ -241,7 +239,7 @@ def load_base_icdstats():
             pass  # handle error when icdstats_generator is empty
 
     db = get_db()
-    # update this
+    # update this 
     db.base_icdstats.drop()
     print("Dropped db.base_icdstats")
     # load coverage first; variant info will depend on coverage
@@ -340,7 +338,7 @@ def load_icd_stats():
     keyarr = list(set(keyarr))
     qtkeyarr = list(set(qtkeyarr))
     #random.shuffle(app.config['ICD_STATS_FILES'])
-
+    
     for icdkey in keyarr:
         for i in range(num_procs):
             p = Process(target=load_icd, args=(keylist[icdkey], i, num_procs, db))
@@ -383,7 +381,7 @@ def load_gene_models():
     with gzip.open(app.config['CANONICAL_TRANSCRIPT_FILE']) as canonical_transcript_file:
         for gene, transcript in get_canonical_transcripts(canonical_transcript_file):
             canonical_transcripts[gene] = transcript
-
+        
     omim_annotations = {}
     with gzip.open(app.config['OMIM_FILE']) as omim_file:
         for fields in get_omim_associations(omim_file):
@@ -398,7 +396,7 @@ def load_gene_models():
             other_names = [other_name.upper() for other_name in dbnsfp_gene['gene_other_names']]
             dbnsfp_info[dbnsfp_gene['ensembl_gene']] = (dbnsfp_gene['gene_full_name'], other_names)
 
-    print('Done loading metadata. Took %s seconds' % int(time.time() - start_time))
+    print('Done loading metadata. Took %s seconds' % int(time.time() - start_time))            
     # grab genes from GTF
     start_time = time.time()
     with gzip.open(app.config['GENCODE_GTF']) as gtf_file:
@@ -627,14 +625,13 @@ def precalculate_metrics():
 
 
 def get_db():
-    """Opens a new database connection if there is none yet for the
-    current application context.
-
     """
-    # if not hasattr(g, 'db_conn'):
-    #     g.db_conn = connect_db()
-    # return g.db_conn
-    return DB
+    Opens a new database connection if there is none yet for the
+    current application context.
+v    """
+    if not hasattr(g, 'db_conn'):
+        g.db_conn = connect_db()
+    return g.db_conn
 
 def run_graph():
     key = str(random.getrandbits(128))
@@ -643,7 +640,7 @@ def run_graph():
 def run_mrp(lof=True, missense=True, genes=None, fdr=5, phenidarr = ['ICD1462','ICD1463']):
     fdr = int(fdr)/100
     annotations = []
-
+    
     # Add in the selected annotations to the category list
     if lof:
         annotations.append('lof_variant')
@@ -682,7 +679,7 @@ def run_mrp(lof=True, missense=True, genes=None, fdr=5, phenidarr = ['ICD1462','
             if fail >= 2:
                 break
             bicarr.append(BIC)
-
+            
             print(tmpc,BIC,AIC)
 #        if tmpc == 5:
 #            with PyCallGraph(output=GraphvizOutput()):
@@ -739,18 +736,18 @@ def run_mr(lof=True, missense=True, genes=None, phenidarr = ['ICD1462','ICD1463'
 
         # Generate relevant files
         betas, se, pvalues, annotations, protein_annotations, variant_ids, icd, gene_return, rsids, alts, allele_frequencies = b.query_genome(genes,phenidarr)
-
+        
         # Reshape betas from genome query
         C = numpy.matlib.eye(betas.shape[1])
         annotvec = [str(annotations[i].strip('"').strip('[').strip(']').strip("'")) for i in range(0,len(annotations))]
         bicarr = []
         for tmpc in range(1,3):
             returndict = mr(betas,se, C, annotvec, gene_return, rsids, variant_ids,tmpc,key,C, numpy.linalg.inv(C),icd, niter=2001,burn=50,thinning=1,verbose=True, outpath = './MRP_out/')
-            BIC = returndict['bic']
-            AIC = returndict['aic']
-            thetainvdict = returndict['thetainv']
-            iter = returndict['iter']
-            clustersize = returndict['c']
+            BIC = returndict['bic'] 
+            AIC = returndict['aic'] 
+            thetainvdict = returndict['thetainv'] 
+            iter = returndict['iter'] 
+            clustersize = returndict['c'] 
             bicarr.append(AIC)
         cminarr = bicarr[1:]
         clustminidx = cminarr.index(min(cminarr))
@@ -771,11 +768,11 @@ def run_mr(lof=True, missense=True, genes=None, phenidarr = ['ICD1462','ICD1463'
 #        if lbf > 1 and (lbf - lbf2) > 1 and lbf2 > 1:
         if lbf > 1:
             returndict = mr(betas,se, C, annotvec, gene_return, rsids, variant_ids,clustminval,key,C, numpy.linalg.inv(C), icd, niter=2001,burn=1000,thinning=1,verbose=True, outpath = './MRP_out/')
-            BIC = returndict['bic']
-            AIC = returndict['aic']
-            thetainvdict = returndict['thetainv']
-            iter = returndict['iter']
-            clustersize = returndict['c']
+            BIC = returndict['bic'] 
+            AIC = returndict['aic'] 
+            thetainvdict = returndict['thetainv'] 
+            iter = returndict['iter'] 
+            clustersize = returndict['c'] 
           #  print("log bayes factor: ",lbf)
             clustvalue = clustersize
             thetainvfindict = thetainvdict
@@ -783,22 +780,22 @@ def run_mr(lof=True, missense=True, genes=None, phenidarr = ['ICD1462','ICD1463'
         elif lbf2 > 1:
             clustminval = 2
             returndict = mr(betas,se, C, annotvec, gene_return, rsids, variant_ids,clustminval,key,C, numpy.linalg.inv(C), icd, niter=2001,burn=1000,thinning=1,verbose=True, outpath = './MRP_out/')
-            BIC = returndict['bic']
-            AIC = returndict['aic']
-            thetainvdict = returndict['thetainv']
-            iter = returndict['iter']
-            clustersize = returndict['c']
+            BIC = returndict['bic'] 
+            AIC = returndict['aic'] 
+            thetainvdict = returndict['thetainv'] 
+            iter = returndict['iter'] 
+            clustersize = returndict['c'] 
            # print("log bayes factor: ",lbf)
             clustvalue = clustersize
             thetainvfindict = thetainvdict
            # print(returndict['thetainv'], "HERE2")
         else:
             returndict = mr(betas,se, C, annotvec, gene_return, rsids, variant_ids,2,key,C, numpy.linalg.inv(C), icd, niter=2001,burn=1000,thinning=1,verbose=True, outpath = './MRP_out/')
-            BIC = returndict['bic']
-            AIC = returndict['aic']
-            thetainvdict = returndict['thetainv']
-            iter = returndict['iter']
-            clustersize = returndict['c']
+            BIC = returndict['bic'] 
+            AIC = returndict['aic'] 
+            thetainvdict = returndict['thetainv'] 
+            iter = returndict['iter'] 
+            clustersize = returndict['c'] 
             thetainvfindict = thetainvdict
             clustvalue = clustersize
             thetainvfindict = thetainvdict
@@ -876,13 +873,15 @@ def variant_icd_page(variant_str):
     db = get_db()
     try:
         chrom, pos = variant_str.split('-')
+        pos = int(pos)
         # pos, ref, alt = get_minimal_representation(pos, ref, alt)
-        variant = lookups.get_variant_ann_by_chrom_pos(db, chrom, pos)
+        xpos = get_xpos(chrom, pos)
+        variant = lookups.get_variant(db, xpos)
         if variant is None:
             variant = {
                 'chrom': chrom,
                 'pos': pos,
-                'xpos': get_xpos(chrom, int(pos))
+                'xpos': xpos
             }
         consequences = None
         ordered_csqs = None
@@ -895,16 +894,16 @@ def variant_icd_page(variant_str):
                 annotation['HGVS'] = get_proper_hgvs(annotation)
                 consequences[annotation['major_consequence']][annotation['Gene']].append(annotation)
        # print(xpos)
-        icdstats = lookups.get_icd_by_chrom_pos(db, chrom, pos)
+        icdstats = lookups.get_variant_icd(db, xpos)
         indexes = []
         seend = {}
-        for idx in range(0,len(icdstats)):
+        for idx in range(0,len(icdstats)): 
             # ICD10=T81/Name=Complications of procedures, not elsewhere classified/Chapter=T/L95OR=0.97/U95OR=2.04/OR=1.40/pvalue=0.0756463/l10pval=1.12/Case=1229
             item = icdstats[idx]
             icd10 = item['icd']
             item['Code'] = icd10
-            # icd10info = lookups.get_icd_info(db, icd10)
-            if 'Name' not in item:
+            icd10info = lookups.get_icd_info(db, icd10)
+            if len(icd10info) == 0:
                 item['Name'] = 'NA'
                 item['Group'] = 'NA'
                 item['OR'] = 1
@@ -915,7 +914,7 @@ def variant_icd_page(variant_str):
                 item['Case'] = 'NA'
                 indexes.append(idx)
             else:
-                # item['Name'] = icd10info[0]['Name']
+                item['Name'] = icd10info[0]['Name']
                 if icd10[0:2] == "RH":
                     item['Group'] = "RH"
                 elif icd10[0:2] == "FH":
@@ -934,13 +933,13 @@ def variant_icd_page(variant_str):
                     item['Group'] = "BRMRI"
                 else:
                     item['Group'] = icd10[0]
-                item['OR'] = format(float(item['or_val']), '.4g')
-                item['L95OR'] = format(float(item['l95or']), '.4g')
-                item['U95OR'] = format(float(item['u95or']), '.4g')
-                item['pvalue'] = format(float(item['pvalue']), '.4g')
-                item['l10pval'] = format(float(item['log10pvalue']), '.4g')
-                # item['Case'] = icd10info[0]['Case']
-                se =  format(float(item['se']), '.4g')
+                item['OR'] = format(float(item['stats'][0]['or']), '.4g')
+                item['L95OR'] = format(float(item['stats'][0]['l95or']), '.4g')
+                item['U95OR'] = format(float(item['stats'][0]['u95or']), '.4g')
+                item['pvalue'] = format(float(item['stats'][0]['pvalue']), '.4g')
+                item['l10pval'] = format(float(item['stats'][0]['log10pvalue']), '.4g')
+                item['Case'] = icd10info[0]['Case']
+                se =  format(float(item['stats'][0]['se']), '.4g') 
                 if float(item['l10pval']) <= 1 or float(se) >= .5 or int(item['Case']) <= 100 or item['Group'] == "INI" or item['Code'] == "HC67" or icd10 in seend:
                     indexes.append(idx)
                 seend[icd10] = icd10
@@ -965,30 +964,36 @@ def icd_page(icd_str):
         return redirect(url_for('login'))
     db = get_db()
     try:
-        # icdlabel = str(icd_str)
-        # .strip('ADD').strip('INI').strip('BRMRI')
-        # Try several cutoffs to see if there are too many variants to
-        # render.  Arbitrary 10k max.
-        # passing = False
+        icdlabel = icd_str
+        #.strip('ADD').strip('INI').strip('BRMRI')
+        # Try several cutoffs to see if there are too many variants to render.  Arbitrary 10k max.
+        passing = False
         cutoff = None
         icd = None
 
         for p in [.001, .0001, .00001]:
-            icd = lookups.get_icd_variant_by_icd_id_pvalue(db, icd_str, p)
-            if len(icd):
+            icd = lookups.get_icd_significant(db, str(icd_str), p)
+           # print(icd_str,icd)
+            if len(icd) < 100000:
+                passing = True
+            if passing:
                 cutoff = p
-                # print("CUTOFF",cutoff)
+               # print("CUTOFF",cutoff)
                 break
-            # print(icd_str,icd)
-        print('Rendering ICD10: %s' % icd_str)
+        icd_info = lookups.get_icd_info(db, str(icdlabel))
+        variants = get_icd_variant_table(icd_str, cutoff)
+        print('Rendering ICD10: %s' % icdlabel)
 
-        if icd is None or len(icd) == 0:
-            icd = [{'Case': 'NA', 'Name': 'NA', 'icd': icd_str}]
-        # print(icd_info)
+        if len(icd_info) == 0:
+            icd_info.append({'Case': 'NA', 'Name': 'NA', 'icd': icdlabel})
+       # print(icd_info)
+
 
         return render_template(
             'icd.html',
             icd=icd,
+            variants_in_gene = variants,
+            icd_info=icd_info,
             cutoff=cutoff
             )
     except Exception as e:
@@ -1004,24 +1009,18 @@ def target_page():
     try:
         passing = False
         cutoff = None
-
         for p in [.00001]:
-            icd = lookups.get_icd_variant_by_pvalue(db, p)
-            if len(icd):
+            vars = lookups.get_significant_prot(db, p, 0)
+            print(vars)
+            if len(vars) < 10000000000:
+                passing = True
+            if passing:
+                cutoff = p
                 break
-
-        #     vars = lookups.get_significant_prot(db, p, 0)
-        #     print(vars)
-        #     if len(vars) < 10000000000:
-        #         passing = True
-        #     if passing:
-        #         cutoff = p
-        #         break
-        # variants = get_prot_variant_table(0,cutoff)
-
+        variants = get_prot_variant_table(0,cutoff)
         return render_template(
             'target.html',
-            icd = icd,
+            variants_in_gene = variants,
             cutoff=cutoff
             )
     except Exception as e:
@@ -1036,8 +1035,8 @@ def get_icd_variant_table(icd, p):
     significant_variants = lookups.get_icd_significant(db, icd, p)
     for v in significant_variants:
         significant_variant_ids[v['xpos']] = {}
-        significant_variant_ids[v['xpos']]['pvalue'] = v['pvalue']
-        significant_variant_ids[v['xpos']]['or'] = v['or_val']
+        significant_variant_ids[v['xpos']]['pvalue'] = v['stats'][0]['pvalue']
+        significant_variant_ids[v['xpos']]['or'] = v['stats'][0]['or']
     variants = lookups.get_variants_by_id(db, significant_variant_ids.keys())
     for v in variants:
         genes = []
@@ -1089,11 +1088,11 @@ def intensity_page(affy_str):
     db = get_db()
     try:
         print('Rendering Intensity page: %s' % affy_str)
-        variant = lookups.get_icd_affyid(db, affy_str)
-        # print(variant)
+        variant = lookups.get_variant_affy(db, affy_str)
+       # print(variant)
         return render_template(
             'intensity.html',
-            affy=affy_str,
+            affy=affy_str, 
             variant=variant
             )
     except Exception as e:
@@ -1153,13 +1152,13 @@ def gene_page(gene_id):
                 functionphen = request.form['phenotypes']
                 phenidarr = []
                 phenidarr.append(str(functionphen))
-               # print(phenidarr)
+               # print(phenidarr) 
                 if lof:
                     annotations.append('lof_variant')
                 if missense:
                     annotations.append('missense_variant')
                 if genes != None:
-                    # Find variants with the given annotation
+                    # Find variants with the given annotation                                                                                                                                                                                            
                     b = models.QueryGenome(category=annotations)
                 betas, se, pvalues, annotations, protein_annotations, variant_ids, icd, gene_return, rsids, alts, allele_frequencies = b.query_genome(genes,phenidarr)
                 betas = [item for sublist in betas for item in sublist]
@@ -1242,9 +1241,9 @@ def runMRP_page():
             genes[i] = genes[i].rstrip()
             if len(genes[i]) == 0:
                 genes.pop(i)
-        # Caching the page
+        # Caching the page 
         annotations = []
-        # Add in the selected annotations to the category list
+        # Add in the selected annotations to the category list 
         if lof:
             annotations.append('lof_variant')
         if missense:
@@ -1252,7 +1251,7 @@ def runMRP_page():
         key = '_'.join(annotations) + '_' + '_'.join(phenidarr) + '_' + '_'.join(genes)
         cache_key = 't-mrp-{}'.format(key)
         t = cache.get(cache_key)
-        # if not cached
+        # if not cached 
         if t is None:
             if os.path.exists(os.path.join('MRP_cache','{}.html'.format(cache_key))):
                 return  open(os.path.join('MRP_cache','{}.html'.format(cache_key))).read()
@@ -1285,49 +1284,49 @@ def get_gene_page_content(gene_id):
         return redirect(url_for('login'))
     db = get_db()
     try:
+        gene = lookups.get_gene(db, gene_id)
+        if gene is None:
+            abort(404)
         cache_key = 't-gene-{}'.format(gene_id)
         t = cache.get(cache_key)
         if t is None:
-            gene = lookups.get_gene_by_id(db, gene_id)
-            if gene is None:
-                abort(404)
-            #print(gene_id)
-            gene_idx = gene['gene_idx']
-
-            variants_in_gene = lookups.get_variants_by_gene_idx(db, gene_idx, gene_id)
-
-            transcripts_in_gene = lookups.get_transcripts_by_gene_idx(db, gene_idx)
-
+           # print(gene_id)
+            variants_in_gene = lookups.get_variants_in_gene(db, gene_id)
+            transcripts_in_gene = lookups.get_transcripts_in_gene(db, gene_id)
             #print(variants_in_gene)
             # Get some canonical transcript and corresponding info
-
             transcript_id = gene['canonical_transcript']
-            transcript_idx = gene['transcript_idx']
-            transcript = lookups.get_transcript_by_idx(db, transcript_idx)
-            transcript['transcript_id'] = transcript_id
-            transcript['exons'] = lookups.get_exons(db, transcript_idx)
+            transcript = lookups.get_transcript(db, transcript_id)
+            variants_in_transcript = lookups.get_variants_in_transcript(db, transcript_id)
+            coverage_stats = lookups.get_coverage_for_transcript(db, transcript['xstart'] - EXON_PADDING, transcript['xstop'] + EXON_PADDING)
+            add_transcript_coordinate_to_variants(db, variants_in_transcript, transcript_id)
 
-            variants_in_transcript = lookups.get_variants_by_transcript_idx(
-                db, transcript_idx, transcript_id)
-
-            coverage_stats = lookups.get_coverage_for_transcript(
-                db, transcript['xstart'] - EXON_PADDING, transcript['xstop'] + EXON_PADDING)
-
-            add_transcript_coordinate_to_variants(variants_in_transcript, transcript)
 
             #print("\n\n\n\nVariants in gene")
             #print(variants_in_gene[0])
 
             # Add minicd info
-            for variant in variants_in_gene:
-                variant["minicd_info"] = ICD_NAME_MAP.get(variant["minicd"],
-                                                          "info_not_found")
+            for i in range(0,len(variants_in_gene)):
+                variants_in_gene[i]["minicd_info"] = "info_not_found"
+                icd_code = variants_in_gene[i]["minicd"]
+                icd10info = lookups.get_icd_info(db, icd_code)
+
+                if len(icd10info) > 0:
+
+                    
+                    if "Name" in icd10info[0].keys():
+                        names = icd10info[0]["Name"]
+                        names = names.split()
+                        names = "&nbsp;".join(names)
+                        variants_in_gene[i]["minicd_info"] = names
 
             #print ("Transcripts in gene")
             #print(transcripts_in_gene)
 
             #print ("Variants in transcript")
             #print (variants_in_transcript)
+
+
 
             t = render_template(
                 'gene.html',
@@ -1352,24 +1351,19 @@ def transcript_page(transcript_id):
         return redirect(url_for('login'))
     db = get_db()
     try:
+        transcript = lookups.get_transcript(db, transcript_id)
+
         cache_key = 't-transcript-{}'.format(transcript_id)
         t = cache.get(cache_key)
         if t is None:
-            transcript = lookups.get_transcript_gene(db, transcript_id)
-            transcript_idx = transcript['transcript_idx']
-            transcript['exons'] = lookups.get_exons(db, transcript_idx)
 
-            gene_idx = transcript['gene_idx']
-            gene = lookups.get_gene_by_idx(db, gene_idx)
-            gene['transcripts'] = lookups.get_transcripts_id_by_gene_idx(db, gene_idx)
+            gene = lookups.get_gene(db, transcript['gene_id'])
+            gene['transcripts'] = lookups.get_transcripts_in_gene(db, transcript['gene_id'])
+            variants_in_transcript = lookups.get_variants_in_transcript(db, transcript_id)
 
-            variants_in_transcript = lookups.get_variants_by_transcript_idx(
-                db, transcript_idx, transcript_id)
+            coverage_stats = lookups.get_coverage_for_transcript(db, transcript['xstart'] - EXON_PADDING, transcript['xstop'] + EXON_PADDING)
 
-            coverage_stats = lookups.get_coverage_for_transcript(
-                db, transcript['xstart'] - EXON_PADDING, transcript['xstop'] + EXON_PADDING)
-
-            add_transcript_coordinate_to_variants(variants_in_transcript, transcript)
+            add_transcript_coordinate_to_variants(db, variants_in_transcript, transcript_id)
 
             t = render_template(
                 'transcript.html',
@@ -1525,7 +1519,7 @@ def text_page():
     query = request.args.get('text')
     datatype, identifier = lookups.get_awesomebar_result(db, query)
     if datatype in ['gene', 'transcript']:
-        gene = lookups.get_gene_by_id(db, identifier)
+        gene = lookups.get_gene(db, identifier)
         link = "http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr%(chrom)s%%3A%(start)s-%(stop)s" % gene
         output = '''Searched for %s. Found %s.
 %s; Canonical: %s.
@@ -1568,7 +1562,7 @@ def metapage(key):
         print('Failed: %s' % e)
         abort(404)
 
-
+    
 
 @app.route('/mrp/<key>')
 def mrp(key):
@@ -1702,8 +1696,8 @@ def get_acess_token():
 # Function to check Google Login Credentials for current session
 def check_credentials():
     # Debugging.  Sick of logging in and getting redirected
-    if app.debug:
-       return True
+    #if True:
+    #    return True
     access_token = session.get('access_token')
     if access_token is None:
         return False
@@ -1736,3 +1730,4 @@ def apply_caching(response):
 
 if __name__ == "__main__":
     app.run(host = "0.0.0.0", port = 5000, debug=False, use_debugger=False, use_reloader=False)
+
