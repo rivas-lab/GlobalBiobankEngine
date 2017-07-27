@@ -14,7 +14,7 @@ METRICS = [
 ]
 
 
-def add_transcript_coordinate_to_variants(db, variant_list, transcript_id):
+def add_transcript_coordinate_to_variants(variant_list, transcript):
     """
     Each variant has a 'xpos' and 'pos' positional attributes.
     This method takes a list of variants and adds a third position: the "transcript coordinates".
@@ -39,9 +39,9 @@ def add_transcript_coordinate_to_variants(db, variant_list, transcript_id):
     Edits variant_list in place; no return val
     """
 
-    import lookups
+    transcript_id = transcript['transcript_id']
     # make sure exons is sorted by (start, end)
-    exons = sorted(lookups.get_exons_in_transcript(db, transcript_id), key=itemgetter('start', 'stop'))
+    exons = sorted(transcript['exons'], key=itemgetter('start', 'stop'))
 
     # offset from start of base for exon in ith position (so first item in this list is always 0)
     exon_offsets = [0 for i in range(len(exons))]
@@ -64,11 +64,11 @@ def xpos_to_pos(xpos):
 
 def add_consequence_to_variants(variant_list):
     for variant in variant_list:
-        add_consequence_to_variant(variant)
+        add_consequence_to_variant(variant, variant['vep_annotations'])
 
 
-def add_consequence_to_variant(variant):
-    worst_csq = worst_csq_with_vep(variant['vep_annotations'])
+def add_consequence_to_variant(variant, vep_annotations):
+    worst_csq = worst_csq_with_vep(vep_annotations)
     if worst_csq is None: return
     variant['major_consequence'] = worst_csq['major_consequence']
     variant['HGVSp'] = get_proper_hgvs(worst_csq)
@@ -247,23 +247,23 @@ def get_xpos(chrom, pos):
     return get_single_location(chrom, pos)
 
 
-def get_minimal_representation(pos, ref, alt): 
+def get_minimal_representation(pos, ref, alt):
     """
     Get the minimal representation of a variant, based on the ref + alt alleles in a VCF
-    This is used to make sure that multiallelic variants in different datasets, 
-    with different combinations of alternate alleles, can always be matched directly. 
+    This is used to make sure that multiallelic variants in different datasets,
+    with different combinations of alternate alleles, can always be matched directly.
 
-    Note that chromosome is ignored here - in xbrowse, we'll probably be dealing with 1D coordinates 
-    Args: 
+    Note that chromosome is ignored here - in xbrowse, we'll probably be dealing with 1D coordinates
+    Args:
         pos (int): genomic position in a chromosome (1-based)
         ref (str): ref allele string
         alt (str): alt allele string
-    Returns: 
+    Returns:
         tuple: (pos, ref, alt) of remapped coordinate
     """
     pos = int(pos)
     # If it's a simple SNV, don't remap anything
-    if len(ref) == 1 and len(alt) == 1: 
+    if len(ref) == 1 and len(alt) == 1:
         return pos, ref, alt
     else:
         # strip off identical suffixes
@@ -275,7 +275,7 @@ def get_minimal_representation(pos, ref, alt):
             alt = alt[1:]
             ref = ref[1:]
             pos += 1
-        return pos, ref, alt 
+        return pos, ref, alt
 
 
 def union(a, b):

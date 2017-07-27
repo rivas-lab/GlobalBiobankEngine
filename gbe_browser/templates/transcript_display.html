@@ -39,7 +39,7 @@ function gene_chart(data, new_data, variant_data, _transcript) {
     var coords = 'pos_coding_noutr';
     var coding_coordinate_params = get_coding_coordinate_params(_transcript, true);
     var chart_width = gene_chart_width;
-    var metric = '-log10pvalue';
+    var metric = 'log10pvalue';
     var metricor = 'odds_ratio';
     var exon_x_scale = d3.scale.linear()
         .domain([0, coding_coordinate_params.size])
@@ -49,8 +49,8 @@ function gene_chart(data, new_data, variant_data, _transcript) {
     var minor =  d3.min(data, function(d) { return d[metricor] }) - .3;
     var minor = minor < 0 ? 0 : minor;
     var maxnor = maxnor < 100 ? 4 : 4;
-    var max_cov = (metric == '-log10pvalue') ? maxn : maxnor;
-    var min_cov = (metric == '-log10pvalue') ? 0 : minor;
+    var max_cov = (metric == 'log10pvalue') ? maxn : maxnor;
+    var min_cov = (metric == 'log10pvalue') ? 0 : minor;
     var y = d3.scale.linear()
         .domain([min_cov, max_cov])
         .range([gene_chart_height, 0]);
@@ -263,7 +263,7 @@ function gene_chart(data, new_data, variant_data, _transcript) {
                if (d.minpval){
                 return (2*(variant_size_scale(max_af) - variant_size_scale(d.minpval)));
                 }
-              else { 
+              else {
                  return 0;
                   }
             }
@@ -301,21 +301,21 @@ function variant_colors(d) {
     } else if (d.category == 'synonymous_variant') {
         return '#228B22';
     }
-    else{ 
+    else{
          return "#d3d3d3";
     }
 }
 
 function change_coverage_chart(data, new_data, variant_data, _transcript, scale_type, metric, skip_utrs, container) {
     var coords = skip_utrs ? 'pos_coding_noutr' : 'pos_coding';
-    var metricor = 'odds_ratio'; 
+    var metricor = 'odds_ratio';
     var maxn = d3.max(data, function(d) { return d[metric] }) + 2;
     var maxnor = d3.max(data, function(d){ return d[metricor]}) + .3;
     var minor =  d3.min(data, function(d) { return d[metricor] }) - .3;
     var minor = minor < 0 ? 0 : minor;
-    var maxnor = maxnor < 100 ? maxnor : 4; 
-    var max_cov = (metric == '-log10pvalue') ? maxn : maxnor;
-    var min_cov = (metric == '-log10pvalue') ? 0 : minor;
+    var maxnor = maxnor < 100 ? maxnor : 4;
+    var max_cov = (metric == 'log10pvalue') ? maxn : maxnor;
+    var min_cov = (metric == 'log10pvalue') ? 0 : minor;
     var coding_coordinate_params = get_coding_coordinate_params(_transcript, skip_utrs);
     var chart_width;
     if (scale_type == 'overview') {
@@ -494,7 +494,7 @@ $(document).ready(function() {
     window.coverage_stats = _.filter(window.coverage_stats, function(d) {
         return d.pos_coding != undefined;
     });
-    $('#avg_coverage').html(coverage_sum('-log10pvalue'));
+    $('#avg_coverage').html(coverage_sum('log10pvalue'));
     $('#avg_coverage_x').html(coverage_sum('30')*100 + '%');
 
     var new_data = create_new_data(window.coverage_stats, 'pos_coding');
@@ -548,7 +548,7 @@ $(document).ready(function() {
         setTimeout(function() {
             var detail = $('.display_coverage_metric_buttons.active').attr('id').replace('display_coverage_', '').replace('_button', '');
             var v = $('.coverage_metric_buttons.active').attr('id').replace('_covmet_button', '');
-            v = (v == 'covered') ? $('#over_x_select').val().replace('X', '') : $("#average_select").val(); 
+            v = (v == 'covered') ? $('#over_x_select').val().replace('X', '') : $("#average_select").val();
             var include_utrs = $('#include_utrs_checkbox').is(':checked');
             var plot_data = include_utrs ? new_data : new_data_skip_utr;
             change_coverage_chart(window.coverage_stats, plot_data, window.variants_in_transcript, window.transcript, detail, v, !include_utrs, '#gene_plot_container');
@@ -577,7 +577,7 @@ $(document).ready(function() {
         var v = $('.coverage_metric_buttons.active').attr('id').replace('_covmet_button', '');
         if (v == 'covered') {
             $('#over_x_select_container').show();
-            v = $('#over_x_select').val().replace('X', ''); 
+            v = $('#over_x_select').val().replace('X', '');
 
         } else {
             $('#average_select_container').show();

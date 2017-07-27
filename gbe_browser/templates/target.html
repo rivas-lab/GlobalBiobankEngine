@@ -2,16 +2,16 @@
 {% block body %}
     <!-- Render context vars in JS here -->
     <script type="text/javascript">
-        window.table_variants = {{ variants_in_gene|tojson|safe }};
+        window.icd = {{ icd|tojson|safe }};
     </script>
-      		    
+
 
     <script>
-        filtered_variants = _.filter(window.table_variants, function(d) {
+        filtered_variants = _.filter(window.icd, function(d) {
             return d.filter == 'PASS';
         });
         $('#number_of_variants').replaceWith(filtered_variants.length);
-        lof_filtered_variants = _.filter(window.table_variants, function(d) {
+        lof_filtered_variants = _.filter(window.icd, function(d) {
             return d.filter == 'PASS' && d.category == 'lof_variant';
         });$('#number_of_lof_variants').replaceWith(lof_filtered_variants.length);
     </script>
@@ -24,7 +24,7 @@
                 </style>
 
 
-   
+
     <div class="container">
         <div class="row">
 
@@ -34,8 +34,8 @@
 <h5><span class="label label-info">Note:</span> Only phenotypes with more than 3000 cases are included</h5>
         <hr/>
 
-            {% if variants_in_gene %}
-                {% set chrom = variants_in_gene[0].chrom %}
+            {% if icd %}
+                {% set chrom = icd[0].chrom %}
                 {% include 'variant_table_icd.html' %}
             {% else %}
                 No significantly associated variants.

@@ -21,7 +21,7 @@ function gene_chart(data, new_data, variant_data, _transcript) {
     var coords = 'pos_coding_noutr';
     var coding_coordinate_params = get_coding_coordinate_params(_transcript, true);
     var chart_width = gene_chart_width;
-    var metric = '-log10pvalue';
+    var metric = 'log10pvalue';
     var metricor = 'odds_ratio';
     var exon_x_scale = d3.scale.linear()
         .domain([0, coding_coordinate_params.size])
@@ -31,8 +31,8 @@ function gene_chart(data, new_data, variant_data, _transcript) {
     var minor =  d3.min(data, function(d) { return d[metricor] }) - .3;
     var minor = minor < 0 ? 0 : minor;
     var maxnor = maxnor < 100 ? 4 : 4;
-    var max_cov = (metric == '-log10pvalue') ? maxn : maxnor;
-    var min_cov = (metric == '-log10pvalue') ? 0 : minor;
+    var max_cov = (metric == 'log10pvalue') ? maxn : maxnor;
+    var min_cov = (metric == 'log10pvalue') ? 0 : minor;
     var y = d3.scale.linear()
         .domain([min_cov, max_cov])
         .range([gene_chart_height, 0]);
@@ -245,7 +245,7 @@ function gene_chart(data, new_data, variant_data, _transcript) {
                if (d.ibd_meta_p){
                 return (2*(variant_size_scale(max_af) - variant_size_scale(d.ibd_meta_p)));
                 }
-              else { 
+              else {
                  return 0;
                   }
             }
@@ -283,21 +283,21 @@ function variant_colors(d) {
     } else if (d.category == 'synonymous_variant') {
         return '#228B22';
     }
-    else{ 
+    else{
          return "#d3d3d3";
     }
 }
 
 function change_icdstats_chart(data, new_data, variant_data, _transcript, scale_type, metric, skip_utrs, container) {
     var coords = skip_utrs ? 'pos_coding_noutr' : 'pos_coding';
-    var metricor = 'odds_ratio'; 
+    var metricor = 'odds_ratio';
     var maxn = d3.max(data, function(d) { return d[metric] }) + 2;
     var maxnor = d3.max(data, function(d){ return d[metricor]}) + .3;
     var minor =  d3.min(data, function(d) { return d[metricor] }) - .3;
     var minor = minor < 0 ? 0 : minor;
-    var maxnor = maxnor < 100 ? maxnor : 4; 
-    var max_cov = (metric == '-log10pvalue') ? maxn : maxnor;
-    var min_cov = (metric == '-log10pvalue') ? 0 : minor;
+    var maxnor = maxnor < 100 ? maxnor : 4;
+    var max_cov = (metric == 'log10pvalue') ? maxn : maxnor;
+    var min_cov = (metric == 'log10pvalue') ? 0 : minor;
     var coding_coordinate_params = get_coding_coordinate_params(_transcript, skip_utrs);
     var chart_width;
     if (scale_type == 'overview') {
@@ -423,7 +423,7 @@ function create_new_data(data, coords) {
     });
     var new_data = [];
     for (var i = d3.min(data, function(d) { return d[coords] }); i < d3.max(data, function(d) { return d[coords] }); i++) {
-    
+
         x[coords] = i;
         //Check the previous base to see if this is the beginning of an exon
 {#        if (i in data_object  && !(i-1 in data_object )) {#}
@@ -464,9 +464,9 @@ $(document).ready(function() {
     var new_data_skip_utr = create_new_data(window.icdstats, 'pos_coding_noutr');
     if (window.icdstats != null) {
         gene_chart(window.icdstats, new_data_skip_utr, window.icd_in_variant, window.transcript);
-  
+
             update_variants();
-        
+
         $('#loading_icdstats').hide();
     } else {
         $('#icd_plot').hide();
@@ -479,5 +479,3 @@ $(document).ready(function() {
     refresh_links();
 });
 </script>
-
-

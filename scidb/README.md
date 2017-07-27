@@ -1,92 +1,163 @@
-# Loading the data
+# biobankenginedev.stanford.edu
 
-Currently the loader is in R. Source `database_load.R` and then do:
-  1. recreate_db()
-  2. load_dbsnp()
-  3. load_variants()
-  4. load_icd()
-  5. load_icd_info()
+## Pull from GitHub.com
 
-There are some extraneous things like `make_extra_indeces` that aren't currently used, may speed things up in the future. Note the ICD loader currently loads the `hybrid` files only - which is the vast majority of the ICD data. Just to start with.
+1. Git status:
 
-# Running ICD Lookups in Python
-
-For a quick demo, first do this as user `scidb`:
 ```bash
-$ cd ~
-$ git clone https://github.com/Paradigm4/SciDB-Py.git
-$ cd SciDB-Py
-$ git checkout devel 
+/opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$ git status
+On branch scidb
+Your branch is up-to-date with 'origin/scidb'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+	modified:   client_secrets.json
+	modified:   config.py
+
+Untracked files:
+...
 ```
 
-Now you can do this from Python:
-```python
->>> execfile('gbe_lookups.py')
->>> result = get_icd(1,795222) #return all ICDs for chromosome 1, position 795222
+2. Git stash, pull, and pop
+
+```bash
+/opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$ git stash
+Saved working directory and index state WIP on scidb: 15fc939 Remove second region example from timing function
+HEAD is now at 15fc939 Remove second region example from timing function
 ```
 
-Note that `result` is a nested NumPy array - which is what the new SciDB-Py package returns by default. You can access the fields like this:
-```python
->>> result[0]
-((255, u'Affx-14445027'), (255, 0.599601), (255, 0.317647), (255, 0.107343), (255, -0.511490844976566), (255, 0.9692262713068632), (255, 0.321718298739391), (255, 1.1175036067570145), 0, 1, 795222, 0)
+```bash
+/opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$ git pull
+remote: Counting objects: 5, done.
+remote: Compressing objects: 100% (3/3), done.
+remote: Total 5 (delta 1), reused 5 (delta 1), pack-reused 0
+Unpacking objects: 100% (5/5), done.
+From github.com:rivas-lab/GlobalBiobankEngine
+   e95f1ad..73affc5  master     -> origin/master
+Already up-to-date.
 ```
 
-The dimensions, chromosome, position and synthetic are actually returned last at the moment:
-```python
->>> result[0]["chrom"]
-1
->>> result[0]["pos"]
-795222
->>> result[0]["affyid"]
-(255, u'Affx-14445027')
->>> result[0]["pvalue"]
-(255, 0.107343)
+```bash
+/opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$ git stash pop
+On branch scidb
+Your branch is up-to-date with 'origin/scidb'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+	modified:   client_secrets.json
+	modified:   config.py
+
+Untracked files:
+...
 ```
 
-Note that the fields `affyid`, `pvalue` (and all other attributes) are nullable by default. SciDB would allow them to be null. Thus they are returned as a tuple in the form of `(null code, value)` and null code 255 means "this value is not null". You could access the value portion like this:
+## Restart Flask
 
-```python
->>> result[0]["pvalue"][1]
-0.10734299999999999
+```bash
+/opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$ docker-compose restart flask
+Restarting biobankengine_flask_1 ... done
 ```
 
-The Python package will also allow you to return the data as a Pandas Dataframe instead of a numpy array. This will automatically coerce nulls and present as a simpler structure. Use `as_dataframe=True` to do that:
-```python
->>> result2 = get_icd(1,795222, as_dataframe=True)
->>> result2
-           affyid    or_val        se    pvalue       lor  log10pvalue  \
-0   Affx-14445027  0.599601  0.317647  0.107343 -0.511491     0.969226   
-1   Affx-14445027  0.971836  0.038178  0.454276 -0.028568     0.342680   
-2   Affx-14445027  1.010800  0.059992  0.857846  0.010742     0.066591   
-3   Affx-14445027  1.347090  0.262824  0.256948  0.297947     0.590155   
-4   Affx-14445027  1.192530  0.216579  0.416218  0.176077     0.380679   
-5   Affx-14445027  1.225790  0.135711  0.133572  0.203586     0.874285   
-6   Affx-14445027  0.870400  0.211242  0.511132 -0.138802     0.291467   
-7   Affx-14445027  1.058520  0.232931  0.807124  0.056872     0.093060   
-8   Affx-14445027  0.671942  0.216477  0.066268 -0.397583     1.178693   
-9   Affx-14445027  0.824208  0.405404  0.633443 -0.193332     0.198292   
-10  Affx-14445027  1.049170  0.265102  0.856321  0.047999     0.067363   
-11  Affx-14445027  1.137790  0.200774  0.520243  0.129088     0.283794   
-12  Affx-14445027  0.734139  0.320935  0.335553 -0.309057     0.474239   
+## Load Data
 
-       l95or     u95or  icd_id  chrom     pos  synthetic  
-0   0.321718  1.117504       0      1  795222          0  
-1   0.901770  1.047347       1      1  795222          0  
-2   0.898668  1.136924       2      1  795222          0  
-3   0.804778  2.254846       3      1  795222          0  
-4   0.780034  1.823161       4      1  795222          0  
-5   0.939499  1.599321       5      1  795222          0  
-6   0.575315  1.316836       6      1  795222          0  
-7   0.670539  1.670990       7      1  795222          0  
-8   0.439605  1.027072       8      1  795222          0  
-9   0.372349  1.824415       9      1  795222          0  
-10  0.624003  1.764027      10      1  795222          0  
-11  0.767644  1.686415      11      1  795222          0  
-12  0.391375  1.377094      12      1  795222          0  
+```bash
+/opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$ python loader.py
+_new_conn:Starting new HTTP connection (1): localhost
+_new_conn:Starting new HTTP connection (1): localhost
+_new_conn:Starting new HTTP connection (1): localhost
+_new_conn:Starting new HTTP connection (1): localhost
+_new_conn:Starting new HTTP connection (1): localhost
+_new_conn:Starting new HTTP connection (1): localhost
+make_fifo:FIFO:/tmp/tmpPiBRXa/fifo
+make_fifo:FIFO:/tmp/tmpVU4v3z/fifo
+make_fifo:FIFO:/tmp/tmpwuBYHN/fifo
+make_fifo:FIFO:/tmp/tmpEjEvnb/fifo
+make_fifo:FIFO:/tmp/tmpMIBk_A/fifo
+make_fifo:FIFO:/tmp/tmpqywPu0/fifo
+Remove and recreate arrays, confirm with "y":
 ```
 
-Finally, there are a few options to try on the lookup function itself. For example:
+### Load Individual Arrays
+
+Running `loader.py` drops all arrays and load all the data files. To load individual arrays, one can call individual functions of the `Loader` class like this:
+
+```bash
+/opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$ python -c 'import loader; loader.Loader().store_dbsnp()'
+make_fifo:FIFO:/tmp/tmp4FEOze/fifo
+make_fifo:FIFO:/tmp/tmp7TaW3p/fifo
+make_pipe:Spawn:zcat /opt/biobankengine/GlobalBioBankEngineRepo/gbe_data/dbsnp150.txt.gz > /tmp/tmp4FEOze/fifo pid:3173
+store_dbsnp:Query:running...
+store_dbsnp:Query:done
+store_dbsnp:Pipe:return code:0
+store_dbsnp:Array:dbsnp_by_rsid
+store_dbsnp:Query:running...
+store_dbsnp:Query:done
+store_dbsnp:Array:dbsnp_by_chrom_pos
+remove_fifo:Remove:/tmp/tmp4FEOze/fifo
+remove_fifo:Remove:/tmp/tmp7TaW3p/fifo
+```
+
+For the list of functions available see the `loader.py` file:
+
+```bash
+/opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$ tail -25 loader.py
+if __name__ == '__main__':
+    loader = Loader()
+    loader.remove_arrays()
+
+    loader.store_qc()
+    loader.store_icd_info()
+    loader.insert_icd_info()
+    loader.insert_icd()
+    loader.insert_qt()
+
+    loader.store_gene_index()
+    loader.store_transcript_index()
+    loader.store_dbnsfp()
+    loader.store_canonical()
+    loader.store_omim()
+    loader.store_gene()
+    loader.store_transcript()
+    loader.store_exon()
+
+    loader.store_variant()
+    loader.store_variant_gene()
+    loader.store_variant_transcript()
+
+    loader.store_coverage()
+    loader.store_dbsnp()
+```
+
+Because of the dependencies between index (e.g., `gene_index`) and
+data (e.g., `gene`) arrays, it is required to reload the data arrays
+when the index arrays are reloaded.
+
+For example, to reload the `icdinfo.txt` file, run:
+
+```bash
+$ python -c 'import loader; loader.Loader().insert_icd_info()'
+```
+
+For example, to reload the variants file, run:
+
+```bash
+$ python -c 'import loader; l = loader.Loader(); l.store_variant(); l.store_variant_gene(); l.store_variant_transcript()'
+```
+
+### Update Input File Names
+
+The input file names and file name patterns are located in
+`config.py`. The variable names used end with `_FILE`, `_FILES`, or
+`_GLOB`. For example the ICD file patterns are set in `ICD_GLOB` and
+`QT_GLOB` variables, e.g.:
+
 ```python
->>> get_icd(1,8999999,9999999) #look for a range instead of a specific coordinate
->>> get_icd(1,8999999,9999999,icd_string='1123') #restrict to a specific ICD name 
+ICD_GLOB = os.path.join(
+    GBE_DATA_PATH, 'icdassoc', 'hybrid', '*c*.hybrid.rewritewna.gz')
+QT_GLOB = os.path.join(
+    GBE_DATA_PATH, 'icdassoc', 'hybrid', '*c*.linear.rewritewna.gz')
 ```
