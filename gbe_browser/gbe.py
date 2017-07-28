@@ -27,6 +27,9 @@ from flask import Response
 from collections import defaultdict
 from werkzeug.contrib.cache import SimpleCache
 from multiprocessing import Process
+# STAN workforce 
+from optimized import Polygenic
+from optimized import PolygenicCoding
 import glob
 import traceback
 import time
@@ -1177,6 +1180,65 @@ def gene_page(gene_id):
 
 
 
+@app.route('runPolyCoding', method = ['GET', 'POST']):
+def runPolyCoding_page():
+    if request.method == 'POST':
+        db = get_db()
+        genes = []
+        missense = lof = False
+        function = request.form['function']
+        if "missense_variant" in function:
+            missense = True
+        if "lof_variant" in function:
+            lof = True
+        annotations = []
+        # Add in the selected annotations to the category list                                                                                                                                                  
+        if lof:
+            annotations.append('lof_variant')
+        if missense:
+            annotations.append('missense_variant')
+        print(annotations)
+        functionphen = request.form.getlist('phenotypes[]')
+        print(functionphen)
+        phenidarr = []
+        for phenname in functionphen:
+            phenidarr.append(str(phenname))
+        # Run Poly function                                                                                                                                                                                   
+        if 'submit_polygenic' in request.form.keys():
+            functionphen = request.form.getlist('phenotypes[]')
+            phenidarr = []
+            for phenname in functionphen:
+                        phenidarr.append(str(phenname))
+            phenidarr.sort()
+            keycheck = '_'.join(phenidarr)
+            key = keycheck 
+            if os.path.exists("static/images/PolygenicCoding/PolygenicCoding_" + str(keycheck) + ".svg"):
+                return redirect("/polygeniccoding/%s" % key)
+            else:
+                b = models.QueryGenome(category=annotations)
+                # Generate relevant files 
+                betas, se, pvalues, annotations, protein_annotations, variant_ids, icd, gene_return, rsids, alts, allele_frequencies = b.query_genome(None, phenidarr)
+                labels = phenidarr
+                print(betas) 
+                criteria = ~(se==0).any(1)
+                print(criteria)
+                betas = betas[criteria]
+                se = se[criteria]
+                print(labels)
+                print(key)
+                print(betas)
+                print(len(betas))
+                print(betas.shape)
+                print(se)
+                print(len(se))
+                PolygenicCoding(key, betas, se, labels, chains = 8, iter = 200, warmup = 100, cores = 8)
+        return redirect('/polygeniccoding/%s' % key)
+    form = LoginForm()
+    if form.validate_on_submit():
+        flash('Login requested for OpenID="%s", remember_me=%s' %
+              (form.openid.data, str(form.remember_me.data)))
+        return redirect('/runPolyCoding.html')
+    return render_template('runPolyCoding.html')
 
 @app.route('/runMRP', methods=['GET', 'POST'])
 def runMRP_page():
@@ -1542,6 +1604,34 @@ def graphpage(key):
         return render_template(
             'graph.html',
             graph_key=key
+            )
+    except Exception as e:
+        print('Failed: %s' % e)
+        abort(404)
+
+@app.route('/polygenic/<key>')
+def polygenicpage(key):
+    if not check_credentials():
+        return redirect(url_for('login'))
+    db = get_db()
+    try:
+        return render_template(
+            'polygenic.html',
+            polygenic_key=key
+            )
+    except Exception as e:
+        print('Failed: %s' % e)
+        abort(404)
+
+@app.route('/polygeniccoding/<key>')
+def polygeniccodingpage(key):
+    if not check_credentials():
+        return redirect(url_for('login'))
+    db = get_db()
+    try:
+        return render_template(
+            'polygeniccoding.html',
+            polygenic_key=key
             )
     except Exception as e:
         print('Failed: %s' % e)
