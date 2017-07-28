@@ -849,8 +849,8 @@ def get_dbsnp(db, chrom, pos):
       db.dbsnp.find_one({'xpos': '1039381448'})
 
     SciDB:
-      between(dbsnp, 1, 39381448,
-                     1, 39381448),
+      between(dbsnp_by_chrom_pos, 1, 39381448,
+                                  1, 39381448),
     """
     res = db.iquery(
         config.DBSNP_LOOKUP_QUERY.format(chrom=chrom, pos=pos),
@@ -876,7 +876,7 @@ def get_variants_from_dbsnp(db, rsid):
 
     SciDB:
       equi_join(
-        filter(dbsnp, rsid = 771157073),
+        filter(dbsnp_by_rsid, rsid = 771157073),
         project(variant, rsid),
         'left_names=chrom,pos',
         'right_names=chrom,pos',
