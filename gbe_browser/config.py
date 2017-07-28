@@ -68,8 +68,8 @@ ICD_PVALUE_MAP = dict(zip((.001, .0001, .00001), range(1, 4)))
 
 # TODO 10K limit
 
-ICD_INFO_STORE_QUERY = """
-  store(
+ICD_INFO_APPEND_QUERY = """
+  insert(
     redimension(
       apply(
         input({input_schema}, '{{fn}}', 0, 'CSV'),
@@ -77,7 +77,9 @@ ICD_INFO_STORE_QUERY = """
         Name, string(null)),
       {icd_info_schema}),
     {icd_info_array})""".format(
-        input_schema=ICD_INFO_SCHEMA.replace(', Case:int64, Name:string', ''),
+        input_schema=ICD_INFO_SCHEMA.replace(
+            ', Case:int64, Name:string', '').replace(
+                '0:*', '{start}:{stop}'),
         icd_info_schema=ICD_INFO_SCHEMA,
         icd_info_array=ICD_INFO_ARRAY)
 
@@ -690,6 +692,20 @@ ICD_INFO_MAP_QUERY = 'project({icd_info_array}, icd, Name)'.format(
 
 ICD_INFO_MAP_SCHEMA = scidbpy.schema.Schema.fromstring("""
   <icd:string, Name:string>[notused]""")
+
+ICD_INFO_ICD_QUERY = 'project({icd_info_array}, icd)'.format(
+    icd_info_array=ICD_INFO_ARRAY)
+
+ICD_INFO_ICD_SCHEMA = scidbpy.schema.Schema.fromstring("""
+  <icd:string>[notused]""")
+
+ICD_INFO_IDX_MAX_QUERY = """
+  aggregate(
+    apply({icd_info_array}, idx, icd_idx),
+     max(idx))""".format(icd_info_array=ICD_INFO_ARRAY)
+
+ICD_INFO_IDX_MAX_SCHEMA = scidbpy.schema.Schema.fromstring("""
+  <max:int64>[notused]""")
 
 ICD_CHROM_POS_LOOKUP_QUERY = """
   equi_join(

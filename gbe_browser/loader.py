@@ -1,4 +1,5 @@
 import StringIO
+import argparse
 import glob
 import itertools
 import logging
@@ -65,21 +66,67 @@ class Loader:
     # -- -
     # -- - ICD - --
     # -- -
-    def store_icd_info(self):
-        icd_lst = list(set(Loader.get_icd(*Loader.get_icd_parts(fn))
-                           for fn in itertools.chain(
-                                   glob.iglob(config.ICD_GLOB),
-                                   glob.iglob(config.QT_GLOB))))
+    def set_icd_qt_lists(self):
+        if config.ICD_INFO_ARRAY in dir(self.db.arrays):
+            self.is_first_time = False
+            icd_exist = set(i['icd']['val']
+                            for i in self.db.iquery(
+                                    config.ICD_INFO_ICD_QUERY,
+                                    fetch=True,
+                                    schema=config.ICD_INFO_ICD_SCHEMA,
+                                    atts_only=True))
+        else:
+            self.is_first_time = True
+            self.db.create_array(config.ICD_INFO_ARRAY, config.ICD_INFO_SCHEMA)
+            self.db.create_array(config.ICD_ARRAY, config.ICD_SCHEMA)
 
-        if not icd_lst:
-            raise Exception('No ICD files found. ' +
-                            'Patterns used:\n{}\n{}'.format(
+        self.icd_lst = [
+            (icd, fn)
+            for (icd, fn) in (
+                    (Loader.get_icd(*Loader.get_icd_parts(fn)), fn)
+                    for fn in glob.iglob(config.ICD_GLOB))
+            if self.is_first_time or icd not in icd_exist]
+
+        self.qt_lst = [
+            (icd, fn)
+            for (icd, fn) in (
+                    (Loader.get_icd(*Loader.get_icd_parts(fn)), fn)
+                    for fn in glob.iglob(config.QT_GLOB))
+            if self.is_first_time or icd not in icd_exist]
+
+        if not self.is_first_time:
+            logger.info('New ICDs found: {}'.format(
+                ','.join(set(icd for (icd, fn) in self.icd_lst))))
+            logger.info('New QTs found: {}'.format(
+                ','.join(set(icd for (icd, fn) in self.qt_lst))))
+
+        if not self.icd_lst and not self.qt_lst:
+            raise Exception(('No {}ICD or QT files found. ' +
+                             'Patterns used:\n{}\n{}').format(
+                                '' if self.is_first_time else 'new ',
                                 config.ICD_GLOB,
                                 config.QT_GLOB))
 
-        self.icd_idx_map = dict(zip(icd_lst, range(len(icd_lst))))
-        self.db.iquery(config.ICD_INFO_STORE_QUERY,
-                       upload_data=StringIO.StringIO('\n'.join(icd_lst)))
+    def append_icd_info(self):
+        icd_qt_lst = set(
+            icd for (icd, fn) in itertools.chain(self.icd_lst, self.qt_lst))
+
+        if self.is_first_time:
+            icd_st = 0
+        else:
+            icd_st = self.db.iquery(config.ICD_INFO_IDX_MAX_QUERY,
+                                    schema=config.ICD_INFO_IDX_MAX_SCHEMA,
+                                    fetch=True,
+                                    atts_only=True)[0]['max']['val'] + 1
+
+        self.icd_idx_map = dict(zip(icd_qt_lst,
+                                    range(icd_st, icd_st + len(icd_qt_lst))))
+        self.db.iquery(
+            config.ICD_INFO_APPEND_QUERY.format(
+                fn='{fn}',
+                start=icd_st,
+                stop=icd_st + len(icd_qt_lst)),
+            upload_data=StringIO.StringIO('\n'.join(icd_qt_lst)))
         logger.info('Array:%s', config.ICD_INFO_ARRAY)
 
     def insert_icd_info(self):
@@ -87,8 +134,8 @@ class Loader:
         logger.info('Array:%s', config.ICD_INFO_ARRAY)
 
     def insert_icd(self):
-        self.db.create_array(config.ICD_ARRAY, config.ICD_SCHEMA)
-        file_iter = [glob.iglob(config.ICD_GLOB)] * config.SCIDB_INSTANCE_NUM
+        file_iter = ([(fn for (icd, fn) in self.icd_lst)]
+                     * config.SCIDB_INSTANCE_NUM)
 
         for file_names in zip_longest(*file_iter):
 
@@ -122,7 +169,8 @@ class Loader:
         logger.info('Array:%s', config.ICD_ARRAY)
 
     def insert_qt(self):
-        file_iter = [glob.iglob(config.QT_GLOB)] * config.SCIDB_INSTANCE_NUM
+        file_iter = ([(fn for (icd, fn) in self.qt_lst)]
+                     * config.SCIDB_INSTANCE_NUM)
 
         for file_names in zip_longest(*file_iter):
 
@@ -480,29 +528,47 @@ class Loader:
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='SciDB Loader')
+    parser.add_argument('action',
+                        choices=['all', 'icd-incremental'],
+                        help='Loading choice')
+
+    args = parser.parse_args()
     loader = Loader()
-    loader.remove_arrays()
 
-    loader.store_qc()
-    loader.store_icd_info()
-    loader.insert_icd_info()
-    loader.insert_icd()
-    loader.insert_qt()
-    loader.store_affyid_index()
-    loader.store_icd_affyid()
+    if args.action == 'all':
+        loader.remove_arrays()
 
-    loader.store_gene_index()
-    loader.store_transcript_index()
-    loader.store_dbnsfp()
-    loader.store_canonical()
-    loader.store_omim()
-    loader.store_gene()
-    loader.store_transcript()
-    loader.store_exon()
+        loader.store_qc()
+        loader.set_icd_qt_lists()
+        loader.append_icd_info()
+        loader.insert_icd_info()
+        loader.insert_icd()
+        loader.insert_qt()
+        loader.store_affyid_index()
+        loader.store_icd_affyid()
 
-    loader.store_variant()
-    loader.store_variant_gene()
-    loader.store_variant_transcript()
+        loader.store_gene_index()
+        loader.store_transcript_index()
+        loader.store_dbnsfp()
+        loader.store_canonical()
+        loader.store_omim()
+        loader.store_gene()
+        loader.store_transcript()
+        loader.store_exon()
 
-    loader.store_coverage()
-    loader.store_dbsnp()
+        loader.store_variant()
+        loader.store_variant_gene()
+        loader.store_variant_transcript()
+
+        loader.store_coverage()
+        loader.store_dbsnp()
+
+    elif args.action == 'icd-incremental':
+        loader.set_icd_qt_lists()
+        loader.append_icd_info()
+        loader.insert_icd_info()
+        loader.insert_icd()
+        loader.insert_qt()
+        loader.store_affyid_index()
+        loader.store_icd_affyid()
