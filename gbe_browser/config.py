@@ -8,7 +8,7 @@ XOFF = int(1e9)
 # == = Load = ==
 # == =
 
-SCIDB_INSTANCE_NUM = 2
+SCIDB_INSTANCE_NUM = 6
 GBE_DATA_PATH = '/opt/biobankengine/GlobalBioBankEngineRepo/gbe_data'
 
 
