@@ -35,6 +35,7 @@ def is_pos_def(x):
        return False
 
 # return BIC -2*log(p(Data | theta that maximizes C, Mc)) + vc log(n) : vc is the number of parameters (K+J)*(C-1), K is the number of phenotypes, J is the number of genes, C is the number of clusters
+@profile
 def mrpmm(betas,ses,vymat,annotvec,genevec,protvec,chroffvec,clusters,fout,Rphen,Rpheninv,phenidarr, Rphenuse=True, fdr=.05, niter=1000,burn=100,thinning=1,verbose=True, protectivescan = False, outpath='/Users/mrivas/', maxlor = 0.693):
     print("Running MCMC algorithm...")
     print(sys.flags.optimize)
@@ -208,7 +209,7 @@ def mrpmm(betas,ses,vymat,annotvec,genevec,protvec,chroffvec,clusters,fout,Rphen
             # Gives covariance matrix of variant  effect on sets of phenotypes (after fixed effect meta-analysis has been applied across all studies available)
             for cidx in range(0,C):
                 llk2 = multivariate_normal.logpdf(betas[varidx,:],np.sqrt(scales[iter-1,annotidx])*bc[iter-1,cidx,:],Vjm) + np.log(pcj[iter,geneid,cidx])
-                if deltam[iter-1,varidx] == cidx:
+                if int(deltam[iter-1,varidx]) == cidx:
                     maxloglkiter[iter-1,0] += llk2
                 lprobmjcu[cidx] += llk2
                         #normalize uc - set to wc
@@ -222,15 +223,15 @@ def mrpmm(betas,ses,vymat,annotvec,genevec,protvec,chroffvec,clusters,fout,Rphen
                 custm = stats.rv_discrete(name='custm',values=(xk,wstmp))
             else:
                 custm = stats.rv_discrete(name='custm',values=(xk,probmjc))
-            deltam[iter,varidx] = custm.rvs(size=1)[0]
+            deltam[iter,varidx] = int(custm.rvs(size=1)[0])
             if protectivescan:
                 protbool = 0
                 protadverse = 0
                 for tmptidx in range(0, k):
-                    if np.sqrt(scales[iter-1,annotidx])*bc[iter-1,deltam[iter,varidx],tmptidx] >= maxlor:
+                    if np.sqrt(scales[iter-1,annotidx])*bc[iter-1,int(deltam[iter,varidx]),tmptidx] >= maxlor:
                         protadverse = 1
-                    if np.sqrt(scales[iter-1,annotidx])*bc[iter-1,deltam[iter,varidx],tmptidx] < -.05:
-                        protbool = 1
+                        if np.sqrt(scales[iter-1,annotidx])*bc[iter-1,int(deltam[iter,varidx]),tmptidx] < -.1:
+                            protbool = 1
                 if protbool == 1 and protadverse == 0:
                     protind[iter,varidx] = 1
         # d) Update b_c using a Gibbs update from a Gaussian distribution
@@ -241,7 +242,7 @@ def mrpmm(betas,ses,vymat,annotvec,genevec,protvec,chroffvec,clusters,fout,Rphen
             mucurrenttmp2 = 0*betas[0,:]
             mucurrenttmp2 = mucurrenttmp2.T
             for varidx in range(0,m):
-                if deltam[iter,varidx] == cidx:
+                if int(deltam[iter,varidx]) == cidx:
                     cnt += 1
                     if cnt == 1:
                         varannot = annotvec[varidx]
