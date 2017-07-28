@@ -33,8 +33,28 @@ Restarting biobankengine_flask_1 ... done
 
 ## Load Data
 
+Usage:
+
 ```bash
-/opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$ python loader.py
+/opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$ python loader.py -h
+usage: loader.py [-h] {all,icd-incremental}
+
+SciDB Loader
+
+positional arguments:
+  {all,icd-incremental}
+                        Loading choice
+
+optional arguments:
+  -h, --help            show this help message and exit
+```
+
+### All
+
+Using the `all` argument, drops all arrays and reloads all the files:
+
+```bash
+/opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$ python loader.py all
 _new_conn:Starting new HTTP connection (1): localhost
 _new_conn:Starting new HTTP connection (1): localhost
 _new_conn:Starting new HTTP connection (1): localhost
@@ -50,9 +70,43 @@ make_fifo:FIFO:/tmp/tmpqywPu0/fifo
 Remove and recreate arrays, confirm with "y":
 ```
 
+### ICD Incremental Load
+
+Using the `incremental-icd` argument, the script looks for new ICDs
+and loads them. If any new ICDs are found, they are listed in the
+output. The `icdinfo.txt` file is reloaded if new ICSs are found:
+
+```bash
+/opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$ python loader.py icd-incremental
+...
+set_icd_qt_lists:New ICDs found: cancer1075,cancer1077,HC265,HC189,HC184,HC186,HC180,HC182,HC286,HC328,HC121,HC282,HC280,HC281,HC320,FH1113,HC322,HC325,HC288,HC15,HC37,HC12,HC19,RH56,cancer1026,HC315,HC198,HC196,HC214,HC210,HC190
+set_icd_qt_lists:New QTs found: INI94,INI95,INI1279
+append_icd_info:Array:icd_info
+insert_icd_info:Array:icd_info
+...
+```
+
+If no new ICDs are found, a message is displayed and the script exits:
+
+```
+/opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$ python loader.py icd-incremental
+...
+set_icd_qt_lists:New ICDs found:
+set_icd_qt_lists:New QTs found:
+Traceback (most recent call last):
+  File "loader.py", line 568, in <module>
+    loader.set_icd_qt_lists()
+  File "loader.py", line 108, in set_icd_qt_lists
+    config.QT_GLOB))
+Exception: No new ICD or QT files found. Patterns used:
+/opt/biobankengine/GlobalBioBankEngineRepo/gbe_data/icdassoc/hybrid/*c*.hybrid.rewritewna.gz
+/opt/biobankengine/GlobalBioBankEngineRepo/gbe_data/icdassoc/hybrid/*c*.linear.rewritewna.gz
+```
+
 ### Load Individual Arrays
 
-Running `loader.py` drops all arrays and load all the data files. To load individual arrays, one can call individual functions of the `Loader` class like this:
+To load individual arrays, one can call individual functions of the
+`Loader` class like this:
 
 ```bash
 /opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$ python -c 'import loader; loader.Loader().store_dbsnp()'
@@ -79,7 +133,8 @@ if __name__ == '__main__':
     loader.remove_arrays()
 
     loader.store_qc()
-    loader.store_icd_info()
+    loader.set_icd_qt_lists()
+    loader.append_icd_info()
     loader.insert_icd_info()
     loader.insert_icd()
     loader.insert_qt()
