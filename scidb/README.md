@@ -2,31 +2,16 @@
 
 ## Pull from GitHub.com
 
-1. Git status:
+1. Check that branch is `scidb`:
 
 ```bash
 /opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$ git status
 On branch scidb
 Your branch is up-to-date with 'origin/scidb'.
-
-Changes not staged for commit:
-  (use "git add <file>..." to update what will be committed)
-  (use "git checkout -- <file>..." to discard changes in working directory)
-
-	modified:   client_secrets.json
-	modified:   config.py
-
-Untracked files:
 ...
 ```
 
-2. Git stash, pull, and pop
-
-```bash
-/opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$ git stash
-Saved working directory and index state WIP on scidb: 15fc939 Remove second region example from timing function
-HEAD is now at 15fc939 Remove second region example from timing function
-```
+2. Pull from GitHub.com
 
 ```bash
 /opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$ git pull
@@ -37,22 +22,6 @@ Unpacking objects: 100% (5/5), done.
 From github.com:rivas-lab/GlobalBiobankEngine
    e95f1ad..73affc5  master     -> origin/master
 Already up-to-date.
-```
-
-```bash
-/opt/biobankengine/GlobalBioBankEngineRepo/gbe_browser$ git stash pop
-On branch scidb
-Your branch is up-to-date with 'origin/scidb'.
-
-Changes not staged for commit:
-  (use "git add <file>..." to update what will be committed)
-  (use "git checkout -- <file>..." to discard changes in working directory)
-
-	modified:   client_secrets.json
-	modified:   config.py
-
-Untracked files:
-...
 ```
 
 ## Restart Flask
