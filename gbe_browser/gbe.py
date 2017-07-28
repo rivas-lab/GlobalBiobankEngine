@@ -1180,7 +1180,7 @@ def gene_page(gene_id):
         return get_gene_page_content(gene_id)
 
 
-@app.route('runPolyCoding', methods = ['GET', 'POST'])
+@app.route('/runPolyCoding', methods = ['GET', 'POST'])
 def runPolyCoding_page():
     if request.method == 'POST':
         db = get_db()
