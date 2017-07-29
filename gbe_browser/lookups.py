@@ -196,7 +196,7 @@ def get_icd_by_chrom_pos(db, chrom, start, stop=None, icd=None):
     return numpy2dict(
         db.iquery(
             config.ICD_CHROM_POS_LOOKUP_QUERY.format(
-                icd_info_filter=config.ICD_INFO_ARRAY,
+                icd_info_filter=icd_info_filter,
                 chrom=chrom,
                 start=start,
                 stop=stop),
