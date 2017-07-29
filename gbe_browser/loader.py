@@ -134,8 +134,8 @@ class Loader:
         logger.info('Array:%s', config.ICD_INFO_ARRAY)
 
     def insert_icd(self):
-        file_iter = ([(fn for (icd, fn) in self.icd_lst)]
-                     * config.SCIDB_INSTANCE_NUM)
+        file_iter = ([(fn for (icd, fn) in self.icd_lst)] *
+                     config.SCIDB_INSTANCE_NUM)
 
         for file_names in zip_longest(*file_iter):
 
@@ -169,8 +169,8 @@ class Loader:
         logger.info('Array:%s', config.ICD_ARRAY)
 
     def insert_qt(self):
-        file_iter = ([(fn for (icd, fn) in self.qt_lst)]
-                     * config.SCIDB_INSTANCE_NUM)
+        file_iter = ([(fn for (icd, fn) in self.qt_lst)] *
+                     config.SCIDB_INSTANCE_NUM)
 
         for file_names in zip_longest(*file_iter):
 
