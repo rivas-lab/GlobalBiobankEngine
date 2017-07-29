@@ -140,8 +140,6 @@ def PolygenicCoding(key, betas, ses, labels, chains = 8, iter = 200, warmup = 10
        library(svglite)
        library(rstan)
        require(GGally)
-       require(network)
-       require(sna)
        require(ggplot2)
        require(corpcor)
        require(RColorBrewer)
