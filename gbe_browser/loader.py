@@ -399,6 +399,15 @@ class Loader:
         logger.info('Query:done')
         logger.info('Array:%s', config.DBSNP_BY_CHROM_POS_ARRAY)
 
+    # -- -
+    # -- - BIM - --
+    # -- -
+    def store_bim(self):
+        logger.info('Query:running...')
+        self.db.iquery(config.BIM_STORE_QUERY)
+        logger.info('Query:done')
+        logger.info('Array:%s', config.BIM_ARRAY)
+
     # -- - - --
     def remove_arrays(self):
         if not Loader.confirm('Remove and recreate arrays'):
@@ -412,16 +421,18 @@ class Loader:
                       config.DBNSFP_ARRAY,
                       config.CANONICAL_ARRAY,
                       config.OMIM_ARRAY,
+                      config.GENE_INDEX_ARRAY,
                       config.TRANSCRIPT_INDEX_ARRAY,
                       config.GENE_ARRAY,
-                      config.TRANSCRIPT_INDEX_ARRAY,
+                      config.TRANSCRIPT_ARRAY,
                       config.EXON_ARRAY,
                       config.VARIANT_ARRAY,
                       config.VARIANT_GENE_ARRAY,
                       config.VARIANT_TRANSCRIPT_ARRAY,
                       config.COVERAGE_ARRAY,
                       config.DBSNP_BY_RSID_ARRAY,
-                      config.DBSNP_BY_CHROM_POS_ARRAY):
+                      config.DBSNP_BY_CHROM_POS_ARRAY,
+                      config.BIM_ARRAY):
             try:
                 self.db.remove(array)
             except:
@@ -563,6 +574,7 @@ if __name__ == '__main__':
 
         loader.store_coverage()
         loader.store_dbsnp()
+        loader.store_bim()
 
     elif args.action == 'icd-incremental':
         loader.set_icd_qt_lists()

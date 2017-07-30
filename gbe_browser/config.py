@@ -667,6 +667,48 @@ DBSNP_BY_CHROM_POS_STORE_QUERY = """
         dbsnp_by_chrom_pos_array=DBSNP_BY_CHROM_POS_ARRAY)
 
 
+# -- -
+# -- - Load: bims - --
+# -- -
+BIM_FILE = os.path.join(GBE_DATA_PATH, 'bims_combined.vep.tsv')
+
+BIM_ARRAY = 'bim'
+BIM_SCHEMA = """
+  <ref:         string,
+   alt:         string,
+   filter:      string,
+   gene:        string,
+   consequence: string,
+   lof:         string,
+   lof_filter:  string,
+   lof_flags:   string,
+   lof_info:    string>
+  [chrom          = 1:25:0:1;
+   pos            = 0:*:0:10000000]"""
+
+BIM_STORE_QUERY = """
+  store(
+    redimension(
+      apply(
+        aio_input('{bim_file}', 'num_attributes=11', 'header=1'),
+        chrom,       int64(a0),
+        pos,         int64(a1),
+        ref,         a2,
+        alt,         a3,
+        filter,      a4,
+        gene,        iif(a5 = 'NA', null, a5),
+        consequence, a6,
+        lof,         iif(a7 = 'NA', null, a7),
+        lof_filter,  iif(a8 = 'NA', null, a8),
+        lof_flags,   iif(a9 = 'NA', null, a9),
+        lof_info,    iif(a10 = 'NA', null, a10)),
+      {bim_schema}),
+    {bim_array})""".format(
+        bim_file=BIM_FILE,
+        bim_schema=BIM_SCHEMA,
+        bim_array=BIM_ARRAY)
+
+
 # == =
 # == = LOOKUP = ==
 # == =
