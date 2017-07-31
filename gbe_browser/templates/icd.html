@@ -83,7 +83,7 @@
 	pvalarr = new Array();
 	idarr = new Array();
 	data_weight_pvalue = [];
-    var cutoff = 3;
+    var cutoff = 7;
 
 
 	// Fill two seperate arrays, one with points greater than the -log10(pvalue) threshold, and another
@@ -257,7 +257,7 @@
         .attr("cy", function(d) {
             return yScale(parseFloat(d[1]));
         })
-        .attr("r", 6)
+        .attr("r", 8)
         .on("mouseover", function(d){return tooltip.style("visibility", "visible").text("chr" + d[2] + "; " + "log(p): " + Number((d[1]).toFixed(2)));})
         .on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
         .on("mouseout", function(){return tooltip.style("visibility", "hidden");})
