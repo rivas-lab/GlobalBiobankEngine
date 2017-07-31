@@ -241,7 +241,7 @@
         .attr("cy", function(d) {
             return yScale(parseFloat(d[1]));
         })
-        .attr("r", 6)
+        .attr("r", 3)
         .style("fill", function(d) {
             return colorScale(parseInt(d[3]));
         });
@@ -257,7 +257,7 @@
         .attr("cy", function(d) {
             return yScale(parseFloat(d[1]));
         })
-        .attr("r", 8)
+        .attr("r", 6)
         .on("mouseover", function(d){return tooltip.style("visibility", "visible").text("chr" + d[2] + "; " + "log(p): " + Number((d[1]).toFixed(2)));})
         .on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
         .on("mouseout", function(){return tooltip.style("visibility", "hidden");})
