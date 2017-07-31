@@ -170,7 +170,7 @@ QT_INSERT_QUERY = """
                        iif(dcast(a10, double(null)) < .001, 1, 0))),
         icdind,      int64(string(int64(a0) * 1e9 + int64(a1)) +
                            {{icdind_cond}}),
-        affyid,      a1,
+        affyid,      a2,
         or_val,      dcast(a7,  double(null)),
         se,          dcast(a8,  double(null)),
         pvalue,      dcast(a10, double(null)),
