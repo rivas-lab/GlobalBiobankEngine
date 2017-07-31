@@ -976,7 +976,7 @@ def icd_page(icd_str):
         cutoff = None
         icd = None
 
-        for p in [.01]:
+        for p in [.001, .0001, .00001]:
             icd = lookups.get_icd_variant_by_icd_id_pvalue(db, icd_str, p)
             if len(icd):
                 cutoff = p
