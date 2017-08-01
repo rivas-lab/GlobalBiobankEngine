@@ -69,9 +69,16 @@ class QueryGenome(object):
         if not self.all:
             genes = list(self.get_genes(gene_names))
             for g in genes:
+#                gene_variant = lookups.get_gene_variant(self.db, gene_names = g, icds=icd)
                 self.get_gene_variants(g)
-                if self.debug: print("%s variants added to gene %s" % (g.variant_count(), g.name))
+ #               gene_id = gene_variant[0]['gene_id']['val']
+#                if self.debug: print("%s variants added to gene %s" % (len(gene_variant), gene_id))
+ #               variant_count += len(gene_variant)
                 variant_count += g.variant_count()
+                t4 = open('t4.test','w')
+                t4.write(str(variant_count))
+                t4.close()
+#                variant_icd = lookups.get_variant_icd(self.db, gene_names = g, icds=icd)
                 self.get_icd_data(g, icd)
                 for v in g.variants:
                     icd_codes = utils.union(icd_codes, g.variants[v].icd.keys())
@@ -114,20 +121,25 @@ class QueryGenome(object):
         icd = []
         alts = []
         icd_count = 0
+        t6 = open('t6.txt','w')
         for i in icd_codes:
             variant_count = 0
             for g in genes:
                 for v in g.variants:
                     if icd_count == 0:
                         variant_ids.append(str(g.variants[v].variant_id))
-                        annotations.append(str(g.variants[v].annotations()))
-                        protein_annotations.append(str(g.variants[v].hgvsp))
+                        annotations.append(str(g.variants[v].annotations()[0]))
+                        protein_annotations.append(str(g.variants[v].annotations()[0]))
+#                        protein_annotations.append(str(g.variants[v].hgvsp))
                         gene_return.append(g.name)
-                        rsids.append(g.variants[v].rsid)
+                        rsids.append(str(g.variants[v].variant_id))
+                       # rsids.append(g.variants[v].rsid)
                         alts.append(g.variants[v].alt)
+                        t6.write(str(g.variants[v].hgvsp))
                         allele_frequencies[variant_count] = g.variants[v].allele_freq
                     if i in g.variants[v].icd and self.threshold > g.variants[v].icd[i].pvalue:
                         betas[variant_count][icd_count] = g.variants[v].icd[i].lor
+                        t6.write(str(g.variants[v].icd[i].lor))
                         se[variant_count][icd_count] = g.variants[v].icd[i].se
                         pvalues[variant_count][icd_count] = g.variants[v].icd[i].pvalue
                     else:
@@ -137,6 +149,10 @@ class QueryGenome(object):
                     variant_count += 1
             icd.append(i)
             icd_count += 1
+#        t6.write(betas.shape[0])
+#        t6.write(betas.shape[1])
+        t6.write('_'.join(annotations))
+        t6.close()
         #if self.debug:
         #    print("BETAS")
         #    print(betas)
@@ -204,13 +220,13 @@ class QueryGenome(object):
         gene: A Gene object
     """
     def get_gene_variants(self, gene):
-        raw_variants = lookups.get_variants_by_gene_idx(
-            self.db, gene.gene_idx, gene.gene_id)
-        for v in raw_variants:
+        gene_variant = lookups.get_gene_variant(self.db, gene_names=[gene.name], icds=None)
+#        raw_variants = lookups.get_variants_by_gene_idx(
+#            self.db, gene.gene_idx, gene.gene_id)
+        for v in gene_variant:
             new_variant = Variant(v)
             if not self.category or new_variant.category in self.category:
                 gene.variants[new_variant.xpos] = new_variant
-
     """
     Input:
         gene: A Gene object
@@ -241,17 +257,19 @@ class QueryGenome(object):
     def get_icd_data(self, gene, icd=None):
         if not icd:
             if self.debug: print("No ICD codes provided, fetching all.")
-            results = lookups.get_icd_by_chrom_pos(
-                self.db, gene.chr, gene.start, gene.stop)
+            results = lookups.get_variant_icd(self.db, gene_names=[gene.name])
+#            results = lookups.get_icd_by_chrom_pos(
+#                self.db, gene.chr, gene.start, gene.stop)
         else:
             if self.debug: print("Fetching ICD data for %s ICD code(s): %s" % (len(icd), ",".join(icd)))
-            results = lookups.get_icd_by_chrom_pos(
-                self.db, gene.chr, gene.start, gene.stop, icd)
+            results = lookups.get_variant_icd(self.db, gene_names=[gene.name], icds=icd)
+           # results = lookups.get_icd_by_chrom_pos(
+          #      self.db, gene.chr, gene.start, gene.stop, icd)
         for r in results:
-            r['xpos'] = r['chrom'] * config.XOFF + r['pos']
-            if r['xpos'] in gene.variants:
-                new_icd = ICD(icd=r['icd'], pvalue=r['pvalue'], lor=r['lor'], se=r['se'])
-                gene.variants[r['xpos']].icd[r['icd']] = new_icd
+            datatmp = r['chrom'] * config.XOFF + r['pos']
+            if datatmp in gene.variants:
+                new_icd = ICD(icd=r['icd']['val'], pvalue=r['pvalue']['val'], lor=r['lor']['val'], se=r['se']['val'])
+                gene.variants[datatmp].icd[r['icd']['val']] = new_icd
 
 """
 This Gene object stores all relevant information for each gene, including a dictionary of Variant objects.
@@ -298,7 +316,7 @@ class Variant(object):
         self.allele_freq = None
         self.xpos = None
         #self.vep_annotations = None
-        self.hgvsp = []
+        self.hgvsp = None
         self.lof_info = []
         self.lof_filter = []
         self.parse_response(variant)
@@ -309,25 +327,43 @@ class Variant(object):
     """
     def parse_response(self, v):
         self.chr = v['chrom']
-        self.variant_id = v['variant_id']
-        self.alt = v['alt']
+#        self.variant_id = v['variant_id']
+        self.alt = v['alt']['val']
         if 'major_consequence' in v:
             self.consequence = v['major_consequence']
-        self.ref = v['ref']
+        self.ref = v['ref']['val']
         if 'category' in v:
             self.category = v['category']
         self.position = v['pos']
-        self.rsid = v['rsid']
-        self.allele_freq = v['exac_nfe']  # !!!
+        self.rsid = v['rsid']['val']
+        self.variant_id = str(self.chr) + "-" + str(self.position) + "-" + str(self.ref) + "-" + str(self.alt)
+        self.allele_freq = v['exac_nfe']['val']  # !!!
         self.xpos = v['chrom'] * config.XOFF + v['pos']
-        if 'vep_annotations' in v:
+        csq = v['csq']['val']
+        gene_id = v['gene_id']['val']
+        vep_annotations =  lookups.parse_vep_annotations(csq, gene_id=gene_id)
+        variant = {}
+        utils.add_consequence_to_variant(variant, vep_annotations)
+        self.consequence = variant['major_consequence']
+        self.category = variant['category']
+#        self.hgvsp.append(variant['HGVSp'])
+        t3 = open('t3.test','w')
+        self.hgvsp = variant['HGVSp']
+        t3.write(str(self.rsid))
+        t3.close()
+        keystr = '_'.join(variant.keys())
+        if "LoF_info" in variant:
+            self.lof_info.append(variant['LoF_info'])
+        if "LoF_filter" in variant:
+            self.lof_filter.append(variant['LoF_filter'])
+#        if 'vep_annotations' in v:
             #self.vep_annotations = v['vep_annotations']
-            for a in v['vep_annotations']:
-                self.hgvsp.append(a['HGVSp'])
-                if len(a['LoF_info']) > 0:
-                    self.lof_info.append(a['LoF_info'])
-                if len(a['LoF_filter']) > 0:
-                    self.lof_filter.append(a['LoF_filter'])
+ #           for a in v['vep_annotations']:
+ #               self.hgvsp.append(a['HGVSp'])
+#                if len(a['LoF_info']) > 0:
+#                    self.lof_info.append(a['LoF_info'])
+#                if len(a['LoF_filter']) > 0:
+#                    self.lof_filter.append(a['LoF_filter'])
 
 
     """
@@ -354,6 +390,9 @@ The ICD object stores information regarding how a variant relates to a specific 
 class ICD(object):
     def __init__(self, icd, lor, se, pvalue):
         self.icd = icd
+        d5 = open('t5.test','w')
+        d5.write(str(lor))
+        d5.close()
         self.lor = float(lor)
         self.se = float(se)
         self.pvalue = float(pvalue)
