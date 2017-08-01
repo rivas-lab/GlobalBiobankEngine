@@ -61,6 +61,15 @@ def numpy2dict(ar):
         for el in ar]
 
 
+def parse_vep_annotations(csq, gene_id=None, transcript_id=None):
+    return [ann for ann in (dict(zip(config.VARIANT_CSQ, cs.split('|')))
+                            for cs in csq.split(','))
+            if ('Feature' in ann and
+                ann['Feature'].startswith('ENST') and
+                (gene_id is None or ann['Gene'] == gene_id) and
+                (transcript_id is None or ann['Feature'] == transcript_id))]
+
+
 def format_variants(variants, add_ann=False, gene_id=None, transcript_id=None):
     for variant in variants:
         variant['rsid'] = ('rs{}'.format(variant['rsid'])
@@ -71,14 +80,8 @@ def format_variants(variants, add_ann=False, gene_id=None, transcript_id=None):
             ref=variant['ref'],
             alt=variant['alt'])
 
-        anns = [dict(zip(config.VARIANT_CSQ, csq.split('|')))
-                for csq in variant['csq'].split(',')]
-        vep_annotations = [
-            ann for ann in anns
-            if ('Feature' in ann and
-                ann['Feature'].startswith('ENST') and
-                (gene_id is None or ann['Gene'] == gene_id) and
-                (transcript_id is None or ann['Feature'] == transcript_id))]
+        vep_annotations = parse_vep_annotations(
+            variant['csq'], gene_id, transcript_id)
         if add_ann:
             variant['vep_annotations'] = vep_annotations
 
