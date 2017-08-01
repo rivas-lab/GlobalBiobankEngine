@@ -1009,8 +1009,8 @@ def print_all():
 
     pp.pprint(get_icd_name_map(db))
 
-    # /coding/RH141 -> gbe.icd_page()
-    pp.pprint(get_icd_variant_by_icd_id_pvalue(db, 'RH141'))
+    # /coding/RH117 -> gbe.icd_page()
+    pp.pprint(get_icd_variant_by_icd_id_pvalue(db, 'RH117'))
 
     # /variant/1-169519049 -> gbe.variant_icd_page()
     pp.pprint(get_variant_ann_by_chrom_pos(db, 1, 169519049))
@@ -1052,7 +1052,7 @@ def print_all():
     pp.pprint(get_gene_id_by_name(db, 'F5'))
     pp.pprint(exists_gene_id(db, 'ENSG00000107404'))
     pp.pprint(exists_transcript_id(db, 'ENST00000378891'))
-    pp.pprint(exists_icd(db, 'RH141'))
+    pp.pprint(exists_icd(db, 'RH117'))
 
     # /target/1 -> gbe.target_page()
     # pp.pprint(get_icd_variant_by_pvalue(db))
@@ -1083,10 +1083,10 @@ def time_all():
     print('     -----\n{:8.2f}ms\t{}\n'.format(tm_loc, 'init'))
 
     #
-    # /coding/RH141 -> gbe.icd_page()
+    # /coding/RH117 -> gbe.icd_page()
     #
     with timer.Timer() as t:
-        get_icd_variant_by_icd_id_pvalue(db, 'RH141')
+        get_icd_variant_by_icd_id_pvalue(db, 'RH117')
     print('{:8.2f}ms\t{}'.format(t.msecs, 'get_icd_variant_by_icd_id_pvalue'))
     print('     -----\n{:8.2f}ms\t{}\n'.format(t.msecs, '/coding/'))
 
@@ -1239,7 +1239,7 @@ def time_all():
     tm_loc += t.msecs
 
     with timer.Timer() as t:
-        exists_icd(db, 'RH141')
+        exists_icd(db, 'RH117')
     print('{:8.2f}ms\t{}'.format(t.msecs, 'exists_icd'))
     tm_loc += t.msecs
     print('     -----\n{:8.2f}ms\t{}\n'.format(tm_loc, '/awesome'))
