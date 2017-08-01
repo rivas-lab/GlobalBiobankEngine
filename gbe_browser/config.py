@@ -268,7 +268,8 @@ DBNSFP_STORE_QUERY = """
         {gene_index_array},
         a1,
         gene_idx),
-      {dbnsfp_schema}, false),
+      {dbnsfp_schema},
+      false),
     {dbnsfp_array})""".format(gene_index_array=GENE_INDEX_ARRAY,
                               dbnsfp_schema=DBNSFP_SCHEMA,
                               dbnsfp_array=DBNSFP_ARRAY)
@@ -288,7 +289,8 @@ CANONICAL_STORE_QUERY = """
         {transcript_index_array},
         a1,
         transcript_idx),
-      {canonical_schema}, false),
+      {canonical_schema},
+      false),
     {canonical_array})""".format(gene_index_array=GENE_INDEX_ARRAY,
                                  transcript_index_array=TRANSCRIPT_INDEX_ARRAY,
                                  canonical_schema=CANONICAL_SCHEMA,
@@ -309,7 +311,8 @@ OMIM_STORE_QUERY = """
         {gene_index_array},
         a0,
         gene_idx),
-      {omim_schema}, false),
+      {omim_schema},
+      false),
     {omim_array})""".format(gene_index_array=GENE_INDEX_ARRAY,
                             omim_schema=OMIM_SCHEMA,
                             omim_array=OMIM_ARRAY)
@@ -668,7 +671,7 @@ DBSNP_BY_CHROM_POS_STORE_QUERY = """
 
 
 # -- -
-# -- - Load: bims - --
+# -- - Load: BIM - --
 # -- -
 BIM_FILE = os.path.join(GBE_DATA_PATH, 'bims_combined.vep.tsv')
 
