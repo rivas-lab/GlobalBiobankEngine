@@ -64,341 +64,108 @@ class QueryGenome(object):
     """
     def query_genome(self, gene_names=None, icd=None):
         genes = []
-        variant_count = 0
         icd_codes = []
         if not self.all:
-            genes = list(self.get_genes(gene_names))
-            for g in genes:
-#                gene_variant = lookups.get_gene_variant(self.db, gene_names = g, icds=icd)
-                self.get_gene_variants(g)
- #               gene_id = gene_variant[0]['gene_id']['val']
-#                if self.debug: print("%s variants added to gene %s" % (len(gene_variant), gene_id))
- #               variant_count += len(gene_variant)
-                variant_count += g.variant_count()
-                t4 = open('t4.test','w')
-                t4.write(str(variant_count))
-                t4.close()
-#                variant_icd = lookups.get_variant_icd(self.db, gene_names = g, icds=icd)
-                self.get_icd_data(g, icd)
-                for v in g.variants:
-                    icd_codes = utils.union(icd_codes, g.variants[v].icd.keys())
-            print("%s total variant(s) found, %s ICD code(s)" % (variant_count, len(icd_codes)))
-        else:
-            # Get all variants, chromosome by chromosome.  Should reduce computation time.
-            for c in range(1,23):
-                xpos_start = int(str(c) + '000000000')
-                xpos_end = int(str(c) + '999999999')
-                chr = Gene('chr' + str(c), 'chr' + str(c), c, 0, 0, xpos_start, xpos_end)
-                self.get_chromosome_variants(chr)
-                if self.debug: print("%s variants added to chromosome %s" % (chr.variant_count(), chr.name))
-                variant_count += chr.variant_count()
-                self.get_icd_data(chr, icd)
-                for v in chr.variants:
-                    icd_codes = utils.union(icd_codes, chr.variants[v].icd.keys())
-                genes.append(chr)
-            print("%s total variant(s) found, %s ICD code(s)" % (variant_count, len(icd_codes)))
-        return self.fill_matrices(genes, variant_count, icd_codes)
-
-    """
-    Populate return matrices for query_genome function
-    Input:
-        genes: A list of Gene objects
-        variant_count: Total number of variants to be output, sum accross all genes
-        icd_codes: A list of icd_codes to be included in output
-    """
-    def fill_matrices(self, genes, variant_count, icd_codes):
-        icd_count = len(icd_codes)
-        # Initialize arrays
-        betas = np.zeros(shape=(variant_count, icd_count),dtype='float64')
-        pvalues = np.zeros(shape=(variant_count, icd_count),dtype='float64')
-        allele_frequencies = np.zeros(shape=(variant_count, 1),dtype='float64')
-        se = np.zeros(shape=(variant_count, icd_count),dtype='float64')
-        annotations = []
-        protein_annotations = []
-        variant_ids = []
-        gene_return = []
-        rsids = []
-        icd = []
-        alts = []
-        icd_count = 0
-        t6 = open('t6.txt','w')
-        for i in icd_codes:
+            genes = gene_names
+            gene_variant = lookups.get_gene_variant(self.db, gene_names = genes, icds = icd)
+            results = lookups.get_variant_icd(self.db, gene_names=genes,icds=icd)
+            icd_count = len(icd_codes)
+            annotations = []
+            protein_annotations = []
+            variant_ids = []
+            gene_return = []
+            rsids = []
+            icd = []
+            alts = []
+            icd_count = 0
+            idxkeep = 0
+            idxkeeparr = []
+            idxo = open('idxo.txt','w')
+            for v in gene_variant:
+                chr = v['chrom']
+                #        self.variant_id = v['variant_id']
+                alt = v['alt']['val']
+                if 'major_consequence' in v:
+                    consequence = v['major_consequence']
+                ref = v['ref']['val']
+                if 'category' in v:
+                    category = v['category']
+                position = v['pos']
+                rsid = v['rsid']['val']
+                variant_id = str(chr) + "-" + str(position) + "-" + str(ref) + "-" + str(alt)
+                allele_freq = v['exac_nfe']['val']  # !!!
+                xpos = v['chrom'] * config.XOFF + v['pos']
+                csq = v['csq']['val']
+                gene_id = v['gene_id']['val']
+                vep_annotations =  lookups.parse_vep_annotations(csq, gene_id=gene_id)
+                variant = {}
+                utils.add_consequence_to_variant(variant, vep_annotations)
+                consequence = variant['major_consequence']
+                category = variant['category']
+                if category in self.category:
+                    idxkeeparr.append(idxkeep)
+                    idxo.write(str(idxkeep))
+                idxkeep += 1
+            gene_variant_subset = gene_variant[idxkeeparr]
+            variant_countall = len(gene_variant_subset)
+            # Initialize arrays
+            betas = np.zeros(shape=(variant_countall, icd_count),dtype='float64')
+            pvalues = np.zeros(shape=(variant_countall, icd_count),dtype='float64')
+            allele_frequencies = np.zeros(shape=(variant_countall, 1),dtype='float64')
+            se = np.zeros(shape=(variant_countall, icd_count),dtype='float64')
             variant_count = 0
-            for g in genes:
-                for v in g.variants:
-                    if icd_count == 0:
-                        variant_ids.append(str(g.variants[v].variant_id))
-                        annotations.append(str(g.variants[v].annotations()[0]))
-                        protein_annotations.append(str(g.variants[v].annotations()[0]))
-#                        protein_annotations.append(str(g.variants[v].hgvsp))
-                        gene_return.append(g.name)
-                        rsids.append(str(g.variants[v].variant_id))
-                       # rsids.append(g.variants[v].rsid)
-                        alts.append(g.variants[v].alt)
-                        t6.write(str(g.variants[v].hgvsp))
-                        allele_frequencies[variant_count] = g.variants[v].allele_freq
-                    if i in g.variants[v].icd and self.threshold > g.variants[v].icd[i].pvalue:
-                        betas[variant_count][icd_count] = g.variants[v].icd[i].lor
-                        t6.write(str(g.variants[v].icd[i].lor))
-                        se[variant_count][icd_count] = g.variants[v].icd[i].se
-                        pvalues[variant_count][icd_count] = g.variants[v].icd[i].pvalue
+            for v in gene_variant_subset:
+                chr = v['chrom']
+                #        self.variant_id = v['variant_id']
+                alt = v['alt']['val']
+                if 'major_consequence' in v:
+                    consequence = v['major_consequence']
+                ref = v['ref']['val']
+                if 'category' in v:
+                    category = v['category']
+                position = v['pos']
+                rsid = v['rsid']['val']
+                variant_id = str(chr) + "-" + str(position) + "-" + str(ref) + "-" + str(alt)
+                allele_freq = v['exac_nfe']['val']  # !!!
+                idxo.write(variant_id)
+                xpos = v['chrom'] * config.XOFF + v['pos']
+                csq = v['csq']['val']
+                gene_id = v['gene_id']['val']
+                vep_annotations =  lookups.parse_vep_annotations(csq, gene_id=gene_id)
+                variant = {}
+                utils.add_consequence_to_variant(variant, vep_annotations)
+                consequence = variant['major_consequence']
+                category = variant['category']
+                #        self.hgvsp.append(variant['HGVSp'])
+                hgvsp = variant['HGVSp']
+                if "LoF_info" in variant:
+                    lof_info.append(variant['LoF_info'])
+                if "LoF_filter" in variant:
+                    lof_filter.append(variant['LoF_filter'])
+                variant_ids.append(str(variant_id))
+                annotations.append(str(consequence))
+                protein_annotations.append(str(hgvsp))
+                gene_return.append(gene_id)
+                rsids.append(str(variant_id))
+                alts.append(alt)
+                allele_frequencies[variant_count,0] = allele_freq
+                for i in icd_codes:
+                    datareturn = variant_icd[(variant_icd['icd']['val'] == i) & (variant_icd['chrom'] == chr) & (variant_icd['pos'] == position)]
+                    if len(datareturn) > 0:
+                        betas[variant_count][icd_count] = datareturn['lor']['val']
+                        se[variant_count][icd_count] = datareturn['se']['val']
+                        pvalues[variant_count][icd_count] = datareturn['pvalue']['val']
                     else:
                         betas[variant_count][icd_count] = 0
                         se[variant_count][icd_count] = 0
                         pvalues[variant_count][icd_count] = 0
-                    variant_count += 1
-            icd.append(i)
-            icd_count += 1
-#        t6.write(betas.shape[0])
-#        t6.write(betas.shape[1])
-        t6.write('_'.join(annotations))
-        t6.close()
-        #if self.debug:
-        #    print("BETAS")
-        #    print(betas)
-        #    print("STANDARD ERROR")
-        #    print(se)
-        #    print("ANNOTATIONS")
-        #    print(annotations)
-        #    print("PROTEIN ANNOTATIONS")
-        #    print(protein_annotations)
-        #    print("VARIANT IDS")
-        #    print(variant_ids)
-        #    print("ICD")
-        #    print(icd)
-        #    print("GENES")
-        #    print(gene_return)
-        #    print("RSIDS")
-        #    print(rsids)
-        #    print("ALTS")
-        #    print(alts)
-        #    print("PVALUES")
-        #    print(pvalues)
-        #    print("ALLELE FREQUENCIES")
-        #    print(allele_frequencies)
+                    icd.append(i)
+                    icd_count += 1
+                variant_count += 1
+            idxo.close()
         return betas, se, pvalues, annotations, protein_annotations, \
                variant_ids, icd, gene_return, rsids, alts, allele_frequencies
 
-    """
-    A generator that yeilds Gene objects for each gene in gene_names. If gene_names is None, all genes will be returned
-    Input:
-        gene_names: A list of gene names
-    Return:
-        Yields Gene objects
-    """
-    def get_genes(self, gene_names):
-        print(gene_names)
-        if self.debug: print("Getting gene info")
-        if not gene_names:
-            if self.debug: print("No gene names passed.  Getting all genes.")
-            result = lookups.get_gene_by_gene_names(self.db)
-        else:
-            if self.debug: print("Getting gene info for %s gene(s): %s" % (len(gene_names), ",".join(gene_names)))
-            result = lookups.get_gene_by_gene_names(self.db, gene_names)
-        if len(result) == 0:
-            print("No genes found!")
-            exit()
-        for r in result:
-            chrom = r['chrom']['val']
-            start = r['start']['val']
-            stop = r['stop']['val']
-            new_gene = Gene(gene_id=r['gene_id']['val'],
-                            name=r['gene_name']['val'],
-                            chr=chrom,
-                            start=start,
-                            stop=stop,
-                            xstart=chrom * config.XOFF + start,
-                            xstop=chrom * config.XOFF + stop,
-                            gene_idx=r['gene_idx'])
-            if self.debug: new_gene.print_gene()
-            yield new_gene
-
-    """
-    Add Variant objects to Gene objects. This function queries the database for the given gene region and adds all found
-    variants to the provided Gene object.
-    Input:
-        gene: A Gene object
-    """
-    def get_gene_variants(self, gene):
-        gene_variant = lookups.get_gene_variant(self.db, gene_names=[gene.name], icds=None)
-#        raw_variants = lookups.get_variants_by_gene_idx(
-#            self.db, gene.gene_idx, gene.gene_id)
-        for v in gene_variant:
-            new_variant = Variant(v)
-            if not self.category or new_variant.category in self.category:
-                gene.variants[new_variant.xpos] = new_variant
-    """
-    Input:
-        gene: A Gene object
-    """
-    def get_chromosome_variants(self, gene):
-        raw_variants = lookups.get_variants_in_chromosome(self.db, str(gene.chr))
-        for v in raw_variants:
-            new_variant = Variant(v)
-            if not self.category or new_variant.category in self.category:
-                gene.variants[new_variant.xpos] = new_variant
-
-
-    """
-    Add all variants in the genome to a gene object
-    """
-    def get_all_variants(self, gene):
-        raw_variants = lookups.get_all_variants(self.db)
-        for v in raw_variants:
-            new_variant = Variant(v)
-            if not self.category or new_variant.category in self.category:
-                gene.variants[new_variant.xpos] = new_variant
-
-    """
-    Add ICD objects to Variant objects, within a Gene object.  For each variant in a given Gene object, identify all
-    ICD codes for which there is data in the database and add the log odds ratio and standard error to the associated
-    Variant object.
-    """
-    def get_icd_data(self, gene, icd=None):
-        if not icd:
-            if self.debug: print("No ICD codes provided, fetching all.")
-            results = lookups.get_variant_icd(self.db, gene_names=[gene.name])
-#            results = lookups.get_icd_by_chrom_pos(
-#                self.db, gene.chr, gene.start, gene.stop)
-        else:
-            if self.debug: print("Fetching ICD data for %s ICD code(s): %s" % (len(icd), ",".join(icd)))
-            results = lookups.get_variant_icd(self.db, gene_names=[gene.name], icds=icd)
-           # results = lookups.get_icd_by_chrom_pos(
-          #      self.db, gene.chr, gene.start, gene.stop, icd)
-        for r in results:
-            datatmp = r['chrom'] * config.XOFF + r['pos']
-            if datatmp in gene.variants:
-                new_icd = ICD(icd=r['icd']['val'], pvalue=r['pvalue']['val'], lor=r['lor']['val'], se=r['se']['val'])
-                gene.variants[datatmp].icd[r['icd']['val']] = new_icd
-
-"""
-This Gene object stores all relevant information for each gene, including a dictionary of Variant objects.
-Gene related functions should be added here.
-"""
-class Gene(object):
-    def __init__(self, gene_id, name, chr, start, stop, xstart, xstop, gene_idx=None):
-        self.gene_id = gene_id
-        self.name = name
-        self.chr = chr
-        self.start = start
-        self.stop = stop
-        self.xstart = xstart
-        self.xstop = xstop
-        self.variants = {}
-        self.gene_idx = gene_idx
-
-    """
-    Print a brief summary of the gene
-    """
-    def print_gene(self):
-        print(self.name, self.gene_id, self.chr, self.start, self.stop, len(self.variants))
-
-    """
-    Count the total number of variants stored within the gene
-    """
-    def variant_count(self):
-        return len(self.variants)
-
-"""
-This Variant object stores all information relevant to each variant, including a dictionary of ICD objects.
-The init function parses the raw response from the database query.
-"""
-class Variant(object):
-    def __init__(self, variant):
-        self.chr = None
-        self.variant_id = None
-        self.ref = None
-        self.alt = None
-        self.consequence = None
-        self.category = None
-        self.position = None
-        self.rsid = None
-        self.allele_freq = None
-        self.xpos = None
-        #self.vep_annotations = None
-        self.hgvsp = None
-        self.lof_info = []
-        self.lof_filter = []
-        self.parse_response(variant)
-        self.icd = {}
-
-    """
-    Parse the response from the database and store each important value
-    """
-    def parse_response(self, v):
-        self.chr = v['chrom']
-#        self.variant_id = v['variant_id']
-        self.alt = v['alt']['val']
-        if 'major_consequence' in v:
-            self.consequence = v['major_consequence']
-        self.ref = v['ref']['val']
-        if 'category' in v:
-            self.category = v['category']
-        self.position = v['pos']
-        self.rsid = v['rsid']['val']
-        self.variant_id = str(self.chr) + "-" + str(self.position) + "-" + str(self.ref) + "-" + str(self.alt)
-        self.allele_freq = v['exac_nfe']['val']  # !!!
-        self.xpos = v['chrom'] * config.XOFF + v['pos']
-        csq = v['csq']['val']
-        gene_id = v['gene_id']['val']
-        vep_annotations =  lookups.parse_vep_annotations(csq, gene_id=gene_id)
-        variant = {}
-        utils.add_consequence_to_variant(variant, vep_annotations)
-        self.consequence = variant['major_consequence']
-        self.category = variant['category']
-#        self.hgvsp.append(variant['HGVSp'])
-        t3 = open('t3.test','w')
-        self.hgvsp = variant['HGVSp']
-        t3.write(str(self.rsid))
-        t3.close()
-        keystr = '_'.join(variant.keys())
-        if "LoF_info" in variant:
-            self.lof_info.append(variant['LoF_info'])
-        if "LoF_filter" in variant:
-            self.lof_filter.append(variant['LoF_filter'])
-#        if 'vep_annotations' in v:
-            #self.vep_annotations = v['vep_annotations']
- #           for a in v['vep_annotations']:
- #               self.hgvsp.append(a['HGVSp'])
-#                if len(a['LoF_info']) > 0:
-#                    self.lof_info.append(a['LoF_info'])
-#                if len(a['LoF_filter']) > 0:
-#                    self.lof_filter.append(a['LoF_filter'])
-
-
-    """
-    Print a summary of the variant object
-    """
-    def print_variant(self):
-        print("%s %s %s %s %s %s" % (self.variant_id, self.chr, self.position, self.ref, self.alt, self.consequence))
-
-    """
-    Return the total number of ICD codes stored for the variant
-    """
-    def icd_count(self):
-        return len(self.icd)
-
-    """
-    Return the union of variant annotations
-    """
-    def annotations(self):
-        return utils.union([self.consequence], [self.category])
-
-"""
-The ICD object stores information regarding how a variant relates to a specific ICD code
-"""
-class ICD(object):
-    def __init__(self, icd, lor, se, pvalue):
-        self.icd = icd
-        d5 = open('t5.test','w')
-        d5.write(str(lor))
-        d5.close()
-        self.lor = float(lor)
-        self.se = float(se)
-        self.pvalue = float(pvalue)
-
-    def print_icd(self):
-        print(self.icd, self.lor, self.se, self.pvalue)
 
 # Questions for Manuel
 # I'm using the alternate allele as the input allele for plink --score, is this the correct behavior?  Do you
