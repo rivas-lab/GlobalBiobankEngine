@@ -1001,6 +1001,75 @@ def get_awesomebar_result(db, query):
     return 'not_found', query
 
 
+# -- -
+# -- - MODELS - --
+# -- -
+def get_gene_variant(db, gene_names=None, icds=None):
+    """
+    e.g.,
+    UI:
+      https://biobankengine.stanford.edu/runPolyCoding
+
+    MongoDB:
+      db.genes.find_one({'gene_name': gene_name}, fields={'_id': False})
+      db.variants.find({'genes': gene_id}, fields={'_id': False})
+
+    SciDB:
+
+    """
+    if gene_names:
+        gene_filter = 'filter({gene_array}, {cond})'.format(
+            gene_array=config.GENE_ARRAY,
+            cond=' or '.join(
+                "gene_name = '{}'".format(g) for g in gene_names))
+    else:
+        gene_filter = config.GENE_ARRAY
+
+    return db.iquery(
+        config.GENE_VARIANT_LOOKUP.format(gene_filter=gene_filter),
+        schema=config.GENE_VARIANT_SCHEMA,
+        fetch=True,
+        atts_only=True)
+
+
+def get_variant_icd(db, gene_names=None, icds=None):
+    """
+    e.g.,
+    UI:
+      https://biobankengine.stanford.edu/runPolyCoding
+
+    MongoDB:
+      db.genes.find_one({'gene_name': gene_name}, fields={'_id': False})
+      db.variants.find({'genes': gene_id}, fields={'_id': False})
+      db.icd.find({'xpos': {'$gte': gene.xstart, '$lte': gene.xstop}},
+                  fields={'_id': False})
+
+    SciDB:
+
+    """
+    if gene_names:
+        gene_filter = 'filter({gene_array}, {cond})'.format(
+            gene_array=config.GENE_ARRAY,
+            cond=' or '.join(
+                "gene_name = '{}'".format(g) for g in gene_names))
+    else:
+        gene_filter = config.GENE_ARRAY
+
+    if icds:
+        icd_filter = 'filter({icd_info_array}, {cond})'.format(
+            icd_info_array=config.ICD_INFO_ARRAY,
+            cond=' or '.join("icd = '{}'".format(i) for i in icds))
+    else:
+        icd_filter = config.ICD_INFO_ARRAY
+
+    return db.iquery(
+        config.VARIANT_ICD_LOOKUP.format(icd_filter=icd_filter,
+                                         gene_filter=gene_filter),
+        schema=config.VARIANT_ICD_SCHEMA,
+        fetch=True,
+        atts_only=True)
+
+
 def print_all():
     import pprint
 
@@ -1058,8 +1127,8 @@ def print_all():
     # pp.pprint(get_icd_variant_by_pvalue(db))
 
     # models
-    pp.pprint(get_gene_by_gene_names(db))
-    pp.pprint(get_gene_by_gene_names(db, ('RP11-126K1.9',)))
+    pp.pprint(get_gene_variant(db))
+    pp.pprint(get_variant_icd(db, icds=('RH117',)))
 
 
 def time_all():
@@ -1251,6 +1320,21 @@ def time_all():
         get_icd_variant_by_pvalue(db)
     print('{:8.2f}ms\t{}'.format(t.msecs, 'get_icd_variant_by_pvalue'))
     print('     -----\n{:8.2f}ms\t{}\n'.format(t.msecs, '/target/1'))
+
+    #
+    # /runPolyCoding -> gbe.runPolyCoding_page()
+    #
+    tm = 0
+    with timer.Timer() as t:
+        get_gene_variant(db)
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_gene_variant'))
+    tm += t.msecs
+
+    with timer.Timer() as t:
+        get_variant_icd(db, icds=('RH117',))
+    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_variant_icd'))
+    tm += t.msecs
+    print('     -----\n{:8.2f}ms\t{}\n'.format(tm, '/runPolyCoding'))
 
 
 if __name__ == '__main__':
