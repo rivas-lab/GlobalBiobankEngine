@@ -457,6 +457,9 @@ class Loader:
         elif 'initialdata' in parts:
             prefix = 'INI'
             intadd = 30
+        elif 'qt' in name: 
+            prefix = 'INI'
+            intadd = 30
         elif '_FH2' in name:
             prefix = 'FH'
             intadd = 40
@@ -478,17 +481,19 @@ class Loader:
             '_')[0].strip()[1:].strip(
                 'RH').strip(
                     'FH').strip(
-                        'cancer').strip(
-                            'HC').split(
-                                '_FH2')[0]
+                        'qt').strip(
+                            'cancer').strip(
+                                'HC').split(
+                                    '_FH2')[0]
 
         suffix = parts[1].strip(
             'RH').strip(
                 'FH').strip(
-                    'MED').strip(
-                        'cancer').strip(
-                            'HC').split(
-                                '_FH2')[0]
+                    'qt').strip(
+                        'MED').strip(
+                            'cancer').strip(
+                                'HC').split(
+                                    '_FH2')[0]
 
         return (prefix, suffix, intadd, ind)
 
