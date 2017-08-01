@@ -6,8 +6,8 @@ import utils
 
 db = scidbpy.connect()
 
-gene_names = ['TSPAN6']
-icds = ['HC49', 'HC382']
+gene_names = ['RUNX3']          # Set to None to get all genes
+icds = ['HC49', 'HC382']        # Set to None to get all ICDs
 
 
 # SciDB lookups
