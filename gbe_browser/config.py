@@ -1009,8 +1009,8 @@ GENE_VARIANT_LOOKUP = """
       equi_join(
         {variant_gene_array},
         equi_join(
-          project({{gene_filter}}, gene_name),
           {gene_index_array},
+          project({{gene_filter}}, gene_name),
           'left_names=gene_idx',
           'right_names=gene_idx',
           'algorithm=hash_replicate_right'),
@@ -1041,60 +1041,57 @@ GENE_VARIANT_SCHEMA = scidbpy.schema.Schema.fromstring("""
    notused01]""")
 
 VARIANT_ICD_LOOKUP = """
-  equi_join(
-    project(
-      equi_join(
-        project({icd_array}, se, pvalue, lor),
-        project({{icd_filter}}, icd),
-        'left_names=icd_idx',
-        'right_names=icd_idx',
-        'keep_dimensions=1',
-        'algorithm=hash_replicate_right'),
-      se,
-      pvalue,
-      lor,
-      chrom,
-      pos,
-      icd),
-    project(
-      equi_join(
-        project(
-          equi_join(
-            project({variant_array}, rsid),
-            {variant_gene_array},
-            'left_names=chrom,pos',
-            'right_names=chrom,pos',
-            'keep_dimensions=1'),
-          chrom,
-          pos,
-          rsid,
-          gene_idx),
-        project(
-          equi_join(
-            {gene_index_array},
-            project({{gene_filter}}, chrom),
-            'left_names=gene_idx',
-            'right_names=gene_idx'),
-          gene_idx),
-        'left_names=gene_idx',
-        'right_names=gene_idx'),
-      chrom,
-      pos,
-      rsid),
-    'left_names=chrom,pos',
-    'right_names=chrom,pos')""".format(icd_array=ICD_ARRAY,
-                                       variant_array=VARIANT_ARRAY,
-                                       variant_gene_array=VARIANT_GENE_ARRAY,
-                                       gene_index_array=GENE_INDEX_ARRAY)
+  project(
+    equi_join(
+      project(
+        equi_join(
+          project({icd_array}, se, pvalue, lor),
+          project({{icd_filter}}, Case),
+          'left_names=icd_idx',
+          'right_names=icd_idx',
+          'keep_dimensions=1',
+          'algorithm=hash_replicate_right'),
+        se,
+        lor,
+        chrom,
+        pos),
+      project(
+        equi_join(
+          project({variant_array}, rsid),
+          project(
+            equi_join(
+              {variant_gene_array},
+              project(
+                equi_join(
+                  {gene_index_array},
+                  project({{gene_filter}}, chrom),
+                  'left_names=gene_idx',
+                  'right_names=gene_idx',
+                  'algorithm=hash_replicate_right'),
+                gene_idx),
+              'left_names=gene_idx',
+              'right_names=gene_idx',
+              'keep_dimensions=1',
+              'algorithm=hash_replicate_right'),
+            chrom,
+            pos,
+            gene_idx),
+          'left_names=chrom,pos',
+          'right_names=chrom,pos'),
+        chrom,
+        pos),
+      'left_names=chrom,pos',
+      'right_names=chrom,pos',
+      'right_outer=1'),
+    se,
+    lor)""".format(icd_array=ICD_ARRAY,
+                   variant_array=VARIANT_ARRAY,
+                   variant_gene_array=VARIANT_GENE_ARRAY,
+                   gene_index_array=GENE_INDEX_ARRAY)
 
 VARIANT_ICD_SCHEMA = scidbpy.schema.Schema.fromstring("""
-  <chrom:  int64 not null,
-   pos:    int64 not null,
-   se:     double,
-   pvalue: double,
-   lor:    double,
-   icd:    string,
-   rsid:   int64>
+  <se:     double,
+   lor:    double>
   [notused0;
    notused1]""")
 
