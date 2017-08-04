@@ -186,6 +186,34 @@ QT_GLOB = os.path.join(
     GBE_DATA_PATH, 'icdassoc', 'hybrid', '*c*.linear.rewritewna.gz')
 ```
 
+### Update BIM Schema and Reload BIM
+
+1. Update `BIM_SCHEMA` constant in `config.py` to add or remove
+   attributes to and from the `bim` array schema.
+1. Update `BIM_STORE_QUERY` constant in `config.py`:
+   1. Map schema attributes to input columns (`a0`, `a1`, etc.). In
+      SciDB input columns are 0-indexed.
+   1. Update `num_attributes` parameter in the query to account for
+      all columns of interest in the input file.
+1. Remove the `bim` array from the database:
+      ```bash
+      > iquery --afl --query "remove(bim)"
+      Query was executed successfully
+      ```
+1. Run BIM loader function:
+      ```bash
+      > python -c "import loader; loader.Loader().store_bim()"
+      make_fifo:FIFO:/tmp/tmpTu9Sjd/fifo
+      make_fifo:FIFO:/tmp/tmp9_zH9b/fifo
+      make_pipe:Spawn:zcat /opt/biobankengine/GlobalBioBankEngineRepo/gbe_data/bims_combined.vep.cf.tsv.gz > /tmp/tmpTu9Sjd/fifo pid:576
+      store_bim:Query:running...
+      store_bim:Query:done
+      store_bim:Pipe:return code:0
+      store_bim:Array:bim
+      remove_fifo:Remove:/tmp/tmpTu9Sjd/fifo
+      remove_fifo:Remove:/tmp/tmp9_zH9b/fifo
+      ```
+
 # models.py Example
 
 The following is the output of running the `models-example.py` script
