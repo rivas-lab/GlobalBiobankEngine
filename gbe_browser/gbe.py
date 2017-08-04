@@ -4,8 +4,6 @@ import itertools
 import io
 import json
 import os
-import pymongo
-import pysam
 import gzip
 from parsing import *
 import lookups
@@ -13,6 +11,7 @@ import random
 import models
 import numpy
 import numpy.matlib
+import rpy2
 from targeted import mrpmm
 from mr import mr
 from graph import graph
@@ -136,228 +135,6 @@ ICD_NAME_MAP = lookups.get_icd_name_map(DB)
 #     """
 #     return scidbpy.connect(app.config.get('SCIDB_URL', None))
 
-def parse_tabix_file_subset(tabix_filenames, subset_i, subset_n, record_parser):
-    """
-    Returns a generator of parsed record objects (as returned by record_parser) for the i'th out n subset of records
-    across all the given tabix_file(s). The records are split by files and contigs within files, with 1/n of all contigs
-    from all files being assigned to this the i'th subset.
-
-    Args:
-        tabix_filenames: a list of one or more tabix-indexed files. These will be opened using pysam.Tabixfile
-        subset_i: zero-based number
-        subset_n: total number of subsets
-        record_parser: a function that takes a file-like object and returns a generator of parsed records
-    """
-    start_time = time.time()
-   # open_tabix_files = []
-    open_tabix_files = [pysam.Tabixfile(tabix_filename) for tabix_filename in tabix_filenames]
-    tabix_file_contig_pairs = [(tabix_file, contig) for tabix_file in open_tabix_files for contig in tabix_file.contigs]
-    tabix_file_contig_subset = tabix_file_contig_pairs[subset_i : : subset_n]  # get every n'th tabix_file/contig pair
-    short_filenames = ", ".join(map(os.path.basename, tabix_filenames))
-    num_file_contig_pairs = len(tabix_file_contig_subset)
-    print(("Loading subset %(subset_i)s of %(subset_n)s total: %(num_file_contig_pairs)s contigs from "
-           "%(short_filenames)s") % locals())
-    counter = 0
-    for tabix_file, contig in tabix_file_contig_subset:
-        header_iterator = tabix_file.header
-        records_iterator = tabix_file.fetch(contig, 0, 10**9)
-        for parsed_record in record_parser(itertools.chain(header_iterator, records_iterator)):
-            counter += 1
-            yield parsed_record
-
-            if counter % 100000 == 0:
-                seconds_elapsed = int(time.time()-start_time)
-                print(("Loaded %(counter)s records from subset %(subset_i)s of %(subset_n)s from %(short_filenames)s "
-                       "(%(seconds_elapsed)s seconds)") % locals())
-
-    print("Finished loading subset %(subset_i)s from  %(short_filenames)s (%(counter)s records)" % locals())
-
-
-def parse_tabix_file_subset2(tabix_filenames, subset_i, subset_n, record_parser):
-    """
-    Returns a generator of parsed record objects (as returned by record_parser) for the i'th out n subset of records
-    across all the given tabix_file(s). The records are split by files and contigs within files, with 1/n of all contigs
-    from all files being assigned to this the i'th subset.
-
-    Args:
-        tabix_filenames: a list of one or more tabix-indexed files. These will be opened using pysam.Tabixfile
-        subset_i: zero-based number
-        subset_n: total number of subsets
-        record_parser: a function that takes a file-like object and returns a generator of parsed records
-    """
-    start_time = time.time()
-#    open_tabix_files = []
-    open_tabix_files = [pysam.Tabixfile(tabix_filename) for tabix_filename in tabix_filenames]
-    tabix_file_contig_pairs = [(tabix_file, contig) for tabix_file in open_tabix_files for contig in tabix_file.contigs]
-    tabix_file_contig_subset = tabix_file_contig_pairs[subset_i : : subset_n]  # get every n'th tabix_file/contig pair
-    short_filenames = ", ".join(map(os.path.basename, tabix_filenames))
-    num_file_contig_pairs = len(tabix_file_contig_subset)
-    print(("Loading subset %(subset_i)s of %(subset_n)s total: %(num_file_contig_pairs)s contigs from "
-           "%(short_filenames)s") % locals())
-    counter = 0
-    for tabix_file, contig in tabix_file_contig_subset:
-        header_iterator = tabix_file.header
-        records_iterator = tabix_file.fetch(contig, 0, 10**9)
-        for parsed_record in record_parser(itertools.chain(header_iterator, records_iterator), tabix_filenames):
-            counter += 1
-            yield parsed_record
-
-            if counter % 100000 == 0:
-                seconds_elapsed = int(time.time()-start_time)
-                print(("Loaded %(counter)s records from subset %(subset_i)s of %(subset_n)s from %(short_filenames)s "
-                       "(%(seconds_elapsed)s seconds)") % locals())
-        tabix_file.close()
-    print("Finished loading subset %(subset_i)s from  %(short_filenames)s (%(counter)s records)" % locals())
-
-
-def load_base_coverage():
-    def load_coverage(coverage_files, i, n, db):
-        coverage_generator = parse_tabix_file_subset(coverage_files, i, n, get_base_coverage_from_file)
-        try:
-            db.base_coverage.insert(coverage_generator, w=0)
-        except pymongo.errors.InvalidOperation:
-            pass  # handle error when coverage_generator is empty
-
-    db = get_db()
-    db.base_coverage.drop()
-    print("Dropped db.base_coverage")
-    # load coverage first; variant info will depend on coverage
-    db.base_coverage.ensure_index('xpos')
-
-    procs = []
-    coverage_files = app.config['BASE_COVERAGE_FILES']
-    num_procs = app.config['LOAD_DB_PARALLEL_PROCESSES']
-    random.shuffle(app.config['BASE_COVERAGE_FILES'])
-    for i in range(num_procs):
-        p = Process(target=load_coverage, args=(coverage_files, i, num_procs, db))
-        p.start()
-        procs.append(p)
-    return procs
-
-def load_base_icdstats():
-    def load_icdstats(icdstats_files, i, n, db):
-        # done
-        icdstats_generator = parse_tabix_file_subset(icdstats_files, i, n, get_base_icdstats_from_file)
-        try:
-            db.base_icdstats.insert(icdstats_generator, w=0)
-        except pymongo.errors.InvalidOperation:
-            pass  # handle error when icdstats_generator is empty
-
-    db = get_db()
-    # update this
-    db.base_icdstats.drop()
-    print("Dropped db.base_icdstats")
-    # load coverage first; variant info will depend on coverage
-    db.base_icdstats.ensure_index('xpos')
-
-    procs = []
-    icdstats_files = app.config['BASE_ICDSTATS_FILES']
-    num_procs = app.config['LOAD_DB_PARALLEL_PROCESSES']
-    random.shuffle(app.config['BASE_ICDSTATS_FILES'])
-    for i in range(num_procs):
-        p = Process(target=load_icdstats, args=(icdstats_files, i, num_procs, db))
-        p.start()
-        procs.append(p)
-    return procs
-
-def load_variants_file():
-    def load_variants(sites_file, i, n, db):
-        variants_generator = parse_tabix_file_subset([sites_file], i, n, get_variants_from_sites_vcf)
-        try:
-            db.variants.insert(variants_generator, w=0)
-        except pymongo.errors.InvalidOperation:
-            pass  # handle error when variant_generator is empty
-
-    db = get_db()
-    db.variants.drop()
-    print("Dropped db.variants")
-
-    # grab variants from sites VCF
-    db.variants.ensure_index('xpos')
-    db.variants.ensure_index('xstart')
-    db.variants.ensure_index('xstop')
-    db.variants.ensure_index('rsid')
-    db.variants.ensure_index('genes')
-    db.variants.ensure_index('transcripts')
-
-    sites_vcfs = app.config['SITES_VCFS']
-    if len(sites_vcfs) > 1:
-        raise Exception("More than one sites vcf file found: %s" % sites_vcfs)
-
-    procs = []
-    num_procs = app.config['LOAD_DB_PARALLEL_PROCESSES']
-    for i in range(num_procs):
-        p = Process(target=load_variants, args=(sites_vcfs[0], i, num_procs, db))
-        p.start()
-        procs.append(p)
-    return procs
-
-    #print 'Done loading variants. Took %s seconds' % int(time.time() - start_time)
-
-def load_icd_stats():
-    def load_icd(icd_files, i, n, db):
-        icd_generator = parse_tabix_file_subset2(icd_files, i, n, get_icd_from_file)
-        # add get_icd_from_file
-        try:
-            db.icd.insert(icd_generator, w=0)
-        except pymongo.errors.InvalidOperation:
-            pass
-    def load_qt(qt_files, i, n, db):
-        qt_generator = parse_tabix_file_subset2(qt_files, i, n, get_qt_from_file)
-        # add get_qt_from_file
-        try:
-            db.icd.insert(qt_generator, w=0)
-        except pymongo.errors.InvalidOperation:
-            pass
-    # load ICD10 code
-    # allows us to search for ICDK50 , ICDK51 in the search bar -> then open icd/K50 presents a manhattan plot - allow points to link to variant page
-    db = get_db()
-    db.icd.drop()
-    print('Dropped db.icd')
-    db.icd.ensure_index('icd')
-    db.icd.ensure_index('xpos')
-    db.icd.ensure_index('icdind')
-    db.icd.ensure_index('affyid')
-    procs = []
-    icd_files = app.config['ICD_STATS_FILES']
-    qt_files = app.config['QT_STATS_FILES']
-    num_procs = app.config['LOAD_DB_PARALLEL_PROCESSES']
-    keyarr = []
-    qtkeyarr = []
-    keylist = {}
-    qtkeylist = {}
-    for filecd in icd_files:
-        keyarr.append(os.path.basename(filecd).split('.')[1])
-        icdk = os.path.basename(filecd).split('.')[1]
-        if icdk in keylist:
-            keylist[icdk].append(filecd)
-        else:
-            keylist[icdk] = [filecd]
-    for filecd in qt_files:
-        qtkeyarr.append(os.path.basename(filecd).split('.')[1])
-        icdk = os.path.basename(filecd).split('.')[1]
-        if icdk in qtkeylist:
-            qtkeylist[icdk].append(filecd)
-        else:
-            qtkeylist[icdk] = [filecd]
-    keyarr = list(set(keyarr))
-    qtkeyarr = list(set(qtkeyarr))
-    #random.shuffle(app.config['ICD_STATS_FILES'])
-
-    for icdkey in keyarr:
-        for i in range(num_procs):
-            p = Process(target=load_icd, args=(keylist[icdkey], i, num_procs, db))
-            p.start()
-            procs.append(p)
-        [p.join() for p in procs]
-    procs = []
-    for icdkey in qtkeyarr:
-        for i in range(num_procs):
-            p = Process(target=load_qt, args=(qtkeylist[icdkey], i, num_procs, db))
-            p.start()
-            procs.append(p)
-        [p.join() for p in procs]
-    return []
 
 
 def load_icd_info_stats():
@@ -457,55 +234,6 @@ def load_gene_models():
 
     return []
 
-
-def load_dbsnp_file():
-    db = get_db()
-
-    def load_dbsnp(dbsnp_file, i, n, db):
-        if os.path.isfile(dbsnp_file + ".tbi"):
-            dbsnp_record_generator = parse_tabix_file_subset([dbsnp_file], i, n, get_snp_from_dbsnp_file)
-            try:
-                db.dbsnp.insert(dbsnp_record_generator, w=0)
-            except pymongo.errors.InvalidOperation:
-                pass  # handle error when coverage_generator is empty
-
-        else:
-            with gzip.open(dbsnp_file) as f:
-                db.dbsnp.insert((snp for snp in get_snp_from_dbsnp_file(f)), w=0)
-
-    db.dbsnp.drop()
-    db.dbsnp.ensure_index('rsid')
-    db.dbsnp.ensure_index('xpos')
-    start_time = time.time()
-    dbsnp_file = app.config['DBSNP_FILE']
-
-    print("Loading dbsnp from %s" % dbsnp_file)
-    if os.path.isfile(dbsnp_file + ".tbi"):
-        num_procs = app.config['LOAD_DB_PARALLEL_PROCESSES']
-    else:
-        # see if non-tabixed .gz version exists
-        if os.path.isfile(dbsnp_file):
-            print(("WARNING: %(dbsnp_file)s.tbi index file not found. Will use single thread to load dbsnp."
-                "To create a tabix-indexed dbsnp file based on UCSC dbsnp, do: \n"
-                "   wget http://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/snp141.txt.gz \n"
-                "   gzcat snp141.txt.gz | cut -f 1-5 | bgzip -c > snp141.txt.bgz \n"
-                "   tabix -0 -s 2 -b 3 -e 4 snp141.txt.bgz") % locals())
-            num_procs = 1
-        else:
-            raise Exception("dbsnp file %s(dbsnp_file)s not found." % locals())
-
-    procs = []
-    for i in range(num_procs):
-        p = Process(target=load_dbsnp, args=(dbsnp_file, i, num_procs, db))
-        p.start()
-        procs.append(p)
-
-    return procs
-    #print 'Done loading dbSNP. Took %s seconds' % int(time.time() - start_time)
-
-    #start_time = time.time()
-    #db.dbsnp.ensure_index('rsid')
-    #print 'Done indexing dbSNP table. Took %s seconds' % int(time.time() - start_time)
 
 
 def load_db():
@@ -658,7 +386,12 @@ def run_mrp(lof=True, missense=True, genes=None, fdr=5, phenidarr = ['ICD1462','
         b = models.QueryGenome(category=annotations)
         key = 't-mrp-' + '_'.join(annotations) + '_' + '_'.join(phenidarr) + '_' + '_'.join(genes)
         # Generate relevant files
+# betas, se, pvalues, annotations, protein_annotations, variant_ids, icd, gene_return, rsids, alts, allele_frequencies
         betas, se, pvalues, annotations, protein_annotations, variant_ids, icd, gene_return, rsids, alts, allele_frequencies = b.query_genome(genes,phenidarr)
+        t1 = open('test.3.a','w')
+        t1.write("BETAS")
+        t1.write(betas)
+        t1.close()
         numpy.save('s3/' + key + '.betas', betas)
         numpy.save('s3/' + key + '.se', se)
         numpy.save('s3/' + key + '.pvalues', pvalues)
@@ -708,12 +441,12 @@ def run_mrp(lof=True, missense=True, genes=None, fdr=5, phenidarr = ['ICD1462','
         clustvalue = 1
         if lbf > 1 and (lbf - lbf2) > 1 and lbf2 > 0:
 #        if lbf > 1:
-            [BIC, AIC, genedat] = mrpmm(betas,se, C, annotvec, gene_return, rsids, variant_ids,clustminval,key,C, numpy.linalg.inv(C), icd, fdr=fdr, niter=2001,burn=500,thinning=1,verbose=True, outpath = './MRP_out/', protectivescan=True)
+            [BIC, AIC, genedat] = mrpmm(betas,se, C, annotvec, gene_return, rsids, variant_ids,clustminval,key,C, numpy.linalg.inv(C), icd, fdr=fdr, niter=1001,burn=500,thinning=1,verbose=True, outpath = './MRP_out/', protectivescan=True)
             print("log bayes factor: ",lbf)
             clustvalue = clustminval
         elif lbf2 > 1:
             clustminval = 2
-            [BIC, AIC, genedat] = mrpmm(betas,se, C, annotvec, gene_return, rsids, variant_ids,clustminval,key,C, numpy.linalg.inv(C), icd, fdr=fdr, niter=2001,burn=500,thinning=1,verbose=True, outpath = './MRP_out/', protectivescan=True)
+            [BIC, AIC, genedat] = mrpmm(betas,se, C, annotvec, gene_return, rsids, variant_ids,clustminval,key,C, numpy.linalg.inv(C), icd, fdr=fdr, niter=1001,burn=500,thinning=1,verbose=True, outpath = './MRP_out/', protectivescan=True)
             print("log bayes factor: ",lbf)
             clustvalue = clustminval
             lbf = lbf2
@@ -1231,6 +964,11 @@ def runPolyCoding_page():
                 print(betas.shape)
                 print(se)
                 print(len(se))
+                f5test = open('test5.tmp','w')
+                f5test.write("BETAS")
+                f5test.write(str(len(betas)))
+                f5test.write(key)
+                f5test.close()
                 PolygenicCoding(key, betas, se, labels, chains = 8, iter = 200, warmup = 100, cores = 8)
         return redirect('/polygeniccoding/%s' % key)
     form = LoginForm()

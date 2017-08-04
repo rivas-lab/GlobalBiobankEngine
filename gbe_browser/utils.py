@@ -85,6 +85,20 @@ def add_consequence_to_variant(variant, vep_annotations):
         variant['category'] = 'other_variant'
 
 
+def add_category_to_variant(worst_csq):
+    if worst_csq is None: return 'other_variant'
+    if csq_order_dict[worst_csq] <= csq_order_dict["frameshift_variant"]:
+        category = 'lof_variant'
+    elif csq_order_dict[worst_csq] <= csq_order_dict["missense_variant"]:
+        # Should be noted that this grabs inframe deletion, etc.
+        category = 'missense_variant'
+    elif csq_order_dict[worst_csq] <= csq_order_dict["synonymous_variant"]:
+        category = 'synonymous_variant'
+    else:
+        category = 'other_variant'
+    return category
+
+
 protein_letters_1to3 = {
     'A': 'Ala', 'C': 'Cys', 'D': 'Asp', 'E': 'Glu',
     'F': 'Phe', 'G': 'Gly', 'H': 'His', 'I': 'Ile',
@@ -214,6 +228,7 @@ def worst_csq_with_vep(annotation_list):
             worst = annotation
     worst['major_consequence'] = worst_csq_from_csq(worst['Consequence'])
     return worst
+
 
 
 def compare_two_consequences(csq1, csq2):

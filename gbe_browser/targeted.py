@@ -26,6 +26,7 @@ from scipy import stats
 from scipy.stats import multivariate_normal
 import random
 
+np.seterr(divide='warn')
 def is_pos_def(x):
     i = 0
     x = np.matrix(x)
@@ -336,6 +337,7 @@ def mrpmm(betas,ses,vymat,annotvec,genevec,protvec,chroffvec,clusters,fout,Rphen
     ## Write output for input files
     mcout = open(outpath + str(fout) + '.mcmc.posteriors','w+')
     varprobdict = {}
+    test5 = open('test5.1.txt','w')
     for varidx in range(0,m):
         mcout.write(chroffvec[varidx] + '\t' + annotvec[varidx] + '\t' + protvec[varidx] + '\t' + genevec[varidx] + '\t' + str(genevec[varidx] + ':' + annotvec[varidx] + ':' +  protvec[varidx]))
         for cidx in range(0,C):

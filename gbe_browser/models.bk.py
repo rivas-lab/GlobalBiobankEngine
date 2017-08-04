@@ -65,93 +65,139 @@ class QueryGenome(object):
     def query_genome(self, gene_names=None, icd=None):
         genes = []
         icd_codes = []
-        HGVSp_M = []
-        keys_M = []
-        idxkeeparr = []
-        variant_ids = []
-        gene_return = []
-        alts = []
-        allele_frequencies = []
-        idxkeep = 0 
         if not self.all:
             genes = gene_names
             gene_variant = lookups.get_gene_variant(self.db, gene_names = genes, icds = icd)
             for gv in gene_variant:
-#                vep_annotations = lookups.parse_vep_annotations(gv['csq']['val'])
+                vep_annotations = lookups.parse_vep_annotations(gv['csq']['val'])
                 variant = {}
+                utils.add_consequence_to_variant(variant, vep_annotations)
+                major_consequence_M.append(variant['major_consequence'])
+                HGVSp_M.append(variant['HGVSp'])
                 keys_M.append('{}-{}-{}-{}'.format(gv['chrom'],
                                                    gv['pos'],
                                                    gv['ref']['val'],
                                                    gv['alt']['val']))
-
- #               rsid = gv['rsid']['val']
-                allele_freq = gv['exac_nfe']['val']  # !!!
-#                gene_id = gv['gene_id']['val']
-              #  variant_ids.append(str(variant_id))
-#                gene_return.append(gene_id)
-                alt = gv['alt']['val']
-#                rsids.append(str(variant_id))
-                alts.append(alt)
-                allele_frequencies.append(allele_freq)
             gene_names_M = gene_variant['gene_name']['val']
-            gene_return = gene_names_M
-            major_consequence_M = gene_variant['consequence']['val']
-            category = [utils.add_category_to_variant(major_consequence_M[i]) for i in range(0,len(major_consequence_M))]
-            for i in range(0,len(category)):
-                if category[i] in self.category:
-                    idxkeeparr.append(i)
-            HGVSp_M = gene_variant['hgvsp']['val']
             # -- -
             # -- - M x N NumPy Arrays - --
             # -- -
             se_M_N = None
             lor_M_N = None
-            pval_M_N = None
-            icds = icd
             for icd in icds:
                 # SciDB lookup
                 # ---
-                variant_icd = lookups.get_variant_icd(self.db, gene_names=gene_names, icds=[icd])
+                variant_icd = lookups.get_variant_icd(db, gene_names=gene_names, icds=[icd])
                 se = variant_icd['se']['val']
                 if se_M_N is None:
                     se_M_N = se
                 else:
-                    se_M_N = np.c_[se_M_N, se]
+                    se_M_N = numpy.c_[se_M_N, se]
                 lor = variant_icd['lor']['val']
                 if lor_M_N is None:
                     lor_M_N = lor
                 else:
-                    lor_M_N = np.c_[lor_M_N, lor]
-        #    print(lor_M_N)
-        #    print(se_M_N)
-        dt= np.dtype('float,float')
-        betas = np.array(lor_M_N)
-        se = np.array(se_M_N)
-        icd_count = len(icds)
-        variant_ids = keys_M
-        protein_annotations = HGVSp_M
-        icd = icds
-        annotations = major_consequence_M
-#        pvalues = pvalues[idxkeeparr,:]
-        if len(betas.shape) == 1:
-            betas = betas.reshape(betas.shape[0],1)
-            se = se.reshape(se.shape[0],1)
-            betas  = betas[idxkeeparr,:]
-            se = se[idxkeeparr,:]
-        else:
-            betas  = betas[idxkeeparr,:]
-            se = se[idxkeeparr,:]
-        np.savetxt('test.out', betas, delimiter=',')
-        np.savetxt('testse.out', se, delimiter=',')  
-        pvalues  = betas
-        variant_ids = list(np.array(variant_ids)[idxkeeparr])
-        annotations = list(np.array(annotations)[idxkeeparr])
-        protein_annotations = list(np.array(protein_annotations)[idxkeeparr])
-        gene_return = list(np.array(gene_return)[idxkeeparr])
-        rsids = variant_ids
-#        rsids = list(numpy.array(rsids)[idxkeeparr])
-        alts = list(np.array(alts)[idxkeeparr])
-        allele_frequencies = list(np.array(allele_frequencies)[idxkeeparr])
+                    lor_M_N = numpy.c_[lor_M_N, lor]
+            print(lor_M_N)
+            print(se_M_N)
+            betas = lor_M_N
+            se = se_M_N
+
+            results = lookups.get_variant_icd(self.db, gene_names=genes,icds=icd)
+            icd_count = len(icd_codes)
+            annotations = []
+            protein_annotations = []
+            variant_ids = []
+            gene_return = []
+            rsids = []
+            icd = []
+            alts = []
+            icd_count = 0
+            idxkeep = 0
+            idxkeeparr = []
+            idxo = open('idxo.txt','w')
+            for v in gene_variant:
+                chr = v['chrom']
+                #        self.variant_id = v['variant_id']
+                alt = v['alt']['val']
+                if 'major_consequence' in v:
+                    consequence = v['major_consequence']
+                ref = v['ref']['val']
+                if 'category' in v:
+                    category = v['category']
+                position = v['pos']
+                rsid = v['rsid']['val']
+                variant_id = str(chr) + "-" + str(position) + "-" + str(ref) + "-" + str(alt)
+                allele_freq = v['exac_nfe']['val']  # !!!
+                xpos = v['chrom'] * config.XOFF + v['pos']
+                csq = v['csq']['val']
+                gene_id = v['gene_id']['val']
+                vep_annotations =  lookups.parse_vep_annotations(csq, gene_id=gene_id)
+                variant = {}
+                utils.add_consequence_to_variant(variant, vep_annotations)
+                consequence = variant['major_consequence']
+                category = variant['category']
+                if category in self.category:
+                    idxkeeparr.append(idxkeep)
+                    idxo.write(str(idxkeep))
+                idxkeep += 1
+            gene_variant_subset = gene_variant[idxkeeparr]
+            variant_countall = len(gene_variant_subset)
+            # Initialize arrays
+            betas = np.zeros(shape=(variant_countall, icd_count),dtype='float64')
+            pvalues = np.zeros(shape=(variant_countall, icd_count),dtype='float64')
+            allele_frequencies = np.zeros(shape=(variant_countall, 1),dtype='float64')
+        #    se = np.zeros(shape=(variant_countall, icd_count),dtype='float64')
+        #    variant_count = 0
+        #    for v in gene_variant_subset:
+                chr = v['chrom']
+                #        self.variant_id = v['variant_id']
+                alt = v['alt']['val']
+                if 'major_consequence' in v:
+                    consequence = v['major_consequence']
+                ref = v['ref']['val']
+                if 'category' in v:
+                    category = v['category']
+                position = v['pos']
+                rsid = v['rsid']['val']
+                variant_id = str(chr) + "-" + str(position) + "-" + str(ref) + "-" + str(alt)
+                allele_freq = v['exac_nfe']['val']  # !!!
+                idxo.write(variant_id)
+                xpos = v['chrom'] * config.XOFF + v['pos']
+                csq = v['csq']['val']
+                gene_id = v['gene_id']['val']
+                vep_annotations =  lookups.parse_vep_annotations(csq, gene_id=gene_id)
+                variant = {}
+                utils.add_consequence_to_variant(variant, vep_annotations)
+                consequence = variant['major_consequence']
+                category = variant['category']
+                #        self.hgvsp.append(variant['HGVSp'])
+                hgvsp = variant['HGVSp']
+                if "LoF_info" in variant:
+                    lof_info.append(variant['LoF_info'])
+                if "LoF_filter" in variant:
+                    lof_filter.append(variant['LoF_filter'])
+                variant_ids.append(str(variant_id))
+                annotations.append(str(consequence))
+                protein_annotations.append(str(hgvsp))
+                gene_return.append(gene_id)
+                rsids.append(str(variant_id))
+                alts.append(alt)
+                allele_frequencies[variant_count,0] = allele_freq
+                for i in icd_codes:
+                    datareturn = variant_icd[(variant_icd['icd']['val'] == i) & (variant_icd['chrom'] == chr) & (variant_icd['pos'] == position)]
+                    if len(datareturn) > 0:
+                        betas[variant_count][icd_count] = datareturn['lor']['val']
+                        se[variant_count][icd_count] = datareturn['se']['val']
+                        pvalues[variant_count][icd_count] = datareturn['pvalue']['val']
+                    else:
+                        betas[variant_count][icd_count] = 0
+                        se[variant_count][icd_count] = 0
+                        pvalues[variant_count][icd_count] = 0
+                    icd.append(i)
+                    icd_count += 1
+                variant_count += 1
+            idxo.close()
         return betas, se, pvalues, annotations, protein_annotations, \
                variant_ids, icd, gene_return, rsids, alts, allele_frequencies
 
