@@ -22,17 +22,12 @@ def Polygenic(key, betas, ses, labels, chains = 8, iter = 200, warmup = 100, cor
     ro.r('''
   covarr<-function(nstudies, fn, betas, ses, labels, chains, iter, warmup, cores){       
 
-       library(svglite)
+
        library(rstan)
-       require(GGally)
-       require(network)
-       require(sna)
        require(ggplot2)
        require(corpcor)
        require(RColorBrewer)
        library(ggthemes)
-# add loo 
-       library(loo)
 
        # Create data for Stan
       stan.data <- list(
@@ -137,14 +132,11 @@ def PolygenicCoding(key, betas, ses, labels, chains = 8, iter = 200, warmup = 10
     ro.r('''
   covarr<-function(nstudies, fn, betas, ses, labels, chains, iter, warmup, cores){       
 
-       library(svglite)
        library(rstan)
-       require(GGally)
        require(ggplot2)
-       require(corpcor)
        require(RColorBrewer)
        library(ggthemes)
-
+    require(svglite)
        # Create data for Stan
       stan.data <- list(
            N = nrow(betas),
@@ -214,8 +206,15 @@ print(mylabels)
 p.1 <- plot(fit2, pars=c("Omegacor", "Thetacor", "pi", "tau"))  
 p.1 <- p.1  +  scale_y_continuous(labels = mylabels, breaks = seq(1,length(mylabels))) +  theme_wsj() + scale_colour_wsj("colors6","")
 #p.1 <- p.1  +  scale_y_continuous(labels = mylabels, breaks = seq(1,length(mylabels))) +  theme_hc() + scale_colour_hc("colors6", "")
-ggsave(fn, plot = p.1, width = 8, height = 8, device = "svg") 
+#    svg(file = fn, width = 8, height = 8)
+#    p.1
+#    dev.off()
+
 p.2 <- traceplot(fit2, pars = c( "tau","pi","Omegacor","Thetacor"), inc_warmup = TRUE, nrow = 5) +  theme_wsj() + scale_colour_wsj("colors6", "")
+#    svg(file = paste(c(fn,2,".svg"), sep = "", collapse=""), width = 8, height = 8)
+#    p.2
+#    dev.off()
+ggsave(fn, plot = p.1, width = 8, height = 8, device = "svg") 
 ggsave(paste(c(fn,2,".svg"), sep = "", collapse=""), plot = p.2, width = 8, height = 8, device = "svg")
 
 ## extract the simulated draws from the posterior and note the number for nsims
