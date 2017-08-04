@@ -1018,7 +1018,7 @@ def get_gene_variant(db, gene_names=None, icds=None):
       db.variants.find({'genes': gene_id}, fields={'_id': False})
 
     SciDB:
-
+      See GENE_VARIANT_LOOKUP in config.py
     """
     if gene_names:
         gene_filter = 'filter({gene_array}, {cond})'.format(
@@ -1048,7 +1048,7 @@ def get_variant_icd(db, gene_names=None, icds=None):
                   fields={'_id': False})
 
     SciDB:
-
+      See VARIANT_ICD_LOOKUP in config.py
     """
     if gene_names:
         gene_filter = 'filter({gene_array}, {cond})'.format(
