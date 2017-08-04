@@ -222,12 +222,31 @@ on small SciDB sample using `gene_names = ['SCYL3']` and `icds =
 
 ```python
 $ python models-example.py
-['frameshift_variant', 'missense_variant', '3_prime_UTR_variant', 'missense_variant', 'missense_variant', '3_prime_UTR_variant', '3_prime_UTR_variant', 'missense_variant', 'missense_variant', 'missense_variant', 'missense_variant', 'splice_region_variant', 'stop_gained', 'missense_variant', 'missense_variant', 'intron_variant', 'intron_variant', 'intron_variant', 'intron_variant', 'intron_variant', 'missense_variant', 'intron_variant', 'intron_variant']
-[u'p.Asp663MetfsTer13', u'p.Gln686Arg', u'', u'p.Gly750Glu', u'p.Arg841Thr', u'', u'', u'p.Ala687Thr', u'p.Pro637Leu', u'p.Gln621Arg', u'p.Gly597Ala', u'p.Gly492Gly', u'p.Arg482Ter', u'p.Val444Ile', u'p.Arg337Gln', u'', u'', u'', u'', u'', u'p.Val130Ala', u'', u'']
-['1-169816870-CCTGA-C', '1-169816943-A-G', '1-169819284-G-A', '1-169820962-G-A', '1-169822088-G-C', '1-169822140-A-AGGCAGAACT', '1-169822844-A-ACAT', '1-169823521-C-T', '1-169823670-G-A', '1-169823718-T-C', '1-169823790-C-G', '1-169824104-G-A', '1-169824967-G-A', '1-169825081-C-T', '1-169831884-C-T', '1-169832444-C-T', '1-169835210-G-T', '1-169836427-C-T', '1-169842669-G-A', '1-169843017-C-T', '1-169845195-A-G', '1-169846883-T-C', '1-169856661-G-A']
+[u'frameshift_variant' u'missense_variant' u'3_prime_UTR_variant'
+ u'missense_variant' u'missense_variant' u'3_prime_UTR_variant'
+ u'3_prime_UTR_variant' u'missense_variant' u'missense_variant'
+ u'missense_variant' u'splice_region_variant' u'stop_gained'
+ u'missense_variant' u'missense_variant' u'intron_variant'
+ u'intron_variant' u'intron_variant' u'intron_variant' u'intron_variant'
+ u'missense_variant' u'intron_variant' u'intron_variant']
+[ u'ENSP00000352276.4:p.Asp663MetfsTer13,ENSP00000286031.6:p.Asp663MetfsTer13'
+ u'ENSP00000352276.4:p.Gln686Arg,ENSP00000286031.6:p.Gln686Arg' u''
+ u'ENSP00000352276.4:p.Gly750Glu,ENSP00000286031.6:p.Gly750Glu'
+ u'ENSP00000286031.6:p.Arg841Thr,ENSP00000352276.4:p.Arg841Thr' u'' u''
+ u'ENSP00000356744.1:p.Ala687Thr,ENSP00000356745.5:p.Ala633Thr,ENSP00000356746.4:p.Ala687Thr'
+ u'ENSP00000356744.1:p.Gln621Arg,ENSP00000356745.5:p.Gln567Arg,ENSP00000356746.4:p.Gln621Arg,ENSP00000407993.1:p.Gln567Arg'
+ u'ENSP00000356745.5:p.Gly543Ala,ENSP00000356746.4:p.Gly597Ala,ENSP00000356744.1:p.Gly597Ala,ENSP00000407993.1:p.Gly543Ala'
+ u'ENSP00000356746.4:p.Gly492%3D,ENSP00000407993.1:p.Gly438%3D,ENSP00000356744.1:p.Gly492%3D,ENSP00000356745.5:p.Gly438%3D'
+ u'ENSP00000356744.1:p.Arg482Ter,ENSP00000356746.4:p.Arg482Ter'
+ u'ENSP00000356744.1:p.Val444Ile,ENSP00000356746.4:p.Val444Ile'
+ u'ENSP00000356745.5:p.Arg337Gln,ENSP00000407993.1:p.Arg337Gln,ENSP00000356744.1:p.Arg337Gln,ENSP00000356746.4:p.Arg337Gln'
+ u'' u'' u'' u'' u''
+ u'ENSP00000356744.1:p.Val130Ala,ENSP00000356745.5:p.Val130Ala,ENSP00000356746.4:p.Val130Ala,ENSP00000407993.1:p.Val130Ala'
+ u'' u'']
+['1-169816870-CCTGA-C', '1-169816943-A-G', '1-169819284-G-A', '1-169820962-G-A', '1-169822088-G-C', '1-169822140-A-AGGCAGAACT', '1-169822844-A-ACAT', '1-169823521-C-T', '1-169823718-T-C', '1-169823790-C-G', '1-169824104-G-A', '1-169824967-G-A', '1-169825081-C-T', '1-169831884-C-T', '1-169832444-C-T', '1-169835210-G-T', '1-169836427-C-T', '1-169842669-G-A', '1-169843017-C-T', '1-169845195-A-G', '1-169846883-T-C', '1-169856661-G-A']
 [u'SCYL3' u'SCYL3' u'SCYL3' u'SCYL3' u'SCYL3' u'SCYL3' u'SCYL3' u'SCYL3'
  u'SCYL3' u'SCYL3' u'SCYL3' u'SCYL3' u'SCYL3' u'SCYL3' u'SCYL3' u'SCYL3'
- u'SCYL3' u'SCYL3' u'SCYL3' u'SCYL3' u'SCYL3' u'SCYL3' u'SCYL3']
+ u'SCYL3' u'SCYL3' u'SCYL3' u'SCYL3' u'SCYL3' u'SCYL3']
 [[  0.00000000e+00   0.00000000e+00]
  [  0.00000000e+00   0.00000000e+00]
  [  3.08996000e-04  -5.57188623e-02]
