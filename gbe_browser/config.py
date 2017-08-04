@@ -993,6 +993,7 @@ GENE_ID_BY_NAME_SCHEMA = scidbpy.schema.Schema.fromstring(
     '<gene_id:string>[notused]')
 
 GENE_VARIANT_LOOKUP = """
+sort(
   equi_join(
     equi_join(
       project({variant_array}, rsid, ref, alt, exac_nfe),
@@ -1017,7 +1018,7 @@ GENE_VARIANT_LOOKUP = """
     {bim_array},
     'left_names=chrom,pos,ref,alt',
     'right_names=chrom,pos,ref,alt',
-    'algorithm=hash_replicate_right')""".format(
+    'algorithm=hash_replicate_right'), chrom,pos,ref,alt)""".format(
         variant_array=VARIANT_ARRAY,
         variant_gene_array=VARIANT_GENE_ARRAY,
         gene_index_array=GENE_INDEX_ARRAY,
@@ -1037,7 +1038,8 @@ GENE_VARIANT_SCHEMA = scidbpy.schema.Schema.fromstring("""
    notused01]""")
 
 VARIANT_ICD_LOOKUP = """
-  project(
+ project(
+   sort(
     equi_join(
       project(
         equi_join(
@@ -1053,7 +1055,7 @@ VARIANT_ICD_LOOKUP = """
         pos),
       project(
         equi_join(
-          project({variant_array}, rsid),
+          project({variant_array}, ref, alt, rsid),
           project(
             equi_join(
               {variant_gene_array},
@@ -1075,10 +1077,11 @@ VARIANT_ICD_LOOKUP = """
           'left_names=chrom,pos',
           'right_names=chrom,pos'),
         chrom,
-        pos),
+        pos, ref, alt),
       'left_names=chrom,pos',
       'right_names=chrom,pos',
       'right_outer=1'),
+    chrom,pos,ref,alt),
     se,
     lor)""".format(icd_array=ICD_ARRAY,
                    variant_array=VARIANT_ARRAY,
