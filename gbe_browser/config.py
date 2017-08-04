@@ -673,38 +673,28 @@ DBSNP_BY_CHROM_POS_STORE_QUERY = """
 # -- -
 # -- - Load: BIM - --
 # -- -
-BIM_FILE = os.path.join(GBE_DATA_PATH, 'bims_combined.vep.tsv')
+BIM_FILE = os.path.join(GBE_DATA_PATH, 'bims_combined.vep.cf.tsv.gz')
 
 BIM_ARRAY = 'bim'
 BIM_SCHEMA = """
   <ref:         string,
    alt:         string,
-   filter:      string,
-   gene:        string,
    consequence: string,
-   lof:         string,
-   lof_filter:  string,
-   lof_flags:   string,
-   lof_info:    string>
-  [chrom          = 1:25:0:1;
-   pos            = 0:*:0:10000000]"""
+   hgvsp:       string>
+  [chrom = 1:25:0:1;
+   pos   = 0:*:0:10000000]"""
 
 BIM_STORE_QUERY = """
   store(
     redimension(
       apply(
-        aio_input('{bim_file}', 'num_attributes=11', 'header=1'),
+        aio_input('{{path}}', 'num_attributes=11', 'header=1'),
         chrom,       int64(a0),
         pos,         int64(a1),
         ref,         a2,
         alt,         a3,
-        filter,      a4,
-        gene,        iif(a5 = 'NA', null, a5),
-        consequence, a6,
-        lof,         iif(a7 = 'NA', null, a7),
-        lof_filter,  iif(a8 = 'NA', null, a8),
-        lof_flags,   iif(a9 = 'NA', null, a9),
-        lof_info,    iif(a10 = 'NA', null, a10)),
+        consequence, a8,
+        hgvsp,       a9),
       {bim_schema}),
     {bim_array})""".format(
         bim_file=BIM_FILE,
@@ -1004,39 +994,45 @@ GENE_ID_BY_NAME_SCHEMA = scidbpy.schema.Schema.fromstring(
 
 GENE_VARIANT_LOOKUP = """
   equi_join(
-    project({variant_array}, rsid, ref, alt, exac_nfe, csq),
-    project(
-      equi_join(
-        {variant_gene_array},
+    equi_join(
+      project({variant_array}, rsid, ref, alt, exac_nfe),
+      project(
         equi_join(
-          {gene_index_array},
-          project({{gene_filter}}, gene_name),
+          {variant_gene_array},
+          equi_join(
+            {gene_index_array},
+            project({{gene_filter}}, gene_name),
+            'left_names=gene_idx',
+            'right_names=gene_idx',
+            'algorithm=hash_replicate_right'),
           'left_names=gene_idx',
           'right_names=gene_idx',
+          'keep_dimensions=1',
           'algorithm=hash_replicate_right'),
-        'left_names=gene_idx',
-        'right_names=gene_idx',
-        'keep_dimensions=1',
-        'algorithm=hash_replicate_right'),
-      chrom,
-      pos,
-      gene_name,
-      gene_id),
-    'left_names=chrom,pos',
-    'right_names=chrom,pos')""".format(variant_array=VARIANT_ARRAY,
-                                       variant_gene_array=VARIANT_GENE_ARRAY,
-                                       gene_index_array=GENE_INDEX_ARRAY)
+        chrom,
+        pos,
+        gene_name),
+      'left_names=chrom,pos',
+      'right_names=chrom,pos'),
+    {bim_array},
+    'left_names=chrom,pos,ref,alt',
+    'right_names=chrom,pos,ref,alt',
+    'algorithm=hash_replicate_right')""".format(
+        variant_array=VARIANT_ARRAY,
+        variant_gene_array=VARIANT_GENE_ARRAY,
+        gene_index_array=GENE_INDEX_ARRAY,
+        bim_array=BIM_ARRAY)
 
 GENE_VARIANT_SCHEMA = scidbpy.schema.Schema.fromstring("""
-  <chrom:     int64 not null,
-   pos:       int64 not null,
-   rsid:      int64,
-   ref:       string,
-   alt:       string,
-   exac_nfe:  double,
-   csq:       string,
-   gene_name: string,
-   gene_id:   string>
+  <chrom:       int64 not null,
+   pos:         int64 not null,
+   ref:         string,
+   alt:         string,
+   rsid:        int64,
+   exac_nfe:    double,
+   gene_name:   string,
+   consequence: string,
+   hgvsp:       string>
   [notused0;
    notused01]""")
 

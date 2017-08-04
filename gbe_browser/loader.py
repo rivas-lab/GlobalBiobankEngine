@@ -403,9 +403,13 @@ class Loader:
     # -- - BIM - --
     # -- -
     def store_bim(self):
+        fifo_name = self.fifo_names[0]
+        pipe = Loader.make_pipe(config.BIM_FILE, fifo_name)
+
         logger.info('Query:running...')
-        self.db.iquery(config.BIM_STORE_QUERY)
+        self.db.iquery(config.BIM_STORE_QUERY.format(path=fifo_name))
         logger.info('Query:done')
+        logger.info('Pipe:return code:%s', pipe.poll())
         logger.info('Array:%s', config.BIM_ARRAY)
 
     # -- - - --
@@ -457,7 +461,7 @@ class Loader:
         elif 'initialdata' in parts:
             prefix = 'INI'
             intadd = 30
-        elif 'qt' in name: 
+        elif 'qt' in name:
             prefix = 'INI'
             intadd = 30
         elif '_FH2' in name:
