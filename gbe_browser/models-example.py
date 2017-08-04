@@ -19,23 +19,24 @@ icds = ['HC49', 'HC382']        # Set to None to get all ICDs
 # ---
 gene_variant = lookups.get_gene_variant(db, gene_names=gene_names, icds=icds)
 
-major_consequence_M = []
-HGVSp_M = []
 keys_M = []
-
 for gv in gene_variant:
-    vep_annotations = lookups.parse_vep_annotations(gv['csq']['val'])
-    variant = {}
-    utils.add_consequence_to_variant(variant, vep_annotations)
+    # vep_annotations = lookups.parse_vep_annotations(gv['csq']['val'])
+    # variant = {}
+    # utils.add_consequence_to_variant(variant, vep_annotations)
 
-    major_consequence_M.append(variant['major_consequence'])
-    HGVSp_M.append(variant['HGVSp'])
+    # major_consequence_M.append(variant['major_consequence'])
+    # HGVSp_M.append(variant['HGVSp'])
+
     keys_M.append('{}-{}-{}-{}'.format(gv['chrom'],
                                        gv['pos'],
                                        gv['ref']['val'],
                                        gv['alt']['val']))
 
 gene_names_M = gene_variant['gene_name']['val']
+major_consequence_M = gene_variant['consequence']['val']
+HGVSp_M = gene_variant['hgvsp']['val']
+
 
 print(major_consequence_M)
 print(HGVSp_M)
