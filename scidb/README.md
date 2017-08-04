@@ -185,3 +185,65 @@ ICD_GLOB = os.path.join(
 QT_GLOB = os.path.join(
     GBE_DATA_PATH, 'icdassoc', 'hybrid', '*c*.linear.rewritewna.gz')
 ```
+
+# models.py Example
+
+The following is the output of running the `models-example.py` script
+on small SciDB sample using `gene_names = ['SCYL3']` and `icds =
+['INI6183', 'RH7']`
+
+```python
+$ python models-example.py
+['frameshift_variant', 'missense_variant', '3_prime_UTR_variant', 'missense_variant', 'missense_variant', '3_prime_UTR_variant', '3_prime_UTR_variant', 'missense_variant', 'missense_variant', 'missense_variant', 'missense_variant', 'splice_region_variant', 'stop_gained', 'missense_variant', 'missense_variant', 'intron_variant', 'intron_variant', 'intron_variant', 'intron_variant', 'intron_variant', 'missense_variant', 'intron_variant', 'intron_variant']
+[u'p.Asp663MetfsTer13', u'p.Gln686Arg', u'', u'p.Gly750Glu', u'p.Arg841Thr', u'', u'', u'p.Ala687Thr', u'p.Pro637Leu', u'p.Gln621Arg', u'p.Gly597Ala', u'p.Gly492Gly', u'p.Arg482Ter', u'p.Val444Ile', u'p.Arg337Gln', u'', u'', u'', u'', u'', u'p.Val130Ala', u'', u'']
+['1-169816870-CCTGA-C', '1-169816943-A-G', '1-169819284-G-A', '1-169820962-G-A', '1-169822088-G-C', '1-169822140-A-AGGCAGAACT', '1-169822844-A-ACAT', '1-169823521-C-T', '1-169823670-G-A', '1-169823718-T-C', '1-169823790-C-G', '1-169824104-G-A', '1-169824967-G-A', '1-169825081-C-T', '1-169831884-C-T', '1-169832444-C-T', '1-169835210-G-T', '1-169836427-C-T', '1-169842669-G-A', '1-169843017-C-T', '1-169845195-A-G', '1-169846883-T-C', '1-169856661-G-A']
+[u'SCYL3' u'SCYL3' u'SCYL3' u'SCYL3' u'SCYL3' u'SCYL3' u'SCYL3' u'SCYL3'
+ u'SCYL3' u'SCYL3' u'SCYL3' u'SCYL3' u'SCYL3' u'SCYL3' u'SCYL3' u'SCYL3'
+ u'SCYL3' u'SCYL3' u'SCYL3' u'SCYL3' u'SCYL3' u'SCYL3' u'SCYL3']
+[[  0.00000000e+00   0.00000000e+00]
+ [  0.00000000e+00   0.00000000e+00]
+ [  3.08996000e-04  -5.57188623e-02]
+ [  0.00000000e+00   0.00000000e+00]
+ [  4.44527000e-02  -2.26808342e-02]
+ [  0.00000000e+00   0.00000000e+00]
+ [  0.00000000e+00   0.00000000e+00]
+ [  1.70134000e-01  -3.74184183e-02]
+ [  1.73954000e-01  -2.76470491e-01]
+ [  0.00000000e+00   0.00000000e+00]
+ [  8.01952000e-02  -8.55687817e-02]
+ [  0.00000000e+00   0.00000000e+00]
+ [ -2.07798000e-02  -4.63382226e-02]
+ [  2.75961000e-01  -2.65208505e-01]
+ [ -3.81780000e-01   0.00000000e+00]
+ [  0.00000000e+00   0.00000000e+00]
+ [  2.47762000e-01   2.64930200e-01]
+ [  0.00000000e+00   0.00000000e+00]
+ [ -8.82501000e-02  -3.11357249e-02]
+ [  3.08996000e-04  -5.13554016e-02]
+ [  5.95597000e-02  -1.12959597e-02]
+ [ -7.12349000e-03   7.74886797e-02]
+ [  0.00000000e+00   0.00000000e+00]]
+[[ 0.         0.       ]
+ [ 0.         0.       ]
+ [ 0.123283   0.102384 ]
+ [ 0.         0.       ]
+ [ 0.0717782  0.0601873]
+ [ 0.         0.       ]
+ [ 0.         0.       ]
+ [ 0.296607   0.238513 ]
+ [ 0.200449   0.172228 ]
+ [ 0.         0.       ]
+ [ 0.0970896  0.0830187]
+ [ 0.         0.       ]
+ [ 0.124205   0.102667 ]
+ [ 0.16257    0.150759 ]
+ [ 0.463026   0.       ]
+ [ 0.         0.       ]
+ [ 0.413534   0.381214 ]
+ [ 0.         0.       ]
+ [ 0.121737   0.106907 ]
+ [ 0.123283   0.102429 ]
+ [ 0.0726321  0.0612982]
+ [ 0.101246   0.0798061]
+ [ 0.         0.       ]]
+```
