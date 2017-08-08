@@ -26,7 +26,7 @@ from flask import Response
 from collections import defaultdict
 from werkzeug.contrib.cache import SimpleCache
 from multiprocessing import Process
-# STAN workforce 
+# STAN workforce
 from optimized import Polygenic
 from optimized import PolygenicCoding
 import glob
@@ -925,7 +925,7 @@ def runPolyCoding_page():
         if "lof_variant" in function:
             lof = True
         annotations = []
-        # Add in the selected annotations to the category list                                                                                                                                                  
+        # Add in the selected annotations to the category list
         if lof:
             annotations.append('lof_variant')
         if missense:
@@ -936,7 +936,7 @@ def runPolyCoding_page():
         phenidarr = []
         for phenname in functionphen:
             phenidarr.append(str(phenname))
-        # Run Poly function                                                                                                                                                                                   
+        # Run Poly function
         if 'submit_polygenic' in request.form.keys():
             functionphen = request.form.getlist('phenotypes[]')
             phenidarr = []
@@ -944,15 +944,15 @@ def runPolyCoding_page():
                         phenidarr.append(str(phenname))
             phenidarr.sort()
             keycheck = '_'.join(phenidarr)
-            key = keycheck 
+            key = keycheck
             if os.path.exists("static/images/PolygenicCoding/PolygenicCoding_" + str(keycheck) + ".svg"):
                 return redirect("/polygeniccoding/%s" % key)
             else:
                 b = models.QueryGenome(category=annotations)
-                # Generate relevant files 
+                # Generate relevant files
                 betas, se, pvalues, annotations, protein_annotations, variant_ids, icd, gene_return, rsids, alts, allele_frequencies = b.query_genome(None, phenidarr)
                 labels = phenidarr
-                print(betas) 
+                print(betas)
                 criteria = ~(se==0).any(1)
                 print(criteria)
                 betas = betas[criteria]
