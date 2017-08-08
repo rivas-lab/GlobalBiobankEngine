@@ -993,36 +993,39 @@ GENE_ID_BY_NAME_SCHEMA = scidbpy.schema.Schema.fromstring(
     '<gene_id:string>[notused]')
 
 GENE_VARIANT_LOOKUP = """
-sort(
-  equi_join(
+  sort(
     equi_join(
-      project({variant_array}, rsid, ref, alt, exac_nfe),
-      project(
-        equi_join(
-          {variant_gene_array},
+      equi_join(
+        project({variant_array}, rsid, ref, alt, exac_nfe),
+        project(
           equi_join(
-            {gene_index_array},
-            project({{gene_filter}}, gene_name),
+            {variant_gene_array},
+            equi_join(
+              {gene_index_array},
+              project({{gene_filter}}, gene_name),
+              'left_names=gene_idx',
+              'right_names=gene_idx',
+              'algorithm=hash_replicate_right'),
             'left_names=gene_idx',
             'right_names=gene_idx',
+            'keep_dimensions=1',
             'algorithm=hash_replicate_right'),
-          'left_names=gene_idx',
-          'right_names=gene_idx',
-          'keep_dimensions=1',
-          'algorithm=hash_replicate_right'),
-        chrom,
-        pos,
-        gene_name),
-      'left_names=chrom,pos',
-      'right_names=chrom,pos'),
-    {bim_array},
-    'left_names=chrom,pos,ref,alt',
-    'right_names=chrom,pos,ref,alt',
-    'algorithm=hash_replicate_right'), chrom,pos,ref,alt)""".format(
-        variant_array=VARIANT_ARRAY,
-        variant_gene_array=VARIANT_GENE_ARRAY,
-        gene_index_array=GENE_INDEX_ARRAY,
-        bim_array=BIM_ARRAY)
+          chrom,
+          pos,
+          gene_name),
+        'left_names=chrom,pos',
+        'right_names=chrom,pos'),
+      {bim_array},
+      'left_names=chrom,pos,ref,alt',
+      'right_names=chrom,pos,ref,alt',
+      'algorithm=hash_replicate_right'),
+    chrom,
+    pos,
+    ref,
+    alt)""".format(variant_array=VARIANT_ARRAY,
+                   variant_gene_array=VARIANT_GENE_ARRAY,
+                   gene_index_array=GENE_INDEX_ARRAY,
+                   bim_array=BIM_ARRAY)
 
 GENE_VARIANT_SCHEMA = scidbpy.schema.Schema.fromstring("""
   <chrom:       int64 not null,
@@ -1038,50 +1041,53 @@ GENE_VARIANT_SCHEMA = scidbpy.schema.Schema.fromstring("""
    notused01]""")
 
 VARIANT_ICD_LOOKUP = """
- project(
-   sort(
-    equi_join(
-      project(
-        equi_join(
-          project({icd_array}, se, pvalue, lor),
-          project({{icd_filter}}, Case),
-          'left_names=icd_idx',
-          'right_names=icd_idx',
-          'keep_dimensions=1',
-          'algorithm=hash_replicate_right'),
-        se,
-        lor,
-        chrom,
-        pos),
-      project(
-        equi_join(
-          project({variant_array}, ref, alt, rsid),
-          project(
-            equi_join(
-              {variant_gene_array},
-              project(
-                equi_join(
-                  {gene_index_array},
-                  project({{gene_filter}}, chrom),
-                  'left_names=gene_idx',
-                  'right_names=gene_idx',
-                  'algorithm=hash_replicate_right'),
-                gene_idx),
-              'left_names=gene_idx',
-              'right_names=gene_idx',
-              'keep_dimensions=1',
-              'algorithm=hash_replicate_right'),
-            chrom,
-            pos,
-            gene_idx),
-          'left_names=chrom,pos',
-          'right_names=chrom,pos'),
-        chrom,
-        pos, ref, alt),
-      'left_names=chrom,pos',
-      'right_names=chrom,pos',
-      'right_outer=1'),
-    chrom,pos,ref,alt),
+  project(
+    sort(
+      equi_join(
+        project(
+          equi_join(
+            project({icd_array}, se, pvalue, lor),
+            project({{icd_filter}}, Case),
+            'left_names=icd_idx',
+            'right_names=icd_idx',
+            'keep_dimensions=1',
+            'algorithm=hash_replicate_right'),
+          se,
+          lor,
+          chrom,
+          pos),
+        project(
+          equi_join(
+            project({variant_array}, ref, alt, rsid),
+            project(
+              equi_join(
+                {variant_gene_array},
+                project(
+                  equi_join(
+                    {gene_index_array},
+                    project({{gene_filter}}, chrom),
+                    'left_names=gene_idx',
+                    'right_names=gene_idx',
+                    'algorithm=hash_replicate_right'),
+                  gene_idx),
+                'left_names=gene_idx',
+                'right_names=gene_idx',
+                'keep_dimensions=1',
+                'algorithm=hash_replicate_right'),
+              chrom,
+              pos,
+              gene_idx),
+            'left_names=chrom,pos',
+            'right_names=chrom,pos'),
+          chrom,
+          pos, ref, alt),
+        'left_names=chrom,pos',
+        'right_names=chrom,pos',
+        'right_outer=1'),
+      chrom,
+      pos,
+      ref,
+      alt),
     se,
     lor)""".format(icd_array=ICD_ARRAY,
                    variant_array=VARIANT_ARRAY,
