@@ -97,16 +97,17 @@ def format_variants(variants, add_ann=False, gene_id=None, transcript_id=None):
     return variants
 
 
-def format_gene(gene):
-    gene['xstart'] = gene['chrom'] * config.XOFF + gene['start']
-    gene['xstop'] = gene['chrom'] * config.XOFF + gene['stop']
+def cast_pos_info(gene):
+    for key in ('chrom', 'start', 'stop'):
+        if key in gene:
+            gene[key] = int(gene[key])
     return gene
 
 
-def format_genes(genes):
-    for gene in genes:
-        format_gene(gene)
-    return genes
+def add_xpos(gene):
+    gene['xstart'] = gene['chrom'] * config.XOFF + gene['start']
+    gene['xstop'] = gene['chrom'] * config.XOFF + gene['stop']
+    return gene
 
 
 def exists(db, array_name, attr_name, attr_val):
@@ -508,7 +509,7 @@ def get_transcript_by_idx(db, transcript_idx):
       between(transcript, null, 3694,
                           null, 3694);
     """
-    return format_gene(
+    return add_xpos(
         numpy2dict0(
             db.iquery(
                 config.TRANSCRIPT_IDX_LOOKUP.format(
@@ -558,14 +559,13 @@ def get_transcript_gene(db, transcript_id):
         transcript.gene_idx,
         gene_index.gene_idx);
     """
-    res = format_gene(
+    return add_xpos(
         numpy2dict0(
             db.iquery(
                 config.TRANSCRIPT_GENE_LOOKUP.format(
                     transcript_id=transcript_id),
                 schema=config.TRANSCRIPT_GENE_SCHEMA,
                 fetch=True)))
-    return res
 
 
 def get_transcripts_by_gene_idx(db, gene_idx):
