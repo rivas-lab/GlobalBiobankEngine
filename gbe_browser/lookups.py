@@ -32,6 +32,9 @@ REGION_RE2 = re.compile(r'^(\d+|X|Y|M|MT)\s*:\s*(\d+)$')
 REGION_RE3 = re.compile(r'^(\d+|X|Y|M|MT)$')
 REGION_RE4 = re.compile(r'^(\d+|X|Y|M|MT)\s*[-:]\s*(\d+)-([ATCG]+)-([ATCG]+)$')
 
+GENE_TRANSCRIPT_INFO_KEYS = ('strand', 'chrom', 'start', 'stop')
+GENE_EXON_INFO_KEYS = ('feature_type', 'chrom', 'start', 'stop')
+
 
 def numpy2dict0(ar):
     """Convert SciDB NumPy record result to Python dictionary and populate
@@ -495,30 +498,6 @@ def get_gene_id_by_name(db, gene_name):
     return res[0]['gene_id']['val']
 
 
-def get_transcript_by_idx(db, transcript_idx):
-    """
-    e.g.,
-    UI:
-      https://biobankengine.stanford.edu/gene/ENSG00000107404
-
-    MongoDB:
-      db.transcripts.find({'transcript_id': 'ENST00000378891'},
-                          fields={'_id': False})
-
-    SciDB:
-      between(transcript, null, 3694,
-                          null, 3694);
-    """
-    return add_xpos(
-        numpy2dict0(
-            db.iquery(
-                config.TRANSCRIPT_IDX_LOOKUP.format(
-                    gene_idx='null',
-                    transcript_idx=transcript_idx),
-                schema=config.TRANSCRIPT_SCHEMA_OBJ,
-                fetch=True)))
-
-
 def exists_transcript_id(db, transcript_id):
     """
     Search bar
@@ -566,29 +545,6 @@ def get_transcript_gene(db, transcript_id):
                     transcript_id=transcript_id),
                 schema=config.TRANSCRIPT_GENE_SCHEMA,
                 fetch=True)))
-
-
-def get_transcripts_by_gene_idx(db, gene_idx):
-    """
-    e.g.,
-    UI:
-      https://biobankengine.stanford.edu/gene/ENSG00000107404
-
-    MongoDB:
-      db.transcripts.find({'gene_id': 'ENSG00000107404'},
-                          fields={'_id': False})
-
-    SciDB:
-      between(transcript, 173, null,
-                          173, null);
-    """
-    return numpy2dict(
-        db.iquery(
-            config.TRANSCRIPT_IDX_LOOKUP.format(
-                gene_idx=gene_idx,
-                transcript_idx='null'),
-            schema=config.TRANSCRIPT_SCHEMA_OBJ,
-            fetch=True))
 
 
 def get_transcripts_id_by_gene_idx(db, gene_idx):
@@ -1091,9 +1047,6 @@ def print_all():
     # /gene/ENSG00000107404 -> gbe.gene_page()
     pp.pprint(get_gene_by_id(db, 'ENSG00000107404'))
     pp.pprint(get_variants_by_gene_idx(db, 173, 'ENSG00000107404'))
-    pp.pprint(get_transcripts_by_gene_idx(db, 173))
-    pp.pprint(get_transcript_by_idx(db, 3694))
-    pp.pprint(get_exons(db, 3694))
     pp.pprint(get_variants_by_transcript_idx(db, 3694, 'ENST00000378891'))
     pp.pprint(get_coverage_for_transcript(db, 1001270607, 1001284543))
 
@@ -1189,21 +1142,6 @@ def time_all():
     with timer.Timer() as t:
         get_variants_by_gene_idx(db, 173, 'ENSG00000107404')
     print('{:8.2f}ms\t{}'.format(t.msecs, 'get_variants_by_gene_idx'))
-    tm += t.msecs
-
-    with timer.Timer() as t:
-        get_transcripts_by_gene_idx(db, 173)
-    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_transcripts_by_gene_idx'))
-    tm += t.msecs
-
-    with timer.Timer() as t:
-        get_transcript_by_idx(db, 3694)
-    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_transcript_by_idx'))
-    tm += t.msecs
-
-    with timer.Timer() as t:
-        get_exons(db, 3694)
-    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_exons'))
     tm += t.msecs
 
     with timer.Timer() as t:

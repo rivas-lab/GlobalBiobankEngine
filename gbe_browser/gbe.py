@@ -1095,16 +1095,27 @@ def get_gene_page_content(gene_id):
 
             variants_in_gene = lookups.get_variants_by_gene_idx(db, gene_idx, gene_id)
 
-            transcripts_in_gene = lookups.get_transcripts_by_gene_idx(db, gene_idx)
+            transcripts_in_gene = [
+                lookups.cast_pos_info(
+                    dict(zip(lookups.GENE_TRANSCRIPT_INFO_KEYS, s.split(':'))))
+                for s in gene['transcript_info'].split(';')
+                if s]
 
             #print(variants_in_gene)
             # Get some canonical transcript and corresponding info
 
             transcript_id = gene['canonical_transcript']
             transcript_idx = gene['transcript_idx']
-            transcript = lookups.get_transcript_by_idx(db, transcript_idx)
+            transcript = lookups.add_xpos(
+                lookups.cast_pos_info(
+                    dict(zip(lookups.GENE_TRANSCRIPT_INFO_KEYS,
+                             gene['c_transcript_info'].split(':')))))
             transcript['transcript_id'] = transcript_id
-            transcript['exons'] = lookups.get_exons(db, transcript_idx)
+            transcript['exons'] = [
+                lookups.cast_pos_info(
+                    dict(zip(lookups.GENE_EXON_INFO_KEYS, s.split(':'))))
+                for s in gene['exon_info'].split(';')
+                if s]
 
             variants_in_transcript = lookups.get_variants_by_transcript_idx(
                 db, transcript_idx, transcript_id)

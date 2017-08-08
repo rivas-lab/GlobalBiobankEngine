@@ -396,7 +396,6 @@ TRANSCRIPT_SCHEMA = """
    stop:   int64>
   [gene_idx       = 0:*:0:10000;
    transcript_idx = 0:*:0:10000]"""
-TRANSCRIPT_SCHEMA_OBJ = scidbpy.schema.Schema.fromstring(TRANSCRIPT_SCHEMA)
 
 TRANSCRIPT_STORE_QUERY = """
   store(
@@ -1247,13 +1246,6 @@ TRANSCRIPT_OR_EXON_BETWEEN_QUERY = """
   between({array_name},
           {gene_idx}, {transcript_idx}, null, null, null, null,
           {gene_idx}, {transcript_idx}, null, null, null, null)"""
-
-TRANSCRIPT_IDX_LOOKUP = """
-  between({transcript_array},
-          {{gene_idx}}, {{transcript_idx}},
-          {{gene_idx}}, {{transcript_idx}})""".format(
-              transcript_array=TRANSCRIPT_ARRAY)
-
 
 TRANSCRIPT_ID_LOOKUP = """
   cross_join(
