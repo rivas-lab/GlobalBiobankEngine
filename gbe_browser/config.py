@@ -319,14 +319,17 @@ OMIM_STORE_QUERY = """
 
 GENE_ARRAY = 'gene'
 GENE_SCHEMA = """
-  <gene_name:      string,
-   strand:         string,
-   full_gene_name: string,
-   omim_accession: string,
-   transcript_idx: int64,
-   chrom:          int64,
-   start:          int64,
-   stop:           int64>
+  <gene_name:         string,
+   strand:            string,
+   full_gene_name:    string,
+   omim_accession:    string,
+   transcript_idx:    int64,
+   chrom:             int64,
+   start:             int64,
+   stop:              int64,
+   c_transcript_info: string,
+   transcript_info:   string,
+   exon_info:         string>
   [gene_idx       = 0:*:0:10000]"""
 
 GENE_STORE_QUERY = """
@@ -350,7 +353,10 @@ GENE_STORE_QUERY = """
                   start,     int64(a3),
                   stop,      int64(a4),
                   gene_name, rsub(a8, 's/.*gene_name "([^"]*).*/$1/'),
-                  strand,    a6),
+                  strand,    a6,
+                  c_transcript_info, string(null),
+                  transcript_info,   string(null),
+                  exon_info,         string(null)),
                 {gene_index_array},
                 g_id,
                 gene_idx),
@@ -359,7 +365,10 @@ GENE_STORE_QUERY = """
                strand:    string,
                chrom:     int64,
                start:     int64,
-               stop:      int64>
+               stop:      int64,
+               c_transcript_info: string,
+               transcript_info:   string,
+               exon_info:         string>
               [gene_idx = 0:*:0:10000]),
 
             merge({dbnsfp_array},
@@ -464,6 +473,131 @@ EXON_STORE_QUERY = """
         gene_index_array=GENE_INDEX_ARRAY,
         transcript_index_array=TRANSCRIPT_INDEX_ARRAY)
 
+GENE_C_TRANSCRIPT_INFO_STORE_QUERY = """
+  store(
+    redimension(
+      equi_join(
+        project({gene_array},
+                gene_name,
+                strand,
+                full_gene_name,
+                omim_accession,
+                transcript_idx,
+                chrom,
+                start,
+                stop,
+                transcript_info,
+                exon_info),
+        project(
+          apply(
+            equi_join(
+              {transcript_array},
+              apply(
+                project({gene_array}, transcript_idx),
+                g_idx,
+                gene_idx),
+              'left_names=transcript_idx',
+              'right_names=transcript_idx',
+              'keep_dimensions=1',
+              'algorithm=hash_replicate_right'),
+            c_transcript_info,
+            strand + ':' + string(chrom) + ':' +
+            string(start) + ':' + string(stop)),
+          g_idx,
+          c_transcript_info),
+        'left_names=gene_idx',
+        'right_names=g_idx',
+        'algorithm=hash_replicate_right'),
+      {gene_array}),
+    {gene_array})""".format(gene_array=GENE_ARRAY,
+                            transcript_array=TRANSCRIPT_ARRAY)
+
+GENE_TRANSCRIPT_INFO_STORE_QUERY = """
+  store(
+    redimension(
+      equi_join(
+        project({gene_array},
+                gene_name,
+                strand,
+                full_gene_name,
+                omim_accession,
+                transcript_idx,
+                chrom,
+                start,
+                stop,
+                c_transcript_info,
+                exon_info),
+        aggregate(
+          redimension(
+            project(
+              apply(
+                equi_join(
+                  {transcript_array},
+                  project({gene_array}, gene_name),
+                  'left_names=gene_idx',
+                  'right_names=gene_idx',
+                  'keep_dimensions=1',
+                  'algorithm=hash_replicate_right'),
+                transcript_info,
+                strand + ':' + string(chrom) + ':' +
+                string(start) + ':' + string(stop) + ';'),
+              gene_idx,
+              transcript_info),
+            <transcript_info: string>
+            [gene_idx  = 0:*:0:1000000;
+             synthetic = 0:*:0:1000]),
+          sum(transcript_info) as transcript_info,
+          gene_idx),
+        'left_names=gene_idx',
+        'right_names=gene_idx'),
+      {gene_array}),
+    {gene_array})""".format(gene_array=GENE_ARRAY,
+                            transcript_array=TRANSCRIPT_ARRAY)
+
+GENE_EXON_INFO_STORE_QUERY = """
+  store(
+    redimension(
+      equi_join(
+        project({gene_array},
+                gene_name,
+                strand,
+                full_gene_name,
+                omim_accession,
+                transcript_idx,
+                chrom,
+                start,
+                stop,
+                c_transcript_info,
+                transcript_info),
+        aggregate(
+          redimension(
+            project(
+              apply(
+                equi_join(
+                  {exon_array},
+                  apply(
+                    project({gene_array}, transcript_idx),
+                    g_idx,
+                    gene_idx),
+                  'left_names=transcript_idx',
+                  'right_names=transcript_idx',
+                  'keep_dimensions=1',
+                  'algorithm=hash_replicate_right'),
+                exon_info,
+                feature_type + ':' + string(chrom) + ':' +
+                string(start) + ':' + string(stop) + ';'),
+              g_idx,
+              exon_info),
+            <exon_info: string>
+            [g_idx  = 0:*:0:1000000;
+             synthetic = 0:*:0:1000]),
+          sum(exon_info) as exon_info,
+          g_idx),
+        'left_names=gene_idx',
+        'right_names=g_idx'),
+      {gene_array}),
+    {gene_array})""".format(gene_array=GENE_ARRAY,
+                            exon_array=EXON_ARRAY)
 
 # -- -
 # -- - Load: VARIANT - --
@@ -916,17 +1050,20 @@ GENE_TRANSCRIPT_BY_ID_QUERY = """
         transcript_index_array=TRANSCRIPT_INDEX_ARRAY)
 
 GENE_TRANSCRIPT_BY_ID_SCHEMA = scidbpy.schema.Schema.fromstring("""
-  <transcript_idx: int64,
-   gene_idx:       int64 not null,
-   gene_name:      string,
-   strand:         string,
-   full_gene_name: string,
-   omim_accession: string,
-   chrom:          int64,
-   start:          int64,
-   stop:           int64,
-   gene_id:        string,
-   transcript_id:  string>
+  <transcript_idx:    int64,
+   gene_idx:          int64 not null,
+   gene_name:         string,
+   strand:            string,
+   full_gene_name:    string,
+   omim_accession:    string,
+   chrom:             int64,
+   start:             int64,
+   stop:              int64,
+   c_transcript_info: string,
+   transcript_info:   string,
+   exon_info:         string,
+   gene_id:           string,
+   transcript_id:     string>
   [notused0;
    notused1]""")
 
@@ -941,15 +1078,18 @@ GENE_TRANSCRIPT_BY_IDX_QUERY = """
         transcript_index_array=TRANSCRIPT_INDEX_ARRAY)
 
 GENE_TRANSCRIPT_BY_IDX_SCHEMA = scidbpy.schema.Schema.fromstring("""
-  <transcript_idx: int64,
-   gene_name:      string,
-   strand:         string,
-   full_gene_name: string,
-   omim_accession: string,
-   chrom:          int64,
-   start:          int64,
-   stop:           int64,
-   transcript_id:  string>
+  <transcript_idx:    int64,
+   gene_name:         string,
+   strand:            string,
+   full_gene_name:    string,
+   omim_accession:    string,
+   chrom:             int64,
+   start:             int64,
+   stop:              int64,
+   c_transcript_info: string,
+   transcript_info:   string,
+   exon_info:         string,
+   transcript_id:     string>
   [notused0;
    notused1]""")
 
@@ -965,18 +1105,21 @@ GENE_REGION_QUERY = """
         gene_index_array=GENE_INDEX_ARRAY)
 
 GENE_REGION_SCHEMA = scidbpy.schema.Schema.fromstring("""
- <gene_idx:       int64 not null,
-  gene_name:      string,
-  strand:         string,
-  full_gene_name: string,
-  omim_accession: string,
-  transcript_idx: int64,
-  chrom:          int64,
-  start:          int64,
-  stop:           int64,
-  gene_id:string>
- [notused0;
-  notused1]""")
+  <gene_idx:          int64 not null,
+   gene_name:         string,
+   strand:            string,
+   full_gene_name:    string,
+   omim_accession:    string,
+   transcript_idx:    int64,
+   chrom:             int64,
+   start:             int64,
+   stop:              int64,
+   c_transcript_info: string,
+   transcript_info:   string,
+   exon_info:         string,
+   gene_id:           string>
+  [notused0;
+   notused1]""")
 
 GENE_ID_BY_NAME_QUERY = """
   project(

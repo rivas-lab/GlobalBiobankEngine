@@ -326,6 +326,18 @@ class Loader:
         logger.info('Pipe:return code:%s', pipe.poll())
         logger.info('Array:%s', config.EXON_ARRAY)
 
+    def store_gene_info(self):
+        logger.info('Query:running...')
+        self.db.iquery(config.GENE_C_TRANSCRIPT_INFO_STORE_QUERY)
+        logger.info('Query:done')
+        logger.info('Query:running...')
+        self.db.iquery(config.GENE_TRANSCRIPT_INFO_STORE_QUERY)
+        logger.info('Query:done')
+        logger.info('Query:running...')
+        self.db.iquery(config.GENE_EXON_INFO_STORE_QUERY)
+        logger.info('Query:done')
+        logger.info('Array:%s', config.GENE_ARRAY)
+
     # -- -
     # -- - VARIANT - --
     # -- -
@@ -576,6 +588,7 @@ if __name__ == '__main__':
         loader.store_gene()
         loader.store_transcript()
         loader.store_exon()
+        loader.store_gene_info()
 
         loader.store_variant()
         loader.store_variant_gene()
