@@ -1257,10 +1257,10 @@ def time_all():
     #
     # /target/1 -> gbe.target_page()
     #
-    with timer.Timer() as t:
-        get_icd_variant_by_pvalue(db)
-    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_icd_variant_by_pvalue'))
-    print('     -----\n{:8.2f}ms\t{}\n'.format(t.msecs, '/target/1'))
+    # with timer.Timer() as t:
+    #     get_icd_variant_by_pvalue(db)
+    # print('{:8.2f}ms\t{}'.format(t.msecs, 'get_icd_variant_by_pvalue'))
+    # print('     -----\n{:8.2f}ms\t{}\n'.format(t.msecs, '/target/1'))
 
     #
     # /runPolyCoding -> gbe.runPolyCoding_page()
