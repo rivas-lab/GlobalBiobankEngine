@@ -1121,9 +1121,12 @@ def get_gene_page_content(gene_id):
                 db, transcript_idx, transcript_id)
 
             coverage_stats = lookups.get_coverage_for_transcript(
-                db, transcript['xstart'] - EXON_PADDING, transcript['xstop'] + EXON_PADDING)
+                db,
+                transcript['xstart'] - EXON_PADDING,
+                transcript['xstop'] + EXON_PADDING)
 
-            add_transcript_coordinate_to_variants(variants_in_transcript, transcript)
+            add_transcript_coordinate_to_variants(
+                variants_in_transcript, transcript)
 
             #print("\n\n\n\nVariants in gene")
             #print(variants_in_gene[0])
