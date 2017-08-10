@@ -605,8 +605,10 @@ def get_variants_by_gene_idx(db, gene_idx, gene_id):
     return format_variants(
         numpy2dict(
             db.iquery(
-                config.VARIANT_GENE_LOOKUP.format(gene_idx=gene_idx),
-                schema=config.VARIANT_GENE_SCHEMA,
+                config.VARIANT_GENE_OR_TRANSCRIPT_LOOKUP.format(
+                    variant_ref_array=config.VARIANT_GENE_ARRAY,
+                    ref_idx=gene_idx),
+                schema=config.VARIANT_GENE_OR_TRANSCRIPT_SCHEMA,
                 fetch=True,
                 atts_only=True)),
         gene_id=gene_id)
@@ -623,22 +625,23 @@ def get_variants_by_transcript_idx(db, transcript_idx, transcript_id):
                        fields={'_id': False})
 
     SciDB:
-      cross_join(
+      equi_join(
         variant,
-        between(variant_transcript, null, null, 3694,
-                                    null, null, 3694),
-        variant.chrom,
-        variant_transcript.chrom,
-        variant.pos,
-        variant_transcript.pos);
+        between(variant_transcript,
+                3694, null,
+                3694, null),
+        'left_names=chrom,pos',
+        'right_names=chrom,pos');
     """
     return format_variants(
         numpy2dict(
             db.iquery(
-                config.VARIANT_TRANSCRIPT_IDX_LOOKUP.format(
-                    transcript_idx=transcript_idx),
-                schema=config.VARIANT_X_TRANSCRIPT_SCHEMA,
-                fetch=True)),
+                config.VARIANT_GENE_OR_TRANSCRIPT_LOOKUP.format(
+                    variant_ref_array=config.VARIANT_TRANSCRIPT_ARRAY,
+                    ref_idx=transcript_idx),
+                schema=config.VARIANT_GENE_OR_TRANSCRIPT_SCHEMA,
+                fetch=True,
+                atts_only=True)),
         transcript_id=transcript_id)
 
 

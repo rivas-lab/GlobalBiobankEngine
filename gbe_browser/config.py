@@ -726,10 +726,10 @@ VARIANT_GENE_STORE_QUERY = """
 
 VARIANT_TRANSCRIPT_ARRAY = 'variant_transcript'
 VARIANT_TRANSCRIPT_SCHEMA = """
-  <notused: int8 not null>
-  [chrom          = 1:25:0:1;
-   pos            = 0:*:0:10000000;
-   transcript_idx = 0:*:0:20]"""
+  <chrom: int64,
+   pos:   int64>
+  [transcript_idx = 0:*:0:10000;
+   synthetic      = 0:*:0:1000000]"""
 
 VARIANT_TRANSCRIPT_STORE_QUERY = """
   store(
@@ -739,8 +739,7 @@ VARIANT_TRANSCRIPT_STORE_QUERY = """
           aio_input('{{path}}', 'num_attributes=3'),
           chrom,         int64(a0),
           pos,           int64(a1),
-          transcript_id, a2,
-          notused,       int8(0)) as INPUT,
+          transcript_id, a2) as INPUT,
         {transcript_index_array},
         INPUT.transcript_id,
         transcript_idx),
@@ -1396,18 +1395,16 @@ VARIANT_CHROM_POS_BY_RSID_SCHEMA = scidbpy.schema.Schema.fromstring("""
   [chrom = 1:25:0:1;
    pos   = 0:*:0:10000000]""")
 
-VARIANT_GENE_LOOKUP = """
+VARIANT_GENE_OR_TRANSCRIPT_LOOKUP = """
   equi_join(
     {variant_array},
-    between({variant_gene_array},
-            {{gene_idx}}, null,
-            {{gene_idx}}, null),
+    between({{variant_ref_array}},
+            {{ref_idx}}, null,
+            {{ref_idx}}, null),
     'left_names=chrom,pos',
-    'right_names=chrom,pos')""".format(
-        variant_array=VARIANT_ARRAY,
-        variant_gene_array=VARIANT_GENE_ARRAY)
+    'right_names=chrom,pos')""".format(variant_array=VARIANT_ARRAY)
 
-VARIANT_GENE_SCHEMA = scidbpy.schema.Schema.fromstring("""
+VARIANT_GENE_OR_TRANSCRIPT_SCHEMA = scidbpy.schema.Schema.fromstring("""
   <chrom:        int64,
    pos:          int64,
    rsid:         int64,
@@ -1423,26 +1420,6 @@ VARIANT_GENE_SCHEMA = scidbpy.schema.Schema.fromstring("""
    csq:          string>
   [notused0;
    notused1]""")
-
-VARIANT_TRANSCRIPT_IDX_LOOKUP = """
-  cross_join(
-    {variant_array},
-    between({variant_transcript_array},
-            null, null, {{transcript_idx}},
-            null, null, {{transcript_idx}}),
-    {variant_array}.chrom,
-    variant_transcript.chrom,
-    {variant_array}.pos,
-    variant_transcript.pos)""".format(
-        variant_array=VARIANT_ARRAY,
-        variant_transcript_array=VARIANT_TRANSCRIPT_ARRAY)
-
-VARIANT_X_TRANSCRIPT_SCHEMA = scidbpy.schema.Schema.fromstring(
-    VARIANT_TRANSCRIPT_SCHEMA.replace(
-        '<',
-        '<{},'.format(
-            VARIANT_SCHEMA[VARIANT_SCHEMA.index('<') + 1:
-                           VARIANT_SCHEMA.index('>')])))
 
 VARIANT_CSQ = ('Allele',
                'Consequence',
