@@ -338,6 +338,12 @@ class Loader:
         logger.info('Query:done')
         logger.info('Array:%s', config.GENE_ARRAY)
 
+    def store_transcript_info(self):
+        logger.info('Query:running...')
+        self.db.iquery(config.TRANSCRIPT_EXON_INFO_STORE_QUERY)
+        logger.info('Query:done')
+        logger.info('Array:%s', config.TRANSCRIPT_ARRAY)
+
     # -- -
     # -- - VARIANT - --
     # -- -
@@ -589,6 +595,7 @@ if __name__ == '__main__':
         loader.store_transcript()
         loader.store_exon()
         loader.store_gene_info()
+        loader.store_transcript_info()
 
         loader.store_variant()
         loader.store_variant_gene()

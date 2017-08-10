@@ -390,10 +390,11 @@ GENE_STORE_QUERY = """
 
 TRANSCRIPT_ARRAY = 'transcript'
 TRANSCRIPT_SCHEMA = """
-  <strand: string,
-   chrom:  int64,
-   start:  int64,
-   stop:   int64>
+  <strand:    string,
+   chrom:     int64,
+   start:     int64,
+   stop:      int64,
+   exon_info: string>
   [gene_idx       = 0:*:0:10000;
    transcript_idx = 0:*:0:10000]"""
 
@@ -404,18 +405,19 @@ TRANSCRIPT_STORE_QUERY = """
         index_lookup(
           apply(
             aio_input('{{path}}', 'num_attributes=9'),
-            g_id,   rsub(a8, 's/.*gene_id "([^.]*).*/$1/'),
-            t_id,   rsub(a8, 's/.*transcript_id "([^.]*).*/$1/'),
-            chrom,  iif(substr(a0, 3, 4) = 'X',
-                        23,
-                        iif(substr(a0, 3, 4) = 'Y',
-                            24,
-                            iif(substr(a0, 3, 4) = 'M',
-                                25,
-                                dcast(substr(a0, 3, 5), int64(null))))),
-            start,  int64(a3),
-            stop,   int64(a4),
-            strand, a6),
+            g_id,      rsub(a8, 's/.*gene_id "([^.]*).*/$1/'),
+            t_id,      rsub(a8, 's/.*transcript_id "([^.]*).*/$1/'),
+            chrom,     iif(substr(a0, 3, 4) = 'X',
+                           23,
+                           iif(substr(a0, 3, 4) = 'Y',
+                               24,
+                               iif(substr(a0, 3, 4) = 'M',
+                                   25,
+                                   dcast(substr(a0, 3, 5), int64(null))))),
+            start,     int64(a3),
+            stop,      int64(a4),
+            strand,    a6,
+            exon_info, string(null)),
           {gene_index_array},
           g_id,
           gene_idx),
@@ -609,6 +611,43 @@ GENE_EXON_INFO_STORE_QUERY = """
       {gene_array}),
     {gene_array})""".format(gene_array=GENE_ARRAY,
                             exon_array=EXON_ARRAY)
+
+TRANSCRIPT_EXON_INFO_STORE_QUERY = """
+  store(
+    redimension(
+      equi_join(
+        project({transcript_array},
+                strand,
+                chrom,
+                start,
+                stop),
+        aggregate(
+          redimension(
+            project(
+              apply(
+                equi_join(
+                  {exon_array},
+                  project({transcript_array}, strand),
+                  'left_names=transcript_idx',
+                  'right_names=transcript_idx',
+                  'keep_dimensions=1',
+                  'algorithm=hash_replicate_right'),
+                exon_info,
+                feature_type + ':' + string(chrom) + ':' +
+                string(start) + ':' + string(stop) + ';'),
+              transcript_idx,
+              exon_info),
+            <exon_info: string>
+            [transcript_idx = 0:*:0:1000000;
+             synthetic      = 0:*:0:1000]),
+          sum(exon_info) as exon_info,
+          transcript_idx),
+        'left_names=transcript_idx',
+        'right_names=transcript_idx',
+        'keep_dimensions=1'),
+      {transcript_array}),
+    {transcript_array})""".format(transcript_array=TRANSCRIPT_ARRAY,
+                                  exon_array=EXON_ARRAY)
 
 # -- -
 # -- - Load: VARIANT - --
