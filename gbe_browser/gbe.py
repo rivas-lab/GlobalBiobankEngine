@@ -1170,19 +1170,43 @@ def transcript_page(transcript_id):
         if t is None:
             transcript = lookups.get_transcript_gene(db, transcript_id)
             transcript_idx = transcript['transcript_idx']
-            transcript['exons'] = lookups.get_exons(db, transcript_idx)
+            transcript_id = transcript['transcript_id']
+            transcript['exons'] = [
+                lookups.cast_pos_info(
+                    dict(zip(lookups.EXON_INFO_KEYS, s.split(':'))))
+                for s in transcript['exon_info'].split(';')
+                if s]
 
-            gene_idx = transcript['gene_idx']
-            gene = lookups.get_gene_by_idx(db, gene_idx)
-            gene['transcripts'] = lookups.get_transcripts_id_by_gene_idx(db, gene_idx)
+            gene = dict((kg, transcript[kt])
+                        for (kt, kg) in (('gene_name', ) * 2,
+                                         ('gene_strand', 'strand'),
+                                         ('full_gene_name', ) * 2,
+                                         ('omim_accession', ) * 2,
+                                         ('gene_chrom', 'chrom'),
+                                         ('gene_start', 'start'),
+                                         ('gene_stop', 'stop'),
+                                         ('c_transcript_info', ) * 2,
+                                         ('transcript_info', ) * 2,
+                                         ('gene_exon_info', 'exon_info'),
+                                         ('gene_id', ) * 2))
+            gene['transcripts'] = [
+                lookups.cast_pos_info(
+                    dict(zip(lookups.TRANSCRIPT_INFO_KEYS, s.split(':'))))
+                for s in gene['transcript_info'].split(';')
+                if s]
+            gene['canonical_transcript'] = gene['c_transcript_info'].split(
+                ':')[0]
 
             variants_in_transcript = lookups.get_variants_by_transcript_idx(
                 db, transcript_idx, transcript_id)
 
             coverage_stats = lookups.get_coverage_for_transcript(
-                db, transcript['xstart'] - EXON_PADDING, transcript['xstop'] + EXON_PADDING)
+                db,
+                transcript['xstart'] - EXON_PADDING,
+                transcript['xstop'] + EXON_PADDING)
 
-            add_transcript_coordinate_to_variants(variants_in_transcript, transcript)
+            add_transcript_coordinate_to_variants(
+                variants_in_transcript, transcript)
 
             t = render_template(
                 'transcript.html',

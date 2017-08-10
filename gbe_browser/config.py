@@ -1315,28 +1315,85 @@ TRANSCRIPT_ID_SCHEMA = scidbpy.schema.Schema.fromstring(
                                     TRANSCRIPT_INDEX_SCHEMA.index('>')])))
 
 TRANSCRIPT_GENE_LOOKUP = """
-  cross_join(
-    cross_join(
-      {transcript_array},
-      filter({transcript_index_array}, transcript_id = '{{transcript_id}}'),
-      {transcript_array}.transcript_idx,
-      {transcript_index_array}.transcript_idx),
-    {gene_index_array},
-    {transcript_array}.gene_idx,
-    {gene_index_array}.gene_idx)""".format(
-        transcript_array=TRANSCRIPT_ARRAY,
-        transcript_index_array=TRANSCRIPT_INDEX_ARRAY,
-        gene_index_array=GENE_INDEX_ARRAY)
+  project(
+    equi_join(
+      project(
+        equi_join(
+          equi_join(
+            {transcript_array},
+            filter({transcript_index_array},
+                   transcript_id = '{{transcript_id}}'),
+            'left_names=transcript_idx',
+            'right_names=transcript_idx',
+            'keep_dimensions=1',
+            'algorithm=hash_replicate_right') as transcript,
+          {gene_array},
+          'left_names=gene_idx',
+          'right_names=gene_idx'),
+         gene_idx,
+         transcript.transcript_idx,
+         transcript.strand,
+         transcript.chrom,
+         transcript.start,
+         transcript.stop,
+         transcript.exon_info,
+         transcript_id,
+         gene_name,
+         gene.strand,
+         full_gene_name,
+         omim_accession,
+         gene.chrom,
+         gene.start,
+         gene.stop,
+         c_transcript_info,
+         transcript_info,
+         gene.exon_info),
+      {gene_index_array},
+      'left_names=gene_idx',
+      'right_names=gene_idx'),
+     transcript.transcript_idx,
+     transcript.strand,
+     transcript.chrom,
+     transcript.start,
+     transcript.stop,
+     transcript.exon_info,
+     transcript_id,
+     gene_name,
+     gene.strand,
+     full_gene_name,
+     omim_accession,
+     gene.chrom,
+     gene.start,
+     gene.stop,
+     c_transcript_info,
+     transcript_info,
+     gene.exon_info,
+     gene_id)""".format(transcript_array=TRANSCRIPT_ARRAY,
+                        transcript_index_array=TRANSCRIPT_INDEX_ARRAY,
+                        gene_array=GENE_ARRAY,
+                        gene_index_array=GENE_INDEX_ARRAY)
 
-TRANSCRIPT_GENE_SCHEMA = scidbpy.schema.Schema.fromstring(
-    TRANSCRIPT_SCHEMA.replace(
-        '>',
-        ',{}, {}>'.format(
-            TRANSCRIPT_INDEX_SCHEMA[TRANSCRIPT_INDEX_SCHEMA.index('<') + 1:
-                                    TRANSCRIPT_INDEX_SCHEMA.index('>')],
-            GENE_INDEX_SCHEMA[GENE_INDEX_SCHEMA.index('<') + 1:
-                              GENE_INDEX_SCHEMA.index('>')])))
-
+TRANSCRIPT_GENE_SCHEMA = scidbpy.schema.Schema.fromstring("""
+  <transcript_idx:    int64 not null,
+   strand:            string,
+   chrom:             int64,
+   start:             int64,
+   stop:              int64,
+   exon_info:         string,
+   transcript_id:     string,
+   gene_name:         string,
+   gene_strand:       string,
+   full_gene_name:    string,
+   omim_accession:    string,
+   gene_chrom:        int64,
+   gene_start:        int64,
+   gene_stop:         int64,
+   c_transcript_info: string,
+   transcript_info:   string,
+   gene_exon_info:    string,
+   gene_id:           string>
+  [notused0;
+   notused1]""")
 
 # -- -
 # -- - Lookup: VARIANT - --

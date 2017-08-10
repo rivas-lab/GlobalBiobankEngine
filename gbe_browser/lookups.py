@@ -526,17 +526,15 @@ def get_transcript_gene(db, transcript_id):
     MongoDB:
       db.transcripts.find({'transcript_id': 'ENST00000378891'},
                           fields={'_id': False})
+      db.exons.find({'transcript_id': transcript_id,
+                     'feature_type': { "$in": ['CDS', 'UTR', 'exon'] }},
+                    fields={'_id': False})
+      db.genes.find({'gene_id': 'ENSG00000107404'}, fields={'_id': False})
+      db.transcripts.find({'gene_id': 'ENSG00000107404'},
+                          fields={'_id': False})
 
     SciDB:
-      cross_join(
-        cross_join(
-          transcript,
-          filter(transcript_index, transcript_id = 'ENST00000378891'),
-          transcript.transcript_idx,
-          transcript_index.transcript_idx),
-        gene_index,
-        transcript.gene_idx,
-        gene_index.gene_idx);
+      See TRANSCRIPT_GENE_LOOKUP in config.py
     """
     return add_xpos(
         numpy2dict0(
@@ -544,7 +542,6 @@ def get_transcript_gene(db, transcript_id):
                 config.TRANSCRIPT_GENE_LOOKUP.format(
                     transcript_id=transcript_id),
                 schema=config.TRANSCRIPT_GENE_SCHEMA,
-                fetch=True)))
 
 
 def get_transcripts_id_by_gene_idx(db, gene_idx):
@@ -595,6 +592,8 @@ def get_exons(db, transcript_idx):
                 transcript_idx=transcript_idx),
             schema=config.EXON_SCHEMA_OBJ,
             fetch=True))
+                fetch=True,
+                atts_only=True)))
 
 
 # -- -
