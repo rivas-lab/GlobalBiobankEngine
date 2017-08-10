@@ -108,8 +108,9 @@ def cast_pos_info(gene):
 
 
 def add_xpos(gene):
-    gene['xstart'] = gene['chrom'] * config.XOFF + gene['start']
-    gene['xstop'] = gene['chrom'] * config.XOFF + gene['stop']
+    if gene and all(k in gene.keys() for k in ('chrom', 'start', 'stop')):
+        gene['xstart'] = gene['chrom'] * config.XOFF + gene['start']
+        gene['xstop'] = gene['chrom'] * config.XOFF + gene['stop']
     return gene
 
 
