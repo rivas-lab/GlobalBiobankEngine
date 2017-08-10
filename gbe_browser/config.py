@@ -533,30 +533,26 @@ GENE_TRANSCRIPT_INFO_STORE_QUERY = """
                 stop,
                 c_transcript_info,
                 exon_info),
-        aggregate(
-          redimension(
-            project(
-              apply(
+        grouped_aggregate(
+          project(
+            apply(
+              equi_join(
+                {transcript_index_array},
                 equi_join(
-                  {transcript_index_array},
-                  equi_join(
-                    {transcript_array},
-                    project({gene_array}, gene_name),
-                    'left_names=gene_idx',
-                    'right_names=gene_idx',
-                    'keep_dimensions=1',
-                    'algorithm=hash_replicate_right'),
-                  'left_names=transcript_idx',
-                  'right_names=transcript_idx',
+                  {transcript_array},
+                  project({gene_array}, gene_name),
+                  'left_names=gene_idx',
+                  'right_names=gene_idx',
+                  'keep_dimensions=1',
                   'algorithm=hash_replicate_right'),
-                transcript_info,
-                transcript_id + ':' + strand + ':' + string(chrom) + ':' +
-                string(start) + ':' + string(stop) + ';'),
-              gene_idx,
-              transcript_info),
-            <transcript_info: string>
-            [gene_idx  = 0:*:0:1000000;
-             synthetic = 0:*:0:1000]),
+                'left_names=transcript_idx',
+                'right_names=transcript_idx',
+                'algorithm=hash_replicate_right'),
+              transcript_info,
+              transcript_id + ':' + strand + ':' + string(chrom) + ':' +
+              string(start) + ':' + string(stop) + ';'),
+            gene_idx,
+            transcript_info),
           sum(transcript_info) as transcript_info,
           gene_idx),
         'left_names=gene_idx',
@@ -581,28 +577,24 @@ GENE_EXON_INFO_STORE_QUERY = """
                 stop,
                 c_transcript_info,
                 transcript_info),
-        aggregate(
-          redimension(
-            project(
-              apply(
-                equi_join(
-                  {exon_array},
-                  apply(
-                    project({gene_array}, transcript_idx),
-                    g_idx,
-                    gene_idx),
-                  'left_names=transcript_idx',
-                  'right_names=transcript_idx',
-                  'keep_dimensions=1',
-                  'algorithm=hash_replicate_right'),
-                exon_info,
-                feature_type + ':' + string(chrom) + ':' +
-                string(start) + ':' + string(stop) + ';'),
-              g_idx,
-              exon_info),
-            <exon_info: string>
-            [g_idx  = 0:*:0:1000000;
-             synthetic = 0:*:0:1000]),
+        grouped_aggregate(
+          project(
+            apply(
+              equi_join(
+                {exon_array},
+                apply(
+                  project({gene_array}, transcript_idx),
+                  g_idx,
+                  gene_idx),
+                'left_names=transcript_idx',
+                'right_names=transcript_idx',
+                'keep_dimensions=1',
+                'algorithm=hash_replicate_right'),
+              exon_info,
+              feature_type + ':' + string(chrom) + ':' +
+              string(start) + ':' + string(stop) + ';'),
+            g_idx,
+            exon_info),
           sum(exon_info) as exon_info,
           g_idx),
         'left_names=gene_idx',
@@ -615,34 +607,31 @@ TRANSCRIPT_EXON_INFO_STORE_QUERY = """
   store(
     redimension(
       equi_join(
-        project({transcript_array},
-                strand,
-                chrom,
-                start,
-                stop),
-        aggregate(
-          redimension(
-            project(
-              apply(
-                equi_join(
-                  {exon_array},
-                  project({transcript_array}, strand),
-                  'left_names=transcript_idx',
-                  'right_names=transcript_idx',
-                  'algorithm=hash_replicate_right'),
-                exon_info,
-                feature_type + ':' + string(chrom) + ':' +
-                string(start) + ':' + string(stop) + ';'),
-              transcript_idx,
-              exon_info),
-            <exon_info: string>
-            [transcript_idx = 0:*:0:1000000;
-             synthetic      = 0:*:0:1000]),
+        project(
+          apply({transcript_array}, gene_idx, gene_idx),
+          gene_idx,
+          strand,
+          chrom,
+          start,
+          stop),
+        grouped_aggregate(
+          project(
+            apply(
+              equi_join(
+                {exon_array},
+                project({transcript_array}, strand),
+                'left_names=transcript_idx',
+                'right_names=transcript_idx',
+                'algorithm=hash_replicate_right'),
+              exon_info,
+              feature_type + ':' + string(chrom) + ':' +
+              string(start) + ':' + string(stop) + ';'),
+            transcript_idx,
+            exon_info),
           sum(exon_info) as exon_info,
           transcript_idx),
         'left_names=transcript_idx',
-        'right_names=transcript_idx',
-        'keep_dimensions=1'),
+        'right_names=transcript_idx'),
       {transcript_array}),
     {transcript_array})""".format(transcript_array=TRANSCRIPT_ARRAY,
                                   exon_array=EXON_ARRAY)
