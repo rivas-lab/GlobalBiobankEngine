@@ -1097,7 +1097,7 @@ def get_gene_page_content(gene_id):
 
             transcripts_in_gene = [
                 lookups.cast_pos_info(
-                    dict(zip(lookups.GENE_TRANSCRIPT_INFO_KEYS, s.split(':'))))
+                    dict(zip(lookups.TRANSCRIPT_INFO_KEYS, s.split(':'))))
                 for s in gene['transcript_info'].split(';')
                 if s]
 
@@ -1108,12 +1108,12 @@ def get_gene_page_content(gene_id):
             transcript_idx = gene['transcript_idx']
             transcript = lookups.add_xpos(
                 lookups.cast_pos_info(
-                    dict(zip(lookups.GENE_TRANSCRIPT_INFO_KEYS,
+                    dict(zip(lookups.TRANSCRIPT_INFO_KEYS,
                              gene['c_transcript_info'].split(':')))))
             transcript['transcript_id'] = transcript_id
             transcript['exons'] = [
                 lookups.cast_pos_info(
-                    dict(zip(lookups.GENE_EXON_INFO_KEYS, s.split(':'))))
+                    dict(zip(lookups.EXON_INFO_KEYS, s.split(':'))))
                 for s in gene['exon_info'].split(';')
                 if s]
 
