@@ -825,7 +825,7 @@ def get_variants_from_dbsnp(db, rsid):
     """
     e.g.,
     UI:
-      https://biobankengine.stanford.edu/awesome?query=rs771157073
+      https://biobankengine.stanford.edu/awesome?query=rs1171
 
     MongoDB:
       db.dbsnp.find_one({'rsid': rsid})
@@ -835,7 +835,7 @@ def get_variants_from_dbsnp(db, rsid):
 
     SciDB:
       equi_join(
-        filter(dbsnp_by_rsid, rsid = 771157073),
+        filter(dbsnp_by_rsid, rsid = 1171),
         project(variant, rsid),
         'left_names=chrom,pos',
         'right_names=chrom,pos',
@@ -1048,7 +1048,7 @@ def print_all():
     pp.pprint(get_gene_by_id(db, 'ENSG00000107404'))
     pp.pprint(get_variants_by_gene_idx(db, 173, 'ENSG00000107404'))
     pp.pprint(get_variants_by_transcript_idx(db, 3694, 'ENST00000378891'))
-    pp.pprint(get_coverage_for_transcript(db, 1001270607, 1001284543))
+    pp.pprint(get_coverage_for_transcript(db, 1001270606, 1001284542))
 
     # /transcript/ENST00000289248 -> gbe.transcript_page()
     pp.pprint(get_transcript_gene(db, 'ENST00000289248'))
@@ -1056,7 +1056,7 @@ def print_all():
     pp.pprint(get_gene_by_idx(db, 842))
     pp.pprint(get_transcripts_id_by_gene_idx(db, 842))
     pp.pprint(get_variants_by_transcript_idx(db, 304, 'ENST00000289248'))
-    pp.pprint(get_coverage_for_transcript(db, 1039351919, 1039392560))
+    pp.pprint(get_coverage_for_transcript(db, 1039351918, 1039392559))
 
     # /region/1-28052491-28089634 -> gbe.region_page()
     pp.pprint(get_genes_in_region(db, 1, 28052491, 28089634))
@@ -1073,7 +1073,7 @@ def print_all():
 
     # /awesome -> gbe.awesome()
     pp.pprint(get_variants_chrom_pos_by_rsid_limit2(db, 'rs6025'))
-    pp.pprint(get_variants_from_dbsnp(db, 'rs771157073'))
+    pp.pprint(get_variants_from_dbsnp(db, 'rs1171'))
     pp.pprint(get_gene_id_by_name(db, 'F5'))
     pp.pprint(exists_gene_id(db, 'ENSG00000107404'))
     pp.pprint(exists_transcript_id(db, 'ENST00000378891'))
