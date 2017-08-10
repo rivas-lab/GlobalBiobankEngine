@@ -594,20 +594,21 @@ def get_variants_by_gene_idx(db, gene_idx, gene_id):
       db.variants.find({'genes': 'ENSG00000107404'}, fields={'_id': False})
 
     SciDB:
-      cross_join(variant,
-                 between(variant_gene, null, null, 173,
-                                       null, null, 173),
-                 variant.chrom,
-                 variant_gene.chrom,
-                 variant.pos,
-                 variant_gene.pos);
+      equi_join(
+        variant,
+        between(variant_gene,
+                173, null,
+                173, null),
+        'left_names=chrom,pos',
+        'right_names=chrom,pos');
     """
     return format_variants(
         numpy2dict(
             db.iquery(
                 config.VARIANT_GENE_LOOKUP.format(gene_idx=gene_idx),
                 schema=config.VARIANT_GENE_SCHEMA,
-                fetch=True)),
+                fetch=True,
+                atts_only=True)),
         gene_id=gene_id)
 
 

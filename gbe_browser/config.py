@@ -702,10 +702,10 @@ VARIANT_STORE_QUERY = """
 
 VARIANT_GENE_ARRAY = 'variant_gene'
 VARIANT_GENE_SCHEMA = """
-  <notused: int8 not null>
-  [chrom    = 1:25:0:1;
-   pos      = 0:*:0:10000000;
-   gene_idx = 0:*:0:20]"""
+  <chrom: int64,
+   pos:   int64>
+  [gene_idx  = 0:*:0:10000;
+   synthetic = 0:*:0:1000000]"""
 
 VARIANT_GENE_STORE_QUERY = """
   store(
@@ -714,8 +714,7 @@ VARIANT_GENE_STORE_QUERY = """
         apply(
           aio_input('{{path}}', 'num_attributes=3'),
           chrom,   int64(a0),
-          pos,     int64(a1),
-          notused, int8(0)),
+          pos,     int64(a1)),
         {gene_index_array},
         a2,
         gene_idx),
@@ -1238,7 +1237,6 @@ VARIANT_ICD_LOOKUP = """
                   gene_idx),
                 'left_names=gene_idx',
                 'right_names=gene_idx',
-                'keep_dimensions=1',
                 'algorithm=hash_replicate_right'),
               chrom,
               pos,
@@ -1399,24 +1397,32 @@ VARIANT_CHROM_POS_BY_RSID_SCHEMA = scidbpy.schema.Schema.fromstring("""
    pos   = 0:*:0:10000000]""")
 
 VARIANT_GENE_LOOKUP = """
-  cross_join(
+  equi_join(
     {variant_array},
     between({variant_gene_array},
-            null, null, {{gene_idx}},
-            null, null, {{gene_idx}}),
-    {variant_array}.chrom,
-    {variant_gene_array}.chrom,
-    {variant_array}.pos,
-    {variant_gene_array}.pos)""".format(
+            {{gene_idx}}, null,
+            {{gene_idx}}, null),
+    'left_names=chrom,pos',
+    'right_names=chrom,pos')""".format(
         variant_array=VARIANT_ARRAY,
         variant_gene_array=VARIANT_GENE_ARRAY)
 
-VARIANT_GENE_SCHEMA = scidbpy.schema.Schema.fromstring(
-    VARIANT_GENE_SCHEMA.replace(
-        '<',
-        '<{},'.format(
-            VARIANT_SCHEMA[VARIANT_SCHEMA.index('<') + 1:
-                           VARIANT_SCHEMA.index('>')])))
+VARIANT_GENE_SCHEMA = scidbpy.schema.Schema.fromstring("""
+  <chrom:        int64,
+   pos:          int64,
+   rsid:         int64,
+   ref:          string,
+   alt:          string,
+   site_quality: string,
+   filter:       string,
+   exac_nfe:     double,
+   minicd:       string,
+   minpval:      double,
+   minor:        double,
+   minl10pval:   double,
+   csq:          string>
+  [notused0;
+   notused1]""")
 
 VARIANT_TRANSCRIPT_IDX_LOOKUP = """
   cross_join(
