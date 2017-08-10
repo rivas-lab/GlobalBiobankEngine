@@ -414,33 +414,6 @@ def exists_gene_id(db, gene_id):
                   "'{}'".format(gene_id))
 
 
-def get_gene_by_idx(db, gene_idx):
-    """
-    e.g.,
-    UI:
-      https://biobankengine.stanford.edu/transcript/ENST00000458200
-
-    MongoDB:
-      db.genes.find({'gene_id': 'ENSG00000107404'}, fields={'_id': False})
-
-    SciDB:
-      equi_join(
-        between(gene, 173, 173),
-        transcript_index,
-        'left_names=transcript_idx',
-        'right_names=transcript_idx',
-        'algorithm=hash_replicate_right');
-    """
-    res = numpy2dict0(
-        db.iquery(
-            config.GENE_TRANSCRIPT_BY_IDX_QUERY.format(gene_idx=gene_idx),
-            schema=config.GENE_TRANSCRIPT_BY_IDX_SCHEMA,
-            fetch=True,
-            atts_only=True))
-    res['canonical_transcript'] = res['transcript_id']
-    return res
-
-
 def get_genes_in_region(db, chrom, start, stop):
     """
     e.g.,
@@ -542,56 +515,6 @@ def get_transcript_gene(db, transcript_id):
                 config.TRANSCRIPT_GENE_LOOKUP.format(
                     transcript_id=transcript_id),
                 schema=config.TRANSCRIPT_GENE_SCHEMA,
-
-
-def get_transcripts_id_by_gene_idx(db, gene_idx):
-    """
-    e.g.,
-    UI:
-      https://biobankengine.stanford.edu/gene/ENSG00000107404
-
-    MongoDB:
-      db.transcripts.find({'gene_id': 'ENSG00000107404'},
-                          fields={'_id': False})
-
-    SciDB:
-      cross_join(
-        between(transcript, 173, null,
-                            173, null),
-        transcript_index,
-        transcript.transcript_idx,
-        transcript_index.transcript_idx);
-    """
-    return numpy2dict(
-        db.iquery(
-            config.TRANSCRIPT_ID_LOOKUP.format(gene_idx=gene_idx),
-            schema=config.TRANSCRIPT_ID_SCHEMA,
-            fetch=True))
-
-
-def get_exons(db, transcript_idx):
-    """
-    e.g.,
-    UI:
-      https://biobankengine.stanford.edu/gene/ENSG00000107404
-
-    MongoDB:
-      db.exons.find({'transcript_id': transcript_id,
-                     'feature_type': { "$in": ['CDS', 'UTR', 'exon'] }},
-                    fields={'_id': False})
-
-    SciDB:
-      between(exon, null, 3694, null, null, null, null,
-                    null, 3694, null, null, null, null);
-    """
-    return numpy2dict(
-        db.iquery(
-            config.TRANSCRIPT_OR_EXON_BETWEEN_QUERY.format(
-                array_name=config.EXON_ARRAY,
-                gene_idx='null',
-                transcript_idx=transcript_idx),
-            schema=config.EXON_SCHEMA_OBJ,
-            fetch=True))
                 fetch=True,
                 atts_only=True)))
 
@@ -1051,9 +974,6 @@ def print_all():
 
     # /transcript/ENST00000289248 -> gbe.transcript_page()
     pp.pprint(get_transcript_gene(db, 'ENST00000289248'))
-    pp.pprint(get_exons(db, 304))
-    pp.pprint(get_gene_by_idx(db, 842))
-    pp.pprint(get_transcripts_id_by_gene_idx(db, 842))
     pp.pprint(get_variants_by_transcript_idx(db, 304, 'ENST00000289248'))
     pp.pprint(get_coverage_for_transcript(db, 1039351918, 1039392559))
 
@@ -1161,21 +1081,6 @@ def time_all():
     with timer.Timer() as t:
         get_transcript_gene(db, 'ENST00000289248')
     print('{:8.2f}ms\t{}'.format(t.msecs, 'get_transcript_gene'))
-    tm += t.msecs
-
-    with timer.Timer() as t:
-        get_exons(db, 304)
-    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_exons'))
-    tm += t.msecs
-
-    with timer.Timer() as t:
-        get_gene_by_idx(db, 842)
-    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_gene_by_idx'))
-    tm += t.msecs
-
-    with timer.Timer() as t:
-        get_transcripts_id_by_gene_idx(db, 842)
-    print('{:8.2f}ms\t{}'.format(t.msecs, 'get_transcripts_id_by_gene_idx'))
     tm += t.msecs
 
     with timer.Timer() as t:

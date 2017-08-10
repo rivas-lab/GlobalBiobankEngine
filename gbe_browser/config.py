@@ -440,7 +440,6 @@ EXON_SCHEMA = """
    start          = 0:*:0:10000000;
    stop           = 0:*:0:10000000;
    synthetic      = 0:199:0:200]"""
-EXON_SCHEMA_OBJ = scidbpy.schema.Schema.fromstring(EXON_SCHEMA)
 
 EXON_STORE_QUERY = """
   store(
@@ -1117,32 +1116,6 @@ GENE_TRANSCRIPT_BY_ID_SCHEMA = scidbpy.schema.Schema.fromstring("""
   [notused0;
    notused1]""")
 
-GENE_TRANSCRIPT_BY_IDX_QUERY = """
-  equi_join(
-    between({gene_array}, {{gene_idx}}, {{gene_idx}}),
-    {transcript_index_array},
-    'left_names=transcript_idx',
-    'right_names=transcript_idx',
-    'algorithm=hash_replicate_right')""".format(
-        gene_array=GENE_ARRAY,
-        transcript_index_array=TRANSCRIPT_INDEX_ARRAY)
-
-GENE_TRANSCRIPT_BY_IDX_SCHEMA = scidbpy.schema.Schema.fromstring("""
-  <transcript_idx:    int64,
-   gene_name:         string,
-   strand:            string,
-   full_gene_name:    string,
-   omim_accession:    string,
-   chrom:             int64,
-   start:             int64,
-   stop:              int64,
-   c_transcript_info: string,
-   transcript_info:   string,
-   exon_info:         string,
-   transcript_id:     string>
-  [notused0;
-   notused1]""")
-
 GENE_REGION_QUERY = """
   equi_join(
     filter({gene_array},
@@ -1292,22 +1265,6 @@ VARIANT_ICD_SCHEMA = scidbpy.schema.Schema.fromstring("""
    lor:    double>
   [notused0;
    notused1]""")
-
-TRANSCRIPT_OR_EXON_BETWEEN_QUERY = """
-  between({array_name},
-          {gene_idx}, {transcript_idx}, null, null, null, null,
-          {gene_idx}, {transcript_idx}, null, null, null, null)"""
-
-TRANSCRIPT_ID_LOOKUP = """
-  cross_join(
-    between({transcript_array},
-            {{gene_idx}}, null,
-            {{gene_idx}}, null),
-    {transcript_index_array},
-    {transcript_array}.transcript_idx,
-    {transcript_index_array}.transcript_idx)""".format(
-        transcript_array=TRANSCRIPT_ARRAY,
-        transcript_index_array=TRANSCRIPT_INDEX_ARRAY)
 
 TRANSCRIPT_ID_SCHEMA = scidbpy.schema.Schema.fromstring(
     TRANSCRIPT_SCHEMA.replace('>', ',{}>'.format(
