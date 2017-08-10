@@ -433,13 +433,13 @@ TRANSCRIPT_STORE_QUERY = """
 
 EXON_ARRAY = 'exon'
 EXON_SCHEMA = """
-  <feature_type: string>
-  [gene_idx       = 0:*:0:20;
-   transcript_idx = 0:*:0:20;
-   chrom          = 1:25:0:1;
-   start          = 0:*:0:10000000;
-   stop           = 0:*:0:10000000;
-   synthetic      = 0:199:0:200]"""
+  <chrom: int64,
+   start: int64,
+   stop:  int64,
+   feature_type: string>
+  [gene_idx       = 0:*:0:10000;
+   transcript_idx = 0:*:0:10000;
+   synthetic      = 0:*:0:10000]"""
 
 EXON_STORE_QUERY = """
   store(
@@ -629,7 +629,6 @@ TRANSCRIPT_EXON_INFO_STORE_QUERY = """
                   project({transcript_array}, strand),
                   'left_names=transcript_idx',
                   'right_names=transcript_idx',
-                  'keep_dimensions=1',
                   'algorithm=hash_replicate_right'),
                 exon_info,
                 feature_type + ':' + string(chrom) + ':' +
