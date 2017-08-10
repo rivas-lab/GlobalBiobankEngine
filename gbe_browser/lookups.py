@@ -32,7 +32,7 @@ REGION_RE2 = re.compile(r'^(\d+|X|Y|M|MT)\s*:\s*(\d+)$')
 REGION_RE3 = re.compile(r'^(\d+|X|Y|M|MT)$')
 REGION_RE4 = re.compile(r'^(\d+|X|Y|M|MT)\s*[-:]\s*(\d+)-([ATCG]+)-([ATCG]+)$')
 
-TRANSCRIPT_INFO_KEYS = ('strand', 'chrom', 'start', 'stop')
+TRANSCRIPT_INFO_KEYS = ('transcript_id', 'strand', 'chrom', 'start', 'stop')
 EXON_INFO_KEYS = ('feature_type', 'chrom', 'start', 'stop')
 
 

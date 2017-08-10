@@ -490,17 +490,22 @@ GENE_C_TRANSCRIPT_INFO_STORE_QUERY = """
         project(
           apply(
             equi_join(
-              {transcript_array},
-              apply(
-                project({gene_array}, transcript_idx),
-                g_idx,
-                gene_idx),
+              {transcript_index_array},
+              equi_join(
+                {transcript_array},
+                apply(
+                  project({gene_array}, transcript_idx),
+                  g_idx,
+                  gene_idx),
+                'left_names=transcript_idx',
+                'right_names=transcript_idx',
+                'keep_dimensions=1',
+                'algorithm=hash_replicate_right'),
               'left_names=transcript_idx',
               'right_names=transcript_idx',
-              'keep_dimensions=1',
               'algorithm=hash_replicate_right'),
             c_transcript_info,
-            strand + ':' + string(chrom) + ':' +
+            transcript_id + ':' + strand + ':' + string(chrom) + ':' +
             string(start) + ':' + string(stop)),
           g_idx,
           c_transcript_info),
@@ -509,7 +514,8 @@ GENE_C_TRANSCRIPT_INFO_STORE_QUERY = """
         'algorithm=hash_replicate_right'),
       {gene_array}),
     {gene_array})""".format(gene_array=GENE_ARRAY,
-                            transcript_array=TRANSCRIPT_ARRAY)
+                            transcript_array=TRANSCRIPT_ARRAY,
+                            transcript_index_array=TRANSCRIPT_INDEX_ARRAY)
 
 GENE_TRANSCRIPT_INFO_STORE_QUERY = """
   store(
@@ -531,14 +537,19 @@ GENE_TRANSCRIPT_INFO_STORE_QUERY = """
             project(
               apply(
                 equi_join(
-                  {transcript_array},
-                  project({gene_array}, gene_name),
-                  'left_names=gene_idx',
-                  'right_names=gene_idx',
-                  'keep_dimensions=1',
+                  {transcript_index_array},
+                  equi_join(
+                    {transcript_array},
+                    project({gene_array}, gene_name),
+                    'left_names=gene_idx',
+                    'right_names=gene_idx',
+                    'keep_dimensions=1',
+                    'algorithm=hash_replicate_right'),
+                  'left_names=transcript_idx',
+                  'right_names=transcript_idx',
                   'algorithm=hash_replicate_right'),
                 transcript_info,
-                strand + ':' + string(chrom) + ':' +
+                transcript_id + ':' + strand + ':' + string(chrom) + ':' +
                 string(start) + ':' + string(stop) + ';'),
               gene_idx,
               transcript_info),
@@ -551,7 +562,8 @@ GENE_TRANSCRIPT_INFO_STORE_QUERY = """
         'right_names=gene_idx'),
       {gene_array}),
     {gene_array})""".format(gene_array=GENE_ARRAY,
-                            transcript_array=TRANSCRIPT_ARRAY)
+                            transcript_array=TRANSCRIPT_ARRAY,
+                            transcript_index_array=TRANSCRIPT_INDEX_ARRAY)
 
 GENE_EXON_INFO_STORE_QUERY = """
   store(
