@@ -661,7 +661,7 @@ VARIANT_SCHEMA = """
 
 VARIANT_STORE_QUERY = """
   store(
-    redimension(
+    faster_redimension(
       apply(
         filter(
           aio_input('{{path}}', 'num_attributes=8'),
