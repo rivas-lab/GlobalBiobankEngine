@@ -66,8 +66,6 @@ ICD_AFFYID_SCHEMA = """
 
 ICD_PVALUE_MAP = dict(zip((.001, .0001, .00001), range(1, 4)))
 
-# TODO 10K limit
-
 ICD_INFO_APPEND_QUERY = """
   insert(
     redimension(
@@ -965,29 +963,33 @@ ICD_AFFYID_LOOKUP_SCHEMA = scidbpy.schema.Schema.fromstring("""
    notused1]""")
 
 ICD_VARIANT_LOOKUP_QUERY = """
-  equi_join(
-    project({variant_array},
-            rsid,
-            ref,
-            alt,
-            filter,
-            exac_nfe,
-            csq),
-    cross_join(
-        project(
-          between({icd_array},
-                  null, null, null, {{pdecimal}}, null,
-                  null, null, null, null, null),
-          or_val,
-          pvalue,
-          log10pvalue),
-        filter({icd_info_array}, icd = '{{icd}}'),
-        {icd_array}.icd_idx,
-        {icd_info_array}.icd_idx) as icd_join,
-    'left_names=chrom,pos',
-    'right_names=chrom,pos',
-    'keep_dimensions=1',
-    'algorithm=merge_right_first')""".format(
+  between(
+    sort(
+      equi_join(
+        project({variant_array},
+                rsid,
+                ref,
+                alt,
+                filter,
+                exac_nfe,
+                csq),
+        cross_join(
+            project(
+              between({icd_array},
+                      null, null, null, {{pdecimal}}, null,
+                      null, null, null, null, null),
+              or_val,
+              pvalue,
+              log10pvalue),
+            filter({icd_info_array}, icd = '{{icd}}'),
+            {icd_array}.icd_idx,
+            {icd_info_array}.icd_idx) as icd_join,
+        'left_names=chrom,pos',
+        'right_names=chrom,pos',
+        'keep_dimensions=1',
+        'algorithm=merge_right_first'),
+      pvalue desc),
+    0, 499)""".format(
         icd_array=ICD_ARRAY,
         icd_info_array=ICD_INFO_ARRAY,
         variant_array=VARIANT_ARRAY)
