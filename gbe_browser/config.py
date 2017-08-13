@@ -989,7 +989,7 @@ ICD_VARIANT_LOOKUP_QUERY = """
         'keep_dimensions=1',
         'algorithm=merge_right_first'),
       pvalue),
-    0, 499)""".format(
+    0, 4999)""".format(
         icd_array=ICD_ARRAY,
         icd_info_array=ICD_INFO_ARRAY,
         variant_array=VARIANT_ARRAY)

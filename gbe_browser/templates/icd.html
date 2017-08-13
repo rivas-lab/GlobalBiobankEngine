@@ -33,8 +33,12 @@
         <hr/>
      <dl class="dl-horizontal" style="margin-bottom: 0px;">
                         <dt>Code:</dt>
-                        <dt>Case Count:</dt>
-
+			{% if icd[0].icd %}
+			<dt>Case Count (Disease) or Individuals (QTs):</dt>
+			{% else %}
+			<dt>Case Count:</dt>
+			{% endif %}
+                        
                         <dd>{{ icd[0].icd.replace('ICD','') }}</dd>
                                              <dd>{{ icd[0].Case }}
                                              </dd>

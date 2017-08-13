@@ -59,9 +59,9 @@
 
 </script>
     <script type="text/javascript">
-        number_of_samples = 60706;
-        release_number = 0.3;
-        number_of_samples_full = 91796;
+        number_of_samples = 500000;
+        release_number = 0.01;
+        number_of_samples_full = 50000;
         $(document).ready(function() {
             $('.number_samples').html(Number(number_of_samples).toLocaleString('en'));
             $('.number_samples_full').html(Number(number_of_samples_full).toLocaleString('en'));
@@ -127,6 +127,11 @@
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
 </nav>
+<div id="google_translate_element"></div><script type="text/javascript">
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'es,fi,ja', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+}
+</script><script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 {#<div id="header">#}
 {#    <div class="container">#}
 {#        <span>#}
