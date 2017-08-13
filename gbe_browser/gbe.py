@@ -709,7 +709,7 @@ def icd_page(icd_str):
         cutoff = None
         icd = None
 
-        for p in [.001, .0001, .00001]:
+        for p in [.001]:
             icd = lookups.get_icd_variant_by_icd_id_pvalue(db, icd_str, p)
             if len(icd):
                 cutoff = p
@@ -759,6 +759,19 @@ def target_page():
             'target.html',
             icd = icd,
             cutoff=cutoff
+            )
+    except Exception as e:
+        print('Failed on protective scan Error=', traceback.format_exc())
+        abort(404)
+
+
+@app.route('/power')
+def power_page():
+    if not check_credentials():
+        return redirect(url_for('login'))
+    try:
+        return render_template(
+            'power.html'
             )
     except Exception as e:
         print('Failed on protective scan Error=', traceback.format_exc())

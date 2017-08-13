@@ -971,6 +971,7 @@ ICD_VARIANT_LOOKUP_QUERY = """
                 ref,
                 alt,
                 filter,
+                ukbb_freq,
                 exac_nfe,
                 csq),
         cross_join(
@@ -1001,6 +1002,7 @@ ICD_VARIANT_SCAN_QUERY = """
             ref,
             alt,
             filter,
+            ukbb_freq,
             exac_nfe,
             csq),
     cross_join(
@@ -1029,6 +1031,7 @@ VARIANT_X_ICD_X_INFO_SCHEMA = scidbpy.schema.Schema.fromstring("""
    ref:         string,
    alt:         string,
    filter:      string,
+   ukbb_freq:    double,
    exac_nfe:    double,
    csq:         string,
    or_val:      double,
@@ -1153,7 +1156,7 @@ GENE_VARIANT_LOOKUP = """
   sort(
     equi_join(
       equi_join(
-        project({variant_array}, rsid, ref, alt, exac_nfe),
+        project({variant_array}, rsid, ref, alt, ukbb_freq, exac_nfe),
         project(
           equi_join(
             {variant_gene_array},
@@ -1190,6 +1193,7 @@ GENE_VARIANT_SCHEMA = scidbpy.schema.Schema.fromstring("""
    ref:         string,
    alt:         string,
    rsid:        int64,
+   ukbb_freq:    double,
    exac_nfe:    double,
    gene_name:   string,
    consequence: string,
@@ -1396,6 +1400,7 @@ VARIANT_GENE_OR_TRANSCRIPT_LOOKUP = """
             alt,
             site_quality,
             filter,
+            ukbb_freq,
             exac_nfe,
             minicd,
             minpval,
@@ -1416,6 +1421,7 @@ VARIANT_GENE_OR_TRANSCRIPT_SCHEMA = scidbpy.schema.Schema.fromstring("""
    alt:          string,
    site_quality: string,
    filter:       string,
+   ukbb_freq:    double,
    exac_nfe:     double,
    minicd:       string,
    minpval:      double,
