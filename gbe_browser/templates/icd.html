@@ -34,14 +34,15 @@
      <dl class="dl-horizontal" style="margin-bottom: 0px;">
                         <dt>Code:</dt>
 			{% if icd[0].icd %}
-			<dt>Case Count (Disease) or Individuals (QTs):</dt>
+			<dt>Case Count or N:</dt>
 			{% else %}
-			<dt>Case Count:</dt>
+			<dt>Case Count or N:</dt>
 			{% endif %}
-                        
+			<dt>Gene-based results:</dt>                        
                         <dd>{{ icd[0].icd.replace('ICD','') }}</dd>
                                              <dd>{{ icd[0].Case }}
                                              </dd>
+                        <dd><a href="/coding/gene/{{ icd[0].icd}}">{{ icd[0].icd.replace('ICD','') }}</a></dd>
 
 
 
