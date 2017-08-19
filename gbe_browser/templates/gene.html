@@ -12,6 +12,7 @@ input[type=submit] {
     cursor: pointer;
 }
 
+                        .bar { fill:#b3995d; }
 
 </style>
     <!-- Render context vars in JS here -->
@@ -63,7 +64,7 @@ div.transbox
             $("#variants_table_container").show();
         });
     </script>
-    <div class="container-fluid">
+    <div class="container-fluid" id="container">
         <div class="col-md-10 col-xs-offset-1 col-md-offset-1">
 	  {% if not gene.di %}
             <h1>Gene: {{ gene.gene_name }}</h1>
@@ -110,13 +111,13 @@ div.transbox
                             </a>
                         </dd>
                     {% endif %}
-<!--                        <dt>Mouse Knockout</dt>
+                        <dt>Mouse Knockout</dt>
                         <dd>
                             <a href="http://www.mousephenotype.org/data/search/gene?kw={{ gene.gene_name }}" target="_blank">
                                 {{ gene.gene_name }}
                                 <i class="fa fa-external-link"></i>
                             </a>
-                        </dd> -->
+                        </dd> 
                     <dt>Other</dt>
                     <dd>
                         <div class="dropdown">
@@ -167,7 +168,108 @@ div.transbox
 			</dd>
                 </dl>
             </div>
-	    <div class=" col-md-5">
+	    <div class="col-md-5" id="container5">
+	      <h4>Top five phenotypes with aggregate analysis</h4>
+
+
+<script>
+function GetTopFivePhenotypes(arrayData){  //sorting to top 5 phenotypes
+  arrayData.sort(function(a, b) {
+                   return parseFloat(b["l10bf"]) - parseFloat(a["l10bf"]);
+                 });
+  return arrayData.slice(0, 5);
+}
+
+var margin = {top: 20, right: 20, bottom: 70, left: 40},
+    width = 400 - margin.left - margin.right,
+    height = 200 - margin.top - margin.bottom;
+
+
+var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
+
+var y = d3.scale.linear().range([height, 0]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .ticks(10);
+
+var tip = d3.tip()
+  .attr('class', 'd3-tip')
+  .offset([-10, 0])
+  .html(function(d) {
+    return "<strong>log 10 Bayes Factor:</strong> <span style='color:red'>" + d3.format(".2f")(d["l10bf"]) + "</span>";
+  })
+
+
+var svg = d3.select("#container5").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", 
+          "translate(" + margin.left + "," + margin.top + ")");
+
+svg.call(tip);
+
+d3.csv("/static/mrpgene/" + gene.gene_name + ".gene.out", function(error, data) {
+  if (error) throw error;
+   data = GetTopFivePhenotypes(data);
+
+  x.domain(data.map(function(d) { return d["coding_name"]; }));
+  y.domain([0, d3.max(data, function(d) { return d["l10bf"]; })]);
+
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis)
+    .selectAll("text")
+      .style("text-anchor", "end")
+      .attr("dx", "-.8em")
+      .attr("dy", "-.55em")
+      .attr("transform", "rotate(-90)" )
+      .style("cursor", "pointer")
+      .filter(function(d){ return typeof(d) == "string"; })
+    .on("click", function(d){
+        document.location.href = "/coding/" + d;
+    });
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end");
+
+  svg.selectAll("bar")
+      .data(data)
+    .enter().append("rect")
+      .style("fill", "steelblue")
+      .attr("x", function(d) { return x(d["coding_name"]); })
+      .attr("width", x.rangeBand())
+      .attr("y", function(d) { return y(d["l10bf"]); })
+      .attr("height", function(d) { return height - y(d["l10bf"]); })
+          .on('mouseover', tip.show)
+      .on('mouseout', tip.hide);
+
+});
+  //      .on("mousemove", function(d){
+    //        tooltip
+          //    .style("left", d3.event.pageX - 50 + "px")
+         //     .style("top", d3.event.pageY - 70 + "px")
+        //      .style("display", "inline-block")
+       //       .html((d["coding_name"]) + "<br>" + "log10BF independent effects model: " + (d3.format(".2f")(d["l10bf"])));
+       // })
+//.on("mouseout", function(d){ tooltip.style("display", "none");});
+
+</script>
+
+
 
             </div>
           </div>         
