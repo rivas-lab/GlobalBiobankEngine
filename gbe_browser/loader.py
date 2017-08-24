@@ -150,6 +150,7 @@ class Loader:
         logger.info('Array:%s', config.ICD_INFO_ARRAY)
 
     def insert_icd(self):
+        self.icd_lst.sort(key=lambda k: k[1])
         file_iter = ([(fn for (icd, fn) in self.icd_lst)] *
                      config.SCIDB_INSTANCE_NUM)
 
