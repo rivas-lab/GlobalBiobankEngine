@@ -29,6 +29,7 @@ class Loader:
         self.db = scidbpy.connect()
         self.fifo_names = Loader.make_fifos()
         self.instances = [str(i) for i in range(config.SCIDB_INSTANCE_NUM)]
+        self.is_additive = False
 
         finalize(self,
                  self.remove_fifos,
@@ -43,6 +44,9 @@ class Loader:
         logger.info('Query:done')
         logger.info('Pipe:return code:%s', pipe.poll())
         logger.info('Array:%s', array_name)
+
+    def set_additive(self):
+        self.is_additive = True
 
     # -- -
     # -- - QC - --
@@ -69,32 +73,40 @@ class Loader:
     def set_icd_qt_lists(self):
         if config.ICD_INFO_ARRAY in dir(self.db.arrays):
             self.is_first_time = False
-            icd_exist = set(i['icd']['val']
-                            for i in self.db.iquery(
-                                    config.ICD_INFO_ICD_QUERY,
-                                    fetch=True,
-                                    schema=config.ICD_INFO_ICD_SCHEMA,
-                                    atts_only=True))
+            self.icd_idx_map = dict(
+                (i['icd']['val'], i['icd_idx'])
+                for i in self.db.iquery(
+                        config.ICD_INFO_ICD_QUERY,
+                        fetch=True,
+                        schema=config.ICD_INFO_ICD_SCHEMA))
+            self.icd_exist = set(self.icd_idx_map.keys())
         else:
             self.is_first_time = True
             self.db.create_array(config.ICD_INFO_ARRAY, config.ICD_INFO_SCHEMA)
             self.db.create_array(config.ICD_ARRAY, config.ICD_SCHEMA)
+            self.icd_idx_map = {}
+
+            self.icd_exist = set()
 
         self.icd_lst = [
             (icd, fn)
             for (icd, fn) in (
                     (Loader.get_icd(*Loader.get_icd_parts(fn)), fn)
                     for fn in glob.iglob(config.ICD_GLOB))
-            if self.is_first_time or icd not in icd_exist]
+            if (self.is_first_time or
+                self.is_additive or
+                icd not in self.icd_exist)]
 
         self.qt_lst = [
             (icd, fn)
             for (icd, fn) in (
                     (Loader.get_icd(*Loader.get_icd_parts(fn)), fn)
                     for fn in glob.iglob(config.QT_GLOB))
-            if self.is_first_time or icd not in icd_exist]
+            if (self.is_first_time or
+                self.is_additive or
+                icd not in self.icd_exist)]
 
-        if not self.is_first_time:
+        if not self.is_first_time and not self.is_additive:
             logger.info('New ICDs found: {}'.format(
                 ','.join(set(icd for (icd, fn) in self.icd_lst))))
             logger.info('New QTs found: {}'.format(
@@ -109,7 +121,9 @@ class Loader:
 
     def append_icd_info(self):
         icd_qt_lst = set(
-            icd for (icd, fn) in itertools.chain(self.icd_lst, self.qt_lst))
+            icd
+            for (icd, fn) in itertools.chain(self.icd_lst, self.qt_lst)
+            if icd not in self.icd_exist)
 
         if self.is_first_time:
             icd_st = 0
@@ -119,14 +133,16 @@ class Loader:
                                     fetch=True,
                                     atts_only=True)[0]['max']['val'] + 1
 
-        self.icd_idx_map = dict(zip(icd_qt_lst,
-                                    range(icd_st, icd_st + len(icd_qt_lst))))
-        self.db.iquery(
-            config.ICD_INFO_APPEND_QUERY.format(
-                fn='{fn}',
-                start=icd_st,
-                stop=icd_st + len(icd_qt_lst)),
-            upload_data=StringIO.StringIO('\n'.join(icd_qt_lst)))
+        self.icd_idx_map.update(
+            dict(zip(icd_qt_lst,
+                     range(icd_st, icd_st + len(icd_qt_lst)))))
+        if icd_qt_lst:
+            self.db.iquery(
+                config.ICD_INFO_APPEND_QUERY.format(
+                    fn='{fn}',
+                    start=icd_st,
+                    stop=icd_st + len(icd_qt_lst)),
+                upload_data=StringIO.StringIO('\n'.join(icd_qt_lst)))
         logger.info('Array:%s', config.ICD_INFO_ARRAY)
 
     def insert_icd_info(self):
@@ -568,7 +584,7 @@ class Loader:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='SciDB Loader')
     parser.add_argument('action',
-                        choices=['all', 'icd-incremental'],
+                        choices=['all', 'icd-incremental', 'icd-additive'],
                         help='Loading choice')
 
     args = parser.parse_args()
@@ -606,6 +622,16 @@ if __name__ == '__main__':
         loader.store_bim()
 
     elif args.action == 'icd-incremental':
+        loader.set_icd_qt_lists()
+        loader.append_icd_info()
+        loader.insert_icd_info()
+        loader.insert_icd()
+        loader.insert_qt()
+        loader.store_affyid_index()
+        loader.store_icd_affyid()
+
+    elif args.action == 'icd-additive':
+        loader.set_additive()
         loader.set_icd_qt_lists()
         loader.append_icd_info()
         loader.insert_icd_info()

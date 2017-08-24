@@ -902,7 +902,7 @@ ICD_INFO_ICD_QUERY = 'project({icd_info_array}, icd)'.format(
     icd_info_array=ICD_INFO_ARRAY)
 
 ICD_INFO_ICD_SCHEMA = scidbpy.schema.Schema.fromstring("""
-  <icd:string>[notused]""")
+  <icd:string>[icd_idx = 0:*:0:80]""")
 
 ICD_INFO_IDX_MAX_QUERY = """
   aggregate(
