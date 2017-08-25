@@ -186,6 +186,7 @@ class Loader:
         logger.info('Array:%s', config.ICD_ARRAY)
 
     def insert_qt(self):
+        self.qt_lst.sort(key=lambda k: k[1])
         file_iter = ([(fn for (icd, fn) in self.qt_lst)] *
                      config.SCIDB_INSTANCE_NUM)
 
