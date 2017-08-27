@@ -29,7 +29,6 @@ class Loader:
         self.db = scidbpy.connect()
         self.fifo_names = Loader.make_fifos()
         self.instances = [str(i) for i in range(config.SCIDB_INSTANCE_NUM)]
-        self.is_additive = False
 
         finalize(self,
                  self.remove_fifos,
@@ -44,9 +43,6 @@ class Loader:
         logger.info('Query:done')
         logger.info('Pipe:return code:%s', pipe.poll())
         logger.info('Array:%s', array_name)
-
-    def set_additive(self):
-        self.is_additive = True
 
     # -- -
     # -- - QC - --
@@ -73,43 +69,79 @@ class Loader:
     def set_icd_qt_lists(self):
         if config.ICD_INFO_ARRAY in dir(self.db.arrays):
             self.is_first_time = False
+
+            logger.info('Query:running...')
+            icd_info = self.db.iquery(config.ICD_INFO_ICD_QUERY,
+                                      fetch=True,
+                                      atts_only=True,
+                                      schema=config.ICD_INFO_ICD_SCHEMA)
+            logger.info('Found:%d records in %s',
+                        len(icd_info), config.ICD_INFO_ARRAY)
+
             self.icd_idx_map = dict(
-                (i['icd']['val'], i['icd_idx'])
-                for i in self.db.iquery(
-                        config.ICD_INFO_ICD_QUERY,
-                        fetch=True,
-                        schema=config.ICD_INFO_ICD_SCHEMA))
+                (i['icd']['val'], i['icd_idx']['val'])
+                for i in icd_info)
             self.icd_exist = set(self.icd_idx_map.keys())
+            icd_chrom = set(i['icd']['val']
+                            for i in icd_info
+                            if i['num_chrom']['val'] < config.CHROM_MAX)
         else:
             self.is_first_time = True
+
             self.db.create_array(config.ICD_INFO_ARRAY, config.ICD_INFO_SCHEMA)
             self.db.create_array(config.ICD_ARRAY, config.ICD_SCHEMA)
-            self.icd_idx_map = {}
 
+            self.icd_idx_map = {}
             self.icd_exist = set()
 
-        self.icd_lst = [
-            (icd, fn)
-            for (icd, fn) in (
-                    (Loader.get_icd(*Loader.get_icd_parts(fn)), fn)
-                    for fn in glob.iglob(config.ICD_GLOB))
-            if (self.is_first_time or
-                self.is_additive or
-                icd not in self.icd_exist)]
+        logger.info('Found:%d files in %s',
+                    sum(1 for _ in glob.iglob(
+                        os.path.join(config.ICD_PATH, '*'))),
+                    config.ICD_PATH)
 
-        self.qt_lst = [
-            (icd, fn)
-            for (icd, fn) in (
-                    (Loader.get_icd(*Loader.get_icd_parts(fn)), fn)
-                    for fn in glob.iglob(config.QT_GLOB))
-            if (self.is_first_time or
-                self.is_additive or
-                icd not in self.icd_exist)]
+        icd_files = [(Loader.get_icd(*Loader.get_icd_parts(fn)), fn)
+                      for fn in glob.iglob(config.ICD_GLOB)]
+        logger.info('Found:%d ICD files matching %s',
+                    len(icd_files),
+                    config.ICD_GLOB)
+        self.icd_lst = [(icd, fn)
+                        for (icd, fn) in icd_files
+                        if self.is_first_time or icd not in self.icd_exist]
+        logger.info('Select:%d ICD files of new ICDs', len(self.icd_lst))
 
-        if not self.is_first_time and not self.is_additive:
-            logger.info('New ICDs found: {}'.format(
+        if not self.is_first_time:
+            icd_lst_chrom = [(icd, fn)
+                             for (icd, fn) in icd_files
+                             if icd in icd_chrom]
+            logger.info('Select:%d ICD files ' +
+                        'for ICDs with less than %s chromosomes',
+                        len(icd_lst_chrom),
+                        config.CHROM_MAX)
+            self.icd_lst += icd_lst_chrom
+            logger.info('ICDs to be loaded: {}'.format(
                 ','.join(set(icd for (icd, fn) in self.icd_lst))))
-            logger.info('New QTs found: {}'.format(
+
+        qt_files = [(Loader.get_icd(*Loader.get_icd_parts(fn)), fn)
+                    for fn in glob.iglob(config.QT_GLOB)]
+        logger.info('Found:%d QT files matching %s',
+                    len(qt_files),
+                    config.QT_GLOB)
+
+        self.qt_lst = [(icd, fn)
+                       for (icd, fn) in qt_files
+                       if self.is_first_time or icd not in self.icd_exist]
+        logger.info('Select:%d QT files of new ICDs', len(self.qt_lst))
+
+        if not self.is_first_time:
+            qt_lst_chrom = [(icd, fn)
+                             for (icd, fn) in qt_files
+                             if icd in icd_chrom]
+            logger.info('Select:%d QT files ' +
+                        'for ICDs with less than %s chromosomes',
+                        len(qt_lst_chrom),
+                        config.CHROM_MAX)
+            self.qt_lst += qt_lst_chrom
+            logger.info('QTs to be loaded: {}'.format(
                 ','.join(set(icd for (icd, fn) in self.qt_lst))))
 
         if not self.icd_lst and not self.qt_lst:
@@ -486,7 +518,6 @@ class Loader:
     def get_icd_parts(file_name):
         name = os.path.basename(file_name)
         parts = name.split('.')
-        print(parts)
         # Figure out prefix and intadd
         if 'brainmri' in parts:
             prefix = 'BRMRI'
@@ -599,7 +630,7 @@ class Loader:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='SciDB Loader')
     parser.add_argument('action',
-                        choices=['all', 'icd-incremental', 'icd-additive'],
+                        choices=['all', 'icd-incremental'],
                         help='Loading choice')
 
     args = parser.parse_args()
@@ -637,16 +668,6 @@ if __name__ == '__main__':
         loader.store_bim()
 
     elif args.action == 'icd-incremental':
-        loader.set_icd_qt_lists()
-        loader.append_icd_info()
-        loader.insert_icd_info()
-        loader.insert_icd()
-        loader.insert_qt()
-        loader.store_affyid_index()
-        loader.store_icd_affyid()
-
-    elif args.action == 'icd-additive':
-        loader.set_additive()
         loader.set_icd_qt_lists()
         loader.append_icd_info()
         loader.insert_icd_info()

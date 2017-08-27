@@ -3,6 +3,7 @@ import scidbpy
 
 
 XOFF = int(1e9)
+CHROM_MAX = 22
 
 # == =
 # == = Load = ==
@@ -28,10 +29,10 @@ QC_ARRAY = 'qc'
 # -- -
 # -- - Load: ICD - --
 # -- -
-ICD_GLOB = os.path.join(
-    GBE_DATA_PATH, 'icdassoc', 'hybrid', '*c*.hybrid.rewritewna.gz')
-QT_GLOB = os.path.join(
-    GBE_DATA_PATH, 'icdassoc', 'hybrid', '*c*.linear*gz')
+ICD_PATH = os.path.join(GBE_DATA_PATH, 'icdassoc', 'hybrid')
+
+ICD_GLOB = os.path.join(ICD_PATH, '*c*.hybrid.rewritewna.gz')
+QT_GLOB = os.path.join(ICD_PATH, '*c*.linear*gz')
 
 ICD_INFO_FILE = os.path.join(GBE_DATA_PATH, 'icdstats', 'icdinfo.txt')
 
@@ -898,11 +899,29 @@ ICD_INFO_MAP_QUERY = 'project({icd_info_array}, icd, Name)'.format(
 ICD_INFO_MAP_SCHEMA = scidbpy.schema.Schema.fromstring("""
   <icd:string, Name:string>[notused]""")
 
-ICD_INFO_ICD_QUERY = 'project({icd_info_array}, icd)'.format(
-    icd_info_array=ICD_INFO_ARRAY)
+ICD_INFO_ICD_QUERY = """
+  equi_join(
+    project({icd_info_array}, icd),
+    grouped_aggregate(
+      grouped_aggregate(
+        {icd_array},
+        count(*),
+        icd_idx,
+        chrom),
+      count(*) as num_chrom,
+      icd_idx),
+    'left_names=icd_idx',
+    'right_names=icd_idx',
+    'left_outer=1',
+    'right_outer=1')""".format(icd_info_array=ICD_INFO_ARRAY,
+                               icd_array=ICD_ARRAY)
 
 ICD_INFO_ICD_SCHEMA = scidbpy.schema.Schema.fromstring("""
-  <icd:string>[icd_idx = 0:*:0:80]""")
+  <icd_idx:   int64,
+   icd:       string,
+   num_chrom: uint64>
+  [notused0;
+   notused1]""")
 
 ICD_INFO_IDX_MAX_QUERY = """
   aggregate(
@@ -1150,7 +1169,7 @@ GENE_ID_BY_NAME_QUERY = """
                        gene_index_array=GENE_INDEX_ARRAY)
 
 GENE_ID_BY_NAME_SCHEMA = scidbpy.schema.Schema.fromstring(
-    '<gene_id:string>[notused]')
+    '<gene_id:string>[notused0]')
 
 GENE_VARIANT_LOOKUP = """
   sort(
@@ -1199,7 +1218,7 @@ GENE_VARIANT_SCHEMA = scidbpy.schema.Schema.fromstring("""
    consequence: string,
    hgvsp:       string>
   [notused0;
-   notused01]""")
+   notused1]""")
 
 VARIANT_ICD_LOOKUP = """
   project(
