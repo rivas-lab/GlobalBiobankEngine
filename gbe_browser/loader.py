@@ -486,7 +486,7 @@ class Loader:
     def get_icd_parts(file_name):
         name = os.path.basename(file_name)
         parts = name.split('.')
-
+        print(parts)
         # Figure out prefix and intadd
         if 'brainmri' in parts:
             prefix = 'BRMRI'
@@ -495,6 +495,15 @@ class Loader:
             prefix = 'ADD'
             intadd = 20
         elif 'initialdata' in parts:
+            prefix = 'INI'
+            intadd = 30
+        elif 'INI' in parts:
+            prefix = 'INI'
+            intadd = 30
+        elif 'initialdata' in name:
+            prefix = 'INI'
+            intadd = 30
+        elif 'INI' in name:
             prefix = 'INI'
             intadd = 30
         elif 'qt' in name:
@@ -522,6 +531,8 @@ class Loader:
                 'RH').strip(
                     'FH').strip(
                         'qt').strip(
+                        'INI').strip(
+                        'initialdata').strip(
                             'cancer').strip(
                                 'HC').split(
                                     '_FH2')[0]
@@ -530,6 +541,8 @@ class Loader:
             'RH').strip(
                 'FH').strip(
                     'qt').strip(
+                    'INI').strip(
+                    'initialdata').strip(
                         'MED').strip(
                             'cancer').strip(
                                 'HC').split(

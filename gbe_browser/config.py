@@ -31,7 +31,7 @@ QC_ARRAY = 'qc'
 ICD_GLOB = os.path.join(
     GBE_DATA_PATH, 'icdassoc', 'hybrid', '*c*.hybrid.rewritewna.gz')
 QT_GLOB = os.path.join(
-    GBE_DATA_PATH, 'icdassoc', 'hybrid', '*c*.linear.rewritewna.gz')
+    GBE_DATA_PATH, 'icdassoc', 'hybrid', '*c*.linear*gz')
 
 ICD_INFO_FILE = os.path.join(GBE_DATA_PATH, 'icdstats', 'icdinfo.txt')
 
@@ -102,7 +102,7 @@ ICD_INFO_INSERT_QUERY = """
 
 ICD_INSERT_QUERY = """
   insert(
-    redimension(
+    faster_redimension(
       apply(
         filter(
           index_lookup(
@@ -144,7 +144,7 @@ ICD_INSERT_QUERY = """
 
 QT_INSERT_QUERY = """
   insert(
-    redimension(
+    faster_redimension(
       apply(
         filter(
           index_lookup(
