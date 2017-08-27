@@ -78,13 +78,24 @@ class Loader:
             logger.info('Found:%d records in %s',
                         len(icd_info), config.ICD_INFO_ARRAY)
 
+            print(icd_info)
+            icd_orphan = [str(i['icd_idx']['val'])
+                          for i in icd_info
+                          if i['icd']['null'] != 255]
+            logger.info('Found:%d orphan ICDs, consider removing them',
+                        len(icd_orphan))
+            logger.info('Found:orphan:icd_idx:%s', ','.join(icd_orphan))
+
             self.icd_idx_map = dict(
                 (i['icd']['val'], i['icd_idx']['val'])
-                for i in icd_info)
+                for i in icd_info
+                if i['icd']['null'] == 255)
             self.icd_exist = set(self.icd_idx_map.keys())
             icd_chrom = set(i['icd']['val']
                             for i in icd_info
-                            if i['num_chrom']['val'] < config.CHROM_MAX)
+                            if (i['icd']['null'] == 255 and
+                                (i['num_chrom']['null'] != 255 or
+                                 i['num_chrom']['val'] < config.CHROM_MAX)))
         else:
             self.is_first_time = True
 
