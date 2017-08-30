@@ -39,10 +39,12 @@
 			<dt>Case Count or N:</dt>
 			{% endif %}
 			<dt>Gene-based results:</dt>                        
+			<dt>Phenotype distribution:</dt>                        
                         <dd>{{ icd[0].icd.replace('ICD','') }}</dd>
                                              <dd>{{ icd[0].Case }}
                                              </dd>
                         <dd><a href="/coding/gene/{{ icd[0].icd}}">{{ icd[0].icd.replace('ICD','') }}</a></dd>
+                        <dd><a href="/coding/phenotype/{{ icd[0].icd}}">{{ icd[0].icd.replace('ICD','') }}</a></dd>
 
 
 
