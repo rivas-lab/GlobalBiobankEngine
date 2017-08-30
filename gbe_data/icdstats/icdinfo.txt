@@ -668,10 +668,6 @@ INI30270	322755	Mean_sphered_cell_volume	322755	322755	Y
 INI30280	322755	Immature_reticulocyte_fraction	322755	322755	Y
 INI30290	322755	High_light_scatter_reticulocyte_percentage	322755	322755	Y
 INI30300	322755	High_light_scatter_reticulocyte_count	322755	322755	Y
-INI30500	104119	Microalbumin_in_urine	104119	104119	Y
-INI30510	327981	Creatinine_(enzymatic)_in_urine	327981	327981	Y
-INI30520	327299	Potassium_in_urine	327299	327299	Y
-INI30530	327302	Sodium_in_urine	327302	327302	Y
 INI48	336659	Waist_circumference	336659	336659	Y
 INI49	336620	Hip_circumference	336620	336620	Y
 INI50	336500	Standing_height	336500	336500	Y

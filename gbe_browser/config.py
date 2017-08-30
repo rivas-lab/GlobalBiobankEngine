@@ -117,7 +117,7 @@ ICD_INSERT_QUERY = """
           substr(a0, 0, 1) <> '#' and
           a6 = 'ADD' and
           is_in_filter is null and
-          dcast(a9, double(null)) < .5 and
+          dcast(a9, double(null)) < 100000000 and
           a11 <> 'NA' and
           dcast(a11, double(null)) <> 0),
         icd_idx,     {{icd_idx_cond}},
@@ -159,7 +159,7 @@ QT_INSERT_QUERY = """
           substr(a0, 0, 1) <> '#' and
           a5 = 'ADD' and
           is_in_filter is null and
-          dcast(a8, double(null)) < .5 and
+          dcast(a8, double(null)) < 100000000 and
           a10 <> 'NA'),
         icd_idx,     {{icd_idx_cond}},
         chrom,       int64(a0),
@@ -1026,7 +1026,7 @@ ICD_VARIANT_SCAN_QUERY = """
             csq),
     cross_join(
         project(
-          between({icd_array},
+          between(filter({icd_array},(se < .4 and or_val <> lor) or (se < .08 and or_val = lor) or (se > 2 and or_val > 1 or or_val < -1 and or_val = lor),
                   null, null, null, {{pdecimal}}, null,
                   null, null, null, null, null),
           or_val,
