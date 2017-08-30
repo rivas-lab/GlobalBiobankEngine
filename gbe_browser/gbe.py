@@ -769,6 +769,43 @@ def codinggene_page(icd_str):
         abort(404)
 
 
+
+@app.route('/coding/phenotype/<icd_str>')
+def codingphenotype_page(icd_str):
+    if not check_credentials():
+        return redirect(url_for('login'))
+    db = get_db()
+    try:
+        # icdlabel = str(icd_str)
+        # .strip('ADD').strip('INI').strip('BRMRI')
+        # Try several cutoffs to see if there are too many variants to
+        # render.  Arbitrary 10k max.
+        # passing = False
+        cutoff = None
+        icd = None
+        for p in [.00001]:
+            icd = lookups.get_icd_variant_by_icd_id_pvalue(db, icd_str, p)
+            if len(icd):
+                cutoff = p
+                # print("CUTOFF",cutoff)
+                break
+            # print(icd_str,icd)
+        print('Rendering ICD10: %s' % icd_str)
+
+        if icd is None or len(icd) == 0:
+            icd = [{'Case': 'NA', 'Name': 'NA', 'icd': icd_str}]
+        # print(icd_info)
+
+        return render_template(
+            'phenotype.html',
+            icd=icd,
+            cutoff=cutoff
+            )
+    except Exception as e:
+        print('Failed on icd:', icd_str, '; Error=', traceback.format_exc())
+        abort(404)
+
+
 @app.route('/target/1')
 def target_page():
     if not check_credentials():
