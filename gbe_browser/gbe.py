@@ -765,6 +765,38 @@ def target_page():
         abort(404)
 
 
+@app.route('/decomposition/pc/<pc>')
+def decompositoin_pc_page(pc):
+    if not check_credentials():
+        return redirect(url_for('login'))
+    db = get_db()
+    
+    # decomposition dataset
+    n_PCs = 50
+    n_phe = 500
+    n_var = 8000
+    
+    try:
+        return render_template(
+            'decomposition_pc.html',
+            pc=pc,
+            phe_contribution_x=[x for x in range(n_phe)],
+            phe_contribution_y=[x for x in range(n_phe)],
+            phe_contribution_labels=[x for x in range(n_phe)],
+            var_contribution_x=[x for x in range(n_var)],
+            var_contribution_y=[x for x in range(n_var)],
+            var_contribution_labels=[x for x in range(n_var)]
+        )
+#        return render_template(
+#            'decomposition_pc.html',
+#            pc=pc)
+##            PCs    = [i for i in range(1, n_PCs + 1)],
+##            labels = ["PC {}".format(i) for i in range(1, n_PCs + 1)]
+##            )
+    except Exception as e:
+        print('Unkonwn Error=', traceback.format_exc())
+        abort(404)
+
 
 def get_icd_variant_table(icd, p):
     db = get_db()

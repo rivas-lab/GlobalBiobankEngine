@@ -1,0 +1,124 @@
+{% extends "layout.html" %}
+{% block head %}
+    <!-- Plotly.js -->
+    <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+{% endblock %}
+
+
+{% block body %}
+
+<div class="container" style="font-size: 16px;">
+    <h1>Decomposition: PC{{ pc }}</h1>
+    <p>
+        In this page, you can investigate which phenotypes/variatns are important for principlal component {{ pc }}.
+    </p>
+
+    <h2>Which phenotypes are important for PC{{ pc }} ?</h2>
+    <div id="phe_contribution_plot" style:width: 100%>
+        <!-- Plotly chart will be drawn inside this DIV -->
+    </div>
+    <h2>Which variants are important for PC{{ pc }} ?</h2>
+    <div id="var_contribution_plot" style:width: 100%>
+        <!-- Plotly chart will be drawn inside this DIV -->
+    </div>
+
+    <!-- This script is for plotting -->
+    <script>           
+        function make_plot(id, x, y, label, title) {
+            Plotly.newPlot(
+                id,
+                [
+                    {
+                        x:x,
+                        y:y,
+                        text:label,
+                        type:'scatter',
+                        mode:'markers'
+                    }
+                ],
+                {
+                    hovermode:'closest',
+                    title:title
+                }
+            );
+        }
+
+        var N = 50,
+            x = Plotly.d3.range(N),
+            y = Plotly.d3.range(N).map( Plotly.d3.random.normal() ),
+            l = x;
+
+        make_plot(
+            'phe_contribution_plot', 
+            {{ phe_contribution_x      | tojson | safe }}, 
+            {{ phe_contribution_y      | tojson | safe }}, 
+            {{ phe_contribution_labels | tojson | safe }},
+            'phenotype contribution score'
+        );        
+
+        make_plot(
+            'var_contribution_plot', 
+            {{ var_contribution_x      | tojson | safe }}, 
+            {{ var_contribution_y      | tojson | safe }}, 
+            {{ var_contribution_labels | tojson | safe }},
+            'variant contribution score'
+        );                
+    </script>
+
+    <script>
+        var phe_contribution_plot = $('#phe_contribution_plot')[0];
+        var var_contribution_plot = $('#var_contribution_plot')[0];
+        phe_contribution_plot.on('plotly_click', function(data){
+            var pts = '';
+            for(var i=0; i < data.points.length; i++){
+                pts =
+                    'x = '+data.points[i].x +' \n' +
+                    'y = '+data.points[i].y.toPrecision(4) + '\n\n';
+            }
+            window.open('https://www.google.com/search?q='+'phe'+pts,'_self',false)
+        });        
+        var_contribution_plot.on('plotly_click', function(data){
+            var pts = '';
+            for(var i=0; i < data.points.length; i++){
+                pts =
+                    'x = '+data.points[i].x +' \n' +
+                    'y = '+data.points[i].y.toPrecision(4) + '\n\n';
+            }
+            window.open ('https://www.google.com/search?q='+'var'+pts,'_self',false)
+        });
+
+    </script>
+    
+    <h2>debug</h2>        
+    <p> {{ phe_contribution_x      | tojson | safe }} </p>    
+    <p> {{ phe_contribution_y      | tojson | safe }} </p>    
+    <p> {{ phe_contribution_labels | tojson | safe }} </p>
+    <p> {{ var_contribution_x      | tojson | safe }} </p>    
+    <p> {{ var_contribution_y      | tojson | safe }} </p>    
+    <p> {{ var_contribution_labels | tojson | safe }} </p>
+    
+    <h1>Frequently Asked Questions</h1>
+    <br/>
+    <ul class="media-list">
+        <li class="media">
+            <div class="media-body">
+                <h4 class="media-heading">How should I cite discoveries made using Global Biobank Engine?</h4>
+ <p>
+            We request that any use of data obtained from the Global Biobank Engine be cited in publications using the following format:
+        </p>
+        <ul>
+            <li>
+             Global Biobank Engine, Stanford, CA (URL: <a href="http://gbe.stanford.edu/">http://gbe.stanford.edu/</a>) [date (month, year) accessed].                </li>
+        </ul>
+        <p>
+            We also ask that the developers of the engine be acknowledged as follows:
+        </p>
+        <ul>
+            <li>The authors would like to thank the Rivas lab for making the resource available.</li>
+        </ul>
+
+       </div>
+    </li>
+    </ul>
+</div>
+{% endblock %}
