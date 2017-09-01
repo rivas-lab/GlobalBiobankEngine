@@ -995,7 +995,7 @@ ICD_VARIANT_LOOKUP_QUERY = """
                 csq),
         cross_join(
             project(
-              between({icd_array},
+              between(filter({icd_array},(se < .4 and or_val <> lor) or (se < .05 and or_val = lor)),
                       null, null, null, {{pdecimal}}, null,
                       null, null, null, null, null),
               or_val,
@@ -1026,7 +1026,7 @@ ICD_VARIANT_SCAN_QUERY = """
             csq),
     cross_join(
         project(
-          between(filter({icd_array},(se < .4 and or_val <> lor) or (se < .08 and or_val = lor) or (se > 2 and or_val > 1 or or_val < -1 and or_val = lor),
+          between(filter({icd_array},(se < .4 and or_val <> lor) or (se < .05 and or_val = lor)),
                   null, null, null, {{pdecimal}}, null,
                   null, null, null, null, null),
           or_val,

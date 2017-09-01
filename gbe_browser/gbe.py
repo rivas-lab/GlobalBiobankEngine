@@ -677,7 +677,7 @@ def variant_icd_page(variant_str):
                 item['l10pval'] = format(float(item['log10pvalue']), '.4g')
                 # item['Case'] = icd10info[0]['Case']
                 se =  format(float(item['se']), '.4g')
-                if float(item['l10pval']) <= 1 or float(se) >= .5 or int(item['Case']) <= 100 or item['Group'] == "INI" or item['Code'] == "HC67" or icd10 in seend:
+                if float(item['l10pval']) <= 1 or float(se) >= .5 or int(item['Case']) <= 100  or item['Code'] == "HC67" or icd10 in seend:
                     indexes.append(idx)
                 seend[icd10] = icd10
         for index in sorted(indexes, reverse=True):
