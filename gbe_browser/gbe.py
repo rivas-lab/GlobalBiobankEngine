@@ -765,27 +765,59 @@ def target_page():
         abort(404)
 
 
-@app.route('/decomposition/pc/<pc>')
-def decompositoin_pc_page(pc):
+@app.route('/decomposition')
+def decompositoin_page():
     if not check_credentials():
         return redirect(url_for('login'))
     db = get_db()
     
     # decomposition dataset
-    n_PCs = 50
-    n_phe = 500
-    n_var = 8000
+#    n_PCs = 50
+#    n_phe = 500
+#    n_var = 8000
+#    pc = 1
+
+    n_PCs = 5
+    n_phe = 10
+    n_var = 50
+    
+#    initial values
+    pc = 1
+    var = 1
+    phe = 1
     
     try:
         return render_template(
-            'decomposition_pc.html',
+            'decomposition.html',
+            
+            dict_of_lists = {
+                '0': [x for x in range(3)],
+                '1': [x for x in range(6)],
+                '2': [x for x in range(10)]                
+            },
+            
+            pcs        = [1 + x for x in range(n_PCs)],
+            phenotypes = [1 + x for x in range(n_phe)],
+            variants   = [1 + x for x in range(n_var)],
+            
             pc=pc,
-            phe_contribution_x=[x for x in range(n_phe)],
-            phe_contribution_y=[x for x in range(n_phe)],
-            phe_contribution_labels=[x for x in range(n_phe)],
-            var_contribution_x=[x for x in range(n_var)],
-            var_contribution_y=[x for x in range(n_var)],
-            var_contribution_labels=[x for x in range(n_var)]
+            var=var,
+            phe=phe,
+                        
+            phe_contribution_x      = {(pci + 1): [x + 1   for x in range(n_phe)] for pci in range(n_PCs)},        
+            phe_contribution_y      = {(pci + 1): [x + pci for x in range(n_phe)] for pci in range(n_PCs)},        
+            phe_contribution_labels = {(pci + 1): [x + 1   for x in range(n_phe)] for pci in range(n_PCs)},        
+            var_contribution_x      = {(pci + 1): [x + 1   for x in range(n_var)] for pci in range(n_PCs)},        
+            var_contribution_y      = {(pci + 1): [x + pci for x in range(n_var)] for pci in range(n_PCs)},        
+            var_contribution_labels = {(pci + 1): [x + 1   for x in range(n_phe)] for pci in range(n_PCs)},        
+            
+            phe_cos_x      = {(phe + 1): [1   + pci for pci in range(n_PCs)] for phe in range(n_phe)},        
+            phe_cos_y      = {(phe + 1): [phe + pci for pci in range(n_PCs)] for phe in range(n_phe)},        
+            phe_cos_labels = {(phe + 1): [1   + pci for pci in range(n_PCs)] for phe in range(n_phe)},        
+            var_cos_x      = {(var + 1): [1   + pci for pci in range(n_PCs)] for var in range(n_var)},        
+            var_cos_y      = {(var + 1): [var + pci for pci in range(n_PCs)] for var in range(n_var)},        
+            var_cos_labels = {(var + 1): [1   + pci for pci in range(n_PCs)] for var in range(n_var)}
+            
         )
 #        return render_template(
 #            'decomposition_pc.html',
