@@ -365,7 +365,7 @@
 		  	.style("cursor", "pointer")
 			.filter(function(d){ return typeof(d) == "string"; })
     		.on("click", function(d){
-    	   		document.location.href = "http://www.icd10data.com/ICD10CM/Codes/" + d;
+    	   		document.location.href = "/coding/" + d;
     		})
     };
     var svg = dimple.newSvg("#ratioChartContainer", "100%", "100%");
