@@ -211,7 +211,45 @@ function update_var_cosine(vari) {
         update_pc(pc - 1);
     });        
 }    
-        
+
+    
+function pca_plot_phe(idx_pc_x, idx_pc_y) {
+    make_plot(
+        'pca_plot_phe', 
+        factor_phe[label_pc[idx_pc_x]], 
+        factor_phe[label_pc[idx_pc_y]], 
+        label_phe,
+        'PCA plot for phenotypes'
+    );        
+}
+    
+function pca_plot_var(idx_pc_x, idx_pc_y) {
+    make_plot(
+        'pca_plot_var',         
+        factor_var[label_pc[idx_pc_x]], 
+        factor_var[label_pc[idx_pc_y]], 
+        label_var,
+        'PCA plot for variants'
+    );        
+}
+    
+function variance_explained_plot(){
+    make_plot(
+        'var_explained_plot',         
+        idx_pc, 
+        eigen_r, 
+        label_pc,
+        'variance explained plot'
+    ); 
+    var var_cosine_plot = $('#var_explained_plot')[0];
+    var_cosine_plot.on('plotly_click', function(data){
+        var pts = '';
+        for(var i=0; i < data.points.length; i++){
+            pc = data.points[i].x;            
+        }
+        update_pc(pc - 1);
+    });
+}    
 </script>
 
 
@@ -224,17 +262,29 @@ function dev_str(str) {
 
 <script>
 function update_pc(pc_idx) {
-    $(".variable_pc").text(label_pc[pc_idx])
+    $(".variable_pc").text(label_pc[pc_idx]);
     update_contribution_plots(label_pc[pc_idx]);
 }   
 
 function update_phe(phe_idx) {
-    $(".variable_phe").text(label_phe[phe_idx])
+    $(".variable_phe").text(label_phe[phe_idx]);
+    $(".variable_phe_link").html(                  
+        "<a href='https://biobankengine.stanford.edu/coding/"
+        + label_phe_code[phe_idx] + "'>" 
+        + label_phe[phe_idx]
+        + "</a>"
+    );
     update_phe_cosine(label_phe[phe_idx]);
 }   
 
 function update_var(var_idx) {
-    $(".variable_var").text(label_var[var_idx])
+    $(".variable_var").text(label_var[var_idx]);
+    $(".variable_var_link").html(                                
+        "<a href='https://biobankengine.stanford.edu/variant/" 
+        + label_var[var_idx] + "'>" 
+        + label_var[var_idx]
+        + "</a>"
+    ); 
     update_var_cosine(label_var[var_idx]);
 }  
     
@@ -288,7 +338,9 @@ function get_data(json_file){
     var data_all = get_json_via_http(json_file);    
     
     eigen_v   = data_all['eigen_v'];
+    eigen_r   = data_all['eigen_r'];
     
+    label_phe_code = data_all['label_phe_code'];
     label_phe = data_all['label_phe'];
     label_var = data_all['label_var'];
     label_pc  = data_all['label_pc'];
@@ -341,6 +393,10 @@ function get_data(json_file){
             );
         } 
         
+        variance_explained_plot();
+        pca_plot_var(0, 1);
+        pca_plot_phe(0, 1);
+
     });
 </script>
 
@@ -385,7 +441,7 @@ function get_data(json_file){
                 </div>
             </div>            
             
-            <p>Which PCs are important for phenotype <span class="variable_phe"></span>?</p>
+            <p>Which PCs are important for phenotype <span class="variable_phe_link"></span>?</p>
             
             <div id="phe_cosine_plot" style:width: 100%>
                 <!-- Plotly chart will be drawn inside this DIV -->
@@ -406,7 +462,7 @@ function get_data(json_file){
                 </div>
             </div>            
                         
-            <p>Which PCs are important for variants <span class="variable_var"></span>?</p>        
+            <p>Which PCs are important for variants <span class="variable_var_link"></span>?</p>        
             
             <div id="var_cosine_plot" style:width: 100%>
                 <!-- Plotly chart will be drawn inside this DIV -->
@@ -444,6 +500,11 @@ function get_data(json_file){
             <div id="phe_contribution_plot" style:width: 100%>
                 <!-- Plotly chart will be drawn inside this DIV -->
             </div>
+            
+            <p><input type="radio" name="phe_contribution" id="phe_contribution_no"/> Do not open phenotype page </p>
+            <p><input type="radio" name="phe_contribution" id="phe_contributoin_current"/> Open the phenotype page in the current window on click (not working)</p>
+            <p><input type="radio" name="phe_contribution" id="phe_contributoin_new"/> Open the phenotype page in a new window on click (not working)</p>
+            
         </div>
         <div class="col col-md-6">
             <h3>Variant contribution score</h3>
@@ -478,31 +539,34 @@ function get_data(json_file){
         </div>                                    
     </div>
     <div class="row">        
-        <div class="col col-md-4">
-            <h3>Variance explained plot</h3>                     
-        </div>
-        <div class="col col-md-4">
+        <div class="col col-md-6">
             <h3>PCA plot for phenotypes</h3>                     
+            <div id="pca_plot_phe" style:width: 100%>
+                <!-- Plotly chart will be drawn inside this DIV -->
+            </div>            
         </div>
-        <div class="col col-md-4">
+        <div class="col col-md-6">
             <h3>PCA plot for variants</h3>                     
+            <div id="pca_plot_var" style:width: 100%>
+                <!-- Plotly chart will be drawn inside this DIV -->
+            </div>                        
         </div>        
     </div>    
+    <div class="row">        
+        <div class="col col-md-6">
+            <h3>Variance explained plot</h3>
+            <div id="var_explained_plot" style:width: 100%>
+                <!-- Plotly chart will be drawn inside this DIV -->
+            </div>
+
+        </div>
+    </div>  
     
     
     <div class="row">
         <h2>debug</h2>
         <p>{{ debug_str }}</p>
-        <div id="dev"></div>
-        <p>
-            <a href="static/decomposition/PTVs.npz">data</a>
-        </p>
-        <p>
-            <a href="static/decomposition/PTVs.json">data_json</a>
-        </p>
-        
-        <h2>experimental</h2>
-        
+        <div id="dev"></div>        
     </div>
     
     <div class="row">
