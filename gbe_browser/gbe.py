@@ -676,9 +676,13 @@ def variant_icd_page(variant_str):
                 item['U95OR'] = format(float(item['u95or']), '.4g')
                 item['pvalue'] = format(float(item['pvalue']), '.4g')
                 item['l10pval'] = format(float(item['log10pvalue']), '.4g')
+                if item['pvalue'] == 0:
+                    item['pvalue'] = .000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001
+                    item['pvalue'] = format(float(item['pvalue']),'.4g')
+                    item['l10pval'] = 100
                 # item['Case'] = icd10info[0]['Case']
                 se =  format(float(item['se']), '.4g')
-                if float(item['l10pval']) <= 1 or float(se) >= .5 or (float(se) >= .08 and item['OR'] == item['LOR']) or int(item['Case']) <= 100  or item['Code'] == "HC67" or icd10 in seend:
+                if float(item['l10pval']) < 1 or float(se) >= .5 or (float(se) >= .08 and item['OR'] == item['LOR']) or int(item['Case']) <= 100  or item['Code'] == "HC67" or icd10 in seend:
                     indexes.append(idx)
                 seend[icd10] = icd10
         for index in sorted(indexes, reverse=True):
