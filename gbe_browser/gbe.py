@@ -777,6 +777,10 @@ def decompositoin_page():
     init_idx_pc  = 6
     init_idx_phe = 429
     init_idx_var = 8503    
+    init_idx_pc_phe_x = 6
+    init_idx_pc_phe_y = 9
+    init_idx_pc_var_x = 6
+    init_idx_pc_var_y = 3
         
     debug_str = 'debug'
     
@@ -786,6 +790,10 @@ def decompositoin_page():
             init_idx_pc  = init_idx_pc,
             init_idx_phe = init_idx_phe,
             init_idx_var = init_idx_var,
+            init_idx_pc_phe_x = init_idx_pc_phe_x,
+            init_idx_pc_phe_y = init_idx_pc_phe_y,
+            init_idx_pc_var_x = init_idx_pc_var_x,
+            init_idx_pc_var_y = init_idx_pc_var_y,
             debug_str = debug_str
         )
     

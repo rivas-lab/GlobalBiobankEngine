@@ -140,11 +140,11 @@ function make_plot(id, x, y, label, title) {
 <!-- This script is for plotting -->
 <script>           
     
-function update_contribution_plots(pc) {
+function update_contribution_plots(pc_idx) {
     make_plot(
         'phe_contribution_plot', 
         idx_phe, 
-        contribution_phe[pc], 
+        contribution_phe[label_pc[pc_idx]], 
         label_phe,
         'phenotype contribution score'
     );        
@@ -152,7 +152,7 @@ function update_contribution_plots(pc) {
     make_plot(
         'var_contribution_plot', 
         idx_var, 
-        contribution_var[pc], 
+        contribution_var[label_pc[pc_idx]], 
         label_var,
         'variant contribution score'
     );               
@@ -165,21 +165,29 @@ function update_contribution_plots(pc) {
             phe = data.points[i].x;
         }
         update_phe(phe - 1);
+        
+//        if( document.getElementById("phe_contributoin_current").checked == true ){
+//            alert('jump to a page (current)')
+//        }
+//        if( document.getElementById("phe_contributoin_new").checked == true ){
+//            alert('jump to a page (new)' : )
+//        }
+        
     });        
     var_contribution_plot.on('plotly_click', function(data){
         var pts = '';
         for(var i=0; i < data.points.length; i++){
             vari = data.points[i].x;            
-        }
+        }        
         update_var(vari - 1);
     });
 }
     
-function update_phe_cosine(phe) {
+function update_phe_cosine(phe_idx) {
     make_plot(
         'phe_cosine_plot', 
         idx_pc, 
-        cos_phe[phe], 
+        cos_phe[label_phe[phe_idx]], 
         label_pc,
         'phenotype cosine score'
     );        
@@ -194,11 +202,11 @@ function update_phe_cosine(phe) {
 }
 
     
-function update_var_cosine(vari) {
+function update_var_cosine(var_idx) {
     make_plot(
         'var_cosine_plot', 
         idx_pc, 
-        cos_var[vari], 
+        cos_var[label_var[var_idx]], 
         label_pc,
         'variant cosine score'
     );        
@@ -211,7 +219,45 @@ function update_var_cosine(vari) {
         update_pc(pc - 1);
     });        
 }    
-        
+
+function pca_plot_phe(idx_pc_x, idx_pc_y) {
+    make_plot(
+        'pca_plot_phe', 
+        factor_phe[label_pc[idx_pc_x]], 
+        factor_phe[label_pc[idx_pc_y]], 
+        label_phe,
+        'PCA plot for phenotypes'
+    );        
+}
+
+function pca_plot_var(idx_pc_x, idx_pc_y) {
+    make_plot(
+        'pca_plot_var',         
+        factor_var[label_pc[idx_pc_x]], 
+        factor_var[label_pc[idx_pc_y]], 
+        label_var,
+        'PCA plot for variants'
+    );        
+}
+
+function variance_explained_plot(){
+    make_plot(
+        'var_explained_plot',         
+        idx_pc, 
+        eigen_r, 
+        label_pc,
+        'variance explained plot'
+    ); 
+    var var_cosine_plot = $('#var_explained_plot')[0];
+    var_cosine_plot.on('plotly_click', function(data){
+        var pts = '';
+        for(var i=0; i < data.points.length; i++){
+            pc = data.points[i].x;            
+        }
+        update_pc(pc - 1);
+    });
+}
+    
 </script>
 
 
@@ -225,17 +271,33 @@ function dev_str(str) {
 <script>
 function update_pc(pc_idx) {
     $(".variable_pc").text(label_pc[pc_idx])
-    update_contribution_plots(label_pc[pc_idx]);
+    update_contribution_plots(pc_idx);
 }   
 
+    
 function update_phe(phe_idx) {
+    
     $(".variable_phe").text(label_phe[phe_idx])
-    update_phe_cosine(label_phe[phe_idx]);
+    $(".variable_phe_link").html(                  
+        "<a href='"https://biobankengine.stanford.edu/coding/"
+        + label_phe_code[phe_idx] + "'>" 
+        + label_phe[phe_idx]
+        + "</a>"
+    );
+
+    update_phe_cosine(phe_idx);
 }   
 
+    
 function update_var(var_idx) {
     $(".variable_var").text(label_var[var_idx])
-    update_var_cosine(label_var[var_idx]);
+    $(".variable_var_link").html(                                
+        "<a href='https://biobankengine.stanford.edu/variant/" 
+        + label_var[var_idx] + "'>" 
+        + label_var[var_idx]
+        + "</a>"
+    );    
+    update_var_cosine(var_idx);
 }  
     
     
@@ -259,6 +321,46 @@ function dropdown_update_pc_var(pc_idx){
     dropdown_show('dropdown-div-pc-var');
 }    
     
+function dummy(){
+    alert('hi');
+}    
+    
+function init_dropdown(){
+    
+    alert('init_dropdown1');
+    
+    for (i = 0; i < label_phe.length; i++) {
+        $("#dropdown-div-phe").append(
+            "<a class=\"dropdown-item\" id='dropdown-phe-" + i + "' onclick=dropdown_update_phe(" + i + ")>" + label_phe[i] + "</a>"
+        );
+    } 
+    
+    alert('init_dropdown2');
+
+    for (i = 0; i < label_var.length; i++) {
+        $("#dropdown-div-var").append(
+            "<a class=\"dropdown-item\" id='dropdown-var-" + i + "' onclick=dropdown_update_var(" + i + ")>" + label_var[i] + "</a>"
+        );
+    } 
+    
+    alert('init_dropdown3');
+
+    for (i = 0; i < label_pc.length; i++) {            
+        $("#dropdown-div-pc-phe").append(                                
+            "<a class=\"dropdown-item\" id='dropdown-pc-phe-" + i + "' onclick=dropdown_update_pc_phe(" + i + ")>" + label_pc[i] + "</a>"
+        );
+    }
+    
+    alert('init_dropdown4');
+
+    for (i = 0; i < label_pc.length; i++) {
+        $("#dropdown-div-pc-var").append(                
+            "<a class=\"dropdown-item\" id='dropdown-pc-var-" + i + "' onclick=dropdown_update_pc_var(" + i + ")>" + label_pc[i] + "</a>"
+        );
+    }
+    
+    alert('init_dropdown5');
+}    
 </script>
 
 
@@ -271,8 +373,11 @@ function get_txt_via_http(url) {
           file_content = req.responseText;
         }
       };
-      req.open("GET", url, false);
-      req.send(null);
+    req.open("GET", url, false);
+    req.setRequestHeader('Pragma', 'no-cache');   
+    req.setRequestHeader('Cache-Control', 'no-cache');                    
+    req.setRequestHeader('If-Modified-Since', 'Sat, 01 Jan 2000 00:00:00 GMT');
+    req.send(null);
     return file_content;
 }
     
@@ -283,12 +388,14 @@ function get_json_via_http(url){
 </script>
 
 
-<script>
+<script>        
 function get_data(json_file){
     var data_all = get_json_via_http(json_file);    
     
-    eigen_v   = data_all['eigen_v'];
-    
+    eigen_v = data_all['eigen_v'];
+    eigen_r = data_all['eigen_r'];
+        
+    label_phe_code = data_all['label_phe_code'];
     label_phe = data_all['label_phe'];
     label_var = data_all['label_var'];
     label_pc  = data_all['label_pc'];
@@ -311,42 +418,29 @@ function get_data(json_file){
 
 
 <script>
-    $(document).ready(function(){
-        get_data('/static/decomposition/PTVs.json');
-        update_pc( {{ init_idx_pc  }});
-        update_phe({{ init_idx_phe }});
-        update_var({{ init_idx_var }});
-        
-        for (i = 0; i < label_phe.length; i++) {
-            $("#dropdown-div-phe").append(
-                "<a class=\"dropdown-item\" id='dropdown-phe-" + i + "' onclick=dropdown_update_phe(" + i + ")>" + label_phe[i] + "</a>"
-            );
-        } 
+$(document).ready(function(){
+    alert('init');
+    get_data('/static/decomposition/PTVs.json');
 
-        for (i = 0; i < label_var.length; i++) {
-            $("#dropdown-div-var").append(
-                "<a class=\"dropdown-item\" id='dropdown-var-" + i + "' onclick=dropdown_update_var(" + i + ")>" + label_var[i] + "</a>"
-            );
-        } 
-        
-        for (i = 0; i < label_pc.length; i++) {            
-            $("#dropdown-div-pc-phe").append(                                
-                "<a class=\"dropdown-item\" id='dropdown-pc-phe-" + i + "' onclick=dropdown_update_pc_phe(" + i + ")>" + label_pc[i] + "</a>"
-            );
-        }
-        
-        for (i = 0; i < label_pc.length; i++) {
-            $("#dropdown-div-pc-var").append(                
-                "<a class=\"dropdown-item\" id='dropdown-pc-var-" + i + "' onclick=dropdown_update_pc_var(" + i + ")>" + label_pc[i] + "</a>"
-            );
-        } 
-        
-    });
+    
+    alert('data done');
+    
+    dummy();
+    
+    init_dropdown();
+
+    alert('dropdown done');
+    update_pc( {{ init_idx_pc  }});
+    update_phe({{ init_idx_phe }});
+    update_var({{ init_idx_var }});
+    
+    variance_explained_plot();
+    
+    pca_plot_var(0, 1);
+    pca_plot_phe(0, 1);
+
+});
 </script>
-
-
-
-
 
 
 {% endblock %}
@@ -376,7 +470,7 @@ function get_data(json_file){
             <div class="btn-group" role="group">
                 <div class="dropdown" align="center">
                     <button onclick="dropdown_show('dropdown-div-phe')" class="button dropdown-toggle" data-toggle="dropdown">
-                        Select a phenotype (current selection: phenotype <span class="variable_phe"></span>)
+                        Select a phenotype (current selection: <span class="variable_phe"></span>)
                     </button>
                     <div id="dropdown-div-phe" class="dropdown-content">
                         <input id="dropdown-input-phe" onkeyup="dropdown_filter('dropdown-div-phe', 'dropdown-input-phe')" type="text" placeholder="Search.." >
@@ -385,7 +479,7 @@ function get_data(json_file){
                 </div>
             </div>            
             
-            <p>Which PCs are important for phenotype <span class="variable_phe"></span>?</p>
+            <p>Which PCs are important for <span class="variable_phe_link"></span>?</p>
             
             <div id="phe_cosine_plot" style:width: 100%>
                 <!-- Plotly chart will be drawn inside this DIV -->
@@ -406,7 +500,7 @@ function get_data(json_file){
                 </div>
             </div>            
                         
-            <p>Which PCs are important for variants <span class="variable_var"></span>?</p>        
+            <p>Which PCs are important for variants <span class="variable_var_link"></span>?</p>
             
             <div id="var_cosine_plot" style:width: 100%>
                 <!-- Plotly chart will be drawn inside this DIV -->
@@ -440,10 +534,17 @@ function get_data(json_file){
             </div>            
             
             <p>Which phenotype is important for <span class="variable_pc"></span> ?</p>
-            
+                        
             <div id="phe_contribution_plot" style:width: 100%>
                 <!-- Plotly chart will be drawn inside this DIV -->
             </div>
+            
+<!--
+            <p><input type="radio" name="phe_contribution" id="phe_contribution_no"/> Do not open phenotype page </p>
+            <p><input type="radio" name="phe_contribution" id="phe_contributoin_current"/> Open the phenotype page in the current window on click (not working)</p>
+            <p><input type="radio" name="phe_contribution" id="phe_contributoin_new"/> Open the phenotype page in a new window on click (not working)</p>
+-->
+
         </div>
         <div class="col col-md-6">
             <h3>Variant contribution score</h3>
@@ -478,29 +579,34 @@ function get_data(json_file){
         </div>                                    
     </div>
     <div class="row">        
-        <div class="col col-md-4">
-            <h3>Variance explained plot</h3>                     
-        </div>
-        <div class="col col-md-4">
+        <div class="col col-md-6">
             <h3>PCA plot for phenotypes</h3>                     
+            <div id="pca_plot_phe" style:width: 100%>
+                <!-- Plotly chart will be drawn inside this DIV -->
+            </div>            
         </div>
-        <div class="col col-md-4">
+        <div class="col col-md-6">
             <h3>PCA plot for variants</h3>                     
+            <div id="pca_plot_var" style:width: 100%>
+                <!-- Plotly chart will be drawn inside this DIV -->
+            </div>                        
         </div>        
     </div>    
+    <div class="row">        
+        <div class="col col-md-6">
+            <h3>Variance explained plot</h3>
+            <div id="var_explained_plot" style:width: 100%>
+                <!-- Plotly chart will be drawn inside this DIV -->
+            </div>
+
+        </div>
+    </div>
     
     
     <div class="row">
         <h2>debug</h2>
         <p>{{ debug_str }}</p>
-        <div id="dev"></div>
-        <p>
-            <a href="static/decomposition/PTVs.npz">data</a>
-        </p>
-        <p>
-            <a href="static/decomposition/PTVs.json">data_json</a>
-        </p>
-        
+        <div id="dev"></div>        
         <h2>experimental</h2>
         
     </div>
