@@ -164,7 +164,7 @@ function update_contribution_plots(pc) {
         for(var i=0; i < data.points.length; i++){
             phe = data.points[i].x;
         }
-        update_phe(phe - 1);
+        update_phe(phe - 1);                                
     });        
     var_contribution_plot.on('plotly_click', function(data){
         var pts = '';
@@ -274,7 +274,11 @@ function update_phe(phe_idx) {
         + label_phe[phe_idx]
         + "</a>"
     );
-    update_phe_cosine(label_phe[phe_idx]);
+    update_phe_cosine(label_phe[phe_idx]);        
+    
+    if( ! document.getElementById("phe_contribution_no").checked ){
+        window.open("https://biobankengine.stanford.edu/coding/" + label_phe_code[phe_idx]);
+    }
 }   
 
 function update_var(var_idx) {
@@ -286,6 +290,10 @@ function update_var(var_idx) {
         + "</a>"
     ); 
     update_var_cosine(label_var[var_idx]);
+    
+    if( ! document.getElementById("var_contribution_no").checked ){
+        window.open("https://biobankengine.stanford.edu/variant/" + label_var[var_idx]);
+    }    
 }  
     
     
@@ -364,6 +372,10 @@ function get_data(json_file){
 
 <script>
     $(document).ready(function(){
+        document.getElementById("phe_contribution_no").checked = true;
+        document.getElementById("var_contribution_no").checked = true;
+        
+        
         get_data('/static/decomposition/PTVs.json');
         update_pc( {{ init_idx_pc  }});
         update_phe({{ init_idx_phe }});
@@ -396,6 +408,7 @@ function get_data(json_file){
         variance_explained_plot();
         pca_plot_var(0, 1);
         pca_plot_phe(0, 1);
+        
 
     });
 </script>
@@ -502,8 +515,7 @@ function get_data(json_file){
             </div>
             
             <p><input type="radio" name="phe_contribution" id="phe_contribution_no"/> Do not open phenotype page </p>
-            <p><input type="radio" name="phe_contribution" id="phe_contributoin_current"/> Open the phenotype page in the current window on click (not working)</p>
-            <p><input type="radio" name="phe_contribution" id="phe_contributoin_new"/> Open the phenotype page in a new window on click (not working)</p>
+            <p><input type="radio" name="phe_contribution" id="phe_contributoin_yes"/> Open the phenotype page on click</p>
             
         </div>
         <div class="col col-md-6">
@@ -526,6 +538,10 @@ function get_data(json_file){
             <div id="var_contribution_plot" style:width: 100%>
                 <!-- Plotly chart will be drawn inside this DIV -->
             </div>
+            
+            <p><input type="radio" name="var_contribution" id="var_contribution_no"/> Do not open variant page </p>
+            <p><input type="radio" name="var_contribution" id="var_contributoin_yes"/> Open the variant page on click</p>
+            
         </div>
 
     </div>
