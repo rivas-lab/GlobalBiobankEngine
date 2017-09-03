@@ -767,64 +767,28 @@ def target_page():
 
 @app.route('/decomposition')
 def decompositoin_page():
+#    import numpy as np
+    
     if not check_credentials():
         return redirect(url_for('login'))
     db = get_db()
     
-    # decomposition dataset
-#    n_PCs = 50
-#    n_phe = 500
-#    n_var = 8000
-#    pc = 1
-
-    n_PCs = 5
-    n_phe = 10
-    n_var = 50
-    
-#    initial values
-    pc = 1
-    var = 1
-    phe = 1
+    # This is asthma example
+    init_idx_pc  = 6
+    init_idx_phe = 429
+    init_idx_var = 8503    
+        
+    debug_str = 'debug'
     
     try:
         return render_template(
-            'decomposition.html',
-            
-            dict_of_lists = {
-                '0': [x for x in range(3)],
-                '1': [x for x in range(6)],
-                '2': [x for x in range(10)]                
-            },
-            
-            pcs        = [1 + x for x in range(n_PCs)],
-            phenotypes = [1 + x for x in range(n_phe)],
-            variants   = [1 + x for x in range(n_var)],
-            
-            pc=pc,
-            var=var,
-            phe=phe,
-                        
-            phe_contribution_x      = {(pci + 1): [x + 1   for x in range(n_phe)] for pci in range(n_PCs)},        
-            phe_contribution_y      = {(pci + 1): [x + pci for x in range(n_phe)] for pci in range(n_PCs)},        
-            phe_contribution_labels = {(pci + 1): [x + 1   for x in range(n_phe)] for pci in range(n_PCs)},        
-            var_contribution_x      = {(pci + 1): [x + 1   for x in range(n_var)] for pci in range(n_PCs)},        
-            var_contribution_y      = {(pci + 1): [x + pci for x in range(n_var)] for pci in range(n_PCs)},        
-            var_contribution_labels = {(pci + 1): [x + 1   for x in range(n_phe)] for pci in range(n_PCs)},        
-            
-            phe_cos_x      = {(phe + 1): [1   + pci for pci in range(n_PCs)] for phe in range(n_phe)},        
-            phe_cos_y      = {(phe + 1): [phe + pci for pci in range(n_PCs)] for phe in range(n_phe)},        
-            phe_cos_labels = {(phe + 1): [1   + pci for pci in range(n_PCs)] for phe in range(n_phe)},        
-            var_cos_x      = {(var + 1): [1   + pci for pci in range(n_PCs)] for var in range(n_var)},        
-            var_cos_y      = {(var + 1): [var + pci for pci in range(n_PCs)] for var in range(n_var)},        
-            var_cos_labels = {(var + 1): [1   + pci for pci in range(n_PCs)] for var in range(n_var)}
-            
+            'decomposition.html',    
+            init_idx_pc  = init_idx_pc,
+            init_idx_phe = init_idx_phe,
+            init_idx_var = init_idx_var,
+            debug_str = debug_str
         )
-#        return render_template(
-#            'decomposition_pc.html',
-#            pc=pc)
-##            PCs    = [i for i in range(1, n_PCs + 1)],
-##            labels = ["PC {}".format(i) for i in range(1, n_PCs + 1)]
-##            )
+    
     except Exception as e:
         print('Unkonwn Error=', traceback.format_exc())
         abort(404)
@@ -888,13 +852,19 @@ def intensity_page(affy_str):
         return redirect(url_for('login'))
     db = get_db()
     try:
+        n_UKBL = 11
+        n_UKBB = 95
+        
+        
         print('Rendering Intensity page: %s' % affy_str)
         variant = lookups.get_icd_affyid(db, affy_str)
         # print(variant)
         return render_template(
             'intensity.html',
             affy=affy_str,
-            variant=variant
+            variant=variant,
+            UKBL_idx = [1 + x for x in range(n_UKBL)],
+            UKBB_idx = [1 + x for x in range(n_UKBB)]
             )
     except Exception as e:
         print('Failed on affy id:', affy_str, '; Error=', traceback.format_exc())
