@@ -139,7 +139,7 @@ function make_plot(id, x, y, label, title) {
 
 <!-- This script is for plotting -->
 <script>           
-function update_contribution_plots(pc) {
+function update_contribution_plots_old(pc) {
     make_plot(
         'phe_contribution_plot', 
         phe_contribution_x[pc], 
@@ -185,7 +185,7 @@ function update_contribution_plots(pc) {
     });
 }
     
-function update_phe_cosine(phe) {
+function update_phe_cosine_old(phe) {
     make_plot(
         'phe_cosine_plot', 
         phe_cos_x[phe], 
@@ -209,7 +209,7 @@ function update_phe_cosine(phe) {
 }
 
     
-function update_var_cosine(vari) {
+function update_var_cosine_old(vari) {
     make_plot(
         'var_cosine_plot', 
         var_cos_x[vari], 
@@ -233,16 +233,115 @@ function update_var_cosine(vari) {
 }
     
     
-function initialize_contribution_plots() {
-    update_contribution_plots({{ pc }});
+function update_contribution_plots(pc) {
+    alert(pc);
+    
+    make_plot(
+        'phe_contribution_plot', 
+        idx_phe, 
+        contribution_phe[pc], 
+        label_phe,
+        'phenotype contribution score'
+    );        
+
+    alert('phe done')
+    
+    make_plot(
+        'var_contribution_plot', 
+        idx_var, 
+        contribution_var[pc], 
+        label_var,
+        'variant contribution score'
+    );               
+    
+    alert('var done')
+
+    var phe_contribution_plot = $('#phe_contribution_plot')[0];
+    var var_contribution_plot = $('#var_contribution_plot')[0];
+    phe_contribution_plot.on('plotly_click', function(data){
+        var pts = '';
+        for(var i=0; i < data.points.length; i++){
+            pts =
+                'x = '+data.points[i].x +' \n' +
+                'y = '+data.points[i].y.toPrecision(4) + '\n\n';
+            phe = data.points[i].x;
+        }
+        update_phe(phe)
+//        alert(phe)
+//        window.open('https://www.google.com/search?q='+'phe '+pts,'_self',false)
+    });        
+    var_contribution_plot.on('plotly_click', function(data){
+        var pts = '';
+        for(var i=0; i < data.points.length; i++){
+            pts =
+                'x = '+data.points[i].x +' \n' +
+                'y = '+data.points[i].y.toPrecision(4) + '\n\n';
+            vari = data.points[i].x;
+            
+        }
+        update_var(vari)
+//        alert(vari)
+//        window.open ('https://www.google.com/search?q='+'var '+pts,'_self',false)
+    });
+}
+    
+function update_phe_cosine(phe) {
+    make_plot(
+        'phe_cosine_plot', 
+        idx_pc, 
+        cos_phe[phe], 
+        label_pc,
+        'phenotype cosine score'
+    );        
+    var phe_cosine_plot = $('#phe_cosine_plot')[0];
+    phe_cosine_plot.on('plotly_click', function(data){
+        var pts = '';
+        for(var i=0; i < data.points.length; i++){
+            pts =
+                'x = '+data.points[i].x +' \n' +
+                'y = '+data.points[i].y.toPrecision(4) + '\n\n';
+            pc = data.points[i].x;            
+        }
+        update_pc(pc)
+//        alert(pc)
+//        window.open('https://www.google.com/search?q='+'phe '+pts,'_self',false)
+    });        
+}
+
+    
+function update_var_cosine(vari) {
+    make_plot(
+        'var_cosine_plot', 
+        idx_var, 
+        cos_var[vari], 
+        label_var,
+        'variant cosine score'
+    );        
+    var var_cosine_plot = $('#var_cosine_plot')[0];
+    var_cosine_plot.on('plotly_click', function(data){
+        var pts = '';
+        for(var i=0; i < data.points.length; i++){
+            pts =
+                'x = '+data.points[i].x +' \n' +
+                'y = '+data.points[i].y.toPrecision(4) + '\n\n';
+            pc = data.points[i].x;            
+        }
+        update_pc(pc)
+//        alert(pc)          
+//        window.open('https://www.google.com/search?q='+'phe '+pts,'_self',false)
+    });        
+}    
+    
+function initialize_contribution_plots(init_idx_pc) {        
+    update_contribution_plots(label_pc[init_idx_pc]);
 }
 
 function initialize_phe_cosine_plot() {
-    update_phe_cosine( {{ phe }} );
+    update_phe_cosine( label_phe[{{ phe }}] );
 }
         
 function initialize_var_cosine_plot() {
-    update_var_cosine( {{ var }} );
+    update_var_cosine( label_var[{{ var }}] );
 }
 
     
@@ -276,9 +375,29 @@ function update_var(vari) {
     
 </script>
 
+<script>
+function get_txt_via_http(url) {
+    var file_content;
+    var req = new XMLHttpRequest();
+      req.onreadystatechange = function() {
+        if(req.readyState == 4 && req.status == 200){
+          file_content = req.responseText;
+        }
+      };
+      req.open("GET", url, false);
+      req.send(null);
+    return file_content;
+}
+    
+function get_json_via_http(url){
+    return JSON.parse(get_txt_via_http(url));
+}    
+    
+</script>
+
 
 <script>
-function get_data(){
+function get_data_old(){
     phe_contribution_x      = {{ phe_contribution_x      | tojson | safe }};
     phe_contribution_y      = {{ phe_contribution_y      | tojson | safe }};
     phe_contribution_labels = {{ phe_contribution_labels | tojson | safe }};
@@ -295,17 +414,60 @@ function get_data(){
     
     dict_of_lists = {{ dict_of_lists | tojson | safe }};
 }
+
+function get_data(json_file){
+    var data_all = get_json_via_http(json_file);    
+    
+    eigen_v   = data_all['eigen_v'];
+    
+    label_phe = data_all['label_phe'];
+    label_var = data_all['label_var'];
+    label_pc  = data_all['label_pc'];
+    
+    idx_phe   = Plotly.d3.range(1, 1 + label_phe.length);
+    idx_var   = Plotly.d3.range(1, 1 + label_var.length);
+    idx_pc    = Plotly.d3.range(1, 1 + label_pc.length);
+    
+    factor_phe = data_all['factor_phe'];
+    factor_var = data_all['factor_var'];
+    
+    contribution_phe = data_all['contribution_phe'];
+    contribution_var = data_all['contribution_var'];
+    
+    cos_phe = data_all['cos_phe'];
+    cos_var = data_all['cos_var'];                
+}
+
 </script>
 
 
 
 <script>
     $(document).ready(function(){
-        get_data();        
-        initialize_contribution_plots();
+//        get_data();        
+        get_data('/static/decomposition/PTVs.json');
+        alert('load');
+        initialize_contribution_plots(0);
+        alert('done');
         initialize_phe_cosine_plot();
         initialize_var_cosine_plot();
         
+//        $.getJSON("/static/decomposition/test.json" , function(data) {
+//            alert(data)
+//        }
+        
+        var json_test = get_json_via_http("/static/decomposition/test.json");        
+        alert(json_test);
+//        alert(JSON.parse(json_str))
+//        alert(JSON.parse(json_str)[0])
+//        
+        
+//        var json_test = get_json_via_http("/static/decomposition/test.json");        
+//        alert(json_test);
+        alert(json_test.length);        
+        alert(json_test[0]);        
+        alert(Plotly.d3.range(1, 1 + json_test.length));
+                
         {% for pci in pcs %}
             $("#dropdown-pc-phe-{{ pci }}").click(function(){
                 update_pc({{ pci }});                
@@ -332,8 +494,10 @@ function get_data(){
         {% endfor %}                                              
         
         
-        dev_str(dict_of_lists[0] + dict_of_lists[1] + dict_of_lists[2]);
-                        
+//        dev_str(dict_of_lists[0] + dict_of_lists[1] + dict_of_lists[2]);
+
+//        dev_str({{debug_str}});
+        
     });
 </script>
 
@@ -348,70 +512,8 @@ function get_data(){
     <div class="row">
         <div class="col">
             <h1>Decomposition</h1>
-            <p>
-                In this page, you can investigate which phenotypes/variatns are important for principlal component {{ pc }}.
-            </p>
         </div>
     </div>
-    
-    <div class="row">
-        <div class="col col-md-12">
-            <h2>Contribution scores for PC<span class="variable_pc">{{ pc }}</span></h2>
-            <p>Given a PC, we can explorer the contribution of the phenotypes/variants to that component.</p>
-        </div>
-        
-                            
-    </div>
-    <div class="row">        
-        <div class="col col-md-6">
-            <h3>Phenotype contribution score</h3> 
-            
-            <div class="btn-group" role="group">
-                <div class="dropdown" align="center">
-                    <button onclick="dropdown_show('dropdown-div-pc-phe')" class="button dropdown-toggle" data-toggle="dropdown">
-                        Select PC (current selection: PC <span class="variable_pc">{{ pc }}</span>)
-                    </button>
-                    <div id="dropdown-div-pc-phe" class="dropdown-content">
-                        <input id="dropdown-input-pc-phe" onkeyup="dropdown_filter('dropdown-div-pc-phe', 'dropdown-input-pc-phe')" type="text" placeholder="Search.." >
-                        {% for pci in pcs %}
-                        <a class="dropdown-item" id='dropdown-pc-phe-{{ pci }}'>PC{{ pci }}</a>
-                        {% endfor %}                      
-                    </div>
-                </div>
-            </div>            
-            
-            <p>Which phenotype is important for PC<span class="variable_pc">{{ pc }}</span> ?</p>
-            
-            <div id="phe_contribution_plot" style:width: 100%>
-                <!-- Plotly chart will be drawn inside this DIV -->
-            </div>
-        </div>
-        <div class="col col-md-6">
-            <h3>Variant contribution score</h3>
-            
-            <div class="btn-group" role="group">
-                <div class="dropdown" align="center">
-                    <button onclick="dropdown_show('dropdown-div-pc-var')" class="button dropdown-toggle" data-toggle="dropdown">
-                        Select PC (current selection: PC <span class="variable_pc">{{ pc }}</span>)
-                    </button>
-                    <div id="dropdown-div-pc-var" class="dropdown-content">
-                        <input id="dropdown-input-pc-var" onkeyup="dropdown_filter('dropdown-div-pc-var', 'dropdown-input-pc-var')" type="text" placeholder="Search.." >
-                        {% for pci in pcs %}
-                        <a class="dropdown-item" id='dropdown-pc-var-{{ pci }}'>PC{{ pci }}</a>
-                        {% endfor %}                      
-                    </div>
-                </div>
-            </div>            
-                        
-            <p>Which variants are important for PC<span class="variable_pc">{{ pc }}</span> ?</p>
-            
-            <div id="var_contribution_plot" style:width: 100%>
-                <!-- Plotly chart will be drawn inside this DIV -->
-            </div>
-        </div>
-
-    </div>
-    
     
     <div class="row">
         <div class="col col-md-12">
@@ -433,7 +535,7 @@ function get_data(){
                     <div id="dropdown-div-phe" class="dropdown-content">
                         <input id="dropdown-input-phe" onkeyup="dropdown_filter('dropdown-div-phe', 'dropdown-input-phe')" type="text" placeholder="Search.." >
                         {% for phe in phenotypes %}
-                        <a class="dropdown-item" id='dropdown-phe-{{ phe }}'>{{ phe }}</a>
+                            <a class="dropdown-item" id='dropdown-phe-{{ phe }}'>{{ phe }}</a>
                         {% endfor %}                                              
                     </div>
                 </div>
@@ -456,7 +558,7 @@ function get_data(){
                     <div id="dropdown-div-var" class="dropdown-content">
                         <input id="dropdown-input-var" onkeyup="dropdown_filter('dropdown-div-var', 'dropdown-input-var')" type="text" placeholder="Search.." >
                         {% for var in variants %}
-                        <a class="dropdown-item" id='dropdown-var-{{ var }}'>{{ var }}</a>
+                            <a class="dropdown-item" id='dropdown-var-{{ var }}'>{{ var }}</a>
                         {% endfor %}                      
                     </div>
                 </div>
@@ -469,13 +571,97 @@ function get_data(){
             </div>
         </div>
 
+    </div> 
+    
+    <div class="row">
+        <div class="col col-md-12">
+            <h2>Contribution scores for PC<span class="variable_pc">{{ pc }}</span></h2>
+            <p>Given a PC, we can explorer the contribution of the phenotypes/variants to that component.</p>
+        </div>
+        
+                            
+    </div>
+    <div class="row">        
+        <div class="col col-md-6">
+            <h3>Phenotype contribution score</h3> 
+            
+            <div class="btn-group" role="group">
+                <div class="dropdown" align="center">
+                    <button onclick="dropdown_show('dropdown-div-pc-phe')" class="button dropdown-toggle" data-toggle="dropdown">
+                        Select PC (current selection: PC <span class="variable_pc">{{ pc }}</span>)
+                    </button>
+                    <div id="dropdown-div-pc-phe" class="dropdown-content">
+                        <input id="dropdown-input-pc-phe" onkeyup="dropdown_filter('dropdown-div-pc-phe', 'dropdown-input-pc-phe')" type="text" placeholder="Search.." >
+                        {% for pci in pcs %}
+                            <a class="dropdown-item" id='dropdown-pc-phe-{{ pci }}'>PC{{ pci }}</a>
+                        {% endfor %}                      
+                    </div>
+                </div>
+            </div>            
+            
+            <p>Which phenotype is important for PC<span class="variable_pc">{{ pc }}</span> ?</p>
+            
+            <div id="phe_contribution_plot" style:width: 100%>
+                <!-- Plotly chart will be drawn inside this DIV -->
+            </div>
+        </div>
+        <div class="col col-md-6">
+            <h3>Variant contribution score</h3>
+            
+            <div class="btn-group" role="group">
+                <div class="dropdown" align="center">
+                    <button onclick="dropdown_show('dropdown-div-pc-var')" class="button dropdown-toggle" data-toggle="dropdown">
+                        Select PC (current selection: PC <span class="variable_pc">{{ pc }}</span>)
+                    </button>
+                    <div id="dropdown-div-pc-var" class="dropdown-content">
+                        <input id="dropdown-input-pc-var" onkeyup="dropdown_filter('dropdown-div-pc-var', 'dropdown-input-pc-var')" type="text" placeholder="Search.." >
+                        {% for pci in pcs %}
+                            <a class="dropdown-item" id='dropdown-pc-var-{{ pci }}'>PC{{ pci }}</a>
+                        {% endfor %}                      
+                    </div>
+                </div>
+            </div>            
+                        
+            <p>Which variants are important for PC<span class="variable_pc">{{ pc }}</span> ?</p>
+            
+            <div id="var_contribution_plot" style:width: 100%>
+                <!-- Plotly chart will be drawn inside this DIV -->
+            </div>
+        </div>
+
+    </div>
+    
+    
+   
+    
+    <div class="row">
+        <div class="col col-md-12">
+            <h2>Singular value decomposition of summary statistics matrix</h2>
+        </div>                                    
+    </div>
+    <div class="row">        
+        <div class="col col-md-4">
+            <h3>Variance explained plot</h3>                     
+        </div>
+        <div class="col col-md-4">
+            <h3>PCA plot for phenotypes</h3>                     
+        </div>
+        <div class="col col-md-4">
+            <h3>PCA plot for variants</h3>                     
+        </div>        
     </div>    
     
     
-    
     <div class="row">
-        <h2>debug</h2> 
+        <h2>debug</h2>
+        <p>{{ debug_str }}</p>
         <div id="dev"></div>
+        <p>
+            <a href="static/decomposition/PTVs.npz">data</a>
+        </p>
+        <p>
+            <a href="static/decomposition/PTVs.json">data_json</a>
+        </p>
         
         <h2>experimental</h2>
         
