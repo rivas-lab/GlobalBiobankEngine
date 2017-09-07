@@ -766,7 +766,7 @@ def target_page():
 
 
 @app.route('/decomposition/<dataset>')
-def decompositoin_page(dataset):    
+def decomposition_page(dataset):    
     if not check_credentials():
         return redirect(url_for('login'))
     db = get_db()
@@ -789,7 +789,7 @@ def decompositoin_page(dataset):
         )
     
     except Exception as e:
-        print('Unkonwn Error=', traceback.format_exc())
+        print('Unknown Error=', traceback.format_exc())
         abort(404)
 
 

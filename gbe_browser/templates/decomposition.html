@@ -175,6 +175,7 @@ function update_contribution_plots(pc) {
     });
 }
     
+    
 function update_phe_cosine(phe) {
     make_plot(
         'phe_cosine_plot', 
@@ -266,6 +267,22 @@ function update_pc(pc_idx) {
     update_contribution_plots(label_pc[pc_idx]);
 }   
 
+function update_pc_phe(pc_idx_x, pc_idx_y) {
+    variable_pc_phe_x = pc_idx_x;
+    variable_pc_phe_y = pc_idx_y;
+    $(".variable_pc_phe_x").text(label_pc[pc_idx_x]);
+    $(".variable_pc_phe_y").text(label_pc[pc_idx_y]);
+    pca_plot_phe(pc_idx_x, pc_idx_y);
+} 
+
+function update_pc_var(pc_idx_x, pc_idx_y) {
+    variable_pc_var_x = pc_idx_x;
+    variable_pc_var_y = pc_idx_y;    
+    $(".variable_pc_var_x").text(label_pc[pc_idx_x]);
+    $(".variable_pc_var_y").text(label_pc[pc_idx_y]);
+    pca_plot_var(pc_idx_x, pc_idx_y);
+} 
+        
 function update_phe(phe_idx) {
     $(".variable_phe").text(label_phe[phe_idx]);
     $(".variable_phe_link").html(                  
@@ -316,7 +333,29 @@ function dropdown_update_pc_var(pc_idx){
     update_pc(pc_idx);
     dropdown_show('dropdown-div-pc-var');
 }    
+
+function dropdown_update_pc_phe_x(pc_idx){
+    update_pc_phe(pc_idx, variable_pc_phe_y);
+    dropdown_show('dropdown-div-pc_phe_x');
+}    
     
+function dropdown_update_pc_phe_y(pc_idx){
+    update_pc_phe(variable_pc_phe_x, pc_idx);
+    dropdown_show('dropdown-div-pc_phe_y');
+}    
+
+function dropdown_update_pc_var_x(pc_idx){
+    update_pc_var(pc_idx, variable_pc_var_y);
+    dropdown_show('dropdown-div-pc_var_x');
+}        
+    
+function dropdown_update_pc_var_y(pc_idx){
+    update_pc_var(variable_pc_var_x, pc_idx);
+    dropdown_show('dropdown-div-pc_var_y');
+}    
+    
+    
+
 </script>
 
 
@@ -405,10 +444,34 @@ function get_data(json_file){
                 "<a class=\"dropdown-item\" id='dropdown-pc-var-" + i + "' onclick=dropdown_update_pc_var(" + i + ")>" + label_pc[i] + "</a>"
             );
         } 
+
+        for (i = 0; i < label_pc.length; i++) {            
+            $("#dropdown-div-pc_phe_x").append(                                
+                "<a class=\"dropdown-item\" id='dropdown-pc_phe_x" + i + "' onclick=dropdown_update_pc_phe_x(" + i + ")>" + label_pc[i] + "</a>"
+            );
+        }        
+
+        for (i = 0; i < label_pc.length; i++) {            
+            $("#dropdown-div-pc_phe_y").append(                                
+                "<a class=\"dropdown-item\" id='dropdown-pc_phe_y" + i + "' onclick=dropdown_update_pc_phe_y(" + i + ")>" + label_pc[i] + "</a>"
+            );
+        }        
+
+        for (i = 0; i < label_pc.length; i++) {            
+            $("#dropdown-div-pc_var_x").append(                                
+                "<a class=\"dropdown-item\" id='dropdown-pc_var_x" + i + "' onclick=dropdown_update_pc_var_x(" + i + ")>" + label_pc[i] + "</a>"
+            );
+        }        
+        
+        for (i = 0; i < label_pc.length; i++) {            
+            $("#dropdown-div-pc_var_y").append(                                
+                "<a class=\"dropdown-item\" id='dropdown-pc_var_y" + i + "' onclick=dropdown_update_pc_var_y(" + i + ")>" + label_pc[i] + "</a>"
+            );
+        }        
         
         variance_explained_plot();
-        pca_plot_var(0, 1);
-        pca_plot_phe(0, 1);
+        update_pc_phe(0, 1);
+        update_pc_var(0, 1);
         
 
     });
@@ -559,13 +622,64 @@ function get_data(json_file){
     </div>
     <div class="row">        
         <div class="col col-md-6">
-            <h3>PCA plot for phenotypes</h3>                     
+            <h3>PCA plot for phenotypes</h3>            
+            
+            <div class="btn-group" role="group">
+                <div class="dropdown" align="center">
+                    <button onclick="dropdown_show('dropdown-div-pc_phe_x')" class="button dropdown-toggle" data-toggle="dropdown">
+                        Select PC (x) (current selection: <span class="variable_pc_phe_x"></span>)
+                    </button>
+                    <div id="dropdown-div-pc_phe_x" class="dropdown-content">
+                        <input id="dropdown-input-pc_phe_x" onkeyup="dropdown_filter('dropdown-div-pc_phe_x', 'dropdown-input-pc_phe_x')" type="text" placeholder="Search.." >
+                        <!-- drop down items -->
+                    </div>
+                </div>
+            </div>            
+            
+            <div class="btn-group" role="group">
+                <div class="dropdown" align="center">
+                    <button onclick="dropdown_show('dropdown-div-pc_phe_y')" class="button dropdown-toggle" data-toggle="dropdown">
+                        Select PC (y) (current selection: <span class="variable_pc_phe_y"></span>)
+                    </button>
+                    <div id="dropdown-div-pc_phe_y" class="dropdown-content">
+                        <input id="dropdown-input-pc-phe" onkeyup="dropdown_filter('dropdown-div-pc_phe_y', 'dropdown-input-pc_phe_y')" type="text" placeholder="Search.." >
+                        <!-- drop down items -->
+                    </div>
+                </div>
+            </div> 
+            
             <div id="pca_plot_phe" style:width: 100%>
                 <!-- Plotly chart will be drawn inside this DIV -->
             </div>            
         </div>
         <div class="col col-md-6">
-            <h3>PCA plot for variants</h3>                     
+            <h3>PCA plot for variants</h3>  
+            
+            <div class="btn-group" role="group">
+                <div class="dropdown" align="center">
+                    <button onclick="dropdown_show('dropdown-div-pc_var_x')" class="button dropdown-toggle" data-toggle="dropdown">
+                        Select PC (x) (current selection: <span class="variable_pc_var_x"></span>)
+                    </button>
+                    <div id="dropdown-div-pc_var_x" class="dropdown-content">
+                        <input id="dropdown-input-pc_var_x" onkeyup="dropdown_filter('dropdown-div-pc_var_x', 'dropdown-input-pc_var_x')" type="text" placeholder="Search.." >
+                        <!-- drop down items -->
+                    </div>
+                </div>
+            </div>            
+            
+            <div class="btn-group" role="group">
+                <div class="dropdown" align="center">
+                    <button onclick="dropdown_show('dropdown-div-pc_var_y')" class="button dropdown-toggle" data-toggle="dropdown">
+                        Select PC (y) (current selection: <span class="variable_pc_var_y"></span>)
+                    </button>
+                    <div id="dropdown-div-pc_var_y" class="dropdown-content">
+                        <input id="dropdown-input-pc-phe" onkeyup="dropdown_filter('dropdown-div-pc_var_y', 'dropdown-input-pc_var_y')" type="text" placeholder="Search.." >
+                        <!-- drop down items -->
+                    </div>
+                </div>
+            </div>            
+            
+            
             <div id="pca_plot_var" style:width: 100%>
                 <!-- Plotly chart will be drawn inside this DIV -->
             </div>                        
