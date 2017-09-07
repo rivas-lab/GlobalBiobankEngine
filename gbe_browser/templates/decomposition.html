@@ -140,32 +140,36 @@ function make_plot(id, x, y, label, title) {
 <!-- This script is for plotting -->
 <script>           
     
-function update_contribution_plots(pc) {
+{% for data in ['contribution', 'cos', 'factor'] %} 
+    {% for phevar in ['phe', 'var'] %}
+    function get_{{ data }}_{{ phevar }}(idx){
+        return get_json_via_http('/static/decomposition/{{ dataset }}/{{ dataset }}_{{ data }}_{{ phevar }}_' + idx + '.json');
+    }
+    {% endfor %}
+{% endfor %}
+
+
+function update_contribution_plots(pc) {    
+    var title_phe = 'phenotype contribution score';
+    var title_var = 'variant contribution score';
     make_plot(
         'phe_contribution_plot', 
-        idx_phe, 
-        contribution_phe[pc], 
-        label_phe,
-        'phenotype contribution score'
-    );        
-
-    make_plot(
-        'var_contribution_plot', 
-        idx_var, 
-        contribution_var[pc], 
-        label_var,
-        'variant contribution score'
-    );               
-
+        idx_phe, get_contribution_phe(pc), label_phe, title_phe
+    );  
     var phe_contribution_plot = $('#phe_contribution_plot')[0];
-    var var_contribution_plot = $('#var_contribution_plot')[0];
     phe_contribution_plot.on('plotly_click', function(data){
         var pts = '';
         for(var i=0; i < data.points.length; i++){
             phe = data.points[i].x;
         }
         update_phe(phe - 1);                                
-    });        
+    });            
+
+    make_plot(
+        'var_contribution_plot', 
+        idx_var, get_contribution_var(pc), label_var, title_var
+    );               
+    var var_contribution_plot = $('#var_contribution_plot')[0];    
     var_contribution_plot.on('plotly_click', function(data){
         var pts = '';
         for(var i=0; i < data.points.length; i++){
@@ -176,12 +180,10 @@ function update_contribution_plots(pc) {
 }
     
     
-function update_phe_cosine(phe) {
+function update_phe_cosine(idx) {
     make_plot(
         'phe_cosine_plot', 
-        idx_pc, 
-        cos_phe[phe], 
-        label_pc,
+        idx_pc, get_cos_phe(idx), label_pc,
         'phenotype cosine score'
     );        
     var phe_cosine_plot = $('#phe_cosine_plot')[0];
@@ -195,12 +197,10 @@ function update_phe_cosine(phe) {
 }
 
     
-function update_var_cosine(vari) {
+function update_var_cosine(idx) {
     make_plot(
         'var_cosine_plot', 
-        idx_pc, 
-        cos_var[vari], 
-        label_pc,
+        idx_pc, get_cos_var(idx), label_pc,
         'variant cosine score'
     );        
     var var_cosine_plot = $('#var_cosine_plot')[0];
@@ -212,13 +212,12 @@ function update_var_cosine(vari) {
         update_pc(pc - 1);
     });        
 }    
-
     
 function pca_plot_phe(idx_pc_x, idx_pc_y) {
     make_plot(
         'pca_plot_phe', 
-        factor_phe[label_pc[idx_pc_x]], 
-        factor_phe[label_pc[idx_pc_y]], 
+        get_factor_phe(idx_pc_x), 
+        get_factor_phe(idx_pc_y), 
         label_phe,
         'PCA plot for phenotypes'
     );        
@@ -227,8 +226,8 @@ function pca_plot_phe(idx_pc_x, idx_pc_y) {
 function pca_plot_var(idx_pc_x, idx_pc_y) {
     make_plot(
         'pca_plot_var',         
-        factor_var[label_pc[idx_pc_x]], 
-        factor_var[label_pc[idx_pc_y]], 
+        get_factor_var(idx_pc_x),
+        get_factor_var(idx_pc_y),
         label_var,
         'PCA plot for variants'
     );        
@@ -264,10 +263,11 @@ function dev_str(str) {
 <script>
 function update_pc(pc_idx) {
     $(".variable_pc").text(label_pc[pc_idx]);
-    update_contribution_plots(label_pc[pc_idx]);
+    update_contribution_plots(pc_idx);
 }   
 
 function update_pc_phe(pc_idx_x, pc_idx_y) {
+    show_alert("alert-pc_phe");
     variable_pc_phe_x = pc_idx_x;
     variable_pc_phe_y = pc_idx_y;
     $(".variable_pc_phe_x").text(label_pc[pc_idx_x]);
@@ -276,6 +276,7 @@ function update_pc_phe(pc_idx_x, pc_idx_y) {
 } 
 
 function update_pc_var(pc_idx_x, pc_idx_y) {
+    show_alert("alert-pc_var");
     variable_pc_var_x = pc_idx_x;
     variable_pc_var_y = pc_idx_y;    
     $(".variable_pc_var_x").text(label_pc[pc_idx_x]);
@@ -291,7 +292,7 @@ function update_phe(phe_idx) {
         + label_phe[phe_idx]
         + "</a>"
     );
-    update_phe_cosine(label_phe[phe_idx]);        
+    update_phe_cosine(phe_idx);        
     
     if( ! document.getElementById("phe_contribution_no").checked ){
         window.open("https://biobankengine.stanford.edu/coding/" + label_phe_code[phe_idx]);
@@ -306,58 +307,40 @@ function update_var(var_idx) {
         + label_var[var_idx]
         + "</a>"
     ); 
-    update_var_cosine(label_var[var_idx]);
+    update_var_cosine(var_idx);
     
     if( ! document.getElementById("var_contribution_no").checked ){
         window.open("https://biobankengine.stanford.edu/variant/" + label_var[var_idx]);
     }    
 }  
     
-    
-function dropdown_update_phe(phe_idx){
-    update_phe(phe_idx);                
-    dropdown_show('dropdown-div-phe');
-}    
-    
-function dropdown_update_var(var_idx){
-    update_var(var_idx);                
-    dropdown_show('dropdown-div-var');
-}    
-    
-function dropdown_update_pc_phe(pc_idx){
-    update_pc(pc_idx);                
-    dropdown_show('dropdown-div-pc-phe');
-}    
+{% for phevar in ['phe', 'var'] %} 
+    function dropdown_update_{{ phevar }}(idx){
+        update_{{ phevar }}(idx);                
+        dropdown_show('dropdown-div-{{ phevar }}');
+    }    
+{% endfor %}
 
-function dropdown_update_pc_var(pc_idx){
-    update_pc(pc_idx);
-    dropdown_show('dropdown-div-pc-var');
-}    
+{% for dropdown_name in ['pc_phe', 'pc_var'] %} 
+    function dropdown_update_{{ dropdown_name }}(pc_idx){
+        update_pc(pc_idx);                
+        dropdown_show('dropdown-div-{{ dropdown_name }}');
+    }    
+{% endfor %}
 
-function dropdown_update_pc_phe_x(pc_idx){
-    update_pc_phe(pc_idx, variable_pc_phe_y);
-    dropdown_show('dropdown-div-pc_phe_x');
-}    
-    
-function dropdown_update_pc_phe_y(pc_idx){
-    update_pc_phe(variable_pc_phe_x, pc_idx);
-    dropdown_show('dropdown-div-pc_phe_y');
-}    
+{% for phevar in ['phe', 'var'] %} 
+    function dropdown_update_pc_{{ phevar }}_x(pc_idx){
+        update_pc_{{ phevar }}(pc_idx, variable_pc_{{ phevar }}_y);
+        dropdown_show('dropdown-div-pc_{{ phevar }}_x');
+    }    
 
-function dropdown_update_pc_var_x(pc_idx){
-    update_pc_var(pc_idx, variable_pc_var_y);
-    dropdown_show('dropdown-div-pc_var_x');
-}        
-    
-function dropdown_update_pc_var_y(pc_idx){
-    update_pc_var(variable_pc_var_x, pc_idx);
-    dropdown_show('dropdown-div-pc_var_y');
-}    
-    
-    
+    function dropdown_update_pc_{{ phevar }}_y(pc_idx){
+        update_pc_{{ phevar }}(variable_pc_{{ phevar }}_x, pc_idx);
+        dropdown_show('dropdown-div-pc_{{ phevar }}_y');
+    }    
+{% endfor %}
 
 </script>
-
 
 <script>
 function get_txt_via_http(url) {
@@ -377,34 +360,33 @@ function get_txt_via_http(url) {
 function get_json_via_http(url){
     return JSON.parse(get_txt_via_http(url));
 }    
+
+function show_alert(id) {
+    $("#" + id).fadeTo(2000, 500).slideUp(500, function(){
+        $("#" + id).slideUp(500);
+    });   
+}
     
 </script>
 
 
 <script>
 function get_data(json_file){
-    var data_all = get_json_via_http(json_file);    
+    var data_misc = get_json_via_http(json_file); 
+//    var data_misc = get_json_via_http('/static/decomposition/{{dataset}}/{{dataset}}_misc.json'); 
     
-    eigen_v   = data_all['eigen_v'];
-    eigen_r   = data_all['eigen_r'];
+    eigen_v   = data_misc['eigen_v'];
+    eigen_r   = data_misc['eigen_r'];
     
-    label_phe_code = data_all['label_phe_code'];
-    label_phe = data_all['label_phe'];
-    label_var = data_all['label_var'];
-    label_pc  = data_all['label_pc'];
+    label_phe_code = data_misc['label_phe_code'];
+    label_phe = data_misc['label_phe'];
+    label_var = data_misc['label_var'];
+    label_pc  = data_misc['label_pc'];
     
     idx_phe   = Plotly.d3.range(1, 1 + label_phe.length);
     idx_var   = Plotly.d3.range(1, 1 + label_var.length);
     idx_pc    = Plotly.d3.range(1, 1 + label_pc.length);
-    
-    factor_phe = data_all['factor_phe'];
-    factor_var = data_all['factor_var'];
-    
-    contribution_phe = data_all['contribution_phe'];
-    contribution_var = data_all['contribution_var'];
-    
-    cos_phe = data_all['cos_phe'];
-    cos_var = data_all['cos_var'];                
+                 
 }
 
 </script>
@@ -412,11 +394,11 @@ function get_data(json_file){
 
 <script>
     $(document).ready(function(){
+        $(".alert-info-fetch-data").hide();        
         document.getElementById("phe_contribution_no").checked = true;
         document.getElementById("var_contribution_no").checked = true;
-        
-        
-        get_data('/static/decomposition/{{dataset}}.json');
+                
+        get_data('/static/decomposition/{{dataset}}/{{dataset}}_misc.json');
         update_pc( {{ init_idx_pc  }});
         update_phe({{ init_idx_phe }});
         update_var({{ init_idx_var }});
@@ -432,55 +414,22 @@ function get_data(json_file){
                 "<a class=\"dropdown-item\" id='dropdown-var-" + i + "' onclick=dropdown_update_var(" + i + ")>" + label_var[i] + "</a>"
             );
         } 
-        
-        for (i = 0; i < label_pc.length; i++) {            
-            $("#dropdown-div-pc-phe").append(                                
-                "<a class=\"dropdown-item\" id='dropdown-pc-phe-" + i + "' onclick=dropdown_update_pc_phe(" + i + ")>" + label_pc[i] + "</a>"
-            );
-        }
-        
-        for (i = 0; i < label_pc.length; i++) {
-            $("#dropdown-div-pc-var").append(                
-                "<a class=\"dropdown-item\" id='dropdown-pc-var-" + i + "' onclick=dropdown_update_pc_var(" + i + ")>" + label_pc[i] + "</a>"
-            );
-        } 
-
-        for (i = 0; i < label_pc.length; i++) {            
-            $("#dropdown-div-pc_phe_x").append(                                
-                "<a class=\"dropdown-item\" id='dropdown-pc_phe_x" + i + "' onclick=dropdown_update_pc_phe_x(" + i + ")>" + label_pc[i] + "</a>"
-            );
-        }        
-
-        for (i = 0; i < label_pc.length; i++) {            
-            $("#dropdown-div-pc_phe_y").append(                                
-                "<a class=\"dropdown-item\" id='dropdown-pc_phe_y" + i + "' onclick=dropdown_update_pc_phe_y(" + i + ")>" + label_pc[i] + "</a>"
-            );
-        }        
-
-        for (i = 0; i < label_pc.length; i++) {            
-            $("#dropdown-div-pc_var_x").append(                                
-                "<a class=\"dropdown-item\" id='dropdown-pc_var_x" + i + "' onclick=dropdown_update_pc_var_x(" + i + ")>" + label_pc[i] + "</a>"
-            );
-        }        
-        
-        for (i = 0; i < label_pc.length; i++) {            
-            $("#dropdown-div-pc_var_y").append(                                
-                "<a class=\"dropdown-item\" id='dropdown-pc_var_y" + i + "' onclick=dropdown_update_pc_var_y(" + i + ")>" + label_pc[i] + "</a>"
-            );
-        }        
-        
+                  
+        {% for dropdown_name in ['pc_phe', 'pc_var', 'pc_phe_x', 'pc_phe_y', 'pc_var_x', 'pc_var_y'] %}
+            for (i = 0; i < label_pc.length; i++) {            
+                $("#dropdown-div-{{ dropdown_name }}").append(                                
+                    "<a class=\"dropdown-item\" onclick=dropdown_update_{{ dropdown_name }}(" + i + ")>" + label_pc[i] + "</a>"
+                );
+            }        
+        {% endfor %}
+                        
         variance_explained_plot();
         update_pc_phe(0, 1);
         update_pc_var(0, 1);
-        
+                          
 
     });
 </script>
-
-
-
-
-
 
 {% endblock %}
 
@@ -564,11 +513,11 @@ function get_data(json_file){
             
             <div class="btn-group" role="group">
                 <div class="dropdown" align="center">
-                    <button onclick="dropdown_show('dropdown-div-pc-phe')" class="button dropdown-toggle" data-toggle="dropdown">
+                    <button onclick="dropdown_show('dropdown-div-pc_phe')" class="button dropdown-toggle" data-toggle="dropdown">
                         Select PC (current selection: <span class="variable_pc"></span>)
                     </button>
-                    <div id="dropdown-div-pc-phe" class="dropdown-content">
-                        <input id="dropdown-input-pc-phe" onkeyup="dropdown_filter('dropdown-div-pc-phe', 'dropdown-input-pc-phe')" type="text" placeholder="Search.." >
+                    <div id="dropdown-div-pc_phe" class="dropdown-content">
+                        <input id="dropdown-input-pc_phe" onkeyup="dropdown_filter('dropdown-div-pc_phe', 'dropdown-input-pc_phe')" type="text" placeholder="Search.." >
                         <!-- drop down items -->
                     </div>
                 </div>
@@ -589,11 +538,11 @@ function get_data(json_file){
             
             <div class="btn-group" role="group">
                 <div class="dropdown" align="center">
-                    <button onclick="dropdown_show('dropdown-div-pc-var')" class="button dropdown-toggle" data-toggle="dropdown">
+                    <button onclick="dropdown_show('dropdown-div-pc_var')" class="button dropdown-toggle" data-toggle="dropdown">
                         Select PC (current selection: <span class="variable_pc"></span>)
                     </button>
-                    <div id="dropdown-div-pc-var" class="dropdown-content">
-                        <input id="dropdown-input-pc-var" onkeyup="dropdown_filter('dropdown-div-pc-var', 'dropdown-input-pc-var')" type="text" placeholder="Search.." >
+                    <div id="dropdown-div-pc_var" class="dropdown-content">
+                        <input id="dropdown-input-pc_var" onkeyup="dropdown_filter('dropdown-div-pc_var', 'dropdown-input-pc_var')" type="text" placeholder="Search.." >
                         <!-- drop down items -->
                     </div>
                 </div>
@@ -624,61 +573,52 @@ function get_data(json_file){
         <div class="col col-md-6">
             <h3>PCA plot for phenotypes</h3>            
             
-            <div class="btn-group" role="group">
-                <div class="dropdown" align="center">
-                    <button onclick="dropdown_show('dropdown-div-pc_phe_x')" class="button dropdown-toggle" data-toggle="dropdown">
-                        Select PC (x) (current selection: <span class="variable_pc_phe_x"></span>)
-                    </button>
-                    <div id="dropdown-div-pc_phe_x" class="dropdown-content">
-                        <input id="dropdown-input-pc_phe_x" onkeyup="dropdown_filter('dropdown-div-pc_phe_x', 'dropdown-input-pc_phe_x')" type="text" placeholder="Search.." >
-                        <!-- drop down items -->
+            {% for axis in ['x', 'y'] %}
+                <div class="btn-group" role="group">
+                    <div class="dropdown" align="center">
+                        <button onclick="dropdown_show('dropdown-div-pc_phe_{{ axis }}')" class="button dropdown-toggle" data-toggle="dropdown">
+                            Select PC ({{ axis }}) (current selection: <span class="variable_pc_phe_{{ axis }}"></span>)
+                        </button>
+                        <div id="dropdown-div-pc_phe_{{ axis }}" class="dropdown-content">
+                            <input id="dropdown-input-pc_phe_{{ axis }}" onkeyup="dropdown_filter('dropdown-div-pc_phe_{{ axis }}', 'dropdown-input-pc_phe_{{ axis }}')" type="text" placeholder="Search.." >
+                            <!-- drop down items -->
+                        </div>
                     </div>
-                </div>
-            </div>            
+                </div>            
+            {% endfor %}
             
-            <div class="btn-group" role="group">
-                <div class="dropdown" align="center">
-                    <button onclick="dropdown_show('dropdown-div-pc_phe_y')" class="button dropdown-toggle" data-toggle="dropdown">
-                        Select PC (y) (current selection: <span class="variable_pc_phe_y"></span>)
-                    </button>
-                    <div id="dropdown-div-pc_phe_y" class="dropdown-content">
-                        <input id="dropdown-input-pc-phe" onkeyup="dropdown_filter('dropdown-div-pc_phe_y', 'dropdown-input-pc_phe_y')" type="text" placeholder="Search.." >
-                        <!-- drop down items -->
-                    </div>
-                </div>
-            </div> 
-            
+            <div class="alert alert-info alert-info-fetch-data" id="alert-pc_phe">
+                <button type="button" class="close" data-dismiss="alert">x</button>
+                <strong>Info</strong>
+                Fetching data.
+            </div>
+                                    
             <div id="pca_plot_phe" style:width: 100%>
                 <!-- Plotly chart will be drawn inside this DIV -->
             </div>            
         </div>
         <div class="col col-md-6">
             <h3>PCA plot for variants</h3>  
-            
-            <div class="btn-group" role="group">
-                <div class="dropdown" align="center">
-                    <button onclick="dropdown_show('dropdown-div-pc_var_x')" class="button dropdown-toggle" data-toggle="dropdown">
-                        Select PC (x) (current selection: <span class="variable_pc_var_x"></span>)
-                    </button>
-                    <div id="dropdown-div-pc_var_x" class="dropdown-content">
-                        <input id="dropdown-input-pc_var_x" onkeyup="dropdown_filter('dropdown-div-pc_var_x', 'dropdown-input-pc_var_x')" type="text" placeholder="Search.." >
-                        <!-- drop down items -->
+
+            {% for axis in ['x', 'y'] %}
+                <div class="btn-group" role="group">
+                    <div class="dropdown" align="center">
+                        <button onclick="dropdown_show('dropdown-div-pc_var_{{ axis }}')" class="button dropdown-toggle" data-toggle="dropdown">
+                            Select PC ({{ axis }}) (current selection: <span class="variable_pc_var_{{ axis }}"></span>)
+                        </button>
+                        <div id="dropdown-div-pc_var_{{ axis }}" class="dropdown-content">
+                            <input id="dropdown-input-pc_var_{{ axis }}" onkeyup="dropdown_filter('dropdown-div-pc_var_{{ axis }}', 'dropdown-input-pc_var_{{ axis }}')" type="text" placeholder="Search.." >
+                            <!-- drop down items -->
+                        </div>
                     </div>
-                </div>
-            </div>            
+                </div>            
+            {% endfor %}
             
-            <div class="btn-group" role="group">
-                <div class="dropdown" align="center">
-                    <button onclick="dropdown_show('dropdown-div-pc_var_y')" class="button dropdown-toggle" data-toggle="dropdown">
-                        Select PC (y) (current selection: <span class="variable_pc_var_y"></span>)
-                    </button>
-                    <div id="dropdown-div-pc_var_y" class="dropdown-content">
-                        <input id="dropdown-input-pc-phe" onkeyup="dropdown_filter('dropdown-div-pc_var_y', 'dropdown-input-pc_var_y')" type="text" placeholder="Search.." >
-                        <!-- drop down items -->
-                    </div>
-                </div>
-            </div>            
-            
+            <div class="alert alert-info alert-info-fetch-data" id="alert-pc_var">
+                <button type="button" class="close" data-dismiss="alert">x</button>
+                <strong>Info</strong>
+                Fetching data.
+            </div>                                                        
             
             <div id="pca_plot_var" style:width: 100%>
                 <!-- Plotly chart will be drawn inside this DIV -->
@@ -699,7 +639,13 @@ function get_data(json_file){
     <div class="row">
         <h2>debug</h2>
         <p>{{ debug_str }}</p>
-        <div id="dev"></div>        
+        <div id="dev"></div>
+        
+        {% for user in ['a', 'b', 'c'] %}
+            {% for num in [1, 2, 3] %}
+              {{ user }} {{ num }}
+            {% endfor %}
+        {% endfor %}                
     </div>
     
     <div class="row">
