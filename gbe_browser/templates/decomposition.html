@@ -346,7 +346,6 @@ function update_var(var_idx) {
 function get_txt_via_http(url) {
     var file_content;
     var req = new XMLHttpRequest();
-//    req.timeout = 3000;
     req.onreadystatechange = function() {
         if(req.readyState == 4 && req.status == 200){
             file_content = req.responseText;
@@ -399,10 +398,7 @@ function get_data(json_file){
         document.getElementById("var_contribution_no").checked = true;
                 
         get_data('/static/decomposition/{{dataset}}/{{dataset}}_misc.json');
-        update_pc( {{ init_idx_pc  }});
-        update_phe({{ init_idx_phe }});
-        update_var({{ init_idx_var }});
-        
+                                
         for (i = 0; i < label_phe.length; i++) {
             $("#dropdown-div-phe").append(
                 "<a class=\"dropdown-item\" id='dropdown-phe-" + i + "' onclick=dropdown_update_phe(" + i + ")>" + label_phe[i] + "</a>"
@@ -426,7 +422,11 @@ function get_data(json_file){
         variance_explained_plot();
         update_pc_phe(0, 1);
         update_pc_var(0, 1);
-                          
+         
+        update_pc( {{ init_idx_pc  }});
+        update_phe({{ init_idx_phe }});
+        update_var({{ init_idx_var }});
+                                   
 
     });
 </script>

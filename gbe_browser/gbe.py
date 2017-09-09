@@ -772,9 +772,14 @@ def decomposition_page(dataset):
     db = get_db()
     
     
-    init_idx_pc  = 6
-    init_idx_phe = 429
-    init_idx_var = 8503    
+    if(dataset == 'PTVs'):
+        init_idx_pc  = 6
+        init_idx_phe = 429
+        init_idx_var = 8503    
+    else:
+        init_idx_pc  = 0
+        init_idx_phe = 0
+        init_idx_var = 0
         
     debug_str = 'debug'
     
