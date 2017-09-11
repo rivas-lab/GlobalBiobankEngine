@@ -542,6 +542,9 @@ class Loader:
         elif 'INI' in parts:
             prefix = 'INI'
             intadd = 30
+        elif 'qt' in parts:
+            prefix = 'INI'
+            intadd = 30
         elif 'initialdata' in name:
             prefix = 'INI'
             intadd = 30
@@ -569,27 +572,11 @@ class Loader:
 
         # Figure out suffix
         ind = parts[1].split(
-            '_')[0].strip()[1:].strip(
-                'RH').strip(
-                    'FH').strip(
-                        'qt').strip(
-                        'INI').strip(
-                        'initialdata').strip(
-                            'cancer').strip(
-                                'HC').split(
-                                    '_FH2')[0]
-
-        suffix = parts[1].strip(
-            'RH').strip(
-                'FH').strip(
-                    'qt').strip(
-                    'INI').strip(
-                    'initialdata').strip(
-                        'MED').strip(
-                            'cancer').strip(
-                                'HC').split(
-                                    '_FH2')[0]
-
+            '_')[0]
+        for ch in ["MED","RH",'FH','qt','INI','initialdata','cancer','HC','_FH2']:
+            if ch in ind:
+                ind = ind.replace(ch,'')
+        suffix = ind
         return (prefix, suffix, intadd, ind)
 
     @staticmethod

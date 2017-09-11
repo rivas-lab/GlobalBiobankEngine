@@ -31,7 +31,7 @@ QC_ARRAY = 'qc'
 # -- -
 ICD_PATH = os.path.join(GBE_DATA_PATH, 'icdassoc', 'hybrid')
 
-ICD_GLOB = os.path.join(ICD_PATH, '*c*.hybrid.rewritewna.gz')
+ICD_GLOB = os.path.join(ICD_PATH, '*c*.hybrid*gz')
 QT_GLOB = os.path.join(ICD_PATH, '*c*.linear*gz')
 
 ICD_INFO_FILE = os.path.join(GBE_DATA_PATH, 'icdstats', 'icdinfo.txt')
@@ -843,29 +843,64 @@ DBSNP_BY_CHROM_POS_STORE_QUERY = """
 
 # -- -
 # -- - Load: BIM - --
-# -- -
-BIM_FILE = os.path.join(GBE_DATA_PATH, 'bims_combined.vep.cf.tsv.gz')
+# -- - Convert string to bool for False / True values - --
+
+BIM_FILE = os.path.join(GBE_DATA_PATH, 'qc/variant_filter_table.tsv.gz')
 
 BIM_ARRAY = 'bim'
 BIM_SCHEMA = """
   <ref:         string,
    alt:         string,
    consequence: string,
-   hgvsp:       string>
+   hgvsp:       string,
+   lof:         string, 
+   miss:        double,
+   missbileve:  double, 
+   missukbb:    double,
+   hwep:        double, 
+   maf:         double, 
+   ld:          bool, 
+   ukbbonly:    bool, 
+   bileveonly:  bool, 
+   missbool:     bool, 
+   hwebool:     bool,
+   mcpi:        bool,
+   gnomadfilter: string, 
+   mgi:         string,
+   mginotes:   string, 
+   allfilter:   int8 >
   [chrom = 1:25:0:1;
    pos   = 0:*:0:10000000]"""
+
 
 BIM_STORE_QUERY = """
   store(
     redimension(
       apply(
-        aio_input('{{path}}', 'num_attributes=11', 'header=1'),
+        aio_input('{{path}}', 'num_attributes=30', 'header=1'),
         chrom,       int64(a0),
         pos,         int64(a1),
         ref,         a2,
         alt,         a3,
-        consequence, a8,
-        hgvsp,       a9),
+        consequence, a6,
+        hgvsp,       a7,
+        lof,         a8, 
+        miss,        double(a13),
+        missbileve,  double(a14), 
+        missukbb,    double(a15),
+        hwep,        double(a17), 
+        maf,         double(a18),
+        ld,          iif(a19 = 'False', false, iif( a19 = 'True', true, null)),
+        ukbbonly,    iif(a20 = 'False', false, iif( a20 = 'True', true, null)),
+        bileveonly,  iif(a21 = 'False', false, iif( a21 = 'True', true, null)),
+        missbool,    iif(a23 = '0', false, iif( a23 = '1', true, null)),
+        hwebool,     iif(a24 = '0', false, iif( a24 = '1', true, null)),
+        mcpi,        iif(a25 = '0', false, iif( a25 = '1', true, null)), 
+        gnomadfilter, a26, 
+        mgi,         a27,
+        mginotes,    a28,
+        allfilter,   int8(a29)
+        ),
       {bim_schema}),
     {bim_array})""".format(
         bim_file=BIM_FILE,
@@ -1386,6 +1421,7 @@ VARIANT_LIMIT_QUERY = """
       ref,
       alt,
       filter,
+      ukbb_freq,
       csq),
     1)""".format(
     variant_array=VARIANT_ARRAY)

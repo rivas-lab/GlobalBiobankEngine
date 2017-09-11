@@ -620,6 +620,7 @@ def variant_icd_page(variant_str):
                 'pos': pos,
                 'xpos': get_xpos(chrom, int(pos))
             }
+        print(variant.keys())
         consequences = None
         ordered_csqs = None
         if 'vep_annotations' in variant:
