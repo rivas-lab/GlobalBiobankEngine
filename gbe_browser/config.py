@@ -71,7 +71,7 @@ ICD_INFO_APPEND_QUERY = """
   insert(
     redimension(
       apply(
-        input({input_schema}, '{{fn}}', 0, 'CSV'),
+       _sg(input({input_schema}, '{{fn}}', 0, 'CSV'), 1),
         Case, int64(null),
         Name, string(null)),
       {icd_info_schema}),
