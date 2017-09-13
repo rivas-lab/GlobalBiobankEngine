@@ -69,17 +69,17 @@ ICD_PVALUE_MAP = dict(zip((.001, .0001, .00001), range(1, 4)))
 
 ICD_INFO_APPEND_QUERY = """
   insert(
-    redimension(
-      apply(
-       _sg(input({input_schema}, '{{fn}}', 0, 'CSV'), 1),
-        Case, int64(null),
-        Name, string(null)),
-      {icd_info_schema}),
+    apply(
+     redimension(
+      input({input_schema}, '{{fn}}', 0, 'CSV'),
+      <icd:string>[icd_idx=0:*:0:80]
+     ),
+     Case, int64(null),
+     Name, string(null)),
     {icd_info_array})""".format(
         input_schema=ICD_INFO_SCHEMA.replace(
             ', Case:int64, Name:string', '').replace(
-                '0:*', '{start}:{stop}'),
-        icd_info_schema=ICD_INFO_SCHEMA,
+                '0:*:0:80', '{start}:{stop}:0:1000000'),
         icd_info_array=ICD_INFO_ARRAY)
 
 ICD_INFO_INSERT_QUERY = """
