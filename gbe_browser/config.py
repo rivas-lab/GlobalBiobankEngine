@@ -126,8 +126,8 @@ ICD_INSERT_QUERY = """
         pdecimal,    iif(dcast(a11, double(null)) < .00001, 3,
                       iif(dcast(a11, double(null)) < .0001, 2,
                        iif(dcast(a11, double(null)) < .001, 1, 0))),
-        icdind,      int64(string(int64(a0) * 1e9 + int64(a1)) +
-                           {{icdind_cond}}),
+        icdind,     0,
+-- int64(string(int64(a0) * 1e9 + int64(a1)) +   {{icdind_cond}}),
         affyid,      a2,
         or_val,      dcast(a8,  double(null)),
         se,          dcast(a9,  double(null)),
@@ -167,8 +167,8 @@ QT_INSERT_QUERY = """
         pdecimal,    iif(dcast(a10, double(null)) < .00001, 3,
                       iif(dcast(a10, double(null)) < .0001, 2,
                        iif(dcast(a10, double(null)) < .001, 1, 0))),
-        icdind,      int64(string(int64(a0) * 1e9 + int64(a1)) +
-                           {{icdind_cond}}),
+        icdind,    0,
+--  int64(string(int64(a0) * 1e9 + int64(a1)) +{{icdind_cond}}),
         affyid,      a2,
         or_val,      dcast(a7,  double(null)),
         se,          dcast(a8,  double(null)),

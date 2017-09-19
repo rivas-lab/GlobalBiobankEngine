@@ -667,6 +667,8 @@ def variant_icd_page(variant_str):
                     item['Group'] = "INI"
                 elif icd10[0:3] == "MED":
                     item['Group'] = "MED"
+                elif icd10[0:3] == "BIN":
+                    item['Group'] = "BIN"
                 elif icd10[0:5] == "BRMRI":
                     item['Group'] = "BRMRI"
                 else:
