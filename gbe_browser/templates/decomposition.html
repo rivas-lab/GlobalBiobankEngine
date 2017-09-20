@@ -137,17 +137,15 @@ function make_plot(id, x, y, label, title) {
 }
     
     
-function make_plot_pie(id, y, label, title) {
+function make_plot_bar(id, x, y, label, title) {
     Plotly.newPlot(
         id,
         [
-            {                
-                values:y,
+            {
+                x:x,
+                y:y,
                 text:label,
-                type:'pie',
-                mode:'markers',
-                showlegend:false,
-                hoverinfo: 'percent+text'
+                type:'bar',
             }
         ],
         {
@@ -155,13 +153,13 @@ function make_plot_pie(id, y, label, title) {
             title:title
         }
     );
-}    
+}  
 </script>
 
 <!-- This script is for plotting -->
 <script>           
     
-{% for data in ['contribution', 'cos', 'factor', 'stackedbar'] %} 
+{% for data in ['contribution', 'cos', 'factor'] %} 
     {% for phevar in ['phe', 'var'] %}
     function get_{{ data }}_{{ phevar }}(idx){
         return get_json_via_http('/static/decomposition/{{ dataset }}/{{ dataset }}_{{ data }}_{{ phevar }}_' + idx + '.json');
@@ -169,10 +167,20 @@ function make_plot_pie(id, y, label, title) {
     {% endfor %}
 {% endfor %}
 
+{% for data in ['bar'] %} 
+    {% for phevar in ['phe', 'gene'] %}
+    function get_{{ data }}_{{ phevar }}(idx){
+        return get_json_via_http('/static/decomposition/{{ dataset }}/{{ dataset }}_{{ data }}_{{ phevar }}_' + idx + '.json');
+    }
+    {% endfor %}
+{% endfor %}
+
+
 
 function update_contribution_plots(pc) {    
-    var title_phe = 'phenotype contribution score';
-    var title_var = 'variant contribution score';
+    var title_phe  = 'phenotype contribution score';
+    var title_var  = 'variant contribution score';
+    var title_gene = 'gene contribution score';
     
     make_plot(
         'phe_contribution_plot', 
@@ -200,20 +208,31 @@ function update_contribution_plots(pc) {
         update_var(vari - 1);
     });
     
-    make_plot_pie(
+    make_plot_bar(
         'phe_contribution_plot_2', 
-        get_stackedbar_phe(pc), label_phe_stackedbar, title_phe
+        idx_bar_phe, get_bar_phe(pc), label_phe_stackedbar, title_phe
     );  
     var phe_contribution_plot_2 = $('#phe_contribution_plot_2')[0];
-    phe_contribution_plot_2.on('plotly_click', function(data){
-        var pts = '';
-        for(var i=0; i < data.points.length; i++){
-            phe = data.points[i].x;
-        }
-        update_phe(phe - 1);                                
-    });            
+//    phe_contribution_plot_2.on('plotly_click', function(data){
+//        var pts = '';
+//        for(var i=0; i < data.points.length; i++){
+//            phe = data.points[i].x;
+//        }
+//        update_phe(phe - 1);                                
+//    });            
     
-    
+    make_plot_bar(
+        'gene_contribution_plot', 
+        idx_bar_gene, get_bar_gene(pc), label_gene_stackedbar, title_gene
+    );  
+    var gene_contribution_plot = $('#gene_contribution_plot')[0];
+//    gene_contribution_plot.on('plotly_click', function(data){
+//        var pts = '';
+//        for(var i=0; i < data.points.length; i++){
+//            phe = data.points[i].x;
+//        }
+//        update_phe(phe - 1);                                
+//    });                        
 }
     
     
@@ -374,8 +393,25 @@ function update_var(var_idx) {
     function dropdown_update_pc_{{ phevar }}_y(pc_idx){
         update_pc_{{ phevar }}(variable_pc_{{ phevar }}_x, pc_idx);
         dropdown_show('dropdown-div-pc_{{ phevar }}_y');
-    }    
+    }  
+ 
 {% endfor %}
+
+{% for phegene in ['phe', 'gene'] %} 
+    function draw_bar_{{ phegene }}(){    
+        var layout = {
+            barmode: 'stack',
+            showlegend: false
+        };    
+        Plotly.newPlot(
+            '{{ phegene }}_bar_plot', 
+            stackedbar_{{ phegene }}, 
+            layout
+        );
+    } 
+{% endfor %}
+
+
 
 </script>
 
@@ -409,7 +445,6 @@ function show_alert(id) {
 <script>
 function get_data(json_file){
     var data_misc = get_json_via_http(json_file); 
-//    var data_misc = get_json_via_http('/static/decomposition/{{dataset}}/{{dataset}}_misc.json'); 
     
     eigen_v   = data_misc['eigen_v'];
     eigen_r   = data_misc['eigen_r'];
@@ -421,12 +456,15 @@ function get_data(json_file){
     label_pc       = data_misc['label_pc'];
     label_phe_stackedbar  = data_misc['label_phe_stackedbar'];
     label_gene_stackedbar = data_misc['label_gene_stackedbar'];    
-        
     
-    idx_phe   = Plotly.d3.range(1, 1 + label_phe.length);
-    idx_var   = Plotly.d3.range(1, 1 + label_var.length);
-    idx_pc    = Plotly.d3.range(1, 1 + label_pc.length);
-                 
+    stackedbar_phe  = data_misc['stackedbar_phe'];
+    stackedbar_gene = data_misc['stackedbar_gene'];        
+    
+    idx_phe      = Plotly.d3.range(1, 1 + label_phe.length);
+    idx_var      = Plotly.d3.range(1, 1 + label_var.length);
+    idx_pc       = Plotly.d3.range(1, 1 + label_pc.length);   
+    idx_bar_phe  = Plotly.d3.range(1, 1 + label_phe_stackedbar.length);
+    idx_bar_gene = Plotly.d3.range(1, 1 + label_gene_stackedbar.length);
 }
 
 </script>
@@ -467,6 +505,9 @@ function get_data(json_file){
         update_pc( {{ init_idx_pc  }});
         update_phe({{ init_idx_phe }});
         update_var({{ init_idx_var }});
+         
+        draw_bar_phe(); 
+        draw_bar_gene();
                                    
 
     });
@@ -569,6 +610,10 @@ function get_data(json_file){
             <div id="phe_contribution_plot" style:width: 100%>
                 <!-- Plotly chart will be drawn inside this DIV -->
             </div>
+        
+            <div id="phe_contribution_plot_2" style:width: 100%>
+                <!-- Plotly chart will be drawn inside this DIV -->
+            </div>
                         
             <p><input type="radio" name="phe_contribution" id="phe_contribution_no"/> Do not open phenotype page </p>
             <p><input type="radio" name="phe_contribution" id="phe_contributoin_yes"/> Open the phenotype page on click</p>
@@ -595,6 +640,10 @@ function get_data(json_file){
                 <!-- Plotly chart will be drawn inside this DIV -->
             </div>
             
+            <div id="gene_contribution_plot" style:width: 100%>
+                <!-- Plotly chart will be drawn inside this DIV -->
+            </div>
+                        
             <p><input type="radio" name="var_contribution" id="var_contribution_no"/> Do not open variant page </p>
             <p><input type="radio" name="var_contribution" id="var_contributoin_yes"/> Open the variant page on click</p>
             
@@ -609,16 +658,18 @@ function get_data(json_file){
     </div>    
     
     <div class="row">        
-        <div class="col col-md-6">
+        <div class="col col-md-12">
             <h3>Stacked bar plot (phe)</h3>
-            <div id="some_plot" style:width: 100%>
+            <div id="phe_bar_plot" style:width: 100%>
                 <!-- Plotly chart will be drawn inside this DIV -->
             </div>
 
         </div>
-        <div class="col col-md-6">
+    </div>
+    <div class="row">    
+        <div class="col col-md-12">
             <h3>Stacked bar plot (gene)</h3>
-            <div id="some_plot" style:width: 100%>
+            <div id="gene_bar_plot" style:width: 100%>
                 <!-- Plotly chart will be drawn inside this DIV -->
             </div>
 
@@ -700,10 +751,12 @@ function get_data(json_file){
     
     <div class="row">
         <div class="col col-md-6">
-            <h3>phenotype contribution plot (pie chart version)</h3>
+            <h3>phenotype contribution plot ()</h3>
+<!--
             <div id="phe_contribution_plot_2" style:width: 100%>
-                <!-- Plotly chart will be drawn inside this DIV -->
+                 Plotly chart will be drawn inside this DIV 
             </div>
+-->
 
         </div>
         
