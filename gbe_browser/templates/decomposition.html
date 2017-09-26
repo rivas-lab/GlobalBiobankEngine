@@ -125,7 +125,7 @@ function make_plot(id, x, y, label, title) {
                 x:x,
                 y:y,
                 text:label,
-                type:'scatter',
+                type:'scattergl',
                 mode:'markers'
             }
         ],
@@ -145,11 +145,11 @@ function make_plot_bar(id, x, y, label, title) {
                 x:x,
                 y:y,
                 text:label,
-                type:'bar',
+                type:'bar'                
             }
         ],
         {
-            hovermode:'closest',
+            hovermode:'closest',        
             title:title
         }
     );
@@ -226,13 +226,17 @@ function update_contribution_plots(pc) {
         idx_bar_gene, get_bar_gene(pc), label_gene_stackedbar, title_gene
     );  
     var gene_contribution_plot = $('#gene_contribution_plot')[0];
-//    gene_contribution_plot.on('plotly_click', function(data){
-//        var pts = '';
-//        for(var i=0; i < data.points.length; i++){
-//            phe = data.points[i].x;
-//        }
-//        update_phe(phe - 1);                                
-//    });                        
+    gene_contribution_plot.on('plotly_click', function(data){
+        var pts = '';
+        for(var i=0; i < data.points.length; i++){
+            gene = data.points[i].x;
+        }
+        if( ! document.getElementById("var_contribution_no").checked ){
+            if(label_gene_stackedbar[gene - 1] != "others"){
+                window.open("https://biobankengine.stanford.edu/gene/" + label_gene_stackedbar[gene - 1]);
+            }
+        }
+    });                        
 }
     
     
@@ -401,7 +405,8 @@ function update_var(var_idx) {
     function draw_bar_{{ phegene }}(){    
         var layout = {
             barmode: 'stack',
-            showlegend: false
+            showlegend: false,
+            hoverinfo: "skip"
         };    
         Plotly.newPlot(
             '{{ phegene }}_bar_plot', 
@@ -620,7 +625,7 @@ function get_data(json_file){
             
         </div>
         <div class="col col-md-6">
-            <h3>Variant contribution score</h3>
+            <h3>Variant/Gene contribution score</h3>
             
             <div class="btn-group" role="group">
                 <div class="dropdown" align="center">
@@ -645,7 +650,7 @@ function get_data(json_file){
             </div>
                         
             <p><input type="radio" name="var_contribution" id="var_contribution_no"/> Do not open variant page </p>
-            <p><input type="radio" name="var_contribution" id="var_contributoin_yes"/> Open the variant page on click</p>
+            <p><input type="radio" name="var_contribution" id="var_contributoin_yes"/> Open the variant/gene page on click</p>
             
         </div>
 
