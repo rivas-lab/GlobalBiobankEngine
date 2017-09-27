@@ -145,7 +145,9 @@ function make_plot_bar(id, x, y, label, title) {
                 x:x,
                 y:y,
                 text:label,
-                type:'bar'                
+                type:'bar',
+//                'hoverinfo': 'x+y' 
+                'hoverinfo': 'x+text+y'
             }
         ],
         {
@@ -159,7 +161,7 @@ function make_plot_bar(id, x, y, label, title) {
 <!-- This script is for plotting -->
 <script>           
     
-{% for data in ['contribution', 'cos', 'factor'] %} 
+{% for data in ['cos', 'factor'] %} 
     {% for phevar in ['phe', 'var'] %}
     function get_{{ data }}_{{ phevar }}(idx){
         return get_json_via_http('/static/decomposition/{{ dataset }}/{{ dataset }}_{{ data }}_{{ phevar }}_' + idx + '.json');
@@ -167,8 +169,20 @@ function make_plot_bar(id, x, y, label, title) {
     {% endfor %}
 {% endfor %}
 
+{% for data in ['contribution'] %} 
+    {% for phevar in ['phe', 'var'] %}
+        {% for type in ['x', 'y', 'l'] %}
+        function get_{{ data }}_{{ phevar }}_{{ type }}(idx){
+            return get_json_via_http('/static/decomposition/{{ dataset }}/{{ dataset }}_{{ data }}_{{ phevar }}_{{ type }}_' + idx + '.json');
+        }
+        {% endfor %}
+    {% endfor %}        
+{% endfor %}
+
+
+
 {% for data in ['bar'] %} 
-    {% for phevar in ['phe', 'gene'] %}
+    {% for phevar in ['phe', 'gene', 'phe_label', 'gene_label', 'phe_code', 'gene_code'] %}
     function get_{{ data }}_{{ phevar }}(idx){
         return get_json_via_http('/static/decomposition/{{ dataset }}/{{ dataset }}_{{ data }}_{{ phevar }}_' + idx + '.json');
     }
@@ -178,13 +192,14 @@ function make_plot_bar(id, x, y, label, title) {
 
 
 function update_contribution_plots(pc) {    
-    var title_phe  = 'phenotype contribution score';
-    var title_var  = 'variant contribution score';
-    var title_gene = 'gene contribution score';
+    var title_phe  = 'Phenotype contribution score';
+    var title_var  = 'Variant contribution score';
+    var title_bar_phe  = 'Top hits in phenotype contribution score (PC' + (pc + 1) + ')';
+    var title_bar_gene = 'Top hits in gene contribution score (PC' + (pc + 1) + ')';
     
     make_plot(
         'phe_contribution_plot', 
-        idx_phe, get_contribution_phe(pc), label_phe, title_phe
+        get_contribution_phe_x(pc), get_contribution_phe_y(pc), get_contribution_phe_l(pc), title_phe
     );  
     var phe_contribution_plot = $('#phe_contribution_plot')[0];
     phe_contribution_plot.on('plotly_click', function(data){
@@ -192,49 +207,53 @@ function update_contribution_plots(pc) {
         for(var i=0; i < data.points.length; i++){
             phe = data.points[i].x;
         }
-        update_phe(phe - 1);                                
+        update_phe(phe);                                
     });            
 
     make_plot(
         'var_contribution_plot', 
-        idx_var, get_contribution_var(pc), label_var, title_var
+        get_contribution_var_x(pc), get_contribution_var_y(pc), get_contribution_var_l(pc), title_var
     );               
     var var_contribution_plot = $('#var_contribution_plot')[0];    
     var_contribution_plot.on('plotly_click', function(data){
         var pts = '';
         for(var i=0; i < data.points.length; i++){
-            vari = data.points[i].x;            
+            var vari = data.points[i].x;            
         }
-        update_var(vari - 1);
+        update_var(vari);
     });
     
+    var bar_phe_code = get_bar_phe_code(pc);
+    var bar_phe_label = get_bar_phe_label(pc);
     make_plot_bar(
         'phe_contribution_plot_2', 
-        idx_bar_phe, get_bar_phe(pc), label_phe_stackedbar, title_phe
+        bar_phe_code, get_bar_phe(pc), 
+        bar_phe_label, title_bar_phe
     );  
     var phe_contribution_plot_2 = $('#phe_contribution_plot_2')[0];
-//    phe_contribution_plot_2.on('plotly_click', function(data){
-//        var pts = '';
-//        for(var i=0; i < data.points.length; i++){
-//            phe = data.points[i].x;
-//        }
-//        update_phe(phe - 1);                                
-//    });            
+    phe_contribution_plot_2.on('plotly_click', function(data){
+        var pts = '';
+        for(var i=0; i < data.points.length; i++){
+            var phe_code = data.points[i].x;
+        }
+        update_phe(label_phe_code_idx[phe_code]);        
+    });        
     
+    var bar_gene_code  = get_bar_gene_code(pc);
+    var bar_gene_label = get_bar_gene_label(pc);    
     make_plot_bar(
         'gene_contribution_plot', 
-        idx_bar_gene, get_bar_gene(pc), label_gene_stackedbar, title_gene
+        bar_gene_code, get_bar_gene(pc), 
+        bar_gene_label, title_bar_gene
     );  
     var gene_contribution_plot = $('#gene_contribution_plot')[0];
     gene_contribution_plot.on('plotly_click', function(data){
         var pts = '';
         for(var i=0; i < data.points.length; i++){
-            gene = data.points[i].x;
+            var gene = data.points[i].x;
         }
-        if( ! document.getElementById("var_contribution_no").checked ){
-            if(label_gene_stackedbar[gene - 1] != "others"){
-                window.open("https://biobankengine.stanford.edu/gene/" + label_gene_stackedbar[gene - 1]);
-            }
+        if( ! document.getElementById("var_contribution_no").checked ){            
+            window.open("https://biobankengine.stanford.edu/gene/" + gene);            
         }
     });                        
 }
@@ -345,6 +364,7 @@ function update_pc_var(pc_idx_x, pc_idx_y) {
 } 
         
 function update_phe(phe_idx) {
+//    alert(phe_idx + " " + label_phe_code[phe_idx] + label_phe[phe_idx])
     $(".variable_phe").text(label_phe[phe_idx]);
     $(".variable_phe_link").html(                  
         "<a href='https://biobankengine.stanford.edu/coding/"
@@ -403,16 +423,26 @@ function update_var(var_idx) {
 
 {% for phegene in ['phe', 'gene'] %} 
     function draw_bar_{{ phegene }}(){    
+        var title_phe  = 'summary of phenotype contribution scores';
+        var title_gene = 'summary of gene contribution scores';
         var layout = {
+            title: title_{{ phegene }},
             barmode: 'stack',
-            showlegend: false,
-            hoverinfo: "skip"
+            showlegend: false
         };    
         Plotly.newPlot(
             '{{ phegene }}_bar_plot', 
             stackedbar_{{ phegene }}, 
             layout
-        );
+        ); 
+ 
+        var {{ phegene }}_bar_plot = $('#{{ phegene }}_bar_plot')[0];
+        {{ phegene }}_bar_plot.on('plotly_click', function(data){            
+            for(var i=0; i < data.points.length; i++){
+                var pc = data.points[i].x;            
+            }
+            update_pc(label_pc_idx[pc]);
+        });
     } 
 {% endfor %}
 
@@ -455,10 +485,12 @@ function get_data(json_file){
     eigen_r   = data_misc['eigen_r'];
     
     label_phe_code = data_misc['label_phe_code'];
+    label_phe_code_idx = data_misc['label_phe_code_idx'];
     label_phe      = data_misc['label_phe'];
     label_var      = data_misc['label_var'];
     label_gene     = data_misc['label_gene'];    
     label_pc       = data_misc['label_pc'];
+    label_pc_idx   = data_misc['label_pc_idx'];
     label_phe_stackedbar  = data_misc['label_phe_stackedbar'];
     label_gene_stackedbar = data_misc['label_gene_stackedbar'];    
     
@@ -528,7 +560,7 @@ function get_data(json_file){
         <div class="col">
             <h1>Decomposition of genetic effects across disease outcomes, biomarkers, and lifestyle measures</h1>
             <p>Yosuke Tanigawa and Manuel A. Rivas</p>
-            <p>Y.T. developped the web application and M.A.R designed the study.</p>
+            <p>Y.T. led the research project and developped the web application and M.A.R designed the study.</p>
         </div>
     </div>
     
@@ -536,10 +568,9 @@ function get_data(json_file){
         <div class="col col-md-12">
             <h2>Cosine scores</h2>
             <p>Given a phenotype/variant, we can explorer which principal components are imporant for the selected phenotype/variant.</p>
-        </div>
-        
-                            
+        </div>                                    
     </div>
+    
     <div class="row">        
         <div class="col col-md-6">
             <h3>Phenotype cosine score</h3> 
@@ -664,7 +695,7 @@ function get_data(json_file){
     
     <div class="row">        
         <div class="col col-md-12">
-            <h3>Stacked bar plot (phe)</h3>
+            <h3>Summary of phenotype contribution scores (phenotypes with 1% > contribution scores are shown)</h3>
             <div id="phe_bar_plot" style:width: 100%>
                 <!-- Plotly chart will be drawn inside this DIV -->
             </div>
@@ -673,7 +704,7 @@ function get_data(json_file){
     </div>
     <div class="row">    
         <div class="col col-md-12">
-            <h3>Stacked bar plot (gene)</h3>
+            <h3>Summary of gene contribution scores (genes with 1% > contribution scores are shown)</h3>
             <div id="gene_bar_plot" style:width: 100%>
                 <!-- Plotly chart will be drawn inside this DIV -->
             </div>
