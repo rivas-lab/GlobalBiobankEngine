@@ -243,14 +243,14 @@ function update_contribution_plots(pc) {
     var bar_gene_label = get_bar_gene_label(pc);    
     make_plot_bar(
         'gene_contribution_plot', 
-        bar_gene_code, get_bar_gene(pc), 
-        bar_gene_label, title_bar_gene
+        bar_gene_label, get_bar_gene(pc), 
+        bar_gene_code, title_bar_gene
     );  
     var gene_contribution_plot = $('#gene_contribution_plot')[0];
     gene_contribution_plot.on('plotly_click', function(data){
         var pts = '';
         for(var i=0; i < data.points.length; i++){
-            var gene = data.points[i].x;
+            var gene = data.points[i].text;
         }
         if( ! document.getElementById("var_contribution_no").checked ){            
             window.open("https://biobankengine.stanford.edu/gene/" + gene);            
@@ -560,7 +560,7 @@ function get_data(json_file){
         <div class="col">
             <h1>Decomposition of genetic effects across disease outcomes, biomarkers, and lifestyle measures</h1>
             <p>Yosuke Tanigawa and Manuel A. Rivas</p>
-            <p>Y.T. led the research project and developped the web application and M.A.R designed the study.</p>
+            <p>Y.T. lead the research project and developped the web application. M.A.R designed the study.</p>
         </div>
     </div>
     

@@ -38,6 +38,12 @@ from flask_wtf import Form
 from wtforms import StringField, BooleanField
 from wtforms.validators import DataRequired
 import scidbpy
+# Plotly dash app packages
+from dash_apps import *
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+import plotly.graph_objs as go
 
 logging.basicConfig(stream=sys.stderr)
 sys.stderr.write("starting gbe.py")
@@ -765,6 +771,28 @@ def target_page():
         abort(404)
 
 
+@app.route('/decomposition-dev')
+def decomposition_dev_page():    
+    if not check_credentials():
+        return redirect(url_for('login'))
+    db = get_db()
+    
+    try:
+        # this list file will be automatically updated by cron job that calls the following script:
+        # https://github.com/rivas-lab/decomposition/blob/master/src/decomposition_dataset_list.sh
+        with open('./static/decomposition/decomposition_datasets.lst') as f:
+            dataset_list = f.read().splitlines()
+                
+        return render_template(
+            'decomposition-dev.html',    
+            dataset_list = dataset_list,
+        )
+    
+    except Exception as e:
+        print('Unknown Error=', traceback.format_exc())
+        abort(404)
+        
+        
 @app.route('/decomposition/<dataset>')
 def decomposition_page(dataset):    
     if not check_credentials():
@@ -1577,6 +1605,62 @@ def mrp(key):
     except Exception as e:
         print('Failed: %s' % e)
         abort(404)
+
+@app.route('/gcorr')
+def gcorr_page():
+    if not check_credentials():
+        return redirect(url_for('login'))
+    return render_template('gcorr.html')
+
+dash_app = dash.Dash(__name__, server=app)
+dash_app.config.supress_callback_exceptions = True
+
+dash_app.layout = html.Div([
+    dcc.Location(id='url', refresh=False),
+    html.Div(id='page-content')
+])
+
+gcorr_layout = html.Div(children=[
+    html.Div(id='gcorr-content'),
+    html.Div([
+        dcc.Graph(
+            id='gcorr-scatter',
+            figure={
+                'layout': {
+                    'title': 'Dash Data Visualization'
+                }
+            }
+        ),
+    ], style={'height':'1000px', 'width':'1200px'}
+    ),
+    
+    html.Div([
+        html.Div([
+            html.Div([
+                html.P('SELECT phenotypes in the dropdown menu to add them to '
+                       'the plot.')
+            ], style={'margin-left': '10px'}),
+            dcc.Dropdown(id='pheno-dropdown',
+                         multi=True,
+                         value=STARTING_PHENOS,
+                         options=[{'label':x, 'value':x} for x in PHENOS]),
+        ], className='twelve columns'),
+    ], className='row'
+    ),
+
+])
+
+@dash_app.callback(dash.dependencies.Output('page-content', 'children'),
+              [dash.dependencies.Input('url', 'pathname')])
+def display_page(pathname):
+    if pathname == '/gcorr-app-raw':
+        return gcorr_layout
+
+@dash_app.callback(
+        dash.dependencies.Output('gcorr-scatter', 'figure'),
+        [dash.dependencies.Input('pheno-dropdown', 'value')])
+def update_table(selected_phenos):
+    return(gcorr_scatter(selected_phenos))
 
 @app.route('/login')
 def login():
