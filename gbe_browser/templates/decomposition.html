@@ -192,8 +192,8 @@ function make_plot_bar(id, x, y, label, title) {
 
 
 function update_contribution_plots(pc) {    
-    var title_phe  = 'Phenotype contribution score';
-    var title_var  = 'Variant contribution score';
+    var title_phe  = 'Phenotype contribution score (PC' + (pc + 1) + ')';
+    var title_var  = 'Variant contribution score (PC' + (pc + 1) + ')';
     var title_bar_phe  = 'Top hits in phenotype contribution score (PC' + (pc + 1) + ')';
     var title_bar_gene = 'Top hits in gene contribution score (PC' + (pc + 1) + ')';
     
@@ -259,11 +259,11 @@ function update_contribution_plots(pc) {
 }
     
     
-function update_phe_cosine(idx) {
+function update_phe_cosine(idx, fig_title) {
     make_plot(
         'phe_cosine_plot', 
         idx_pc, get_cos_phe(idx), label_pc,
-        'phenotype cosine score'
+        fig_title
     );        
     var phe_cosine_plot = $('#phe_cosine_plot')[0];
     phe_cosine_plot.on('plotly_click', function(data){
@@ -276,11 +276,11 @@ function update_phe_cosine(idx) {
 }
 
     
-function update_var_cosine(idx) {
+function update_var_cosine(idx, fig_title) {
     make_plot(
         'var_cosine_plot', 
         idx_pc, get_cos_var(idx), label_pc,
-        'variant cosine score'
+        fig_title
     );        
     var var_cosine_plot = $('#var_cosine_plot')[0];
     var_cosine_plot.on('plotly_click', function(data){
@@ -298,7 +298,7 @@ function pca_plot_phe(idx_pc_x, idx_pc_y) {
         get_factor_phe(idx_pc_x), 
         get_factor_phe(idx_pc_y), 
         label_phe,
-        'PCA plot for phenotypes'
+        'PCA plot for phenotypes (PC' + idx_pc_x + ', PC' + idx_pc_y + ')'
     );        
 }
     
@@ -308,7 +308,7 @@ function pca_plot_var(idx_pc_x, idx_pc_y) {
         get_factor_var(idx_pc_x),
         get_factor_var(idx_pc_y),
         label_var,
-        'PCA plot for variants'
+        'PCA plot for variants (PC' + idx_pc_x + ', PC' + idx_pc_y + ')'
     );        
 }
     
@@ -372,7 +372,7 @@ function update_phe(phe_idx) {
         + label_phe[phe_idx]
         + "</a>"
     );
-    update_phe_cosine(phe_idx);        
+    update_phe_cosine(phe_idx, 'phenotype cosine score (' + label_phe[phe_idx] + ')');        
     
     if( ! document.getElementById("phe_contribution_no").checked ){
         window.open("https://biobankengine.stanford.edu/coding/" + label_phe_code[phe_idx]);
@@ -387,7 +387,7 @@ function update_var(var_idx) {
         + label_var[var_idx]
         + "</a>"
     ); 
-    update_var_cosine(var_idx);
+    update_var_cosine(var_idx, 'variant cosine score (' + label_var[var_idx] + ')');
     
     if( ! document.getElementById("var_contribution_no").checked ){
         window.open("https://biobankengine.stanford.edu/variant/" + label_var[var_idx]);
