@@ -3920,19 +3920,19 @@ INI87	256433	Non-cancer_illness_year/age_first_occurred	256433	256433	Y
 INI93	30077	Systolic_blood_pressure,_manual_reading	30077	30077	Y
 INI94	30077	Diastolic_blood_pressure,_manual_reading	30077	30077	Y
 INI95	30077	Pulse_rate_(during_blood-pressure_measurement)	30077	30077	Y
-MED1000000001	59198	Statin users	59198	59198	
-MED1000000002	13630	Atorvastatin vs Statin Users	13630	13630	
-MED1000000003	181	Fluvastatin vs Statin Users	181	181	
-MED1000000004	1856	Pravastatin vs Statin Users	1856	1856	
-MED1000000005	2418	Rosuvastatin vs Statin Users	2418	2418	
-MED1000000006	41743	Simvastatin vs Statin Users	41743	41743	
-MED1000000007	43940	High cholesterol	43940	43940	
-MED1000000008	1909	Methotrexate vs all	1909	1909	
-MED1000000009	1909	Methotrexate vs self reported or coded RA	1909	1909	
-MED1000000010	1909	Methotrexate vs self reported RA	1909	1909	
-MED1000000011	1115	NHS coded RA	1115	1115	
-MED1000000012	4244	Self reported RA vs All	4244	4244	
-MED1000000013	3976	Self reported or coded RA vs All	3976	3976	
+MED1000000001	59198	Statin	users	59198	59198
+MED1000000002	13630	Atorvastatin	vs	Statin	Users
+MED1000000003	181	Fluvastatin	vs	Statin	Users
+MED1000000004	1856	Pravastatin	vs	Statin	Users
+MED1000000005	2418	Rosuvastatin	vs	Statin	Users
+MED1000000006	41743	Simvastatin	vs	Statin	Users
+MED1000000007	43940	High	cholesterol	43940	43940
+MED1000000008	1909	Methotrexate	vs	all	1909
+MED1000000009	1909	Methotrexate	vs	self	reported
+MED1000000010	1909	Methotrexate	vs	self	reported
+MED1000000011	1115	NHS	coded	RA	1115
+MED1000000012	4244	Self	reported	RA	vs
+MED1000000013	3976	Self	reported	or	coded
 MED1140850692	0	aludrox_gel	0	0	20003
 MED1140850708	0	dijex_liquid	0	0	20003
 MED1140850712	0	diovol_fruit_flavour_suspension	0	0	20003
