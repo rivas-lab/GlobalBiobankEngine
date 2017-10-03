@@ -671,6 +671,10 @@ def variant_icd_page(variant_str):
                     item['Group'] = "BIN"
                 elif icd10[0:5] == "BRMRI":
                     item['Group'] = "BRMRI"
+                elif icd10[0:7] == "BROADBIN":
+                    item['Group'] = "BROADBIN"
+                elif icd10[0:7] == "BROADQT":
+                    item['Group'] = "BROADQT"
                 else:
                     item['Group'] = icd10[0]
                 item['OR'] = format(float(item['or_val']), '.4g')

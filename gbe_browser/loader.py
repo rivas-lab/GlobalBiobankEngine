@@ -572,14 +572,29 @@ class Loader:
         elif 'MED' in parts:
             prefix = 'MED'
             intadd = 2
+        elif 'BROADBIN' in name:
+            prefix = 'BROADBIN'
+            intadd = 1
+        elif 'BROADBIN' in parts:
+            prefix = 'BROADBIN'
+            intadd = 1
+        elif 'BROADQT' in name:
+            prefix = 'BROADQT'
+            intadd = 3
+        elif 'BROADQT' in parts:
+            prefix = 'BROADQT'
+            intadd = 4
         elif 'BIN' in name:
+            prefix = 'BIN'
+            intadd = 1
+        elif 'BIN' in parts:
             prefix = 'BIN'
             intadd = 1
 
         # Figure out suffix
         ind = parts[1].split(
             '_')[0]
-        for ch in ["MED","BIN","RH",'FH','qt','INI','initialdata','cancer','HC','_FH2']:
+        for ch in ['BROADQT','BROADBIN',"MED","BIN","RH",'FH','qt','INI','initialdata','cancer','HC','_FH2']:
             if ch in ind:
                 ind = ind.replace(ch,'')
         suffix = ind
