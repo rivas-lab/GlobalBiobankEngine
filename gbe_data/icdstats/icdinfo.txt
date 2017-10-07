@@ -1,5 +1,78 @@
+BIN1920	150741	Mood_swings	150741	150741	Y
+BIN1930	143813	Miserableness	143813	143813	Y
+BIN1940	92202	Irritability	92202	92202	Y
+BIN1950	184345	Sensitivity_/_hurt_feelings	184345	184345	Y
+BIN1960	136434	Fed-up_feelings	136434	136434	Y
+BIN1970	79183	Nervous_feelings	79183	79183	Y
+BIN1980	188518	Worrier_/_anxious_feelings	188518	188518	Y
+BIN1990	57228	Tense_/_'highly_strung'	57228	57228	Y
+BIN2000	157254	Worry_too_long_after_embarrassment	157254	157254	Y
+BIN2010	70835	Suffer_from_'nerves'	70835	70835	Y
+BIN2020	60153	Loneliness,_isolation	60153	60153	Y
+BIN2030	95106	Guilty_feelings	95106	95106	Y
+BIN2040	84500	Risk_taking	84500	84500	Y
 BIN20483	2433	Ever_attempted_suicide	2433	2433	Y
 BIN20484	502618	Attempted_suicide_vs_all	502618	502618	Y
+BIN2090	116603	Seen_doctor_(GP)_for_nerves,_anxiety,_tension_or_depression	116603	116603	Y
+BIN2100	38637	Seen_a_psychiatrist_for_nerves,_anxiety,_tension_or_depression	38637	38637	Y
+BIN2188	109472	Long-standing_illness,_disability_or_infirmity	109472	109472	Y
+BIN2207	302440	Wears_glasses_or_contact_lenses	302440	302440	Y
+BIN22126	19390	Doctor_diagnosed_hayfever_or_allergic_rhinitis	19390	19390	Y
+BIN22127	10841	Doctor_diagnosed_asthma	10841	10841	Y
+BIN22128	260	Doctor_diagnosed_emphysema	260	260	Y
+BIN22129	961	Doctor_diagnosed_chronic_bronchitis	961	961	Y
+BIN22130	1265	Doctor_diagnosed_COPD_(chronic_obstructive_pulmonary_disease)	1265	1265	Y
+BIN22131	3	Doctor_diagnosed_cystic_fibrosis	3	3	Y
+BIN22132	36	Doctor_diagnosed_alpha-1_antitrypsin_deficiency	36	36	Y
+BIN22133	361	Doctor_diagnosed_sarcoidosis	361	361	Y
+BIN22134	758	Doctor_diagnosed_bronchiectasis	758	758	Y
+BIN22135	87	Doctor_diagnosed_idiopathic_pulmonary_fibrosis	87	87	Y
+BIN22136	38	Doctor_diagnosed_fibrosing_alveolitis/unspecified_alveolitis	38	38	Y
+BIN22137	440	Doctor_diagnosed_tuberculosis	440	440	Y
+BIN22138	7	Doctor_diagnosed_silicosis	7	7	Y
+BIN22139	61	Doctor_diagnosed_asbestosis	61	61	Y
+BIN22140	101	Doctor_diagnosed_lung_cancer_(not_mesothelioma)	101	101	Y
+BIN22141	8	Doctor_diagnosed_mesothelioma_of_the_lung	8	8	Y
+BIN22502	11689	Cough_on_most_days	11689	11689	Y
+BIN22504	7175	Bring_up_phlegm/sputum/mucus_on_most_days	7175	7175	Y
+BIN2257	127792	Hearing_difficulty/problems_with_background_noise	127792	127792	Y
+BIN2415	100476	Had_major_operations	100476	100476	Y
+BIN2443	16597	Diabetes_diagnosed_by_doctor	16597	16597	Y
+BIN2453	27559	Cancer_diagnosed_by_doctor	27559	27559	Y
+BIN2463	33636	Fractured/broken_bones_in_last_5_years	33636	33636	Y
+BIN2473	69980	Other_serious_medical_condition/disability_diagnosed_by_doctor	69980	69980	Y
+BIN2774	56361	Ever_had_stillbirth,_spontaneous_miscarriage_or_termination	56361	56361	Y
+BIN2814	71776	Ever_used_hormone-replacement_therapy_(HRT)	71776	71776	Y
+BIN3393	11152	Hearing_aid_user	11152	11152	Y
+BIN3404	53883	Neck/shoulder_pain_for_3+_months	53883	53883	Y
+BIN3414	30388	Hip_pain_for_3+_months	30388	30388	Y
+BIN3571	59459	Back_pain_for_3+_months	59459	59459	Y
+BIN3591	13545	Ever_had_hysterectomy_(womb_removed)	13545	13545	Y
+BIN3606	9083	Chest_pain_or_discomfort_walking_normally	9083	9083	Y
+BIN3616	15820	Chest_pain_due_to_walking_ceases_when_standing_still	15820	15820	Y
+BIN3741	15775	Stomach/abdominal_pain_for_3+_months	15775	15775	Y
+BIN3773	57847	Knee_pain_for_3+_months	57847	57847	Y
+BIN3799	30503	Headaches_for_3+_months	30503	30503	Y
+BIN4041	646	Gestational_diabetes_only	646	646	Y
+BIN4067	2948	Facial_pains_for_3+_months	2948	2948	Y
+BIN4598	67453	Ever_depressed_for_a_whole_week	67453	67453	Y
+BIN4631	45120	Ever_unenthusiastic/disinterested_for_a_whole_week	45120	45120	Y
+BIN4642	6696	Ever_manic/hyper_for_2_days	6696	6696	Y
+BIN4653	21777	Ever_highly_irritable/argumentative_for_2_days	21777	21777	Y
+BIN4728	28151	Leg_pain_on_walking	28151	28151	Y
+BIN4792	107	Cochlear_implant	107	107	Y
+BIN5181	7162	Ever_had_eye_surgery	7162	7162	Y
+BIN5324	1990	Ever_had_cataract_surgery	1990	1990	Y
+BIN5325	1830	Ever_had_refractive_laser_eye_surgery	1830	1830	Y
+BIN5326	118	Ever_had_surgery_for_glaucoma_or_high_eye_pressure	118	118	Y
+BIN5327	262	Ever_had_laser_treatment_for_glaucoma_or_high_eye_pressure	262	262	Y
+BIN5328	150	Ever_had_corneal_graft_surgery	150	150	Y
+BIN5452	17117	Leg_pain_when_standing_still_or_sitting	17117	17117	Y
+BIN5463	8970	Leg_pain_in_calf/calves	8970	8970	Y
+BIN5474	18528	Leg_pain_when_walking_uphill_or_hurrying	18528	18528	Y
+BIN5485	15527	Leg_pain_when_walking_normally	15527	15527	Y
+BIN5496	5375	Leg_pain_when_walking_ever_disappears_while_walking	5375	5375	Y
+BIN5529	1008	Surgery_on_leg_arteries_(other_than_for_varicose_veins)	1008	1008	Y
 BROADBIN1000000	116941	Alcohol_usually_taken_with_meals	116941	116941	Y
 BROADBIN1000001	181621	Breastfed_as_a_baby	181621	181621	Y
 BROADBIN1000002	32442	Handedness_(chirality/laterality):_Left-handed	32442	32442	Y
@@ -3920,19 +3993,19 @@ INI87	256433	Non-cancer_illness_year/age_first_occurred	256433	256433	Y
 INI93	30077	Systolic_blood_pressure,_manual_reading	30077	30077	Y
 INI94	30077	Diastolic_blood_pressure,_manual_reading	30077	30077	Y
 INI95	30077	Pulse_rate_(during_blood-pressure_measurement)	30077	30077	Y
-MED1000000001	59198	Statin	users	59198	59198
-MED1000000002	13630	Atorvastatin	vs	Statin	Users
-MED1000000003	181	Fluvastatin	vs	Statin	Users
-MED1000000004	1856	Pravastatin	vs	Statin	Users
-MED1000000005	2418	Rosuvastatin	vs	Statin	Users
-MED1000000006	41743	Simvastatin	vs	Statin	Users
-MED1000000007	43940	High	cholesterol	43940	43940
-MED1000000008	1909	Methotrexate	vs	all	1909
-MED1000000009	1909	Methotrexate	vs	self	reported
-MED1000000010	1909	Methotrexate	vs	self	reported
-MED1000000011	1115	NHS	coded	RA	1115
-MED1000000012	4244	Self	reported	RA	vs
-MED1000000013	3976	Self	reported	or	coded
+MED1000000001	59198	Statin users	59198	59198	
+MED1000000002	13630	Atorvastatin vs Statin Users	13630	13630	
+MED1000000003	181	Fluvastatin vs Statin Users	181	181	
+MED1000000004	1856	Pravastatin vs Statin Users	1856	1856	
+MED1000000005	2418	Rosuvastatin vs Statin Users	2418	2418	
+MED1000000006	41743	Simvastatin vs Statin Users	41743	41743	
+MED1000000007	43940	High cholesterol	43940	43940	
+MED1000000008	1909	Methotrexate vs all	1909	1909	
+MED1000000009	1909	Methotrexate vs self reported or coded RA	1909	1909	
+MED1000000010	1909	Methotrexate vs self reported RA	1909	1909	
+MED1000000011	1115	NHS coded RA	1115	1115	
+MED1000000012	4244	Self reported RA vs All	4244	4244	
+MED1000000013	3976	Self reported or coded RA vs All	3976	3976	
 MED1140850692	0	aludrox_gel	0	0	20003
 MED1140850708	0	dijex_liquid	0	0	20003
 MED1140850712	0	diovol_fruit_flavour_suspension	0	0	20003
