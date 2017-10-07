@@ -1,0 +1,9 @@
+This file contains the same variants and columns as variant_filter_table.tsv.gz
+but also includes variants that were used for the Broad GWAS runs. The
+annotations and statistics for the "Broad variants" were created by the Broad
+group. There are two additional columns in this file: "broad" indicates whether
+the variant was annotated by us or by the Broad. "imp_info" is the imputation
+score. Some statistics/annotations may be missing because they were not
+calculated for some variants.
+
+Chris DeBoever
