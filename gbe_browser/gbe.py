@@ -102,7 +102,7 @@ app.config.update(dict(
     DEBUG=True,
     SECRET_KEY='development key',
     LOAD_DB_PARALLEL_PROCESSES = 8,  # contigs assigned to threads, so good to make this a factor of 24 (eg. 2,3,4,6,8)
-    SITES_VCFS=glob.glob(os.path.join(os.path.dirname(__file__), GBE_FILES_DIRECTORY, 'icd10ukbb.ukbiobank.merge.sort.vcf.gz')),
+    SITES_VCFS=glob.glob(os.path.join(os.path.dirname(__file__), GBE_FILES_DIRECTORY, 'icd10ukbb.ukbiobank.combined.vcf.gz')),
     GENCODE_GTF=os.path.join(os.path.dirname(__file__), GBE_FILES_DIRECTORY, 'gencode.gtf.gz'),
     CANONICAL_TRANSCRIPT_FILE=os.path.join(os.path.dirname(__file__), GBE_FILES_DIRECTORY, 'canonical_transcripts.txt.gz'),
     OMIM_FILE=os.path.join(os.path.dirname(__file__), GBE_FILES_DIRECTORY, 'omim_info.txt.gz'),
@@ -671,7 +671,7 @@ def variant_icd_page(variant_str):
                     item['Group'] = "BIN"
                 elif icd10[0:5] == "BRMRI":
                     item['Group'] = "BRMRI"
-                elif icd10[0:7] == "BROADBIN":
+                elif icd10[0:8] == "BROADBIN":
                     item['Group'] = "BROADBIN"
                 elif icd10[0:7] == "BROADQT":
                     item['Group'] = "BROADQT"
@@ -736,6 +736,43 @@ def icd_page(icd_str):
 
         return render_template(
             'icd.html',
+            icd=icd,
+            cutoff=cutoff
+            )
+    except Exception as e:
+        print('Failed on icd:', icd_str, '; Error=', traceback.format_exc())
+        abort(404)
+
+
+@app.route('/codinguncertain/<icd_str>')
+def icduncertain_page(icd_str):
+    if not check_credentials():
+        return redirect(url_for('login'))
+    db = get_db()
+    try:
+        # icdlabel = str(icd_str)
+        # .strip('ADD').strip('INI').strip('BRMRI')
+        # Try several cutoffs to see if there are too many variants to
+        # render.  Arbitrary 10k max.
+        # passing = False
+        cutoff = None
+        icd = None
+
+        for p in [.001]:
+            icd = lookups.get_icd_variant_by_icd_id_pvalue_uncertain(db, icd_str, p)
+            if len(icd):
+                cutoff = p
+                # print("CUTOFF",cutoff)
+                break
+            # print(icd_str,icd)
+        print('Rendering ICD10: %s' % icd_str)
+
+        if icd is None or len(icd) == 0:
+            icd = [{'Case': 'NA', 'Name': 'NA', 'icd': icd_str}]
+        # print(icd_info)
+
+        return render_template(
+            'icduncertain.html',
             icd=icd,
             cutoff=cutoff
             )
