@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block body %}
+    <!-- Render context vars in JS here -->
+<div class="container" style="font-size: 16px;">
+    <div class="row">
+        <div class="col">
+            <h1>Genetic Parameters: Genetic correlation</h1>
+            <p>Christopher DeBoever and Manuel A. Rivas</p>
+            <p>C.D. developped the web application and M.A.R designed the study.</p>
+            <p>This app displays the genetic correlation and other genetic parameters for various phenotypes from the UK Biobank.</p>
+	    <iframe id="gcorr_app" src="https://biobankenginedev.stanford.edu/gcorr-app-raw" style="border: none; width: 100%; height: 2500px" frameborder="0"></iframe>
+        </div>
+    </div>
+</div>
+{% endblock %}
