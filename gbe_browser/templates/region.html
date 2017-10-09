@@ -1,5 +1,11 @@
 {% extends "layout.html" %}
-{% block body %}
+
+{% block head %}
+    <link rel="stylesheet" type="text/css" href="http://epigenomegateway.wustl.edu/browser/style.css" />
+    <script type="text/javascript" src="http://epigenomegateway.wustl.edu/browser/js/base.js"></script>
+    <script type="text/javascript" src="http://epigenomegateway.wustl.edu/browser/js/personality.js"></script>
+    <script type="text/javascript" src="http://epigenomegateway.wustl.edu/browser/js/embed.js"></script>
+
     <script type="text/javascript">
         window.coverage_stats = {{ coverage|tojson|safe }};
         window.genes = {{ genes_in_region|tojson|safe }};
@@ -9,10 +15,13 @@
         window.stop = {{ stop|tojson|safe }};
 
         $(document).ready(function() {
-update_variants();
+            update_variants();
             
         });
     </script>
+{% endblock %}
+
+{% block body %}
     <div class="container">
         {% if rsid %}
             <h1>RSID: {{ rsid }}</h1>

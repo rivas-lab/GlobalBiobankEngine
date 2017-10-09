@@ -38,6 +38,12 @@ from flask_wtf import Form
 from wtforms import StringField, BooleanField
 from wtforms.validators import DataRequired
 import scidbpy
+# Plotly dash app packages
+from dash_apps import *
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+import plotly.graph_objs as go
 
 logging.basicConfig(stream=sys.stderr)
 sys.stderr.write("starting gbe.py")
@@ -901,6 +907,70 @@ def power_page():
         abort(404)
 
 
+@app.route('/decomposition-dev')
+def decomposition_dev_page():    
+    if not check_credentials():
+        return redirect(url_for('login'))
+    db = get_db()
+    
+    try:
+        # this list file will be automatically updated by cron job that calls the following script:
+        # https://github.com/rivas-lab/decomposition/blob/master/src/decomposition_dataset_list.sh
+        with open('./static/decomposition/decomposition_datasets.lst') as f:
+            dataset_list = f.read().splitlines()
+                
+        return render_template(
+            'decomposition-dev.html',    
+            dataset_list = dataset_list,
+        )
+    
+    except Exception as e:
+        print('Unknown Error=', traceback.format_exc())
+        abort(404)
+        
+        
+@app.route('/decomposition/<dataset>')
+def decomposition_page(dataset):    
+    if not check_credentials():
+        return redirect(url_for('login'))
+    db = get_db()
+    
+    
+    if(dataset == 'PTVs'):
+        init_idx_pc  = 6
+        init_idx_phe = 429
+        init_idx_var = 8503    
+    else:
+        init_idx_pc  = 0
+        init_idx_phe = 0
+        init_idx_var = 0
+        
+    debug_str = 'debug'
+    
+    try:
+        if(dataset == "20170930_EMBL-Stanford_coding-nonMHC_z"):
+            return render_template(
+                'decomposition-20170930.html',    
+                init_idx_pc  = init_idx_pc,
+                init_idx_phe = init_idx_phe,
+                init_idx_var = init_idx_var,
+                dataset = dataset,
+                debug_str = debug_str
+            )
+        else:
+            return render_template(
+                'decomposition.html',    
+                init_idx_pc  = init_idx_pc,
+                init_idx_phe = init_idx_phe,
+                init_idx_var = init_idx_var,
+                dataset = dataset,
+                debug_str = debug_str
+            )            
+    
+    except Exception as e:
+        print('Unknown Error=', traceback.format_exc())
+        abort(404)
+
 
 def get_icd_variant_table(icd, p):
     db = get_db()
@@ -960,13 +1030,19 @@ def intensity_page(affy_str):
         return redirect(url_for('login'))
     db = get_db()
     try:
+        n_UKBL = 11
+        n_UKBB = 95
+        
+        
         print('Rendering Intensity page: %s' % affy_str)
         variant = lookups.get_icd_affyid(db, affy_str)
         # print(variant)
         return render_template(
             'intensity.html',
             affy=affy_str,
-            variant=variant
+            variant=variant,
+            UKBL_idx = [1 + x for x in range(n_UKBL)],
+            UKBB_idx = [1 + x for x in range(n_UKBB)]
             )
     except Exception as e:
         print('Failed on affy id:', affy_str, '; Error=', traceback.format_exc())
@@ -1681,6 +1757,62 @@ def mrp(key):
     except Exception as e:
         print('Failed: %s' % e)
         abort(404)
+
+@app.route('/gcorr')
+def gcorr_page():
+    if not check_credentials():
+        return redirect(url_for('login'))
+    return render_template('gcorr.html')
+
+dash_app = dash.Dash(__name__, server=app)
+dash_app.config.supress_callback_exceptions = True
+
+dash_app.layout = html.Div([
+    dcc.Location(id='url', refresh=False),
+    html.Div(id='page-content')
+])
+
+gcorr_layout = html.Div(children=[
+    html.Div(id='gcorr-content'),
+    html.Div([
+        dcc.Graph(
+            id='gcorr-scatter',
+            figure={
+                'layout': {
+                    'title': 'Dash Data Visualization'
+                }
+            }
+        ),
+    ], style={'height':'1000px', 'width':'1200px'}
+    ),
+    
+    html.Div([
+        html.Div([
+            html.Div([
+                html.P('SELECT phenotypes in the dropdown menu to add them to '
+                       'the plot.')
+            ], style={'margin-left': '10px'}),
+            dcc.Dropdown(id='pheno-dropdown',
+                         multi=True,
+                         value=STARTING_PHENOS,
+                         options=[{'label':x, 'value':x} for x in PHENOS]),
+        ], className='twelve columns'),
+    ], className='row'
+    ),
+
+])
+
+@dash_app.callback(dash.dependencies.Output('page-content', 'children'),
+              [dash.dependencies.Input('url', 'pathname')])
+def display_page(pathname):
+    if pathname == '/gcorr-app-raw':
+        return gcorr_layout
+
+@dash_app.callback(
+        dash.dependencies.Output('gcorr-scatter', 'figure'),
+        [dash.dependencies.Input('pheno-dropdown', 'value')])
+def update_table(selected_phenos):
+    return(gcorr_scatter(selected_phenos))
 
 @app.route('/login')
 def login():
