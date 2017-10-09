@@ -284,6 +284,52 @@ def get_icd_variant_by_icd_id_pvalue(db, icd_id, pvalue=0.001):
                 fetch=True,
                 atts_only=True)))
 
+def get_icd_variant_by_icd_id_pvalue_uncertain(db, icd_id, pvalue=0.001):
+    """
+    e.g.,
+    UI:
+      https://biobankengine.stanford.edu/coding/RH117
+
+    MongoDB:
+      db.icd.find({'icd': 'RH117', 'stats.pvalue': {'$lt': 0.01}},
+                  fields={'_id': false})
+      db.icd_info.find({'icd': 'RH117'}, fields={'_id': False})
+      db.variants.find({'xpos': '1039381448'}, fields={'_id': False})
+
+    SciDB:
+      equi_join(
+        project(variant,
+                rsid,
+                ref,
+                alt,
+                filter,
+                exac_nfe,
+                csq),
+        cross_join(
+            project(
+              between(icd, null, null, null, 1,    null,
+                           null, null, null, null, null),
+              or_val,
+              pvalue,
+              log10pvalue),
+            filter(icd_info, icd = 'RH117'),
+            icd.icd_idx,
+            icd_info.icd_idx) as icd_join,
+        'left_names=chrom,pos',
+        'right_names=chrom,pos',
+        'keep_dimensions=1',
+        'algorithm=merge_right_first');
+    """
+    pdecimal = config.ICD_PVALUE_MAP.get(pvalue, 0)
+    return format_variants(
+        numpy2dict(
+            db.iquery(
+                config.ICD_VARIANT_LOOKUP_UNCERTAIN_QUERY.format(
+                    icd=icd_id, pdecimal=pdecimal),
+                schema=config.VARIANT_X_ICD_X_INFO_SCHEMA,
+                fetch=True,
+                atts_only=True)))
+
 
 def get_icd_variant_by_pvalue(db, pvalue=0.001):
     """

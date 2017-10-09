@@ -639,7 +639,7 @@ TRANSCRIPT_EXON_INFO_STORE_QUERY = """
 # -- - Load: VARIANT - --
 # -- -
 VARIANT_FILE = os.path.join(GBE_DATA_PATH,
-                            'icd10ukbb.ukbiobank.merge.sort.vcf.gz')
+                            'icd10ukbb.ukbiobank.combined.vcf.gz')
 
 VARIANT_ARRAY = 'variant'
 VARIANT_SCHEMA = """
@@ -845,7 +845,7 @@ DBSNP_BY_CHROM_POS_STORE_QUERY = """
 # -- - Load: BIM - --
 # -- - Convert string to bool for False / True values - --
 
-BIM_FILE = os.path.join(GBE_DATA_PATH, 'qc/variant_filter_table.tsv.gz')
+BIM_FILE = os.path.join(GBE_DATA_PATH, 'qc/combined_broad_variant_filter_table.tsv.gz')
 
 BIM_ARRAY = 'bim'
 BIM_SCHEMA = """
@@ -868,7 +868,9 @@ BIM_SCHEMA = """
    gnomadfilter: string, 
    mgi:         string,
    mginotes:   string, 
-   allfilter:   int8 >
+   allfilter:   int8, 
+   broad:      bool, 
+   imputationinfo: double>
   [chrom = 1:25:0:1;
    pos   = 0:*:0:10000000]"""
 
@@ -877,7 +879,7 @@ BIM_STORE_QUERY = """
   store(
     redimension(
       apply(
-        aio_input('{{path}}', 'num_attributes=30', 'header=1'),
+        aio_input('{{path}}', 'num_attributes=32', 'header=1'),
         chrom,       int64(a0),
         pos,         int64(a1),
         ref,         a2,
@@ -885,11 +887,11 @@ BIM_STORE_QUERY = """
         consequence, a6,
         hgvsp,       a7,
         lof,         a8, 
-        miss,        double(a13),
-        missbileve,  double(a14), 
-        missukbb,    double(a15),
-        hwep,        double(a17), 
-        maf,         double(a18),
+        miss,        dcast(a13, double(null)),
+        missbileve,  dcast(a14, double(null)), 
+        missukbb,    dcast(a15, double(null)),
+        hwep,        dcast(a17, double(null)), 
+        maf,         dcast(a18, double(null)),
         ld,          iif(a19 = 'False', false, iif( a19 = 'True', true, null)),
         ukbbonly,    iif(a20 = 'False', false, iif( a20 = 'True', true, null)),
         bileveonly,  iif(a21 = 'False', false, iif( a21 = 'True', true, null)),
@@ -899,7 +901,9 @@ BIM_STORE_QUERY = """
         gnomadfilter, a26, 
         mgi,         a27,
         mginotes,    a28,
-        allfilter,   int8(a29)
+        allfilter,   int8(a29),
+        broad,       iif(a30 = 'False', false, iif( a30 = 'True', true, null)), 
+        imputationinfo, dcast(a31, double(null))
         ),
       {bim_schema}),
     {bim_array})""".format(
@@ -1031,6 +1035,40 @@ ICD_VARIANT_LOOKUP_QUERY = """
         cross_join(
             project(
               between(filter({icd_array},(se < .4 and or_val <> lor) or (se < .05 and or_val = lor)),
+                      null, null, null, {{pdecimal}}, null,
+                      null, null, null, null, null),
+              or_val,
+              pvalue,
+              log10pvalue),
+            filter({icd_info_array}, icd = '{{icd}}'),
+            {icd_array}.icd_idx,
+            {icd_info_array}.icd_idx) as icd_join,
+        'left_names=chrom,pos',
+        'right_names=chrom,pos',
+        'keep_dimensions=1',
+        'algorithm=merge_right_first'),
+      pvalue),
+    0, 4999)""".format(
+        icd_array=ICD_ARRAY,
+        icd_info_array=ICD_INFO_ARRAY,
+        variant_array=VARIANT_ARRAY)
+
+
+ICD_VARIANT_LOOKUP_UNCERTAIN_QUERY = """
+  between(
+    sort(
+      equi_join(
+        project({variant_array},
+                rsid,
+                ref,
+                alt,
+                filter,
+                ukbb_freq,
+                exac_nfe,
+                csq),
+        cross_join(
+            project(
+              between(filter({icd_array},(se >= .4 and or_val <> lor) or (se >= .05 and or_val = lor)),
                       null, null, null, {{pdecimal}}, null,
                       null, null, null, null, null),
               or_val,
