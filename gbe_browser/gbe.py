@@ -812,14 +812,24 @@ def decomposition_page(dataset):
     debug_str = 'debug'
     
     try:
-        return render_template(
-            'decomposition.html',    
-            init_idx_pc  = init_idx_pc,
-            init_idx_phe = init_idx_phe,
-            init_idx_var = init_idx_var,
-            dataset = dataset,
-            debug_str = debug_str
-        )
+        if(dataset == "20170930_EMBL-Stanford_coding-nonMHC_z"):
+            return render_template(
+                'decomposition-20170930.html',    
+                init_idx_pc  = init_idx_pc,
+                init_idx_phe = init_idx_phe,
+                init_idx_var = init_idx_var,
+                dataset = dataset,
+                debug_str = debug_str
+            )
+        else:
+            return render_template(
+                'decomposition.html',    
+                init_idx_pc  = init_idx_pc,
+                init_idx_phe = init_idx_phe,
+                init_idx_var = init_idx_var,
+                dataset = dataset,
+                debug_str = debug_str
+            )            
     
     except Exception as e:
         print('Unknown Error=', traceback.format_exc())

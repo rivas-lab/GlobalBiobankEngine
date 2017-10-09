@@ -298,7 +298,7 @@ function pca_plot_phe(idx_pc_x, idx_pc_y) {
         get_factor_phe(idx_pc_x), 
         get_factor_phe(idx_pc_y), 
         label_phe,
-        'PCA plot for phenotypes (PC' + idx_pc_x + ', PC' + idx_pc_y + ')'
+        'PCA plot for phenotypes (PC' + (idx_pc_x + 1) + ', PC' + (idx_pc_y + 1) + ')'
     );        
 }
     
@@ -308,7 +308,7 @@ function pca_plot_var(idx_pc_x, idx_pc_y) {
         get_factor_var(idx_pc_x),
         get_factor_var(idx_pc_y),
         label_var,
-        'PCA plot for variants (PC' + idx_pc_x + ', PC' + idx_pc_y + ')'
+        'PCA plot for variants (PC' + (idx_pc_x + 1) + ', PC' + (idx_pc_y + 1) + ')'
     );        
 }
     
@@ -495,7 +495,9 @@ function get_data(json_file){
     label_gene_stackedbar = data_misc['label_gene_stackedbar'];    
     
     stackedbar_phe  = data_misc['stackedbar_phe'];
-    stackedbar_gene = data_misc['stackedbar_gene'];        
+    stackedbar_gene = data_misc['stackedbar_gene']; 
+    
+    metadata     = data_misc['metadata']; 
     
     idx_phe      = Plotly.d3.range(1, 1 + label_phe.length);
     idx_var      = Plotly.d3.range(1, 1 + label_var.length);
@@ -545,7 +547,8 @@ function get_data(json_file){
          
         draw_bar_phe(); 
         draw_bar_gene();
-                                   
+                      
+        $("#metadata").text(metadata); 
 
     });
 </script>
@@ -563,6 +566,15 @@ function get_data(json_file){
             <p>Y.T. lead the research project and developped the web application. M.A.R designed the study.</p>
         </div>
     </div>
+
+    <div class="row">
+        <div class="col col-md-12">
+            <h2>About this dataset: {{ dataset }}</h2>
+            <p id="metadata"></p>
+            <p>Note that Coordinated Universal Time (UTC) is 7 hours ahead of Pacific Time </p>
+        </div>                                    
+    </div>
+
     
     <div class="row">
         <div class="col col-md-12">
