@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 
 def initialize():
-    fn = os.path.join('static/gcorr/opt_corr.tsv')
+    fn = os.path.join('static/gcorr/opt_corr.tsv.gz')
     data = pd.read_table(fn, index_col=0)
     t = data.copy(deep=True)
     t.index = ['_'.join(list(reversed(x.split('_')))) for x in t.index]
@@ -25,8 +25,6 @@ def initialize():
     data['p2'] = (data['p2'].apply(lambda x: x.replace('_', ' ')) + ' (' + 
                   data['p2_code'] + ')')
     phenos = sorted(list(set(data.p1) | set(data.p2)))
-    # starting_phenos = ['asthma', 'diabetes', 'rheumatoid_arthritis', 
-    #                    'high_cholesterol']
     vc = pd.Series(list(data.p1) + list(data.p2)).value_counts()
     starting_phenos = list(vc.head(40).index)
     return(data, phenos, starting_phenos)
@@ -37,11 +35,15 @@ def make_plot_df(df):
     sindex = pd.Series(range(len(ind)), index=ind)
     tdf['xind'] = sindex[tdf.p1].values
     tdf['yind'] = sindex[tdf.p2].values
-    # tdf['size'] = -np.log10(tdf.drawp)
-    tdf['size'] = np.log(tdf.drawz)
-    tdf['size'] = tdf['size'] - tdf['size'].min()
-    tdf['size'] = tdf['size'] / tdf['size'].max()
-    tdf['size'] = tdf['size'] * 100 + 50
+    minz = np.log(3)
+    # Everything with a z-score above 4.5 will be the same size
+    maxz = np.log(4.5)
+    minsize = 50.
+    maxsize = 130
+    m = (maxsize - minsize) / (maxz - minz)
+    b = maxsize - m * maxz
+    tdf['size'] = np.log(tdf.drawz) * m + b
+    tdf.loc[tdf['size'] > maxsize, 'size'] = maxsize
     return(tdf, sindex)
 
 def gcorr_scatter(selected_phenos):
@@ -86,6 +88,8 @@ def gcorr_scatter(selected_phenos):
             color = tdf['omegacor21'],
             colorbar=dict(title='Genetic correlation'),
             colorscale='RdBu',
+            cmin=-1,
+            cmax=1,
             showscale=True
         )
     )]
