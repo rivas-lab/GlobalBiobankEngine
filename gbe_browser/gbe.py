@@ -1863,7 +1863,6 @@ def check_credentials():
         return False
 
 
-#@basic_auth.required
 @app.after_request
 def apply_caching(response):
     # prevent click-jacking vulnerability identified by BITs
