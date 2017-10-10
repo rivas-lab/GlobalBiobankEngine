@@ -12,7 +12,7 @@ import scipy.spatial.distance as dist
 import scipy.cluster.hierarchy as sch
 
 def initialize():
-    fn = os.path.join('static/gcorr/opt_corr.tsv')
+    fn = os.path.join('static/gcorr/opt_corr.tsv.gz')
     data = pd.read_table(fn, index_col=0)
     t = data.copy(deep=True)
     t.index = ['_'.join(list(reversed(x.split('_')))) for x in t.index]
@@ -28,8 +28,6 @@ def initialize():
     data['p2'] = (data['p2'].apply(lambda x: x.replace('_', ' ')) + ' (' + 
                   data['p2_code'] + ')')
     phenos = sorted(list(set(data.p1) | set(data.p2)))
-    # starting_phenos = ['asthma', 'diabetes', 'rheumatoid_arthritis', 
-    #                    'high_cholesterol']
     vc = pd.Series(list(data.p1) + list(data.p2)).value_counts()
     starting_phenos = list(vc.head(40).index)
     return(data, phenos, starting_phenos)
