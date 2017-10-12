@@ -1764,6 +1764,8 @@ def gcorr_page():
         return redirect(url_for('login'))
     return render_template('gcorr.html')
 
+### Dash app ###
+# start dash app
 dash_app = dash.Dash(__name__, server=app)
 dash_app.config.supress_callback_exceptions = True
 
@@ -1772,112 +1774,13 @@ dash_app.layout = html.Div([
     html.Div(id='page-content')
 ])
 
-gcorr_layout = html.Div(children=[
-    html.Div([
-        dcc.Graph(
-            id='gcorr-scatter',
-            figure={'layout': {'title': 'Dash Data Visualization'}}
-        ),
-    ], style={'height':'900px', 'width':'1300px'}
-    ),
-    html.Div([
-        html.Div([
-            html.Div([
-                html.P('SELECT phenotype code categories to include.'),
-            ], style={'margin-left': '10px'}),
-            dcc.Checklist(
-                id='pheno-categories',
-                options=[{'label': x, 'value': x} for x in PHENO_CATEGORIES],
-                values=PHENO_CATEGORIES,
-            )
-        ], className='two columns'
-        ),
-        html.Div([
-            html.Div([
-                html.P('SELECT clustering method.'),
-            ], style={'margin-left': '10px'}),
-            dcc.RadioItems(
-                id='cluster-method',
-                options=[
-                    {'label': 'single', 'value': 'single'},
-                    {'label': 'complete', 'value': 'complete'},
-                    {'label': 'average', 'value': 'average'},
-                    {'label': 'ward', 'value': 'ward'},
-                ],
-                value='complete',
-                labelStyle={'display': 'inline-block'}
-            ),
-        ], className='two columns'
-        ),
-        html.Div([
-            html.Div([
-                html.P('Minimum z-score.')
-            ], style={'margin-left': '10px'}),
-            dcc.Input(
-                id='z-cutoff',
-                placeholder='z >=', 
-                type='number',
-                value=MIN_Z,
-            )
-            ], className='two columns'
-        ),
-    ], className='row',
-    ),
-    html.Div([
-        html.Div([
-            html.Div([
-                html.P('Correlation window.')
-            ], style={'margin-left': '10px'}),
-            dcc.RangeSlider(
-                id='gcorr-range',
-                count=2,
-                min=-1,
-                max=1,
-                step=0.01,
-                value=[-1, 1],
-                marks=dict(zip(np.arange(-1, 1.25, 0.25), 
-                               np.arange(-1, 1.25, 0.25))),
-            ),
-        ], className='four columns',
-        ),
-        html.Div([
-            dcc.RadioItems(
-                id='gcorr-radio',
-                options=[{'label': 'include', 'value': 'include'},
-                         {'label': 'exclude', 'value': 'exclude'}],
-                value='include',
-            )
-        ], className='two columns', 
-        ),
-    ], className='row', style={'margin-top': '30px'},
-    ),
-    html.Div([
-        html.Div([
-            html.Div(id='gcorr-range-values', style={'margin-top': '20px'}),
-        ], className='four columns',
-        ),
-    ], className='row', 
-    ),
-    html.Div([
-        html.Div([
-            html.Div([
-                html.P('SELECT phenotypes in the dropdown menu to add them to '
-                       'the plot.')
-            ], style={'margin-left': '10px'}),
-            dcc.Dropdown(id='pheno-dropdown',
-                         multi=True,
-                         value=STARTING_PHENOS,
-                        ),
-        ], className='twelve columns'),
-    ], className='row', style={'margin-top': '30px'},
-    ),
-])
-
-@dash_app.callback(dash.dependencies.Output('page-content', 'children'),
-              [dash.dependencies.Input('url', 'pathname')])
-def display_page(pathname):
-    if pathname == '/gcorr-app-raw':
-        return gcorr_layout
+# Dash dash_app.callbacks
+@dash_app.callback(
+    dash.dependencies.Output('pi2-range-values', 'children'),
+    [dash.dependencies.Input('pi2-range', 'value')]
+)
+def update_pi2_range_values(pi2_range):
+    return('Membership range: {} to {}'.format(*pi2_range))
 
 @dash_app.callback(
     dash.dependencies.Output('gcorr-range-values', 'children'),
@@ -1892,7 +1795,8 @@ def update_gcorr_range_values(gcorr_range):
 )
 def set_possible_phenos(pheno_categories):
     return([{'label':x, 'value':x} for x in
-            PHENOS.loc[PHENOS.category.isin(pheno_categories), 'phenotype']])
+            sorted(PHENOS.loc[PHENOS.category.isin(pheno_categories),
+                              'phenotype'])])
 
 @dash_app.callback(
     dash.dependencies.Output('gcorr-scatter', 'figure'),
@@ -1902,12 +1806,45 @@ def set_possible_phenos(pheno_categories):
      dash.dependencies.Input('z-cutoff', 'value'),
      dash.dependencies.Input('gcorr-range', 'value'),
      dash.dependencies.Input('gcorr-radio', 'value'),
+     dash.dependencies.Input('pi2-range', 'value'),
+     dash.dependencies.Input('pi2-radio', 'value'),
+     dash.dependencies.Input('show-zero-estimates', 'values'),
+     dash.dependencies.Input('size-var', 'value'),
     ]
 )
-def update_table(selected_phenos, cluster_method, pheno_categories, z_cutoff,
-                 gcorr_range, gcorr_radio):
-    return(gcorr_scatter(selected_phenos, cluster_method, pheno_categories,
-                         z_cutoff, gcorr_range, gcorr_radio))
+def update_table(
+    selected_phenos, 
+    cluster_method, 
+    pheno_categories, 
+    z_cutoff,
+    gcorr_range, 
+    gcorr_radio, 
+    pi2_range, 
+    pi2_radio, 
+    show_zero_estimates,
+    size_var,
+):
+    return(
+        gcorr_scatter(
+            selected_phenos, 
+            cluster_method, 
+            pheno_categories,
+            z_cutoff, 
+            gcorr_range, 
+            gcorr_radio,
+            pi2_range, 
+            pi2_radio, 
+            show_zero_estimates,
+            size_var,
+        )
+    )
+
+# Dash app callbaack for displaying page. This generally won't be updated.
+@dash_app.callback(dash.dependencies.Output('page-content', 'children'),
+              [dash.dependencies.Input('url', 'pathname')])
+def display_page(pathname):
+    if pathname == '/gcorr-app-raw':
+        return gcorr_layout
 
 @app.route('/login')
 def login():
