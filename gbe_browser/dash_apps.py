@@ -12,6 +12,9 @@ import scipy.spatial.distance as dist
 import scipy.cluster.hierarchy as sch
 
 def initialize():
+    # Minimum z-score to display data for.
+    min_z = 3
+    
     fn = os.path.join('static/gcorr/opt_corr.tsv.gz')
     data = pd.read_table(fn, index_col=0)
     t = data.copy(deep=True)
@@ -20,20 +23,59 @@ def initialize():
                     ['p1_num_cases', 'p2_num_cases']]:
         a = list(t[columns[0]])
         b = list(t[columns[1]])
-        t[columns[1]] = a
-        t[columns[0]] = b
+        t.loc[:, columns[1]] = a
+        t.loc[:, columns[0]] = b
     data = pd.concat([data, t])
-    data['p1'] = (data['p1'].apply(lambda x: x.replace('_', ' ')) + ' (' +
-                  data['p1_code'] + ')')
-    data['p2'] = (data['p2'].apply(lambda x: x.replace('_', ' ')) + ' (' + 
-                  data['p2_code'] + ')')
-    phenos = sorted(list(set(data.p1) | set(data.p2)))
+    
+    fn = os.path.join('static/gcorr/traits.tsv.gz')
+    phenos = pd.read_table(fn, index_col=0)
+    phenos = phenos.loc[sorted(list(set(data.p1_code) | set(data.p2_code)))]
+    phenos['phenotype'] = (phenos['phenotype'].apply(lambda x: x.replace('_', ' ')).values
+                           + ' (' + pd.Series(phenos.index) + ')').values
+    data.loc[:, 'p1'] = phenos.loc[data['p1_code'], 'phenotype'].values
+    data.loc[:, 'p2'] = phenos.loc[data['p2_code'], 'phenotype'].values
+    pheno_categories = list(set(phenos['category']))
+    name_to_code = pd.Series(
+        dict(zip(list(data['p1']) + list(data['p2']),
+                 list(data['p1_code']) + list(data['p2_code']))),
+    )
     vc = pd.Series(list(data.p1) + list(data.p2)).value_counts()
-    starting_phenos = list(vc.head(40).index)
-    return(data, phenos, starting_phenos)
 
-def make_plot_df(selected_phenos):
+    starting_phenos = list(vc.head(40).index)
+    return(data, phenos, starting_phenos, pheno_categories, min_z, name_to_code)
+
+def make_plot_df(
+    selected_phenos, 
+    cluster_method, 
+    pheno_categories, 
+    z_cutoff,
+    gcorr_range, 
+    gcorr_radio,
+):
+    # Check whether z-score cutoff is a valid number and greater than the
+    # minimum.
+    try:
+        z_cutoff = float(z_cutoff)
+    except ValueError:
+        z_cutoff = MIN_Z
+    # Restrict selected phenotypes to those in the selected code categories if
+    # needed. 
+    if len(pheno_categories) < len(PHENO_CATEGORIES):
+        c = PHENOS.loc[NAME_TO_CODE.loc[selected_phenos], 
+                       'category'].isin(pheno_categories)
+        selected_phenos = [selected_phenos[i] for i in
+                           range(len(selected_phenos)) if c[i]]
+    # Restrict data from the selected phenotypes.
     tdf = DATA[DATA.p1.isin(selected_phenos) & DATA.p2.isin(selected_phenos)]
+    # Filter using z-score cutoff.
+    tdf = tdf[tdf['drawz'] >= z_cutoff]
+    # Filter according to gcorr slider and radio.
+    if gcorr_radio == 'include':
+        tdf = tdf[(tdf['omegacor21'] <= gcorr_range[1]) & 
+                  (tdf['omegacor21'] >= gcorr_range[0])]
+    elif gcorr_radio == 'exclude':
+        tdf = tdf[(tdf['omegacor21'] >= gcorr_range[1]) | 
+                  (tdf['omegacor21'] <= gcorr_range[0])]
     if tdf.shape[0] > 2:
         tdf_m = tdf.pivot_table(values='omegacor21', index='p1', columns='p2').fillna(0)
         if tdf_m.shape[0] < len(selected_phenos):
@@ -43,7 +85,7 @@ def make_plot_df(selected_phenos):
         distmat = dist.pdist(tdf_m, metric='euclidean')
         # Allow the following methods 'single', 'complete', 'average', 'weighted'
         # and 'ward' because they are O(n^2)
-        hclust = sch.linkage(distmat, method='complete')
+        hclust = sch.linkage(distmat, method=cluster_method)
         dend = sch.dendrogram(hclust, no_plot=True)
         order = pd.Series(tdf_m.index, index=range(tdf_m.shape[0]))[dend['leaves']]
     else:
@@ -63,13 +105,28 @@ def make_plot_df(selected_phenos):
     tdf.loc[tdf['size'] > maxsize, 'size'] = maxsize
     return(tdf, sindex)
 
-def gcorr_scatter(selected_phenos):
+def gcorr_scatter(selected_phenos, cluster_method, pheno_categories, z_cutoff,
+                  gcorr_range, gcorr_radio):
     if len(selected_phenos) > 0:
-        tdf,sindex = make_plot_df(selected_phenos)
+        tdf,sindex = make_plot_df(
+            selected_phenos, 
+            cluster_method,
+            pheno_categories, 
+            z_cutoff, 
+            gcorr_range,
+            gcorr_radio,
+        )
     else:
         # If there are no selected phenos, we'll just show the starting data
         # until the user makes a selection.
-        tdf,sindex = make_plot_df(STARTING_PHENOS)
+        tdf,sindex = make_plot_df(
+            STARTING_PHENOS, 
+            cluster_method,
+            pheno_categories, 
+            z_cutoff, 
+            gcorr_range,
+            gcorr_radio,
+        )
 
     text = ('gcorr: ' + tdf.omegacor21.round(3).astype(str) + '<BR>' + 
             'gcorr SE: ' + tdf.omegacor21_se.round(3).astype(str) + '<BR>' + 
@@ -119,4 +176,4 @@ def gcorr_scatter(selected_phenos):
     fig = go.Figure(data=data, layout=layout)
     return(fig)
 
-DATA, PHENOS, STARTING_PHENOS = initialize()
+DATA, PHENOS, STARTING_PHENOS, PHENO_CATEGORIES, MIN_Z, NAME_TO_CODE = initialize()

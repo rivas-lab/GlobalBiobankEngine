@@ -1773,19 +1773,91 @@ dash_app.layout = html.Div([
 ])
 
 gcorr_layout = html.Div(children=[
-    html.Div(id='gcorr-content'),
     html.Div([
         dcc.Graph(
             id='gcorr-scatter',
-            figure={
-                'layout': {
-                    'title': 'Dash Data Visualization'
-                }
-            }
+            figure={'layout': {'title': 'Dash Data Visualization'}}
         ),
-    ], style={'height':'1000px', 'width':'1200px'}
+    ], style={'height':'900px', 'width':'1300px'}
     ),
-    
+    html.Div([
+        html.Div([
+            html.Div([
+                html.P('SELECT phenotype code categories to include.'),
+            ], style={'margin-left': '10px'}),
+            dcc.Checklist(
+                id='pheno-categories',
+                options=[{'label': x, 'value': x} for x in PHENO_CATEGORIES],
+                values=PHENO_CATEGORIES,
+            )
+        ], className='two columns'
+        ),
+        html.Div([
+            html.Div([
+                html.P('SELECT clustering method.'),
+            ], style={'margin-left': '10px'}),
+            dcc.RadioItems(
+                id='cluster-method',
+                options=[
+                    {'label': 'single', 'value': 'single'},
+                    {'label': 'complete', 'value': 'complete'},
+                    {'label': 'average', 'value': 'average'},
+                    {'label': 'ward', 'value': 'ward'},
+                ],
+                value='complete',
+                labelStyle={'display': 'inline-block'}
+            ),
+        ], className='two columns'
+        ),
+        html.Div([
+            html.Div([
+                html.P('Minimum z-score.')
+            ], style={'margin-left': '10px'}),
+            dcc.Input(
+                id='z-cutoff',
+                placeholder='z >=', 
+                type='number',
+                value=MIN_Z,
+            )
+            ], className='two columns'
+        ),
+    ], className='row',
+    ),
+    html.Div([
+        html.Div([
+            html.Div([
+                html.P('Correlation window.')
+            ], style={'margin-left': '10px'}),
+            dcc.RangeSlider(
+                id='gcorr-range',
+                count=2,
+                min=-1,
+                max=1,
+                step=0.01,
+                value=[-1, 1],
+                marks=dict(zip(np.arange(-1, 1.25, 0.25), 
+                               np.arange(-1, 1.25, 0.25))),
+            ),
+        ], className='four columns',
+        ),
+        html.Div([
+            dcc.RadioItems(
+                id='gcorr-radio',
+                options=[{'label': 'include', 'value': 'include'},
+                         {'label': 'exclude', 'value': 'exclude'}],
+                value='include',
+            )
+        ], className='two columns', 
+        ),
+    ], className='row', style={'margin-top': '30px'},
+    ),
+    html.Div([
+        html.Div([
+            html.Div(id='gcorr-range-values', style={'margin-top': '20px'}),
+        ], className='four columns',
+        ),
+    ], className='row', 
+    ),
     html.Div([
         html.Div([
             html.Div([
@@ -1795,11 +1867,10 @@ gcorr_layout = html.Div(children=[
             dcc.Dropdown(id='pheno-dropdown',
                          multi=True,
                          value=STARTING_PHENOS,
-                         options=[{'label':x, 'value':x} for x in PHENOS]),
+                        ),
         ], className='twelve columns'),
-    ], className='row'
+    ], className='row', style={'margin-top': '30px'},
     ),
-
 ])
 
 @dash_app.callback(dash.dependencies.Output('page-content', 'children'),
@@ -1809,10 +1880,34 @@ def display_page(pathname):
         return gcorr_layout
 
 @dash_app.callback(
-        dash.dependencies.Output('gcorr-scatter', 'figure'),
-        [dash.dependencies.Input('pheno-dropdown', 'value')])
-def update_table(selected_phenos):
-    return(gcorr_scatter(selected_phenos))
+    dash.dependencies.Output('gcorr-range-values', 'children'),
+    [dash.dependencies.Input('gcorr-range', 'value')]
+)
+def update_gcorr_range_values(gcorr_range):
+    return('Correlation range: {} to {}'.format(*gcorr_range))
+
+@dash_app.callback(
+    dash.dependencies.Output('pheno-dropdown', 'options'),
+    [dash.dependencies.Input('pheno-categories', 'values')]
+)
+def set_possible_phenos(pheno_categories):
+    return([{'label':x, 'value':x} for x in
+            PHENOS.loc[PHENOS.category.isin(pheno_categories), 'phenotype']])
+
+@dash_app.callback(
+    dash.dependencies.Output('gcorr-scatter', 'figure'),
+    [dash.dependencies.Input('pheno-dropdown', 'value'),
+     dash.dependencies.Input('cluster-method', 'value'),
+     dash.dependencies.Input('pheno-categories', 'values'),
+     dash.dependencies.Input('z-cutoff', 'value'),
+     dash.dependencies.Input('gcorr-range', 'value'),
+     dash.dependencies.Input('gcorr-radio', 'value'),
+    ]
+)
+def update_table(selected_phenos, cluster_method, pheno_categories, z_cutoff,
+                 gcorr_range, gcorr_radio):
+    return(gcorr_scatter(selected_phenos, cluster_method, pheno_categories,
+                         z_cutoff, gcorr_range, gcorr_radio))
 
 @app.route('/login')
 def login():
