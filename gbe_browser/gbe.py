@@ -957,6 +957,15 @@ def decomposition_page(dataset):
                 dataset = dataset,
                 debug_str = debug_str
             )
+        elif(dataset[:8] == "20171011"):
+            return render_template(
+                'decomposition-20171011.html',    
+                init_idx_pc  = init_idx_pc,
+                init_idx_phe = init_idx_phe,
+                init_idx_var = init_idx_var,
+                dataset = dataset,
+                debug_str = debug_str
+            )
         else:
             return render_template(
                 'decomposition.html',    
