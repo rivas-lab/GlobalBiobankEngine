@@ -167,7 +167,7 @@ function make_plot_bar(id, x, y, label, title) {
 <!-- This script is for plotting -->
 <script>           
     
-{% for data in ['cos', 'factor'] %} 
+{% for data in ['cos', 'factor', 'loading'] %} 
     {% for phevar in ['phe', 'var'] %}
     function get_{{ data }}_{{ phevar }}(idx){
         return get_json_via_http('/static/decomposition/{{ dataset }}/{{ dataset }}_{{ data }}_{{ phevar }}_' + idx + '.json');
@@ -311,7 +311,25 @@ function update_phe_cosine(idx, fig_title) {
             pc = data.points[i].x;            
         }
         update_pc(pc - 1);
-    });        
+    });  
+}
+ 
+ 
+function update_phe_loading(idx, fig_title) { 
+    make_plot(
+        'phe_loading_given_phe_plot', 
+        idx_pc, get_loading_phe(idx), label_pc,
+        fig_title
+    );        
+    var phe_loading_given_phe_plot = $('#phe_loading_given_phe_plot')[0];
+    phe_loading_given_phe_plot.on('plotly_click', function(data){
+        var pts = '';
+        for(var i=0; i < data.points.length; i++){
+            pc = data.points[i].x;            
+        }
+        update_pc(pc - 1);
+    });     
+    
 }
 
     
@@ -330,7 +348,27 @@ function update_var_cosine(idx, fig_title) {
         update_pc(pc - 1);
     });        
 }    
+  
+ 
+function update_var_loading(idx, fig_title) { 
     
+    make_plot(
+        'var_loading_given_var_plot', 
+        idx_pc, get_loading_var(idx), label_pc,
+        fig_title
+    );        
+    alert("plot")
+    var var_loading_given_var_plot = $('#var_loading_given_var_plot')[0];
+    var_loading_given_var_plot.on('plotly_click', function(data){
+        var pts = '';
+        for(var i=0; i < data.points.length; i++){
+            pc = data.points[i].x;            
+        }
+        update_pc(pc - 1);
+    });         
+}
+ 
+ 
 function pca_plot_phe(idx_pc_x, idx_pc_y) {
     make_plot(
         'pca_plot_phe', 
@@ -341,6 +379,7 @@ function pca_plot_phe(idx_pc_x, idx_pc_y) {
     );        
 }
     
+ 
 function pca_plot_var(idx_pc_x, idx_pc_y) {
     make_plot(
         'pca_plot_var',         
@@ -351,6 +390,7 @@ function pca_plot_var(idx_pc_x, idx_pc_y) {
     );        
 }
     
+ 
 function variance_explained_plot(){
     make_plot(
         'var_explained_plot',         
@@ -411,7 +451,8 @@ function update_phe(phe_idx) {
         + label_phe[phe_idx]
         + "</a>"
     );
-    update_phe_cosine(phe_idx, 'Phenotype squared cosine score (' + label_phe[phe_idx] + ')');        
+    update_phe_cosine(phe_idx, 'Phenotype squared cosine score (' + label_phe[phe_idx] + ')'); 
+    update_phe_loading(phe_idx, 'Phenotype squared loading score (' + label_phe[phe_idx] + ')'); 
     
     if( ! document.getElementById("phe_contribution_no").checked ){
         window.open("https://biobankengine.stanford.edu/coding/" + label_phe_code[phe_idx]);
@@ -427,6 +468,7 @@ function update_var(var_idx) {
         + "</a>"
     ); 
     update_var_cosine(var_idx, 'Variant squared cosine score (' + label_var[var_idx] + ')');
+//    update_var_loading(var_idx, 'Variant squared loading score (' + label_var[var_idx] + ')');    
     
     if( ! document.getElementById("var_contribution_no").checked ){
         window.open("https://biobankengine.stanford.edu/variant/" + label_var[var_idx]);
@@ -624,7 +666,7 @@ function get_data(json_file){
     
     <div class="row">        
         <div class="col col-md-6">
-            <h3>Phenotype squared cosine score</h3> 
+            <h3>Phenotype squared cosine score for <span class="variable_phe"></span></h3> 
             
             <div class="btn-group" role="group">
                 <div class="dropdown" align="center">
@@ -645,7 +687,7 @@ function get_data(json_file){
             </div>
         </div>
         <div class="col col-md-6">
-            <h3>Variant squared cosine score</h3>
+            <h3>Variant squared cosine score for <span class="variable_var"></span></h3>
             
             <div class="btn-group" role="group">
                 <div class="dropdown" align="center">
@@ -667,6 +709,41 @@ function get_data(json_file){
         </div>
 
     </div> 
+    
+    <div class="row">
+        <div class="col col-md-12">
+            <h2>Squared loading scores</h2>
+            <p>Given a phenotype/variant, which PC has the strongest association?</p>
+            <p>In contrast to cosine scores that characterize a PC space given a phenotype/variant, loading scores quantify the association between a given phenotype/variant and PCs.</p>
+        </div>                                    
+    </div>
+    
+    
+    <div class="row">
+        <div class="col col-md-6">
+            <h3>Squared phenotype loading scores for <span class="variable_phe"></span></h2>
+                        
+            <p>Which PCs shows the strongest association to phenotype <span class="variable_phe_link"></span>?</p>
+                            
+            <div id="phe_loading_given_phe_plot" style:width: 100%>
+                <!-- Plotly chart will be drawn inside this DIV -->
+            </div>               
+            
+        </div>                                    
+        <div class="col col-md-6">
+            <h3>Squared variant loading scores for <span class="variable_var"></span></h2>
+                        
+            <p>Which PCs shows the strongest association to variant <span class="variable_var_link"></span>?</p>
+                            
+            
+            <p>Currently this plot is disabled</p>
+            <div id="var_loading_given_var_plot" style:width: 100%>
+                <!-- Plotly chart will be drawn inside this DIV -->
+            </div>               
+            
+        </div>                                    
+    </div>        
+    
     
     <div class="row">
         <div class="col col-md-12">
@@ -860,25 +937,6 @@ function get_data(json_file){
     </div>  
     
     
-<!--
-    <div class="row">
-        <div class="col col-md-6">
-            <h3>phenotype contribution plot ()</h3>
-        </div>
-        
-        <div class="col col-md-6">
-            <h2>debug</h2>
-            <p>{{ debug_str }}</p>
-            <div id="dev"></div>
-
-            {% for user in ['a', 'b', 'c'] %}
-                {% for num in [1, 2, 3] %}
-                  {{ user }} {{ num }}
-                {% endfor %}
-            {% endfor %}                
-        </div>        
-    </div>
--->
     
     <div class="row">
         <h1>Frequently Asked Questions</h1>
