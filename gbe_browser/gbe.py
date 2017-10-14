@@ -1777,6 +1777,9 @@ def gcorr_page():
 # start dash app
 dash_app = dash.Dash(__name__, server=app)
 dash_app.config.supress_callback_exceptions = True
+dash_app.css.append_css({
+        "external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"
+})
 
 dash_app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
@@ -1800,12 +1803,18 @@ def update_gcorr_range_values(gcorr_range):
 
 @dash_app.callback(
     dash.dependencies.Output('pheno-dropdown', 'options'),
-    [dash.dependencies.Input('pheno-categories', 'values')]
+    [dash.dependencies.Input('pheno-categories', 'values'),
+     dash.dependencies.Input('case-cutoff', 'value'),
+    ]
 )
-def set_possible_phenos(pheno_categories):
-    return([{'label':x, 'value':x} for x in
-            sorted(PHENOS.loc[PHENOS.category.isin(pheno_categories),
-                              'phenotype'])])
+def set_possible_phenos(pheno_categories, case_cutoff):
+    try:
+        case_cutoff = int(case_cutoff)
+    except:
+        case_cutoff = MIN_CASES
+    poss = PHENOS[(PHENOS['category'].isin(pheno_categories)) & 
+                  (PHENOS['numcases'] >= case_cutoff)]
+    return([{'label':x, 'value':x} for x in sorted(poss['phenotype'])])
 
 @dash_app.callback(
     dash.dependencies.Output('gcorr-scatter', 'figure'),
@@ -1813,6 +1822,7 @@ def set_possible_phenos(pheno_categories):
      dash.dependencies.Input('cluster-method', 'value'),
      dash.dependencies.Input('pheno-categories', 'values'),
      dash.dependencies.Input('z-cutoff', 'value'),
+     dash.dependencies.Input('case-cutoff', 'value'),
      dash.dependencies.Input('gcorr-range', 'value'),
      dash.dependencies.Input('gcorr-radio', 'value'),
      dash.dependencies.Input('pi2-range', 'value'),
@@ -1826,6 +1836,7 @@ def update_table(
     cluster_method, 
     pheno_categories, 
     z_cutoff,
+    case_cutoff,
     gcorr_range, 
     gcorr_radio, 
     pi2_range, 
@@ -1839,6 +1850,7 @@ def update_table(
             cluster_method, 
             pheno_categories,
             z_cutoff, 
+            case_cutoff,
             gcorr_range, 
             gcorr_radio,
             pi2_range, 
