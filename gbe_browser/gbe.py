@@ -1127,6 +1127,52 @@ def gene_page(gene_id):
 
 
 
+@app.route('/geneaggregate/<gene_id>', methods=['GET', 'POST'])
+def geneaggregate_page(gene_id):
+    return get_geneaggregate_page_content(gene_id)
+
+
+@app.route('/coding/geneaggregate/<icd_str>')
+def icdaggregate_page(icd_str):
+    if not check_credentials():
+        return redirect(url_for('login'))
+    db = get_db()
+    try:
+        # icdlabel = str(icd_str)
+        # .strip('ADD').strip('INI').strip('BRMRI')
+        # Try several cutoffs to see if there are too many variants to
+        # render.  Arbitrary 10k max.
+        # passing = False
+        cutoff = None
+        icd = None
+
+        for p in [.001]:
+            icd = lookups.get_icd_variant_by_icd_id_pvalue(db, icd_str, p)
+            if len(icd):
+                cutoff = p
+                # print("CUTOFF",cutoff)
+                break
+            # print(icd_str,icd)
+        print('Rendering ICD10: %s' % icd_str)
+
+        if icd is None or len(icd) == 0:
+            icd = [{'Case': 'NA', 'Name': 'NA', 'icd': icd_str}]
+        # print(icd_info)
+
+        return render_template(
+            'icdgeneaggregate.html',
+            icd=icd,
+            cutoff=cutoff
+            )
+    except Exception as e:
+        print('Failed on icd:', icd_str, '; Error=', traceback.format_exc())
+        abort(404)
+
+
+
+
+
+
 
 @app.route('/runPolyCoding', methods = ['GET', 'POST'])
 def runPolyCoding_page():
@@ -1367,6 +1413,86 @@ def get_gene_page_content(gene_id):
                 coverage_stats=coverage_stats
             )
             cache.set(cache_key, t, timeout=1000*60)
+        print('Rendering gene: %s' % gene_id)
+        return t
+    except Exception as e:
+        print('Failed on gene:', gene_id, ';Error=', e)
+        abort(404)
+
+
+
+
+def get_geneaggregate_page_content(gene_id):
+    if not check_credentials():
+        return redirect(url_for('login'))
+    db = get_db()
+    try:
+        t = None
+        if t is None:
+            gene = lookups.get_gene_by_id(db, gene_id)
+            if gene is None:
+                abort(404)
+            #print(gene_id)
+            gene_idx = gene['gene_idx']
+
+            variants_in_gene = lookups.get_variants_by_gene_idx(db, gene_idx, gene_id)
+
+            transcripts_in_gene = [
+                lookups.cast_pos_info(
+                    dict(zip(lookups.TRANSCRIPT_INFO_KEYS, s.split(':'))))
+                for s in gene['transcript_info'].split(';')
+                if s]
+
+            #print(variants_in_gene)
+            # Get some canonical transcript and corresponding info
+
+            transcript_id = gene['canonical_transcript']
+            transcript_idx = gene['transcript_idx']
+            transcript = lookups.add_xpos(
+                lookups.cast_pos_info(
+                    dict(zip(lookups.TRANSCRIPT_INFO_KEYS,
+                             gene['c_transcript_info'].split(':')))))
+            transcript['transcript_id'] = transcript_id
+            transcript['exons'] = [
+                lookups.cast_pos_info(
+                    dict(zip(lookups.EXON_INFO_KEYS, s.split(':'))))
+                for s in gene['exon_info'].split(';')
+                if s]
+
+            variants_in_transcript = lookups.get_variants_by_transcript_idx(
+                db, transcript_idx, transcript_id)
+
+            coverage_stats = lookups.get_coverage_for_transcript(
+                db,
+                transcript['xstart'] - EXON_PADDING,
+                transcript['xstop'] + EXON_PADDING)
+
+            add_transcript_coordinate_to_variants(
+                variants_in_transcript, transcript)
+
+            #print("\n\n\n\nVariants in gene")
+            #print(variants_in_gene[0])
+
+            # Add minicd info
+            for variant in variants_in_gene:
+                variant["minicd_info"] = ICD_NAME_MAP.get(variant["minicd"],
+                                                          "info_not_found")
+
+            #print ("Transcripts in gene")
+            #print(transcripts_in_gene)
+
+            #print ("Variants in transcript")
+            #print (variants_in_transcript)
+
+            t = render_template(
+                'geneaggregate.html',
+                gene=gene,
+                transcript=transcript,
+                variants_in_gene=variants_in_gene,
+                variants_in_transcript=variants_in_transcript,
+                transcripts_in_gene=transcripts_in_gene,
+                coverage_stats=coverage_stats
+            )
         print('Rendering gene: %s' % gene_id)
         return t
     except Exception as e:
