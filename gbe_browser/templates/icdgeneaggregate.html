@@ -326,7 +326,7 @@ d3.csv("/static/mrpgene/phe/" + icd[0].icd +  ".001_00001.out", function(error, 
 
 
 <script>
-function GetTopFivePhenotypes(arrayData){  //sorting to top 5 phenotypes
+function GetTopFivePhenotypes(arrayData){  //sorting to top N phenotypes
   arrayData.sort(function(a, b) {
                    return parseFloat(b["as.numeric.subset.d..key.....l10bfsim...value"]) - parseFloat(a["as.numeric.subset.d..key.....l10bfsim...value"]);
                  });
