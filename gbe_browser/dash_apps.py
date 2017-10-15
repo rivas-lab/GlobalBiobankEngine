@@ -10,6 +10,8 @@ import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
 import scipy.spatial.distance as dist
 import scipy.cluster.hierarchy as sch
+    # fn = os.path.join('static/gcorr/opt_corr.tsv.gz')
+    # fn = os.path.join('static/gcorr/traits.tsv.gz')
 
 def initialize():
     # Minimum z-score to display data for.
@@ -21,7 +23,7 @@ def initialize():
     # Width in px of plot
     plot_width = 1200
     # Maximum number of phenotypes to display
-    max_phenos = 40
+    max_phenos = 100
     
     fn = os.path.join('static/gcorr/opt_corr.tsv.gz')
     data = pd.read_table(fn, index_col=0)
@@ -140,19 +142,31 @@ gcorr_layout = html.Div(children=[
     html.Div([
         html.Div([
             html.Div([
-                html.Div(id='gcorr-range-values'),
+                html.P('Correlation minimum.')
             ], style={'margin-left': '10px'}),
-            dcc.RangeSlider(
-                id='gcorr-range',
-                count=1,
+            dcc.Input(
+                id='gcorr-min',
+                type='number',
+                value=-1,
+                step=0.01,
                 min=-1,
                 max=1,
+            )
+        ], className='one column',
+        ),
+        html.Div([
+            html.Div([
+                html.P('Correlation maximum.')
+            ], style={'margin-left': '10px'}),
+            dcc.Input(
+                id='gcorr-max',
+                type='number',
+                value=1,
                 step=0.01,
-                value=[-1, 1],
-                marks=dict(zip(np.arange(-1, 1.25, 0.25), 
-                               np.arange(-1, 1.25, 0.25))),
-            ),
-        ], className='four columns',
+                min=-1,
+                max=1,
+            )
+        ], className='one column',
         ),
         html.Div([
             dcc.RadioItems(
@@ -165,19 +179,31 @@ gcorr_layout = html.Div(children=[
         ),
         html.Div([
             html.Div([
-                html.Div(id='pi2-range-values'),
+                html.P('Membership (pi2) minimum.')
             ], style={'margin-left': '10px'}),
-            dcc.RangeSlider(
-                id='pi2-range',
-                count=1,
+            dcc.Input(
+                id='pi2-min',
+                type='number',
+                value=0,
+                step=0.01,
                 min=0,
                 max=0.2,
-                step=0.005,
-                value=[0, 0.2],
-                marks=dict(zip(np.arange(0, 0.25, 0.05), 
-                               [str(x) for x in np.arange(0, 0.25, 0.05)])),
-            ),
-        ], className='four columns',
+            )
+        ], className='one column',
+        ),
+        html.Div([
+            html.Div([
+                html.P('Membership (pi2) maximum.')
+            ], style={'margin-left': '10px'}),
+            dcc.Input(
+                id='pi2-max',
+                type='number',
+                value=0.2,
+                step=0.01,
+                min=0,
+                max=0.2,
+            )
+        ], className='one column',
         ),
         html.Div([
             dcc.RadioItems(
@@ -207,8 +233,8 @@ gcorr_layout = html.Div(children=[
         html.Div([
             html.Div([
                 html.P('SELECT phenotypes in the dropdown menu to add them to '
-                       'the plot.\nWARNING: only {} phenotypes can be '
-                       'displayed at the same time.'.format(MAX_PHENOS)),
+                       'the plot.\nWARNING: The plot designed to display 40 or '
+                       'less phenotypes at the same time.'),
             ], style={'margin-left': '10px'}),
             dcc.Dropdown(id='pheno-dropdown',
                          multi=True,
@@ -217,7 +243,7 @@ gcorr_layout = html.Div(children=[
         ], className='twelve columns'),
     ], className='row', style={'margin-top': '30px'},
     ),
-])
+    ])
 
 def make_plot_df(
     selected_phenos, 
@@ -225,13 +251,25 @@ def make_plot_df(
     pheno_categories, 
     z_cutoff,
     case_cutoff,
-    gcorr_range, 
+    gcorr_min, 
+    gcorr_max, 
     gcorr_radio,
-    pi2_range, 
+    pi2_min, 
+    pi2_max, 
     pi2_radio,
     show_zero_estimates,
     size_var,
 ):
+    try:
+        gcorr_range = [min(float(gcorr_min), float(gcorr_max)), 
+                       max(float(gcorr_min), float(gcorr_max))]
+    except:
+        gcorr_range = [-1, 1]
+    try:
+        pi2_range = [min(float(pi2_min), float(pi2_max)), 
+                     max(float(pi2_min), float(pi2_max))]
+    except:
+        pi2_range = [0, 0.2]
     show_zero_estimates = show_zero_estimates == ['show']
     # Check whether z-score cutoff is a valid number or set it to the minimum.
     try:
@@ -369,15 +407,23 @@ def calc_margins(tdf, xlab):
     xmargin = PLOT_WIDTH - 14 * nump - cb_width - np.exp(nump / 10)
     if xmargin < 0:
         xmargin = 0
+    if xmargin < 568:
+        xmargin = 568
     # The np.exp(nump / 10) is a fudge factor.
     ymargin = PLOT_HEIGHT - 13.5 * nump - np.exp(nump / 10)
     if ymargin < 0:
         ymargin = 0
+    if ymargin < 205:
+        ymargin = 205
     # As the number of phenotypes gets larger, we will move the plot to the
     # upper right to make room for the axis labels.
     m = (1 - 0.5) / (40 - min_phenos)
     b = 0.5 - m * min_phenos
     frac = m * nump + b
+    if frac < 0:
+        frac = 0
+    if frac > 1:
+        frac = 1
     out = dict(
         l=xmargin * frac,
         b=ymargin * frac,
@@ -392,9 +438,11 @@ def gcorr_scatter(
     pheno_categories, 
     z_cutoff,
     case_cutoff,
-    gcorr_range, 
+    gcorr_min, 
+    gcorr_max, 
     gcorr_radio, 
-    pi2_range, 
+    pi2_min,
+    pi2_max,
     pi2_radio, 
     show_zero_estimates,
     size_var,
@@ -406,9 +454,11 @@ def gcorr_scatter(
             pheno_categories, 
             z_cutoff,
             case_cutoff,
-            gcorr_range,
+            gcorr_min,
+            gcorr_max,
             gcorr_radio,
-            pi2_range,
+            pi2_min,
+            pi2_max,
             pi2_radio,
             show_zero_estimates,
             size_var,
@@ -422,9 +472,11 @@ def gcorr_scatter(
             pheno_categories, 
             z_cutoff, 
             case_cutoff,
-            gcorr_range,
+            gcorr_min,
+            gcorr_max,
             gcorr_radio,
-            pi2_range,
+            pi2_min,
+            pi2_max,
             pi2_radio,
             show_zero_estimates,
             size_var,
