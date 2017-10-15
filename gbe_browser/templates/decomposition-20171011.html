@@ -24,6 +24,7 @@
 }
 
 
+
 .dropbtn1:hover, .dropbtn:focus {
     background-color: #B6B1A9;
 }
@@ -167,7 +168,7 @@ function make_plot_bar(id, x, y, label, title) {
 <!-- This script is for plotting -->
 <script>           
     
-{% for data in ['cos', 'factor', 'loading'] %} 
+{% for data in ['cos', 'factor'] %} 
     {% for phevar in ['phe', 'var'] %}
     function get_{{ data }}_{{ phevar }}(idx){
         return get_json_via_http('/static/decomposition/{{ dataset }}/{{ dataset }}_{{ data }}_{{ phevar }}_' + idx + '.json');
@@ -175,7 +176,7 @@ function make_plot_bar(id, x, y, label, title) {
     {% endfor %}
 {% endfor %}
 
-{% for data in ['contribution', 'loading'] %} 
+{% for data in ['contribution'] %} 
     {% for phevar in ['phe', 'var'] %}
         {% for type in ['x', 'y', 'l'] %}
         function get_{{ data }}_{{ phevar }}_{{ type }}(idx){
@@ -200,8 +201,6 @@ function make_plot_bar(id, x, y, label, title) {
 function update_contribution_plots(pc) {    
     var title_phe  = 'Phenotype contribution score (PC' + (pc + 1) + ')';
     var title_var  = 'Variant contribution score (PC' + (pc + 1) + ')';
-    var title_load_phe  = 'Phenotype squared loading score (PC' + (pc + 1) + ')';
-    var title_load_var  = 'Variant squared loading score (PC' + (pc + 1) + ')';    
     var title_bar_phe  = 'Top hits in phenotype contribution score (PC' + (pc + 1) + ')';
     var title_bar_gene = 'Top hits in gene contribution score (PC' + (pc + 1) + ')';
     
@@ -248,7 +247,7 @@ function update_contribution_plots(pc) {
     });        
     
     var bar_gene_code  = get_bar_gene_code(pc);
-    var bar_gene_label = get_bar_gene_label(pc);        
+    var bar_gene_label = get_bar_gene_label(pc);    
     make_plot_bar(
         'gene_contribution_plot', 
         bar_gene_label, get_bar_gene(pc), 
@@ -263,38 +262,7 @@ function update_contribution_plots(pc) {
         if( ! document.getElementById("var_contribution_no").checked ){            
             window.open("https://biobankengine.stanford.edu/gene/" + gene);            
         }
-    });   
-    
-    
-    
-    make_plot(
-        'phe_loading_plot', 
-        get_loading_phe_x(pc), get_loading_phe_y(pc), 
-        get_loading_phe_l(pc), title_load_phe
-    );  
-    var phe_loading_plot = $('#phe_loading_plot')[0];
-    phe_contribution_plot.on('plotly_click', function(data){
-        var pts = '';
-        for(var i=0; i < data.points.length; i++){
-            phe = data.points[i].x;
-        }
-        update_phe(phe);                                
-    });            
-
-    make_plot(
-        'var_loading_plot', 
-        get_loading_var_x(pc), get_loading_var_y(pc), 
-        get_loading_var_l(pc), title_load_var
-    );               
-    var var_loading_plot = $('#var_loading_plot')[0];    
-    var_loading_plot.on('plotly_click', function(data){
-        var pts = '';
-        for(var i=0; i < data.points.length; i++){
-            var vari = data.points[i].x;            
-        }
-        update_var(vari);
-    });    
-    
+    });                        
 }
     
     
@@ -311,25 +279,7 @@ function update_phe_cosine(idx, fig_title) {
             pc = data.points[i].x;            
         }
         update_pc(pc - 1);
-    });  
-}
- 
- 
-function update_phe_loading(idx, fig_title) { 
-    make_plot(
-        'phe_loading_given_phe_plot', 
-        idx_pc, get_loading_phe(idx), label_pc,
-        fig_title
-    );        
-    var phe_loading_given_phe_plot = $('#phe_loading_given_phe_plot')[0];
-    phe_loading_given_phe_plot.on('plotly_click', function(data){
-        var pts = '';
-        for(var i=0; i < data.points.length; i++){
-            pc = data.points[i].x;            
-        }
-        update_pc(pc - 1);
-    });     
-    
+    });        
 }
 
     
@@ -348,27 +298,7 @@ function update_var_cosine(idx, fig_title) {
         update_pc(pc - 1);
     });        
 }    
-  
- 
-function update_var_loading(idx, fig_title) { 
     
-    make_plot(
-        'var_loading_given_var_plot', 
-        idx_pc, get_loading_var(idx), label_pc,
-        fig_title
-    );        
-    alert("plot")
-    var var_loading_given_var_plot = $('#var_loading_given_var_plot')[0];
-    var_loading_given_var_plot.on('plotly_click', function(data){
-        var pts = '';
-        for(var i=0; i < data.points.length; i++){
-            pc = data.points[i].x;            
-        }
-        update_pc(pc - 1);
-    });         
-}
- 
- 
 function pca_plot_phe(idx_pc_x, idx_pc_y) {
     make_plot(
         'pca_plot_phe', 
@@ -379,7 +309,6 @@ function pca_plot_phe(idx_pc_x, idx_pc_y) {
     );        
 }
     
- 
 function pca_plot_var(idx_pc_x, idx_pc_y) {
     make_plot(
         'pca_plot_var',         
@@ -390,14 +319,13 @@ function pca_plot_var(idx_pc_x, idx_pc_y) {
     );        
 }
     
- 
 function variance_explained_plot(){
     make_plot(
         'var_explained_plot',         
         idx_pc, 
         eigen_r, 
         label_pc,
-        'Scree plot (variance explained plot)'
+        'variance explained plot'
     ); 
     var var_cosine_plot = $('#var_explained_plot')[0];
     var_cosine_plot.on('plotly_click', function(data){
@@ -451,8 +379,7 @@ function update_phe(phe_idx) {
         + label_phe[phe_idx]
         + "</a>"
     );
-    update_phe_cosine(phe_idx, 'Phenotype squared cosine score (' + label_phe[phe_idx] + ')'); 
-    update_phe_loading(phe_idx, 'Phenotype squared loading score (' + label_phe[phe_idx] + ')'); 
+    update_phe_cosine(phe_idx, 'phenotype cosine score (' + label_phe[phe_idx] + ')');        
     
     if( ! document.getElementById("phe_contribution_no").checked ){
         window.open("https://biobankengine.stanford.edu/coding/" + label_phe_code[phe_idx]);
@@ -467,8 +394,7 @@ function update_var(var_idx) {
         + label_var[var_idx]
         + "</a>"
     ); 
-    update_var_cosine(var_idx, 'Variant squared cosine score (' + label_var[var_idx] + ')');
-//    update_var_loading(var_idx, 'Variant squared loading score (' + label_var[var_idx] + ')');    
+    update_var_cosine(var_idx, 'variant cosine score (' + label_var[var_idx] + ')');
     
     if( ! document.getElementById("var_contribution_no").checked ){
         window.open("https://biobankengine.stanford.edu/variant/" + label_var[var_idx]);
@@ -504,8 +430,8 @@ function update_var(var_idx) {
 
 {% for phegene in ['phe', 'gene'] %} 
     function draw_bar_{{ phegene }}(){    
-        var title_phe  = 'Global summary of phenotype contribution scores';
-        var title_gene = 'Global summary of gene contribution scores';
+        var title_phe  = 'summary of phenotype contribution scores';
+        var title_gene = 'summary of gene contribution scores';
         var layout = {
             title: title_{{ phegene }},
             barmode: 'stack',
@@ -659,14 +585,14 @@ function get_data(json_file){
     
     <div class="row">
         <div class="col col-md-12">
-            <h2>Squared cosine scores</h2>
+            <h2>Cosine scores</h2>
             <p>Given a phenotype/variant, we can explorer which principal components are imporant for the selected phenotype/variant.</p>
         </div>                                    
     </div>
     
     <div class="row">        
         <div class="col col-md-6">
-            <h3>Phenotype squared cosine score for <span class="variable_phe"></span></h3> 
+            <h3>Phenotype cosine score</h3> 
             
             <div class="btn-group" role="group">
                 <div class="dropdown" align="center">
@@ -687,7 +613,7 @@ function get_data(json_file){
             </div>
         </div>
         <div class="col col-md-6">
-            <h3>Variant squared cosine score for <span class="variable_var"></span></h3>
+            <h3>Variant cosine score</h3>
             
             <div class="btn-group" role="group">
                 <div class="dropdown" align="center">
@@ -712,46 +638,12 @@ function get_data(json_file){
     
     <div class="row">
         <div class="col col-md-12">
-            <h2>Squared loading scores</h2>
-            <p>Given a phenotype/variant, which PC has the strongest association?</p>
-            <p>In contrast to cosine scores that characterize a PC space given a phenotype/variant, loading scores quantify the association between a given phenotype/variant and PCs.</p>
-        </div>                                    
-    </div>
-    
-    
-    <div class="row">
-        <div class="col col-md-6">
-            <h3>Squared phenotype loading scores for <span class="variable_phe"></span></h2>
-                        
-            <p>Which PCs shows the strongest association to phenotype <span class="variable_phe_link"></span>?</p>
-                            
-            <div id="phe_loading_given_phe_plot" style:width: 100%>
-                <!-- Plotly chart will be drawn inside this DIV -->
-            </div>               
-            
-        </div>                                    
-        <div class="col col-md-6">
-            <h3>Squared variant loading scores for <span class="variable_var"></span></h2>
-                        
-            <p>Which PCs shows the strongest association to variant <span class="variable_var_link"></span>?</p>
-                            
-            
-            <p>Currently this plot is disabled</p>
-            <div id="var_loading_given_var_plot" style:width: 100%>
-                <!-- Plotly chart will be drawn inside this DIV -->
-            </div>               
-            
-        </div>                                    
-    </div>        
-    
-    
-    <div class="row">
-        <div class="col col-md-12">
             <h2>Contribution scores for <span class="variable_pc"></span></h2>
             <p>Given a PC, we can explorer the contribution of the phenotypes/variants to that component.</p>
-        </div>                                    
+        </div>
+        
+                            
     </div>
-    
     <div class="row">        
         <div class="col col-md-6">
             <h3>Phenotype contribution score</h3> 
@@ -816,32 +708,7 @@ function get_data(json_file){
     
     <div class="row">
         <div class="col col-md-12">
-            <h2>Squared loading scores for <span class="variable_pc"></span></h2>
-            <p>Given a PC, which phenotype/variant has the highest association?</p>
-            <p>In contrast to contribution scores that characterize a given PC, loading scores quantify the association between a given PC and phenotypes/variants.</p>
-        </div>                                    
-    </div>
-    
-    
-    <div class="row">
-        <div class="col col-md-6">
-            <h2>Squared phenotype loading scores</h2>            
-            <div id="phe_loading_plot" style:width: 100%>
-                <!-- Plotly chart will be drawn inside this DIV -->
-            </div>                        
-        </div>                                    
-        <div class="col col-md-6">
-            <h2>Squared variant loading scores</h2>
-            <div id="var_loading_plot" style:width: 100%>
-                <!-- Plotly chart will be drawn inside this DIV -->
-            </div>            
-        </div>                                    
-    </div>    
-    
-    
-    <div class="row">
-        <div class="col col-md-12">
-            <h2>Global summary of contribution scores</h2>
+            <h2>Summary of contribution scores</h2>
         </div>                                    
     </div>    
     
@@ -937,6 +804,25 @@ function get_data(json_file){
     </div>  
     
     
+<!--
+    <div class="row">
+        <div class="col col-md-6">
+            <h3>phenotype contribution plot ()</h3>
+        </div>
+        
+        <div class="col col-md-6">
+            <h2>debug</h2>
+            <p>{{ debug_str }}</p>
+            <div id="dev"></div>
+
+            {% for user in ['a', 'b', 'c'] %}
+                {% for num in [1, 2, 3] %}
+                  {{ user }} {{ num }}
+                {% endfor %}
+            {% endfor %}                
+        </div>        
+    </div>
+-->
     
     <div class="row">
         <h1>Frequently Asked Questions</h1>
