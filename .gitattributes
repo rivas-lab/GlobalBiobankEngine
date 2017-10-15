@@ -1,2 +1,1 @@
 gbe_data/qc/variant_filter_table.tsv.gz filter=lfs diff=lfs merge=lfs -text
-gbe_browser/static/gcorr/opt_corr.tsv.gz filter=lfs diff=lfs merge=lfs -text
