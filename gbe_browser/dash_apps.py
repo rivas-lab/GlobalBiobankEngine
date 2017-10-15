@@ -60,7 +60,8 @@ gcorr_layout = html.Div(children=[
     html.Div([
         dcc.Graph(
             id='gcorr-scatter',
-            figure={'layout': {'title': 'Dash Data Visualization'}}
+            figure={'layout': {'title': 'Dash Data Visualization'}},
+            config={'displayModeBar': False},
         ),
     ], style={'height':'{}px'.format(PLOT_HEIGHT),
               'width':'{}px'.format(PLOT_WIDTH)}
