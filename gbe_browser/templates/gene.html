@@ -220,7 +220,7 @@ d3.csv("/static/mrpgene/gene/" + gene.gene_name + ".01_00001.gene.out", function
    data = GetTopFivePhenotypes(data);
 
   x.domain(data.map(function(d) { return d["coding"]; }));
-  y.domain([0, d3.max(data, function(d) { return d["l10bf"]; })]);
+  y.domain([0, d3.max(data, function(d) { return +d["l10bf"]; })]);
 
   svg.append("g")
       .attr("class", "x axis")
