@@ -202,7 +202,7 @@ var tip = d3.tip()
   .attr('class', 'd3-tip')
   .offset([-10, 0])
   .html(function(d) {
-    return "<strong>log 10 Bayes Factor:</strong> <span style='color:red'>" + d3.format(".2f")(d["l10bf"]) + "</span>";
+    return "<strong>log 10 Bayes Factor:</strong> <span style='color:red'>" + d3.format(".2f")(d["l10bf"]) + "</span><br><strong>Phenotype:</strong> <span style='color:red'>" + d["coding"] + "</span>";
   })
 
 
@@ -219,7 +219,7 @@ d3.csv("/static/mrpgene/gene/" + gene.gene_name + ".01_00001.gene.out", function
   if (error) throw error;
    data = GetTopFivePhenotypes(data);
 
-  x.domain(data.map(function(d) { return d["coding_name"]; }));
+  x.domain(data.map(function(d) { return d["coding"]; }));
   y.domain([0, d3.max(data, function(d) { return d["l10bf"]; })]);
 
   svg.append("g")
@@ -250,7 +250,7 @@ d3.csv("/static/mrpgene/gene/" + gene.gene_name + ".01_00001.gene.out", function
       .data(data)
     .enter().append("rect")
       .style("fill", "steelblue")
-      .attr("x", function(d) { return x(d["coding_name"]); })
+      .attr("x", function(d) { return x(d["coding"]); })
       .attr("width", x.rangeBand())
       .attr("y", function(d) { return y(d["l10bf"]); })
       .attr("height", function(d) { return height - y(d["l10bf"]); })

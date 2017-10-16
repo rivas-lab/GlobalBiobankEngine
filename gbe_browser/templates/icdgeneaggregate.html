@@ -138,7 +138,7 @@ var yAxis = d3.svg.axis()
     .orient("left")
     .ticks(10);
 
-var tip1 = d3.tip()
+var tip = d3.tip()
   .attr('class', 'd3-tip')
   .offset([-10, 0])
   .html(function(d) {
@@ -153,14 +153,14 @@ var svg1 = d3.select("#containeraggregaterarelowfreq").append("svg")
     .attr("transform", 
           "translate(" + margin.left + "," + margin.top + ")");
 
-svg1.call(tip1);
+svg1.call(tip);
 
-d3.csv("/static/mrpgene/phe/" + icd[0].icd + ".001_00001.out", function(error, data) {
+d3.csv("/static/mrpgene/phe/" + icd[0].icd + ".01_00001.out", function(error, data) {
   if (error) throw error;
    data = GetTopFivePhenotypes(data);
 
   x.domain(data.map(function(d) { return d["subset.d..key.....l10bf...gene_name"]; }));
-  y.domain([-.5, d3.max(data, function(d) { return d["as.numeric.subset.d..key.....l10bfsim...value."]; })]);
+  y.domain([-.5, d3.max(data, function(d) { return +d["as.numeric.subset.d..key.....l10bfsim...value."]; })]);
 
   svg1.append("g")
       .attr("class", "x axis")
@@ -196,8 +196,8 @@ d3.csv("/static/mrpgene/phe/" + icd[0].icd + ".001_00001.out", function(error, d
       .attr("width", x.rangeBand())
       .attr("cy", function(d) { return y(d["as.numeric.subset.d..key.....l10bfsim...value."]); })
       .attr("height", function(d) { return height - y(d["as.numeric.subset.d..key.....l10bfsim...value."]); })
-          .on('mouseover', tip1.show)
-      .on('mouseout', tip1.hide)
+          .on('mouseover', tip.show)
+      .on('mouseout', tip.hide)
     .on("click", function(d){
     document.location.href = "awesome?query=" + d["subset.d..key.....l10bf...gene_name"];
     });
@@ -220,7 +220,7 @@ d3.csv("/static/mrpgene/phe/" + icd[0].icd + ".001_00001.out", function(error, d
 <script>
 function GetTopFivePhenotypes(arrayData){  //sorting to top 5 phenotypes
   arrayData.sort(function(a, b) {
-                   return parseFloat(b["as.numeric.subset.d..key.....l10bfsim...value"]) - parseFloat(a["as.numeric.subset.d..key.....l10bfsim...value"]);
+                   return parseFloat(b["as.numeric.subset.d..key.....l10bfsim...value."]) - parseFloat(a["as.numeric.subset.d..key.....l10bfsim...value."]);
                  });
   return arrayData.slice(0, 100);
 }
@@ -243,11 +243,11 @@ var yAxis = d3.svg.axis()
     .orient("left")
     .ticks(10);
 
-var tip2 = d3.tip()
+var tip = d3.tip()
   .attr('class', 'd3-tip')
   .offset([-10, 0])
   .html(function(d) {
-    return "<strong>log 10 Bayes Factor:</strong> <span style='color:red'>" + d3.format(".2f")(d["as.numeric.subset.d..key.....l10bfsim...value"]) + "</span><br><strong>Gene: </strong><span style='color:red'>" + d["subset.d..key.....l10bf...gene_name"];
+    return "<strong>log 10 Bayes Factor:</strong> <span style='color:red'>" + d3.format(".2f")(d["as.numeric.subset.d..key.....l10bfsim...value."]) + "</span><br><strong>Gene: </strong><span style='color:red'>" + d["subset.d..key.....l10bf...gene_name"];
   })
 
 
@@ -258,14 +258,14 @@ var svg2 = d3.select("#containeraggregaterare").append("svg")
     .attr("transform", 
           "translate(" + margin.left + "," + margin.top + ")");
 
-svg2.call(tip2);
+svg2.call(tip);
 
 d3.csv("/static/mrpgene/phe/" + icd[0].icd +  ".001_00001.out", function(error, data) {
   if (error) throw error;
    data = GetTopFivePhenotypes(data);
 
   x.domain(data.map(function(d) { return d["subset.d..key.....l10bf...gene_name"]; }));
-  y.domain([-.5, d3.max(data, function(d) { return +d["as.numeric.subset.d..key.....l10bfsim...value"]; })]);
+  y.domain([-.5, d3.max(data, function(d) { return +d["as.numeric.subset.d..key.....l10bfsim...value."]; })]);
 
   svg2.append("g")
       .attr("class", "x axis")
@@ -299,10 +299,10 @@ d3.csv("/static/mrpgene/phe/" + icd[0].icd +  ".001_00001.out", function(error, 
       .attr("r", 3.5)
       .attr("cx", function(d) { return x(d["subset.d..key.....l10bf...gene_name"]); })
       .attr("width", x.rangeBand())
-      .attr("cy", function(d) { return y(d["as.numeric.subset.d..key.....l10bfsim...value"]); })
-      .attr("height", function(d) { return height - y(d["as.numeric.subset.d..key.....l10bfsim...value"]); })
-          .on('mouseover', tip2.show)
-      .on('mouseout', tip2.hide)
+      .attr("cy", function(d) { return y(d["as.numeric.subset.d..key.....l10bfsim...value."]); })
+      .attr("height", function(d) { return height - y(d["as.numeric.subset.d..key.....l10bfsim...value."]); })
+          .on('mouseover', tip.show)
+      .on('mouseout', tip.hide)
     .on("click", function(d){
     document.location.href = "awesome?query=" + d["subset.d..key.....l10bf...gene_name"];
     });
@@ -328,7 +328,7 @@ d3.csv("/static/mrpgene/phe/" + icd[0].icd +  ".001_00001.out", function(error, 
 <script>
 function GetTopFivePhenotypes(arrayData){  //sorting to top N phenotypes
   arrayData.sort(function(a, b) {
-                   return parseFloat(b["as.numeric.subset.d..key.....l10bfsim...value"]) - parseFloat(a["as.numeric.subset.d..key.....l10bfsim...value"]);
+                   return parseFloat(b["as.numeric.subset.d..key.....l10bfsim...value."]) - parseFloat(a["as.numeric.subset.d..key.....l10bfsim...value."]);
                  });
   return arrayData.slice(0, 100);
 }
@@ -351,31 +351,31 @@ var yAxis = d3.svg.axis()
     .orient("left")
     .ticks(10);
 
-var tip3 = d3.tip()
+var tip = d3.tip()
   .attr('class', 'd3-tip')
   .offset([-10, 0])
   .html(function(d) {
-    return "<strong>log 10 Bayes Factor:</strong> <span style='color:red'>" + d3.format(".2f")(d["as.numeric.subset.d..key.....l10bfsim...value"]) + "</span><br><strong>Gene: </strong><span style='color:red'>" + d["subset.d..key.....l10bf...gene_name"];
+    return "<strong>log 10 Bayes Factor:</strong> <span style='color:red'>" + d3.format(".2f")(d["as.numeric.subset.d..key.....l10bfsim...value."]) + "</span><br><strong>Gene: </strong><span style='color:red'>" + d["subset.d..key.....l10bf...gene_name"];
   })
 
 
-var svg = d3.select("#containeraggregateptv").append("svg")
+var svg3 = d3.select("#containeraggregateptv").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
     .attr("transform", 
           "translate(" + margin.left + "," + margin.top + ")");
 
-svg.call(tip3);
+svg3.call(tip);
 
 d3.csv("/static/mrpgene/phe/" + icd[0].icd + ".00001.out", function(error, data) {
   if (error) throw error;
    data = GetTopFivePhenotypes(data);
 
   x.domain(data.map(function(d) { return d["subset.d..key.....l10bf...gene_name"]; }));
-  y.domain([-.5, d3.max(data, function(d) { return d["as.numeric.subset.d..key.....l10bfsim...value"]; })]);
+  y.domain([-.5, d3.max(data, function(d) { return +d["as.numeric.subset.d..key.....l10bfsim...value."]; })]);
 
-  svg.append("g")
+  svg3.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis)
@@ -390,7 +390,7 @@ d3.csv("/static/mrpgene/phe/" + icd[0].icd + ".00001.out", function(error, data)
     document.location.href = "awesome?query=" + d["subset.d..key.....l10bf...gene_name"];
     });
 
-  svg.append("g")
+  svg3.append("g")
       .attr("class", "y axis")
       .call(yAxis)
     .append("text")
@@ -399,7 +399,7 @@ d3.csv("/static/mrpgene/phe/" + icd[0].icd + ".00001.out", function(error, data)
       .attr("dy", ".71em")
       .style("text-anchor", "end");
 
-  svg.selectAll(".dot")
+  svg3.selectAll(".dot")
       .data(data)
     .enter().append("circle")
       .style("fill", "steelblue")
@@ -407,10 +407,10 @@ d3.csv("/static/mrpgene/phe/" + icd[0].icd + ".00001.out", function(error, data)
       .attr("r", 3.5)
       .attr("cx", function(d) { return x(d["subset.d..key.....l10bf...gene_name"]); })
       .attr("width", x.rangeBand())
-      .attr("cy", function(d) { return y(d["as.numeric.subset.d..key.....l10bfsim...value"]); })
-      .attr("height", function(d) { return height - y(d["as.numeric.subset.d..key.....l10bfsim...value"]); })
-          .on('mouseover', tip3.show)
-      .on('mouseout', tip3.hide)
+      .attr("cy", function(d) { return y(d["as.numeric.subset.d..key.....l10bfsim...value."]); })
+      .attr("height", function(d) { return height - y(d["as.numeric.subset.d..key.....l10bfsim...value."]); })
+          .on('mouseover', tip.show)
+      .on('mouseout', tip.hide)
     .on("click", function(d){
     document.location.href = "awesome?query=" + d["subset.d..key.....l10bf...gene_name"];
     });
