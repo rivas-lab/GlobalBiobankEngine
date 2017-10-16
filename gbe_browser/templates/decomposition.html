@@ -266,7 +266,7 @@ function update_contribution_plots(pc) {
     });   
     
     
-    
+/*   
     make_plot(
         'phe_loading_plot', 
         get_loading_phe_x(pc), get_loading_phe_y(pc), 
@@ -294,6 +294,7 @@ function update_contribution_plots(pc) {
         }
         update_var(vari);
     });    
+*/
     
 }
     
@@ -443,7 +444,6 @@ function update_pc_var(pc_idx_x, pc_idx_y) {
 } 
         
 function update_phe(phe_idx) {
-//    alert(phe_idx + " " + label_phe_code[phe_idx] + label_phe[phe_idx])
     $(".variable_phe").text(label_phe[phe_idx]);
     $(".variable_phe_link").html(                  
         "<a href='https://biobankengine.stanford.edu/coding/"
@@ -452,7 +452,7 @@ function update_phe(phe_idx) {
         + "</a>"
     );
     update_phe_cosine(phe_idx, 'Phenotype squared cosine score (' + label_phe[phe_idx] + ')'); 
-    update_phe_loading(phe_idx, 'Phenotype squared loading score (' + label_phe[phe_idx] + ')'); 
+//    update_phe_loading(phe_idx, 'Phenotype squared loading score (' + label_phe[phe_idx] + ')'); 
     
     if( ! document.getElementById("phe_contribution_no").checked ){
         window.open("https://biobankengine.stanford.edu/coding/" + label_phe_code[phe_idx]);
@@ -647,15 +647,6 @@ function get_data(json_file){
             <p>Y.T. lead the research project and developped the web application. M.A.R designed the study.</p>
         </div>
     </div>
-
-    <div class="row">
-        <div class="col col-md-12">
-            <h2>About this dataset: {{ dataset }}</h2>
-            <p id="metadata"></p>
-            <p>Note that Coordinated Universal Time (UTC) is 7 hours ahead of Pacific Time </p>
-        </div>                                    
-    </div>
-
     
     <div class="row">
         <div class="col col-md-12">
@@ -710,6 +701,7 @@ function get_data(json_file){
 
     </div> 
     
+<!--
     <div class="row">
         <div class="col col-md-12">
             <h2>Squared loading scores</h2>
@@ -726,7 +718,6 @@ function get_data(json_file){
             <p>Which PCs shows the strongest association to phenotype <span class="variable_phe_link"></span>?</p>
                             
             <div id="phe_loading_given_phe_plot" style:width: 100%>
-                <!-- Plotly chart will be drawn inside this DIV -->
             </div>               
             
         </div>                                    
@@ -738,12 +729,11 @@ function get_data(json_file){
             
             <p>Currently this plot is disabled</p>
             <div id="var_loading_given_var_plot" style:width: 100%>
-                <!-- Plotly chart will be drawn inside this DIV -->
             </div>               
             
         </div>                                    
     </div>        
-    
+-->
     
     <div class="row">
         <div class="col col-md-12">
@@ -813,7 +803,8 @@ function get_data(json_file){
         </div>
 
     </div>
-    
+
+<!--    
     <div class="row">
         <div class="col col-md-12">
             <h2>Squared loading scores for <span class="variable_pc"></span></h2>
@@ -827,17 +818,15 @@ function get_data(json_file){
         <div class="col col-md-6">
             <h2>Squared phenotype loading scores</h2>            
             <div id="phe_loading_plot" style:width: 100%>
-                <!-- Plotly chart will be drawn inside this DIV -->
             </div>                        
         </div>                                    
         <div class="col col-md-6">
             <h2>Squared variant loading scores</h2>
             <div id="var_loading_plot" style:width: 100%>
-                <!-- Plotly chart will be drawn inside this DIV -->
             </div>            
         </div>                                    
     </div>    
-    
+-->    
     
     <div class="row">
         <div class="col col-md-12">
@@ -928,7 +917,7 @@ function get_data(json_file){
     </div>    
     <div class="row">        
         <div class="col col-md-6">
-            <h3>Variance explained plot</h3>
+            <h3>Scree plot (Variance explained plot)</h3>
             <div id="var_explained_plot" style:width: 100%>
                 <!-- Plotly chart will be drawn inside this DIV -->
             </div>
@@ -937,7 +926,15 @@ function get_data(json_file){
     </div>  
     
     
+    <div class="row">
+        <div class="col col-md-12">
+            <h2>About this dataset: {{ dataset }}</h2>
+            <p id="metadata"></p>
+            <p>Note that Coordinated Universal Time (UTC) is 7 hours ahead of Pacific Time </p>
+        </div>                                    
+    </div>
     
+
     <div class="row">
         <h1>Frequently Asked Questions</h1>
         <br/>
