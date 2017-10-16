@@ -215,7 +215,7 @@ var svg = d3.select("#container5").append("svg")
 
 svg.call(tip);
 
-d3.csv("/static/mrpgene/gene/" + gene.gene_name + ".gene.out", function(error, data) {
+d3.csv("/static/mrpgene/gene/" + gene.gene_name + ".01_00001.gene.out", function(error, data) {
   if (error) throw error;
    data = GetTopFivePhenotypes(data);
 
