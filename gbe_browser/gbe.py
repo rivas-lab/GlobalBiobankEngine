@@ -907,8 +907,8 @@ def power_page():
         abort(404)
 
 
-@app.route('/decomposition-dev')
-def decomposition_dev_page():    
+@app.route('/decomposition-app')
+def decomposition_app_page():    
     if not check_credentials():
         return redirect(url_for('login'))
     db = get_db()
@@ -920,7 +920,7 @@ def decomposition_dev_page():
             dataset_list = f.read().splitlines()
                 
         return render_template(
-            'decomposition-dev.html',    
+            'decomposition-app.html',    
             dataset_list = dataset_list,
         )
     
