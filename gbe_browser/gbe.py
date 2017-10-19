@@ -907,8 +907,8 @@ def power_page():
         abort(404)
 
 
-@app.route('/decomposition-app')
-def decomposition_app_page():    
+@app.route('/decomposition-dev')
+def decomposition_dev_page():    
     if not check_credentials():
         return redirect(url_for('login'))
     db = get_db()
@@ -917,6 +917,25 @@ def decomposition_app_page():
         # this list file will be automatically updated by cron job that calls the following script:
         # https://github.com/rivas-lab/decomposition/blob/master/src/decomposition_dataset_list.sh
         with open('./static/decomposition/decomposition_datasets.lst') as f:
+            dataset_list = f.read().splitlines()
+                
+        return render_template(
+            'decomposition-dev.html',    
+            dataset_list = dataset_list,
+        )
+    
+    except Exception as e:
+        print('Unknown Error=', traceback.format_exc())
+        abort(404)
+
+@app.route('/decomposition-app')
+def decomposition_app_page():    
+    if not check_credentials():
+        return redirect(url_for('login'))
+    db = get_db()
+    
+    try:
+        with open('./static/decomposition/decomposition-app.lst') as f:
             dataset_list = f.read().splitlines()
                 
         return render_template(

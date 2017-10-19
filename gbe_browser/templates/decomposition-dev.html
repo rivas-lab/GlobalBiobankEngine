@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block body %}
+
+<div class="container" style="font-size: 16px;">
+    <div class="row">
+        <div class="col">
+            <h1>Decomposition of genetic effects across disease outcomes, biomarkers, and lifestyle measures</h1>
+            <p>Yosuke Tanigawa and Manuel A. Rivas</p>
+            <p>Y.T. developed the web application. M.A.R designed the study.</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col">
+             <img src="../static/decomposition_methods.png" alt="Decomposition - Methods overview" width="800">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <h2 align="center">Video Tutorial for Decomposition App</h2>
+            <p>
+                Yosuke explains the decomposition app and teaches viewers how to interpret scores and plots using examples. 
+                The <a href="../decomposition/codingNonMHC_z_nonCenter_p0001_100PCs">coding variants</a> is used as an example.
+            </p>
+            <iframe width="600" height="450" src="https://www.youtube.com/embed/vI89vgU4oSE" frameborder="0" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col col-md-12">
+            <h2>Available datasets</h2>
+            <p>The following datasets are available now:</p>
+            <ul id="dataset_list">
+            {% for dataset in dataset_list %}
+                <li><a href="../decomposition/{{ dataset }}">{{ dataset }}</a></li>
+            {% endfor %}
+            </ul>  
+            <h3>Naming convention</h3>
+            <p>The name of the datasets corresponds to the following conditions:</p>
+            <ul>
+                <li>all, coding, non-coding, and PTVs: This indicates the type of variants included in the analysis. PTVs = Protein Truncating Variants, coding = coding variants, non-coding = non-coding variants (does NOT include coding variants), and all = coding + non-coding.</li>
+                <li>nonMHC: By default, all the variants on autosomes are included in the analysis. nonMHC dataset has variants outside of major histocompatibility complex region.</li>
+                <li>z: The elements of summary statistic matrix is Z-score</li>
+                <li>non-center: By default, the left/right-singular vector from truncated-singular value decomposition is centered around zero. non-center datasets skip this procedure.</li>
+                <li>p[some value]: The default p-value threshold is 0.001. If there is a suffix like 'p0.01', that means the p-value threshold is adjusted to the specified value.</li>
+            </ul>
+        </div>                                    
+    </div>
+
+    
+</div>
+{% endblock %}
