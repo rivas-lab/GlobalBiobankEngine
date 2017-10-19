@@ -928,6 +928,33 @@ def decomposition_dev_page():
         print('Unknown Error=', traceback.format_exc())
         abort(404)
 
+
+@app.route('/decomposition-internal/<dataset>')
+def decomposition_internal_page(dataset):    
+    if not check_credentials():
+        return redirect(url_for('login'))
+    db = get_db()
+    
+    init_idx_pc  = 0
+    init_idx_phe = 0
+    init_idx_var = 0
+    debug_str = 'debug'
+    
+    try:
+        return render_template(
+            'decomposition-internal.html',    
+            init_idx_pc  = init_idx_pc,
+            init_idx_phe = init_idx_phe,
+            init_idx_var = init_idx_var,
+            dataset = dataset,
+            debug_str = debug_str
+        )            
+    
+    except Exception as e:
+        print('Unknown Error=', traceback.format_exc())
+        abort(404)
+
+
 @app.route('/decomposition-app')
 def decomposition_app_page():    
     if not check_credentials():
@@ -948,6 +975,7 @@ def decomposition_app_page():
         abort(404)
         
         
+
 @app.route('/decomposition/<dataset>')
 def decomposition_page(dataset):    
     if not check_credentials():
