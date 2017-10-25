@@ -279,7 +279,7 @@ d3.csv("/static/mrpgene/phe/" + icd[0].icd +  ".001_00001.out", function(error, 
       .style("cursor", "pointer")
       .filter(function(d){ return typeof(d) == "string"; })
     .on("click", function(d){
-    document.location.href = "awesome?query=" + d["subset.d..key.....l10bf...gene_name"];
+    document.location.href = "https://biobankengine.stanford.edu/awesome?query=" + d["subset.d..key.....l10bf...gene_name"];
     });
 
   svg2.append("g")
@@ -304,7 +304,7 @@ d3.csv("/static/mrpgene/phe/" + icd[0].icd +  ".001_00001.out", function(error, 
           .on('mouseover', tip.show)
       .on('mouseout', tip.hide)
     .on("click", function(d){
-    document.location.href = "awesome?query=" + d["subset.d..key.....l10bf...gene_name"];
+    document.location.href = "https://biobankengine.stanford.edu/awesome?query=" + d["subset.d..key.....l10bf...gene_name"];
     });
 
 });
@@ -387,7 +387,7 @@ d3.csv("/static/mrpgene/phe/" + icd[0].icd + ".00001.out", function(error, data)
       .style("cursor", "pointer")
       .filter(function(d){ return typeof(d) == "string"; })
     .on("click", function(d){
-    document.location.href = "awesome?query=" + d["subset.d..key.....l10bf...gene_name"];
+    document.location.href = "https://biobankengine.stanford.edu/awesome?query=" + d["subset.d..key.....l10bf...gene_name"];
     });
 
   svg3.append("g")
@@ -412,7 +412,7 @@ d3.csv("/static/mrpgene/phe/" + icd[0].icd + ".00001.out", function(error, data)
           .on('mouseover', tip.show)
       .on('mouseout', tip.hide)
     .on("click", function(d){
-    document.location.href = "awesome?query=" + d["subset.d..key.....l10bf...gene_name"];
+    document.location.href = "https://biobankengine.stanford.edu/awesome?query=" + d["subset.d..key.....l10bf...gene_name"];
     });
 
 });
