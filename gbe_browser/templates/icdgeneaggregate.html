@@ -172,10 +172,7 @@ d3.csv("/static/mrpgene/phe/" + icd[0].icd + ".01_00001.out", function(error, da
       .attr("dy", "-.55em")
       .attr("transform", "rotate(-90)" )
       .style("cursor", "pointer")
-      .filter(function(d){ return typeof(d) == "string"; })
-    .on("click", function(d){
-    document.location.href = "awesome?query=" + d["subset.d..key.....l10bf...gene_name"];
-    });
+      .filter(function(d){ return typeof(d) == "string"; });
 
   svg1.append("g")
       .attr("class", "y axis")
@@ -199,7 +196,7 @@ d3.csv("/static/mrpgene/phe/" + icd[0].icd + ".01_00001.out", function(error, da
           .on('mouseover', tip.show)
       .on('mouseout', tip.hide)
     .on("click", function(d){
-    document.location.href = "awesome?query=" + d["subset.d..key.....l10bf...gene_name"];
+    document.location.href = "https://biobankengine.stanford.edu/awesome?query=" + d["subset.d..key.....l10bf...gene_name"];
     });
 
 });
@@ -277,10 +274,7 @@ d3.csv("/static/mrpgene/phe/" + icd[0].icd +  ".001_00001.out", function(error, 
       .attr("dy", "-.55em")
       .attr("transform", "rotate(-90)" )
       .style("cursor", "pointer")
-      .filter(function(d){ return typeof(d) == "string"; })
-    .on("click", function(d){
-    document.location.href = "https://biobankengine.stanford.edu/awesome?query=" + d["subset.d..key.....l10bf...gene_name"];
-    });
+      .filter(function(d){ return typeof(d) == "string"; });
 
   svg2.append("g")
       .attr("class", "y axis")
@@ -385,11 +379,8 @@ d3.csv("/static/mrpgene/phe/" + icd[0].icd + ".00001.out", function(error, data)
       .attr("dy", "-.55em")
       .attr("transform", "rotate(-90)" )
       .style("cursor", "pointer")
-      .filter(function(d){ return typeof(d) == "string"; })
-    .on("click", function(d){
-    document.location.href = "https://biobankengine.stanford.edu/awesome?query=" + d["subset.d..key.....l10bf...gene_name"];
-    });
-
+      .filter(function(d){ return typeof(d) == "string"; });
+   
   svg3.append("g")
       .attr("class", "y axis")
       .call(yAxis)

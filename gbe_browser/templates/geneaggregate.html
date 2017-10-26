@@ -257,10 +257,7 @@ d3.csv("/static/mrpgene/gene/" + gene.gene_name + ".01_00001.gene.out", function
       .attr("dy", "-.55em")
       .attr("transform", "rotate(-90)" )
       .style("cursor", "pointer")
-      .filter(function(d){ return typeof(d) == "string"; })
-    .on("click", function(d){
-    document.location.href = "/coding/" + d;
-    });
+      .filter(function(d){ return typeof(d) == "string"; });
 
   svg1.append("g")
       .attr("class", "y axis")
@@ -279,8 +276,8 @@ d3.csv("/static/mrpgene/gene/" + gene.gene_name + ".01_00001.gene.out", function
       .attr("r", 3.5)
       .attr("cx", function(d) { return x(d["name"]); })
       .attr("width", x.rangeBand())
-      .attr("cy", function(d) { return y(d["l10bfsim"]); })
-      .attr("height", function(d) { return height - y(d["l10bfsim"]); })
+      .attr("cy", function(d) { return y(+d["l10bfsim"]); })
+      .attr("height", function(d) { return height - y(+d["l10bfsim"]); })
           .on('mouseover', tip.show)
       .on('mouseout', tip.hide)
     .on("click", function(d){
@@ -362,10 +359,7 @@ d3.csv("/static/mrpgene/gene/" + gene.gene_name + ".001_00001.gene.out", functio
       .attr("dy", "-.55em")
       .attr("transform", "rotate(-90)" )
       .style("cursor", "pointer")
-      .filter(function(d){ return typeof(d) == "string"; })
-    .on("click", function(d){
-    document.location.href = "/coding/" + d;
-    });
+      .filter(function(d){ return typeof(d) == "string"; });
 
   svg2.append("g")
       .attr("class", "y axis")
@@ -384,8 +378,8 @@ d3.csv("/static/mrpgene/gene/" + gene.gene_name + ".001_00001.gene.out", functio
       .attr("r", 3.5)
       .attr("cx", function(d) { return x(d["name"]); })
       .attr("width", x.rangeBand())
-      .attr("cy", function(d) { return y(d["l10bfsim"]); })
-      .attr("height", function(d) { return height - y(d["l10bfsim"]); })
+      .attr("cy", function(d) { return y(+d["l10bfsim"]); })
+      .attr("height", function(d) { return height - y(+d["l10bfsim"]); })
           .on('mouseover', tip.show)
       .on('mouseout', tip.hide)
     .on("click", function(d){
@@ -470,10 +464,7 @@ d3.csv("/static/mrpgene/gene/" + gene.gene_name + ".00001.gene.out", function(er
       .attr("dy", "-.55em")
       .attr("transform", "rotate(-90)" )
       .style("cursor", "pointer")
-      .filter(function(d){ return typeof(d) == "string"; })
-    .on("click", function(d){
-    document.location.href = "/coding/" + d;
-    });
+      .filter(function(d){ return typeof(d) == "string"; });
 
   svg.append("g")
       .attr("class", "y axis")
@@ -492,8 +483,8 @@ d3.csv("/static/mrpgene/gene/" + gene.gene_name + ".00001.gene.out", function(er
       .attr("r", 3.5)
       .attr("cx", function(d) { return x(d["name"]); })
       .attr("width", x.rangeBand())
-      .attr("cy", function(d) { return y(d["l10bfsim"]); })
-      .attr("height", function(d) { return height - y(d["l10bfsim"]); })
+      .attr("cy", function(d) { return y(+d["l10bfsim"]); })
+      .attr("height", function(d) { return height - y(+d["l10bfsim"]); })
           .on('mouseover', tip.show)
       .on('mouseout', tip.hide)
     .on("click", function(d){
