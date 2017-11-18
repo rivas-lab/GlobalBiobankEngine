@@ -1,3 +1,4 @@
+BIN1020483	2433	Attempted_suicide_vs_all	2433	2433	Y
 BIN1920	150741	Mood_swings	150741	150741	Y
 BIN1930	143813	Miserableness	143813	143813	Y
 BIN1940	92202	Irritability	92202	92202	Y
@@ -12,7 +13,6 @@ BIN2020	60153	Loneliness,_isolation	60153	60153	Y
 BIN2030	95106	Guilty_feelings	95106	95106	Y
 BIN2040	84500	Risk_taking	84500	84500	Y
 BIN20483	2433	Ever_attempted_suicide	2433	2433	Y
-BIN20484	502618	Attempted_suicide_vs_all	502618	502618	Y
 BIN2090	116603	Seen_doctor_(GP)_for_nerves,_anxiety,_tension_or_depression	116603	116603	Y
 BIN2100	38637	Seen_a_psychiatrist_for_nerves,_anxiety,_tension_or_depression	38637	38637	Y
 BIN2188	109472	Long-standing_illness,_disability_or_infirmity	109472	109472	Y
@@ -2798,6 +2798,9 @@ HC3000	73261	Job_involves_heavy_manual_or_physical_work	73261	73261	Y
 HC3001	73261	Job_involves_mainly_walking_or_standing	73261	73261	Y
 HC300	258	benign_/_essential_tremor	258	258	Y
 HC3002	73261	Job_involves_shift_work	73261	73261	Y
+HC3003	33117	Job_involves_manual_or_physical_work	33117	33117	Y
+HC3004	173454	Usual_walking_pace_brisk_vs_other	173454	173454	Y
+HC3005	33868	Usual_walking_pace_slow_vs_other	33868	33868	Y
 HC301	133	asbestosis	133	133	Y
 HC302	3247	retinal_detachment	3247	3247	Y
 HC303	2094	malabsorption/coeliac_disease	2094	2094	Y
