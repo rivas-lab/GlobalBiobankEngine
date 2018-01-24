@@ -10814,6 +10814,7 @@ MED2038460076	461	phenytoin	461	461	20003
 MED2038460150	95962	paracetamol	95962	95962	20003
 MED2038507816	0	aluminium_hydroxide	0	0	20003
 MED99999	17699	Free-text_entry,_unable_to_be_coded	17699	17699	20003
+QT_FC1020453	110201	cannabis_use_frequency	110201	110201	Y
 RH0	2	Fragile_X_Syndrome	2	2	Y
 RH101	23	Acute_Glomerulonephritis	23	23	Y
 RH102	10	Friedreichs_Ataxia	10	10	Y
