@@ -3,6 +3,14 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+
+# R
+.RData
+.Rhistory
+
+# Emacs backup
+*~
+
 # C extensions
 *.so
 
