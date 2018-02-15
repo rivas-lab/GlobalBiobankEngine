@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+{% block body %}
+    <!-- Render context vars in JS here -->
+    <script type="text/javascript">
+        window.icd = {{ icd|tojson|safe }};
+        window.page_name = window.icd[0].icd_id;
+    </script>
+
+
+    <script>
+        filtered_variants = _.filter(window.table_variants, function(d) {
+            return d.filter == 'PASS';
+        });
+        $('#number_of_variants').replaceWith(filtered_variants.length);
+        lof_filtered_variants = _.filter(window.table_variants, function(d) {
+            return d.filter == 'PASS' && d.category == 'lof_variant';
+        });$('#number_of_lof_variants').replaceWith(lof_filtered_variants.length);
+    </script>
+
+<script type="text/javascript" src="{{ url_for('static', filename='d3.v3.min.js') }}"></script>
+    <style>
+                        h3{background-color:#826aa5;color:#fff;padding:3px;}
+                        h3 span{float:right;font-size:28px;font-weight:normal;padding:1px;}
+                        h3 span a{color:#fff;text-decoration:none;}
+
+                </style>
+
+
+    <div class="container">
+        <div class="row">
+
+            <h1><span>Code Phenotype: {{icd[0].Name}}</span></h1>
+
+        <hr/>
+     <dl class="dl-horizontal" style="margin-bottom: 0px;">
+                        <dt>Code:</dt>
+			{% if icd[0].icd %}
+			<dt>Case Count or N:</dt>
+			{% else %}
+			<dt>Case Count or N:</dt>
+			{% endif %}
+			<dt>Single variant results:</dt>                        
+			<dt>Phenotype distribution:</dt>           
+                        <dd>{{ icd[0].icd.replace('ICD','') }}</dd>
+                                             <dd>{{ icd[0].Case }}
+                                             </dd>
+                        <dd><a href="/coding/{{ icd[0].icd}}">{{ icd[0].icd.replace('ICD','') }}</a></dd>
+                        <dd><a href="/coding/phenotype/{{ icd[0].icd}}">{{ icd[0].icd.replace('ICD','') }}</a></dd>
+
+
+
+                    </dl>
+           <hr />
+         </div>
+
+
+      <div id="containergenome2">
+ <img src="/static/images/decomposition/dev_all_z_center_p001_100PCs/{{icd[0].icd}}_eigen_dev_all_z_center_p001_100PCs.png" align="middle" width="100%"> </img>
+
+      </div>
+    </div>
+
+{% endblock %}
