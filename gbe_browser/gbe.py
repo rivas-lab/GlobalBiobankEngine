@@ -1028,6 +1028,20 @@ def decomposition_page(dataset):
         abort(404)
 
 
+@app.route('/hla-assoc')
+def hla_assoc_page():
+    if not check_credentials():
+        return redirect(url_for('login'))
+    db = get_db()
+
+    try:
+        return render_template('hla-assoc.html')
+
+    except Exception as e:
+        print('Unknown Error=', traceback.format_exc())
+        abort(404)
+
+
 def get_icd_variant_table(icd, p):
     db = get_db()
     significant_variant_ids = {}
@@ -1106,7 +1120,7 @@ def intensity_page(affy_str):
 
 @app.route('/gene/<gene_id>', methods=['GET', 'POST'])
 def gene_page(gene_id):
-    if gene_id in GENES_TO_CACHE:
+    if gene_id in []:
         return open(os.path.join(GENE_CACHE_DIR, '{}.html'.format(gene_id))).read()
     else:
         if request.method == 'POST':
@@ -1181,6 +1195,114 @@ def gene_page(gene_id):
         return get_gene_page_content(gene_id)
 
 
+@app.route('/gene/interactive/<gene_id>', methods=['GET', 'POST'])
+def gene_interactive_page(gene_id):
+    if gene_id in []:
+        return open(os.path.join(GENE_CACHE_DIR, '{}.html'.format(gene_id))).read()
+    else:
+        if request.method == 'POST':
+          #  print(dir(request))
+          #  print(request.form.keys())
+            genes = []
+            missense = lof = False
+            function = request.form['function']
+            if "missense_variant" in function:
+                missense = True
+            if "lof_variant" in function:
+                lof = True
+            if request.form['gene_text']:
+                text = request.form['gene_text']
+                genes = text.split("\n")
+        # Remove any empty rows from genes
+            for i in range(len(genes)):
+                genes[i] = genes[i].rstrip()
+                if len(genes[i]) == 0:
+                    genes.pop(i)
+           # print(genes)
+            if 'submit_mrp' in request.form.keys():
+                functionfdr = request.form['functionfdr']
+                functionphen = request.form.getlist('phenotypes[]')
+               # print(functionphen)
+                functionfdr = str(functionfdr)
+                fdr = functionfdr.strip('[')
+                fdr = fdr.strip(']')
+                phenidarr = []
+                for phenname in functionphen:
+                    phenidarr.append(str(phenname))
+               # print(phenidarr)
+                # Run MRP function
+                [key,lbf,clusterval, genedat] = run_mrp(lof=lof, missense=missense, genes=genes, fdr=fdr, phenidarr=phenidarr)
+                 # Send results of MRP function to mrp page
+                return redirect('/mrp/%s' % key)
+            if 'submit_graph' in request.form.keys():
+                data = run_mr(lof=lof, missense=missense, genes=genes)
+               # print(data['thetainvfindict'])
+                key = data['key']
+               # print(data.keys())
+                graph(**data)
+                return redirect('/graph/%s' % key)
+            if 'submit_meta' in request.form.keys():
+                key = str(random.getrandbits(128))
+                annotations = []
+                # Add in the selected annotations to the category list                                                                                                                                                                                                                        functionphen = request.form.getlist('phenotypes[]')
+                functionphen = request.form['phenotypes']
+                phenidarr = []
+                phenidarr.append(str(functionphen))
+                # From models-example.py             
+                gene_variant = lookups.get_gene_variant(DB, gene_names=genes, icds=phenidarr)
+                keys_M = []
+                for gv in gene_variant:
+                    keys_M.append('{}-{}-{}-{}'.format(gv['chrom'],
+                                                       gv['pos'],
+                                                       gv['ref']['val'],
+                                                       gv['alt']['val']))
+                gene_names_M = gene_variant['gene_name']['val']
+                major_consequence_M = gene_variant['consequence']['val']
+                HGVSp_M = gene_variant['hgvsp']['val']
+
+                # -- -                                                                                                                                                                       
+                # -- - M x N NumPy Arrays - --                                                                                                                                               
+                # -- -                                                                                                                                                                       
+                se_M_N = None
+                lor_M_N = None
+                for icd in icds:
+                    # SciDB lookup                                                                                                                                                            
+                    # ---                                                                                                                                                                     
+                    variant_icd = lookups.get_variant_icd(DB, gene_names=genes, icds=phenidarr)
+                    se = variant_icd['se']['val']
+                    if se_M_N is None:
+                        se_M_N = se
+                    else:
+                        se_M_N = numpy.c_[se_M_N, se]
+                    lor = variant_icd['lor']['val']
+                    if lor_M_N is None:
+                        lor_M_N = lor
+                    else:
+                        lor_M_N = numpy.c_[lor_M_N, lor]
+               # print(phenidarr)
+                if lof:
+                    annotations.append('lof_variant')
+                if missense:
+                    annotations.append('missense_variant')
+                if genes != None:
+                    # Find variants with the given annotation
+                    b = models.QueryGenome(category=annotations)
+                betas, se, pvalues, annotations, protein_annotations, variant_ids, icd, gene_return, rsids, alts, allele_frequencies = b.query_genome(genes,phenidarr)
+                betas = [item for sublist in betas for item in sublist]
+                se = [item for sublist in se for item in sublist]
+                idxdel = []
+                for i in range(0,len(se)):
+                    if (float(se[i]) == 0) or (float(se[i]) > .5):
+                        idxdel.append(i)
+                betas = [i for j, i in enumerate(betas) if j not in idxdel]
+                protein_annotations = [str(protein_annotations[i].strip('"').strip('[').strip(']').strip("'").split(",")[0].split(":")[1].strip("'")) if len(protein_annotations[i].strip('"').strip('[').strip(']').strip("'").split(",")[0].split(":")) > 1 else 'NA' for i in range(0,len(protein_annotations))]
+                variant_ids = [variant_ids[j] + "|" + protein_annotations[j] for j, i in enumerate(variant_ids) if j not in idxdel]
+                se = [i for j, i in enumerate(se) if j not in idxdel]
+                meta(key, betas, se, variant_ids,chains = 4, iter = 5000, warmup = 1000, cores = 2)
+                return redirect('/meta/%s' % key)
+        return get_gene_interactive_page_content(gene_id)
+
+
 
 
 @app.route('/geneaggregate/<gene_id>', methods=['GET', 'POST'])
@@ -1217,6 +1339,83 @@ def icdaggregate_page(icd_str):
 
         return render_template(
             'icdgeneaggregate.html',
+            icd=icd,
+            cutoff=cutoff
+            )
+    except Exception as e:
+        print('Failed on icd:', icd_str, '; Error=', traceback.format_exc())
+        abort(404)
+
+
+
+@app.route('/coding/gene-mh/<icd_str>')
+def icd_genemh_page(icd_str):
+    if not check_credentials():
+        return redirect(url_for('login'))
+    db = get_db()
+    try:
+        # icdlabel = str(icd_str)
+        # .strip('ADD').strip('INI').strip('BRMRI')
+        # Try several cutoffs to see if there are too many variants to
+        # render.  Arbitrary 10k max.
+        # passing = False
+        cutoff = None
+        icd = None
+
+        for p in [.001]:
+            icd = lookups.get_icd_variant_by_icd_id_pvalue(db, icd_str, p)
+            if len(icd):
+                cutoff = p
+                # print("CUTOFF",cutoff)
+                break
+            # print(icd_str,icd)
+        print('Rendering ICD10: %s' % icd_str)
+
+        if icd is None or len(icd) == 0:
+            icd = [{'Case': 'NA', 'Name': 'NA', 'icd': icd_str}]
+        # print(icd_info)
+
+        return render_template(
+            'gene-mh.html',
+            icd=icd,
+            cutoff=cutoff
+            )
+    except Exception as e:
+        print('Failed on icd:', icd_str, '; Error=', traceback.format_exc())
+        abort(404)
+
+
+
+
+@app.route('/coding/decomposition-risk/<icd_str>')
+def decomposition_risk_page(icd_str):
+    if not check_credentials():
+        return redirect(url_for('login'))
+    db = get_db()
+    try:
+        # icdlabel = str(icd_str)
+        # .strip('ADD').strip('INI').strip('BRMRI')
+        # Try several cutoffs to see if there are too many variants to
+        # render.  Arbitrary 10k max.
+        # passing = False
+        cutoff = None
+        icd = None
+
+        for p in [.001]:
+            icd = lookups.get_icd_variant_by_icd_id_pvalue(db, icd_str, p)
+            if len(icd):
+                cutoff = p
+                # print("CUTOFF",cutoff)
+                break
+            # print(icd_str,icd)
+        print('Rendering ICD10: %s' % icd_str)
+
+        if icd is None or len(icd) == 0:
+            icd = [{'Case': 'NA', 'Name': 'NA', 'icd': icd_str}]
+        # print(icd_info)
+
+        return render_template(
+            'decomposition-risk.html',
             icd=icd,
             cutoff=cutoff
             )
@@ -1461,6 +1660,86 @@ def get_gene_page_content(gene_id):
 
             t = render_template(
                 'gene.html',
+                gene=gene,
+                transcript=transcript,
+                variants_in_gene=variants_in_gene,
+                variants_in_transcript=variants_in_transcript,
+                transcripts_in_gene=transcripts_in_gene,
+                coverage_stats=coverage_stats
+            )
+            cache.set(cache_key, t, timeout=1000*60)
+        print('Rendering gene: %s' % gene_id)
+        return t
+    except Exception as e:
+        print('Failed on gene:', gene_id, ';Error=', e)
+        abort(404)
+
+
+def get_gene_interactive_page_content(gene_id):
+    if not check_credentials():
+        return redirect(url_for('login'))
+    db = get_db()
+    try:
+        cache_key = 't-gene-{}'.format(gene_id)
+        t = None
+        if t is None:
+            gene = lookups.get_gene_by_id(db, gene_id)
+            if gene is None:
+                abort(404)
+            #print(gene_id)
+            gene_idx = gene['gene_idx']
+
+            variants_in_gene = lookups.get_variants_by_gene_idx(db, gene_idx, gene_id)
+
+            transcripts_in_gene = [
+                lookups.cast_pos_info(
+                    dict(zip(lookups.TRANSCRIPT_INFO_KEYS, s.split(':'))))
+                for s in gene['transcript_info'].split(';')
+                if s]
+
+            #print(variants_in_gene)
+            # Get some canonical transcript and corresponding info
+
+            transcript_id = gene['canonical_transcript']
+            transcript_idx = gene['transcript_idx']
+            transcript = lookups.add_xpos(
+                lookups.cast_pos_info(
+                    dict(zip(lookups.TRANSCRIPT_INFO_KEYS,
+                             gene['c_transcript_info'].split(':')))))
+            transcript['transcript_id'] = transcript_id
+            transcript['exons'] = [
+                lookups.cast_pos_info(
+                    dict(zip(lookups.EXON_INFO_KEYS, s.split(':'))))
+                for s in gene['exon_info'].split(';')
+                if s]
+
+            variants_in_transcript = lookups.get_variants_by_transcript_idx(
+                db, transcript_idx, transcript_id)
+
+            coverage_stats = lookups.get_coverage_for_transcript(
+                db,
+                transcript['xstart'] - EXON_PADDING,
+                transcript['xstop'] + EXON_PADDING)
+
+            add_transcript_coordinate_to_variants(
+                variants_in_transcript, transcript)
+
+            #print("\n\n\n\nVariants in gene")
+            #print(variants_in_gene[0])
+
+            # Add minicd info
+            for variant in variants_in_gene:
+                variant["minicd_info"] = ICD_NAME_MAP.get(variant["minicd"],
+                                                          "info_not_found")
+
+            #print ("Transcripts in gene")
+            #print(transcripts_in_gene)
+
+            #print ("Variants in transcript")
+            #print (variants_in_transcript)
+
+            t = render_template(
+                'geneinteractive.html',
                 gene=gene,
                 transcript=transcript,
                 variants_in_gene=variants_in_gene,

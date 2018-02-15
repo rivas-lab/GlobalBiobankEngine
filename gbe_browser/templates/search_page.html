@@ -89,6 +89,36 @@
 .dropdown a:hover {background-color: #ddd}
 
 .show {display:block;}
+#exTab1 .tab-content {
+  color : white;
+  background-color: #428bca;
+  padding : 5px 15px;
+}
+
+#exTab2 h3 {
+  color : white;
+  background-color: #428bca;
+  padding : 5px 15px;
+}
+
+/* remove border radius for the tab */
+
+#exTab1 .nav-pills > li > a {
+  border-radius: 0;
+}
+
+/* change border radius for the tab , apply corners on top*/
+
+#exTab3 .nav-pills > li > a {
+  border-radius: 4px 4px 0 0 ;
+}
+
+#exTab3 .tab-content {
+  color : white;
+  background-color: #428bca;
+  padding : 5px 15px;
+}
+
 
 
 </style>
@@ -320,7 +350,7 @@ function filterFunction8() {
    <p>
 
 <h3 align="left">Browseable phenotypes</h3>
-<div class="btn-group-vertical" role="group" align="left">
+<div class="btn-group-vertical" role="group" align="left" style="width: 100%;">
 
 <div class="btn-group" role="group">
 <div class="dropdown" align="center">
@@ -819,7 +849,7 @@ function filterFunction8() {
 <a class="dropdown-item" href="coding/HC286"> plantar fascitis (174)</a>
 <a class="dropdown-item" href="coding/HC26"> iritis (166)</a>
 <a class="dropdown-item" href="coding/HC2"> myocarditis (165)</a>
-<a class="dropdown-item" href="coding/HC152"> deliberate self-harm/suicide attempt (161)</a>
+<!--<a class="dropdown-item" href="coding/HC152"> deliberate self-harm/suicide attempt (161)</a>-->
 <a class="dropdown-item" href="coding/HC341"> fracture face / orbit / eye socket (159)</a>
 <a class="dropdown-item" href="coding/HC46"> renal failure requiring dialysis (156)</a>
 <a class="dropdown-item" href="coding/HC289"> vitiligo (155)</a>
@@ -2241,10 +2271,13 @@ function filterFunction8() {
 <iframe width="560" height="315" src="https://www.youtube.com/embed/lSYgC0U7t4o" frameborder="0" allowfullscreen></iframe>
   </div>
 
-              <div class="col-md-4">.
-                <h3 align="center">Up next</h3>
+              <div class="col-md-4">
+		  <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#demo">
+				Recent News </button>
+		    <div id="demo" class="collapse" >
+              <h3 align="center">Up next</h3>
 		<h4>October 10-18, 2017</h4> - Imputation results upload with (<a href="http://www.nealelab.is/">Neale Lab</a>).
-                <h3 align="center">Recent News</h3>
+		<h4>November 21, 2017</h4> - HLA Disease Map added (<a href="https://biobankengine.stanford.edu/hla-assoc">Here</a>).
 		<h4>October 25, 2017</h4> - Update of gene-based results: Top 100 genes per phenotype and top 100 phenotypes per gene.
 		<h4>October 18, 2017</h4> - Release of genetic parameters app I: <a href="https://biobankengine.stanford.edu/gcorr">genetic correlation</a>.
 		<h4>October 18, 2017</h4> - Release of <a href="https://biobankengine.stanford.edu/decomposition-app">decomposition app</a>.
@@ -2257,20 +2290,25 @@ function filterFunction8() {
 		<h4>August 9, 2017</h4> - Initial support for quantitative measures (<a href="#" class="text-warning">more QC required</a>).
 		<h4>August 8, 2017</h4> - Included cluster plots for PTVs (see <a href="https://biobankengine.stanford.edu/intensity/rs328">example</a>). Updated support for region and variant search (see example, Thanks to <a href="https://www.atgu.mgh.harvard.edu/people/raymond_walters">Raymond Walters</a>). 
 		<h4>August 7, 2017</h4> - Links to Mouse Knockout project
-		<h4>July 24, 2017</h4> - Initial support for 337,000 individuals in UK Biobank
-<!--		<h4>July 10, 2017</h4> - Added support for HWE filtering and cancer phenotypes
+		<h4>July 24, 2017</h4> - Initial support for 337,000 individuals in UK Biobank 
+		<h4>July 10, 2017</h4> - Added support for HWE filtering and cancer phenotypes
 		<h4>July 7, 2017</h4> - Added support for region search (phenotype tooltips soon)
 		<h4>July 2, 2017</h4> - Quality control of variants
-		<h4>July 2, 2017</h4> - Additional data loaded along with phenotype tooltips -->
+		<h4>July 2, 2017</h4> - Additional data loaded along with phenotype tooltips
 		<h4>June 7, 2017</h4> - Public release of Global Biobank Engine!
                 <h4>April 1, 2017</h4> - Internal release.
-                <h3 align="center">Lab manuscripts</h3>
+		</div>
+		  <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#demo2">
+				Lab manuscripts </button>
+		    <div id="demo2" class="collapse" >
                 bioRxiv preprints
 		<h4>August 28, 2017</h4> - <a href="http://www.biorxiv.org/content/early/2017/08/23/179762">Medical relevance of protein-truncating variants across 337,208 individuals in the UK Biobank study</a> (<a href="https://www.youtube.com/watch?v=JpFFjjoTMLk">video journal club</a>)
-
-            </div>
-</div>
-
+		<h4>October 27, 2017</h4> - <a href="https://www.biorxiv.org/content/early/2017/10/27/210302">Large-scale phenome-wide association study of PCSK9 loss-of-function variants demonstrates protection against ischemic stroke</a> 
+		<h4>October 27, 2017</h4> - <a href="https://www.biorxiv.org/content/early/2017/10/27/206961">Vulnerabilities of transcriptome-wide association studies</a> 
+		<h4>January 31, 2018</h4> - <a href="https://www.biorxiv.org/content/early/2018/01/31/257162">Bayesian model comparison for rare variant association studies of multiple phenotypes</a> 
+		      </div>
+		  </div>
+            
 <br>
 
 

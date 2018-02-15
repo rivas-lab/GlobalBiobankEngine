@@ -958,8 +958,8 @@ def get_gene_variant(db, gene_names=None, icds=None):
         gene_filter = config.GENE_ARRAY
 
     return db.iquery(
-        config.GENE_VARIANT_LOOKUP.format(gene_filter=gene_filter),
-        schema=config.GENE_VARIANT_SCHEMA,
+        config.GENE_VARIANT_LOOKUP.format(gene_filter=gene_filter, bim_filter="true", variant_filter="true"),
+        #schema=config.GENE_VARIANT_SCHEMA,
         fetch=True,
         atts_only=True)
 

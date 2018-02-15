@@ -28,7 +28,7 @@
     <div class="container">
         <div class="row">
 
-            <h1><span class="hidden-xs">Code Phenotype: {{icd[0].Name}}</span></h1>
+            <h1><span>Code Phenotype: {{icd[0].Name}}</span></h1>
 
         <hr/>
      <dl class="dl-horizontal" style="margin-bottom: 0px;">
@@ -39,11 +39,13 @@
 			<dt>Case Count or N:</dt>
 			{% endif %}
 			<dt>Gene-based results:</dt>                        
+			<dt>Gene-based results (experimental):</dt>                        
 			<dt>Phenotype distribution:</dt>           
                         <dd>{{ icd[0].icd.replace('ICD','') }}</dd>
                                              <dd>{{ icd[0].Case }}
                                              </dd>
                         <dd><a href="/coding/geneaggregate/{{ icd[0].icd}}">{{ icd[0].icd.replace('ICD','') }}</a></dd>
+                        <dd><a href="/coding/gene-mh/{{ icd[0].icd}}">{{ icd[0].icd.replace('ICD','') }}</a></dd>
                         <dd><a href="/coding/phenotype/{{ icd[0].icd}}">{{ icd[0].icd.replace('ICD','') }}</a></dd>
 
 
@@ -60,12 +62,9 @@
 
 
     // manhattan plot code obtained/edited/adapted from : https://github.com/chengsoonong/rede/tree/master/Rede/manhattanplot
-    d3.select("html")
+    d3.select("#containergenome")
                 .style("height", "100%");
-                //.style("overflow", "auto");
-            d3.select("body")
-                .style("height", "100%");
-               // .style("overflow", "auto");
+//                .style("overflow", "auto");
 
     var chrom_length = 0;
 
@@ -122,11 +121,12 @@
 
 	// Merge the both high and low significance points together into a single array
     all_data = data_low.concat(data_high);
-
+    console.log(all_data);
 	// Set minimums and maximums for pvalue range
     var min_pvalue = 0;
+    console.log(data_weight_pvalue);
     var max_pvalue = d3.max([16, d3.max(data_weight_pvalue)]);
-
+    console.log(d3.max(data_weight_pvalue));
     // var which defined the extra space in the bottom and the top of the -log(p-value) axis dynamically to the dataset
     var extend_scale = (max_pvalue - min_pvalue) *0.05;
 
@@ -203,7 +203,7 @@
         .ticks(5);
 
     // Define tooltip
-    var tooltip = d3.select("body")
+    var tooltip = d3.select("#containergenome")
 	    .append("div")
 	    .style("position", "absolute")
 	    .style("z-index", "10")

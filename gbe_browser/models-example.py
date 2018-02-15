@@ -7,8 +7,8 @@ import utils
 
 db = scidbpy.connect()
 
-#gene_names = ['IL33']          # Set to None to get all genes
-gene_names = None
+gene_names = ['IL33']          # Set to None to get all genes
+#gene_names = None
 icds = ['HC49', 'HC382']        # Set to None to get all ICDs
 
 

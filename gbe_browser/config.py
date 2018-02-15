@@ -31,8 +31,8 @@ QC_ARRAY = 'qc'
 # -- -
 ICD_PATH = os.path.join(GBE_DATA_PATH, 'icdassoc', 'hybrid')
 
-ICD_GLOB = os.path.join(ICD_PATH, '*c*.hybrid*gz')
-QT_GLOB = os.path.join(ICD_PATH, '*c*.linear*gz')
+ICD_GLOB = os.path.join(ICD_PATH, '*logistic*gz')
+QT_GLOB = os.path.join(ICD_PATH, '*linear*gz')
 
 ICD_INFO_FILE = os.path.join(GBE_DATA_PATH, 'icdstats', 'icdinfo.txt')
 
@@ -1248,7 +1248,7 @@ GENE_VARIANT_LOOKUP = """
   sort(
     equi_join(
       equi_join(
-        project({variant_array}, rsid, ref, alt, ukbb_freq, exac_nfe),
+        project(filter({variant_array}, {{variant_filter}}), rsid, ref, alt, ukbb_freq, exac_nfe),
         project(
           equi_join(
             {variant_gene_array},
@@ -1267,10 +1267,10 @@ GENE_VARIANT_LOOKUP = """
           gene_name),
         'left_names=chrom,pos',
         'right_names=chrom,pos'),
-      {bim_array},
+      filter({bim_array}, {{bim_filter}}),
       'left_names=chrom,pos,ref,alt',
       'right_names=chrom,pos,ref,alt',
-      'algorithm=hash_replicate_right'),
+      'algorithm=hash_replicate_left'),
     chrom,
     pos,
     ref,

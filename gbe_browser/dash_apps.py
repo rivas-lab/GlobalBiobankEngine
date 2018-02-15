@@ -50,8 +50,8 @@ def initialize():
                  list(data['p1_code']) + list(data['p2_code']))),
     )
     vc = pd.Series(list(data.p1) + list(data.p2)).value_counts()
+    starting_phenos = list(set(list(vc.head(40).index)) - set(['Lupus (RH51)', 'systemic lupus erythematosis/sle (HC352)']))
 
-    starting_phenos = list(vc.head(40).index)
     return(data, phenos, starting_phenos, pheno_categories, min_z, min_cases,
            name_to_code, plot_height, plot_width, max_phenos)
 
@@ -187,7 +187,7 @@ gcorr_layout = html.Div(children=[
                 value=0,
                 step=0.01,
                 min=0,
-                max=0.2,
+                max=1,
             )
         ], className='one column',
         ),
@@ -198,10 +198,10 @@ gcorr_layout = html.Div(children=[
             dcc.Input(
                 id='pi2-max',
                 type='number',
-                value=0.2,
+                value=1,
                 step=0.01,
                 min=0,
-                max=0.2,
+                max=1,
             )
         ], className='one column',
         ),
@@ -365,15 +365,15 @@ def make_plot_df(
         # Size based on membership
         # mins = np.log(DATA['pi2'].min())
         # maxs = np.log(DATA['pi2'].max())
-        mins = DATA['pi2'].min()
-        maxs = DATA['pi2'].max()
+        mins = np.log(0.001)
+        maxs = np.log(1)
         minsize = 5.
         maxsize = 13
         m = (maxsize - minsize) / (maxs - mins)
         b = maxsize - m * maxs
-        # tdf.loc[:, 'size'] = np.log(tdf['pi2']) * m + b
-        tdf.loc[:, 'size'] = tdf['pi2'] * m + b
-        tdf.loc[tdf['size'] > maxsize, 'size'] = maxsize
+        tdf.loc[:, 'size'] = np.log(tdf['pi2']) * m + b
+        # tdf.loc[:, 'size'] = tdf['pi2'] * m + b
+        # tdf.loc[tdf['size'] > maxsize, 'size'] = maxsize
     elif size_var == 'z-score':
         # Default is z-score
         mins = np.log(3)
