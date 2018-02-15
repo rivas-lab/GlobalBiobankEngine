@@ -1,3 +1,65 @@
+<<<<<<< HEAD
+INI20453	110201	cannabis_use_frequency	110201	110201	Y
+INI6218	16	Impedance_of_whole_body,_manual_entry	16	16	Y
+INI6219	16	Impedance_of_leg,_manual_entry_(right)	16	16	Y
+INI6220	16	Impedance_of_leg,_manual_entry_(left)	16	16	Y
+INI6221	16	Impedance_of_arm,_manual_entry_(right)	16	16	Y
+INI6222	16	Impedance_of_arm,_manual_entry_(left)	16	16	Y
+INI23098	331513	Weight	331513	331513	Y
+INI23099	331318	Body_fat_percentage	331318	331318	Y
+INI23100	330970	Whole_body_fat_mass	330970	330970	Y
+INI23101	331486	Whole_body_fat-free_mass	331486	331486	Y
+INI23102	331510	Whole_body_water_mass	331510	331510	Y
+INI23104	331508	Body_mass_index_(BMI)	331508	331508	Y
+INI23105	331502	Basal_metabolic_rate	331502	331502	Y
+INI23106	331480	Impedance_of_whole_body	331480	331480	Y
+INI23107	331496	Impedance_of_leg_(right)	331496	331496	Y
+INI23108	331491	Impedance_of_leg_(left)	331491	331491	Y
+INI23109	331475	Impedance_of_arm_(right)	331475	331475	Y
+INI23110	331487	Impedance_of_arm_(left)	331487	331487	Y
+INI23111	331491	Leg_fat_percentage_(right)	331491	331491	Y
+INI23112	331488	Leg_fat_mass_(right)	331488	331488	Y
+INI23113	331480	Leg_fat-free_mass_(right)	331480	331480	Y
+INI23114	331480	Leg_predicted_mass_(right)	331480	331480	Y
+INI23115	331473	Leg_fat_percentage_(left)	331473	331473	Y
+INI23116	331470	Leg_fat_mass_(left)	331470	331470	Y
+INI23117	331454	Leg_fat-free_mass_(left)	331454	331454	Y
+INI23118	331449	Leg_predicted_mass_(left)	331449	331449	Y
+INI23119	331445	Arm_fat_percentage_(right)	331445	331445	Y
+INI23120	331422	Arm_fat_mass_(right)	331422	331422	Y
+INI23121	331418	Arm_fat-free_mass_(right)	331418	331418	Y
+INI23122	331413	Arm_predicted_mass_(right)	331413	331413	Y
+INI23123	331395	Arm_fat_percentage_(left)	331395	331395	Y
+INI23124	331362	Arm_fat_mass_(left)	331362	331362	Y
+INI23125	331358	Arm_fat-free_mass_(left)	331358	331358	Y
+INI23126	331345	Arm_predicted_mass_(left)	331345	331345	Y
+INI23127	331314	Trunk_fat_percentage	331314	331314	Y
+INI23128	331295	Trunk_fat_mass	331295	331295	Y
+INI23129	331234	Trunk_fat-free_mass	331234	331234	Y
+INI23130	331203	Trunk_predicted_mass	331203	331203	Y
+INI24003	332633	Nitrogen_dioxide_air_pollution;_2010	332633	332633	Y
+INI24004	332633	Nitrogen_oxides_air_pollution;_2010	332633	332633	Y
+INI24005	308977	Particulate_matter_air_pollution_(pm10);_2010	308977	308977	Y
+INI24006	308977	Particulate_matter_air_pollution_(pm2.5);_2010	308977	308977	Y
+INI24007	308977	Particulate_matter_air_pollution_(pm2.5)_absorbance;_2010	308977	308977	Y
+INI24008	308977	Particulate_matter_air_pollution_2.5-10um;_2010	308977	308977	Y
+INI24009	332633	Traffic_intensity_on_the_nearest_road	332633	332633	Y
+INI24010	332633	Inverse_distance_to_the_nearest_road	332633	332633	Y
+INI24011	332633	Traffic_intensity_on_the_nearest_major_road	332633	332633	Y
+INI24012	332633	Inverse_distance_to_the_nearest_major_road	332633	332633	Y
+INI24013	332633	Total_traffic_load_on_major_roads	332633	332633	Y
+INI24015	332633	Sum_of_road_length_of_major_roads_within_100m	332633	332633	Y
+INI24016	332633	Nitrogen_dioxide_air_pollution;_2005	332633	332633	Y
+INI24017	332633	Nitrogen_dioxide_air_pollution;_2006	332633	332633	Y
+INI24018	332633	Nitrogen_dioxide_air_pollution;_2007	332633	332633	Y
+INI24019	331841	Particulate_matter_air_pollution_(pm10);_2007	331841	331841	Y
+INI24020	332633	Average_daytime_sound_level_of_noise_pollution	332633	332633	Y
+INI24021	332633	Average_evening_sound_level_of_noise_pollution	332633	332633	Y
+INI24022	332633	Average_night-time_sound_level_of_noise_pollution	332633	332633	Y
+INI24023	332633	Average_16-hour_sound_level_of_noise_pollution	332633	332633	Y
+INI24024	332633	Average_24-hour_sound_level_of_noise_pollution	332633	332633	Y
+=======
+>>>>>>> d3e99961ccb7c90916ee48b4832e8e350a64d404
 BIN1020483	2433	Attempted_suicide_vs_all	2433	2433	Y
 BIN1920	150741	Mood_swings	150741	150741	Y
 BIN1930	143813	Miserableness	143813	143813	Y
@@ -4057,6 +4119,21 @@ INI87	256433	Non-cancer_illness_year/age_first_occurred	256433	256433	Y
 INI93	30077	Systolic_blood_pressure,_manual_reading	30077	30077	Y
 INI94	30077	Diastolic_blood_pressure,_manual_reading	30077	30077	Y
 INI95	30077	Pulse_rate_(during_blood-pressure_measurement)	30077	30077	Y
+<<<<<<< HEAD
+MED1000000001	59198	Statin	users	59198	59198
+MED1000000002	13630	Atorvastatin	vs	Statin	Users
+MED1000000003	181	Fluvastatin	vs	Statin	Users
+MED1000000004	1856	Pravastatin	vs	Statin	Users
+MED1000000005	2418	Rosuvastatin	vs	Statin	Users
+MED1000000006	41743	Simvastatin	vs	Statin	Users
+MED1000000007	43940	High	cholesterol	43940	43940
+MED1000000008	1909	Methotrexate	vs	all	1909
+MED1000000009	1909	Methotrexate	vs	self	reported
+MED1000000010	1909	Methotrexate	vs	self	reported
+MED1000000011	1115	NHS	coded	RA	1115
+MED1000000012	4244	Self	reported	RA	vs
+MED1000000013	3976	Self	reported	or	coded
+=======
 MED1000000001	59198	Statin_users	59198	59198
 MED1000000002	13630	Atorvastatin_vs_Statin_Users	13630	13630
 MED1000000003	181	Fluvastatin_vs_Statin_Users	181	181
@@ -4070,6 +4147,7 @@ MED1000000010	1909	Methotrexate_vs_self_reported_RA	1909	1909
 MED1000000011	1115	NHS_coded_RA	1115	1115
 MED1000000012	4244	Self_reported_RA_vs_All	4244	4244
 MED1000000013	3976	Self_reported_or_coded_RA_vs_All	3976	3976
+>>>>>>> d3e99961ccb7c90916ee48b4832e8e350a64d404
 MED1140850692	0	aludrox_gel	0	0	20003
 MED1140850708	0	dijex_liquid	0	0	20003
 MED1140850712	0	diovol_fruit_flavour_suspension	0	0	20003
