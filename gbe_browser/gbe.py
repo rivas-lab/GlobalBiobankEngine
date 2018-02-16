@@ -1,6 +1,7 @@
 from __future__ import division
 import sys
 import itertools
+import collections
 import io
 import json
 import os
@@ -88,8 +89,32 @@ google = oauth.remote_app('google',
                           consumer_secret=google_client_secret)
 
 
-# Set random seed
+class permission_groups():
+    '''
+    store dict of set of emails to store white-list of individuals for pages with restricted access.
+    To change add/remove/modify the permission groups, please edit permission_groups.tsv
+    '''
+    def __init__(self, groups=None, input_file=None):
+        self._groups = collections.defaultdict(set)
+        if groups is not None:
+            # one can pass groups as an argument to constructor
+            for group, emails in groups:
+                self._groups[group].union(set(emails))
+        elif input_file is not None:
+            # read from file
+            with open(input_file) as f:
+                # read file and skip empty and comment lines
+                input_file_lines = [x for x in f.read().splitlines() if len(x) > 0 and x[0] != '#']
+            for line in input_file_lines:
+                # the file should be a tsv file. 1st column: group, 2nd column: email
+                group, email = line.split('\t')[0], line.split('\t')[1]
+                self._groups[group].add(email)
+    def get(self, group_name):
+        return self._groups[group_name]
 
+p_groups = permission_groups(input_file='permission_groups.tsv')
+
+# Set random seed
 
 mail_on_500(app, ADMINISTRATORS)
 Compress(app)
@@ -612,7 +637,10 @@ def awesome():
 
 @app.route('/variant_dev/<variant_str>')
 def variant_icd_page_dev(variant_str):
-    return variant_icd_page(variant_str, dev=True)
+    if not check_credentials(permission_group=p_groups.get('rivas-lab')):
+        abort(404)
+    else:
+        return variant_icd_page(variant_str, dev_page=True)
 
 @app.route('/variant/<variant_str>')
 def variant_icd_page(variant_str, dev_page=False):
@@ -675,7 +703,7 @@ def variant_icd_page(variant_str, dev_page=False):
                 item['pvalue'] = format(float(item['pvalue']), '.4g')
                 item['l10pval'] = format(float(item['log10pvalue']), '.4g')
                 if float(item['pvalue']) == 0:
-                    item['pvalue'] = np.finfo(float).eps
+                    item['pvalue'] = numpy.finfo(float).eps
                     item['pvalue'] = format(float(item['pvalue']),'.4g')
                     item['l10pval'] = 250
                 # item['Case'] = icd10info[0]['Case']
@@ -686,13 +714,23 @@ def variant_icd_page(variant_str, dev_page=False):
         for index in sorted(indexes, reverse=True):
             del icdstats[index]
         print('Rendering variant: %s' % variant_str)
-        return render_template(
-            'variant_dev.html' if dev_page else 'variant.html',
-            variant=variant,
-            icdstats=icdstats,
-            consequences=consequences,
-            ordered_csqs=ordered_csqs
-        )
+        if(dev_page):
+            return render_template(
+                'variant_dev.html',
+                variant=variant,
+                icdstats=icdstats,
+                consequences=consequences,
+                ordered_csqs=ordered_csqs,
+                debug_message='hello',
+            )
+        else:
+            return render_template(
+                'variant.html',
+                variant=variant,
+                icdstats=icdstats,
+                consequences=consequences,
+                ordered_csqs=ordered_csqs,
+            )
     except Exception as e:
         print('Failed on variant:', variant_str, '; Error=', traceback.format_exc())
         abort(404)
@@ -896,6 +934,9 @@ def power_page():
 def decomposition_dev_page():    
     if not check_credentials():
         return redirect(url_for('login'))
+    elif not check_credentials(permission_group=p_groups.get('rivas-lab')):
+        abort(404)
+
     db = get_db()
     
     try:
@@ -918,6 +959,8 @@ def decomposition_dev_page():
 def decomposition_internal_page(dataset):    
     if not check_credentials():
         return redirect(url_for('login'))
+    elif not check_credentials(permission_group=p_groups.get('rivas-lab')):
+        abort(404)
     db = get_db()
     
     init_idx_pc  = 0
@@ -944,7 +987,7 @@ def decomposition_internal_page(dataset):
 def decomposition_app_page():    
     abort(404)
 
-def null():
+def decomposition_app_page_null():
     if not check_credentials():
         return redirect(url_for('login'))
     db = get_db()
@@ -968,6 +1011,8 @@ def null():
 def decomposition_page(dataset):    
     if not check_credentials():
         return redirect(url_for('login'))
+    elif not check_credentials(permission_group=p_groups.get('rivas-lab')):
+        abort(404)
     db = get_db()
     
     
@@ -2321,7 +2366,7 @@ def get_acess_token():
     return session.get('access_token')
 
 # Function to check Google Login Credentials for current session
-def check_credentials():
+def check_credentials(permission_group=None):
     # Debugging.  Sick of logging in and getting redirected
     if app.debug:
        return True
@@ -2339,7 +2384,11 @@ def check_credentials():
         res = urlopen(req)
         data = json.loads(res.read())
         # todo log email address data['email']
-        return True
+        if ((permission_group is None) or (data['email'] in permission_group)):
+            return True
+        else:
+            return False
+        #return True
     except URLError as e:
         if e.code == 401:
             # Unauthorized - bad token
