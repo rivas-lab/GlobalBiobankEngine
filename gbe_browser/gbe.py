@@ -19,7 +19,6 @@ from meta import meta
 from utils import *
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash, jsonify
 from flask_compress import Compress
-from flask import Flask, redirect, url_for, session
 from flask_oauth import OAuth
 from flask_errormail import mail_on_500
 from flask import Response
@@ -611,8 +610,12 @@ def awesome():
         raise Exception
 
 
+@app.route('/variant_dev/<variant_str>')
+def variant_icd_page_dev(variant_str):
+    return variant_icd_page(variant_str, dev=True)
+
 @app.route('/variant/<variant_str>')
-def variant_icd_page(variant_str):
+def variant_icd_page(variant_str, dev_page=False):
     if not check_credentials():
         return redirect(url_for('login'))
     db = get_db()
@@ -659,30 +662,12 @@ def variant_icd_page(variant_str):
                 indexes.append(idx)
             else:
                 # item['Name'] = icd10info[0]['Name']
-                if icd10[0:2] == "RH":
-                    item['Group'] = "RH"
-                elif icd10[0:2] == "FH":
-                    item['Group'] = "FH"
-                elif icd10[0:2] == "HC":
-                    item['Group'] = "HC"
-                elif icd10[0:6] == "cancer":
-                    item['Group'] = "cancer"
-                elif icd10[0:3] == "ADD":
-                    item['Group'] = "ADD"
-                elif icd10[0:3] == "INI":
-                    item['Group'] = "INI"
-                elif icd10[0:3] == "MED":
-                    item['Group'] = "MED"
-                elif icd10[0:3] == "BIN":
-                    item['Group'] = "BIN"
-                elif icd10[0:5] == "BRMRI":
-                    item['Group'] = "BRMRI"
-                elif icd10[0:8] == "BROADBIN":
-                    item['Group'] = "BROADBIN"
-                elif icd10[0:7] == "BROADQT":
-                    item['Group'] = "BROADQT"
-                else:
-                    item['Group'] = icd10[0]
+                item['Group'] = icd10[0] # default value
+                groups = ['RH', 'FH', 'HC', 'cancer', 'ADD', 'INI', 'MED', 'BIN', 'BRMRI', 'BROADBIN', 'BROADQT']
+                for group in groups:
+                    if icd10.startswith(group):
+                        item['Group'] = group
+                        break
                 item['OR'] = format(float(item['or_val']), '.4g')
                 item['LOR'] = format(float(item['lor']), '.4g')
                 item['L95OR'] = format(float(item['l95or']), '.4g')
@@ -690,7 +675,7 @@ def variant_icd_page(variant_str):
                 item['pvalue'] = format(float(item['pvalue']), '.4g')
                 item['l10pval'] = format(float(item['log10pvalue']), '.4g')
                 if float(item['pvalue']) == 0:
-                    item['pvalue'] = .00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001
+                    item['pvalue'] = np.finfo(float).eps
                     item['pvalue'] = format(float(item['pvalue']),'.4g')
                     item['l10pval'] = 250
                 # item['Case'] = icd10info[0]['Case']
@@ -702,7 +687,7 @@ def variant_icd_page(variant_str):
             del icdstats[index]
         print('Rendering variant: %s' % variant_str)
         return render_template(
-            'variant.html',
+            'variant_dev.html' if dev_page else 'variant.html',
             variant=variant,
             icdstats=icdstats,
             consequences=consequences,
@@ -957,6 +942,9 @@ def decomposition_internal_page(dataset):
 
 @app.route('/decomposition-app')
 def decomposition_app_page():    
+    abort(404)
+
+def null():
     if not check_credentials():
         return redirect(url_for('login'))
     db = get_db()
