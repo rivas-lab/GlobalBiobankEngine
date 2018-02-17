@@ -780,7 +780,7 @@ def variant_page_plot_pval_data(icdstats):
 
 
 def variant_page_plot_lor_data(icdstats):
-    plot_d_dict = variant_page_data_prep_sub(icdstats, sort_key='OR')
+    plot_d_dict = variant_page_data_prep_sub(icdstats, sort_key='log10pvalue')
     groups = plot_d_dict.keys()
     plot_d = [{
         'x':    plot_d_dict[group]['icd'],
