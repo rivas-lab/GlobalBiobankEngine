@@ -636,15 +636,8 @@ def awesome():
         raise Exception
 
 
-@app.route('/variant_dev/<variant_str>')
-def variant_icd_page_dev(variant_str):
-    if not check_credentials(permission_group=p_groups.get('rivas-lab')):
-        abort(404)
-    else:
-        return variant_icd_page(variant_str, dev_page=True)
-
 @app.route('/variant/<variant_str>')
-def variant_icd_page(variant_str, dev_page=False):
+def variant_icd_page(variant_str):
     if not check_credentials():
         return redirect(url_for('login'))
     db = get_db()
@@ -715,37 +708,28 @@ def variant_icd_page(variant_str, dev_page=False):
         for index in sorted(indexes, reverse=True):
             del icdstats[index]
         print('Rendering variant: %s' % variant_str)
-        if(dev_page):
-            plot_data=prepare_variant_page_plotly_plot_data(icdstats)
-            return render_template(
-                'variant_dev.html',
-                variant=variant,
-                icdstats=icdstats,
-                consequences=consequences,
-                ordered_csqs=ordered_csqs,
-                debug_message='hello',
-               # plotly_plot_data=[ {'x': [1, 2, 3], 'y': [1,2, 3]}, ], #plot_data
-                plotly_plot_data=plot_data,
-            )
-        else:
-            return render_template(
-                'variant.html',
-                variant=variant,
-                icdstats=icdstats,
-                consequences=consequences,
-                ordered_csqs=ordered_csqs,
-            )
+        return render_template(
+            'variant.html',
+            variant=variant,
+            icdstats=icdstats,
+            consequences=consequences,
+            ordered_csqs=ordered_csqs,
+            debug_message='',
+            #plot_pval_data = [{'x': [1, 2, 3], 'y': [1,2, 3]}],
+            plot_pval_data = variant_page_plot_pval_data(icdstats),
+            plot_lor_data  = variant_page_plot_lor_data(icdstats),
+        )
     except Exception as e:
         print('Failed on variant:', variant_str, '; Error=', traceback.format_exc())
         abort(404)
 
-def prepare_variant_page_plotly_plot_data(icdstats):
+def variant_page_data_prep_sub(icdstats, sort_key='log10pvalue'):
     plot_d_raw = collections.defaultdict(list)
     keys = icdstats[0].keys()
     for key in keys:
         plot_d_raw[key] = np.array([x[key] for x in icdstats])
     plot_df = pandas.DataFrame(plot_d_raw).sort_values(
-        by=['Group', 'log10pvalue'], ascending=[True, False]
+        by=['Group', sort_key], ascending=[True, False]
     )
     plot_d_dict = collections.defaultdict(collections.defaultdict)
     
@@ -753,6 +737,13 @@ def prepare_variant_page_plotly_plot_data(icdstats):
     for group in groups:
         for key in keys:
             plot_d_dict[group][key] = list(plot_df[plot_df['Group'] == group][key])
+    for group in groups:
+        for key in ['OR', 'L95OR', 'U95OR']:
+            plot_d_dict[group]['L{}'.format(key)] = list(np.log10(np.array([float(x) for x in plot_d_dict[group][key]])))
+    for group in groups:
+        for key in ['LL95OR', 'LU95OR']:
+            diff = np.array(plot_d_dict[group][key]) - np.array(plot_d_dict[group]['LOR'])
+            plot_d_dict[group]['d{}'.format(key)] = [0 if np.isnan(x) else np.abs(x) for x in diff]
 
     for group in groups:
         group_len = len(plot_d_dict[group]['icd'])
@@ -768,13 +759,41 @@ def prepare_variant_page_plotly_plot_data(icdstats):
                 plot_d_dict[group]['U95OR'],
             )
         ]
+    return plot_d_dict
 
+
+def variant_page_plot_pval_data(icdstats):
+    plot_d_dict = variant_page_data_prep_sub(icdstats, sort_key='log10pvalue')
+    groups = plot_d_dict.keys()
     plot_d = [{
         'x':    plot_d_dict[group]['icd'],
         'y':    plot_d_dict[group]['l10pval'],
         'text': plot_d_dict[group]['text'],
         'name': group,
         'type': 'scattergl',
+        'mode': 'markers',
+        'marker': {'size': 16, },
+        'hoverinfo':'x+text', 
+    } for group in groups]
+ 
+    return plot_d
+
+
+def variant_page_plot_lor_data(icdstats):
+    plot_d_dict = variant_page_data_prep_sub(icdstats, sort_key='OR')
+    groups = plot_d_dict.keys()
+    plot_d = [{
+        'x':    plot_d_dict[group]['icd'],
+        'y':    plot_d_dict[group]['LOR'],
+        'error_y': {
+            'type'       : 'data',
+            'symmetric'  : 'false',
+            'array'      : plot_d_dict[group]['dLU95OR'],
+            'arrayminus' : plot_d_dict[group]['dLL95OR'],
+        },
+        'text': plot_d_dict[group]['text'],
+        'name': group,
+        'type': 'scatter',
         'mode': 'markers',
         'marker': {'size': 16, },
         'hoverinfo':'x+text', 
