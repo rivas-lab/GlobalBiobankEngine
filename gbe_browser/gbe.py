@@ -676,16 +676,18 @@ def variant_icd_page(variant_str):
                 item['Name'] = 'NA'
                 item['Group'] = 'NA'
                 item['OR'] = 1
+                item['LOR'] = 0
                 item['L95OR'] = 1
                 item['U95OR'] = 1
                 item['pvalue'] = 1
                 item['l10pval'] = 0
                 item['Case'] = 'NA'
+                item['SE'] = 0
                 indexes.append(idx)
             else:
                 # item['Name'] = icd10info[0]['Name']
                 item['Group'] = icd10[0] # default value
-                groups = ['RH', 'FH', 'HC', 'cancer', 'ADD', 'INI', 'MED', 'BIN', 'BRMRI', 'BROADBIN', 'BROADQT']
+                groups = ['RH', 'FH', 'HC', 'cancer', 'ADD', 'INI', 'MED', 'BIN', 'BRMRI', 'BROADBIN', 'BROADQT', 'INI_FC', 'BIN_FC']
                 for group in groups:
                     if icd10.startswith(group):
                         item['Group'] = group
@@ -696,6 +698,7 @@ def variant_icd_page(variant_str):
                 item['U95OR'] = format(float(item['u95or']), '.4g')
                 item['pvalue'] = format(float(item['pvalue']), '.4g')
                 item['l10pval'] = format(float(item['log10pvalue']), '.4g')
+                item['SE'] = format(float(item['se']), '.4g')
                 if float(item['pvalue']) == 0:
                     item['pvalue'] = numpy.finfo(float).eps
                     item['pvalue'] = format(float(item['pvalue']),'.4g')
@@ -738,25 +741,34 @@ def variant_page_data_prep_sub(icdstats, sort_key='log10pvalue'):
         for key in keys:
             plot_d_dict[group][key] = list(plot_df[plot_df['Group'] == group][key])
     for group in groups:
-        for key in ['OR', 'L95OR', 'U95OR']:
-            plot_d_dict[group]['L{}'.format(key)] = list(np.log10(np.array([float(x) for x in plot_d_dict[group][key]])))
+        for key in ['OR', 'LOR', 'L95OR', 'U95OR', 'pvalue', 'SE']:
+            plot_d_dict[group][key] = [float(x) for x in plot_d_dict[group][key]]
     for group in groups:
-        for key in ['LL95OR', 'LU95OR']:
-            diff = np.array(plot_d_dict[group][key]) - np.array(plot_d_dict[group]['LOR'])
-            plot_d_dict[group]['d{}'.format(key)] = [0 if np.isnan(x) else np.abs(x) for x in diff]
+        #error_bar = {'L95OR': -1, 'U95OR': 1}
+        #for key in error_bar.keys():
+        #    diff = np.array(plot_d_dict[group][key]) - np.array(plot_d_dict[group]['LOR'])
+        #    plot_d_dict[group]['d{}'.format(key)] = [0 if np.isnan(x) else np.abs(x) for x in diff]
+        plot_d_dict[group]['196SE'] = list( 1.96 * np.array(plot_d_dict[group]['SE']) )
 
     for group in groups:
+        if group in set(['INI', 'INI_FC']):
+            beta_or_lor = 'BETA'
+        else:
+            beta_or_lor = 'log(OR)'
         group_len = len(plot_d_dict[group]['icd'])
         plot_d_dict[group]['text'] = [
-            '{}. Case: {}, P-value: {:.3e}, OR = {:.5f} (95% [{:.5f}, {:.5f}])'.format(
-                ''.join([c if c != '_' else ' ' for c in x[0]]), x[1], float(x[2]), float(x[3]), float(x[4]), float(x[5])
+            '{}. Case: {}, P-value: {:.3e}, {} = {:.5f} (95% [{:.5f}, {:.5f}])'.format(
+                ''.join([c if c != '_' else ' ' for c in x[0]]), x[1], x[2], x[3], x[4], x[5], x[6]
             ) for x in zip(
                 plot_d_dict[group]['Name'],
                 plot_d_dict[group]['Case'],
                 plot_d_dict[group]['pvalue'],
-                plot_d_dict[group]['OR'],
-                plot_d_dict[group]['L95OR'],
-                plot_d_dict[group]['U95OR'],
+                [beta_or_lor] * group_len,
+                plot_d_dict[group]['LOR'],
+                np.array(plot_d_dict[group]['LOR']) - 1.96 * np.array(plot_d_dict[group]['SE']),
+                np.array(plot_d_dict[group]['LOR']) + 1.96 * np.array(plot_d_dict[group]['SE']),
+                #plot_d_dict[group]['L95OR'],
+                #plot_d_dict[group]['U95OR'],
             )
         ]
     return plot_d_dict
@@ -788,8 +800,8 @@ def variant_page_plot_lor_data(icdstats):
         'error_y': {
             'type'       : 'data',
             'symmetric'  : 'false',
-            'array'      : plot_d_dict[group]['dLU95OR'],
-            'arrayminus' : plot_d_dict[group]['dLL95OR'],
+            'array'      : plot_d_dict[group]['196SE'],
+            'arrayminus' : plot_d_dict[group]['196SE'],
         },
         'text': plot_d_dict[group]['text'],
         'name': group,
