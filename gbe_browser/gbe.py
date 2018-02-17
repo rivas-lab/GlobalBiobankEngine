@@ -13,6 +13,7 @@ import models
 import numpy
 import numpy.matlib
 import rpy2
+import pandas
 from targeted import mrpmm
 from mr import mr
 from graph import graph
@@ -715,6 +716,7 @@ def variant_icd_page(variant_str, dev_page=False):
             del icdstats[index]
         print('Rendering variant: %s' % variant_str)
         if(dev_page):
+            plot_data=prepare_variant_page_plotly_plot_data(icdstats)
             return render_template(
                 'variant_dev.html',
                 variant=variant,
@@ -722,6 +724,8 @@ def variant_icd_page(variant_str, dev_page=False):
                 consequences=consequences,
                 ordered_csqs=ordered_csqs,
                 debug_message='hello',
+               # plotly_plot_data=[ {'x': [1, 2, 3], 'y': [1,2, 3]}, ], #plot_data
+                plotly_plot_data=plot_data,
             )
         else:
             return render_template(
@@ -734,6 +738,49 @@ def variant_icd_page(variant_str, dev_page=False):
     except Exception as e:
         print('Failed on variant:', variant_str, '; Error=', traceback.format_exc())
         abort(404)
+
+def prepare_variant_page_plotly_plot_data(icdstats):
+    plot_d_raw = collections.defaultdict(list)
+    keys = icdstats[0].keys()
+    for key in keys:
+        plot_d_raw[key] = np.array([x[key] for x in icdstats])
+    plot_df = pandas.DataFrame(plot_d_raw).sort_values(
+        by=['Group', 'log10pvalue'], ascending=[True, False]
+    )
+    plot_d_dict = collections.defaultdict(collections.defaultdict)
+    
+    groups = sorted(set(plot_df['Group']))
+    for group in groups:
+        for key in keys:
+            plot_d_dict[group][key] = list(plot_df[plot_df['Group'] == group][key])
+
+    for group in groups:
+        group_len = len(plot_d_dict[group]['icd'])
+        plot_d_dict[group]['text'] = [
+            '{}. Case: {}, P-value: {:.3e}, OR = {:.5f} (95% [{:.5f}, {:.5f}])'.format(
+                ''.join([c if c != '_' else ' ' for c in x[0]]), x[1], float(x[2]), float(x[3]), float(x[4]), float(x[5])
+            ) for x in zip(
+                plot_d_dict[group]['Name'],
+                plot_d_dict[group]['Case'],
+                plot_d_dict[group]['pvalue'],
+                plot_d_dict[group]['OR'],
+                plot_d_dict[group]['L95OR'],
+                plot_d_dict[group]['U95OR'],
+            )
+        ]
+
+    plot_d = [{
+        'x':    plot_d_dict[group]['icd'],
+        'y':    plot_d_dict[group]['l10pval'],
+        'text': plot_d_dict[group]['text'],
+        'name': group,
+        'type': 'scattergl',
+        'mode': 'markers',
+        'marker': {'size': 16, },
+        'hoverinfo':'x+text', 
+    } for group in groups]
+ 
+    return plot_d
 
 
 @app.route('/coding/<icd_str>')
