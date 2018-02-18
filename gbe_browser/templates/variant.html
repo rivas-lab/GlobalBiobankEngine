@@ -66,14 +66,52 @@
     window.consequence = {{ consequences|tojson|safe }};
     window.ordered_csqs = {{ ordered_csqs|tojson|safe }};
 
+    // data for plots with Plotly
+    window.plot_pval_data_all = {{ plot_pval_data | tojson | safe }};
+    window.plot_lor_data_all  = {{ plot_lor_data | tojson | safe }};
+        
+    console.log({{ pval_slider_max }});
     
+    // This function checks p-value and return a list(list(boolean)) to indicate
+    // whether each of the phenotypes passes the p-value filter
+    function plot_compute_pval_filter(data, pval_thr){
+        var pval_thr_log = -Math.log(parseFloat(pval_thr));                
+        return data.map( function( group_d ){ 
+            return group_d['y'].map(function(d){
+                return d >= pval_thr_log;                
+            })
+        })
+    }
+    
+    // apply p-value filter to the data
+    function plot_apply_pval_filter(data, precomputed_filter){
+        return data.map( function(group_d, group_idx){
+            var filtered_d = group_d;
+            for(item of ['x', 'y', 'text']){
+                filtered_d[item] = group_d[item].filter(function(d, i){
+                    return precomputed_filter[group_idx][i];
+                })                
+            }
+            return filtered_d;          
+        });
+    }
+
+    window.plotly_axis_titlefont = {
+        family: 'Helvetica Neue',
+        size: 14,
+    };        
+        
+    // wrapper for a plotly plot
     function plotly_plot(id, data, title, yaxis_title, axis_titlefont){
+        
         var plot_by_group = document.getElementById(id),            
             layout = {
                 hovermode:'closest',
                 title:title,
                 xaxis: {
-                    title: 'Phenotype coding',
+                    title: 'Phenotype',
+                    showticklabels: false,
+                    dtick: 1,
                     tickangle: 45,
                     //                type = 'category',
                     titlefont: axis_titlefont,
@@ -85,6 +123,7 @@
 
             };
 
+        Plotly.purge(id);
         Plotly.newPlot(id, data, layout);
 
         plot_by_group.on('plotly_click', function(data){
@@ -96,12 +135,63 @@
         });
     }
     
-    var plotly_axis_titlefont = {
-        family: 'Helvetica Neue',
-        size: 14,
-    };
+    // Generate two plots given a p-value threshold
+    function update_plots(pval_threshold_str){
+        // create a working copy of the data
+        var plot_pval_data     = JSON.parse(JSON.stringify(window.plot_pval_data_all));
+        var plot_lor_data      = JSON.parse(JSON.stringify(window.plot_lor_data_all));
+        
+        var plot_pval_filter = plot_compute_pval_filter(plot_pval_data, pval_threshold_str);        
+
+        plotly_plot(
+            'plot_pval', 
+            plot_apply_pval_filter(plot_pval_data, plot_pval_filter), 
+            '-log10(P-value) of PheWAS', 
+            '-log10(P-value)', 
+            window.plotly_axis_titlefont
+        );        
+
+        plotly_plot(
+            'plot_lor', 
+            plot_apply_pval_filter(plot_lor_data, plot_pval_filter),         
+            'log(OR) or BETA of PheWAS', 
+            'log(OR) or BETA', 
+            window.plotly_axis_titlefont
+        );        
+        
+    }    
+    
+    function btn_plot_update_onclick(){
+        var input_pval_thr = document.getElementById("input_pval_thr");
+//        alert(Math.exp(-input_pval_thr.value));
+        
+        update_plots(Math.exp(-input_pval_thr.value));
+    }
+    
+    function init_pval_bar_and_plots(){
+        var input_pval_thr = document.getElementById("input_pval_thr");
+        var out_pval_thr = document.getElementById("out_pval_thr");
+        out_pval_thr.innerHTML = 'Current P-value threshold: ' + Math.pow(
+            10, -input_pval_thr.value
+        ); 
+
+        input_pval_thr.oninput = function() {
+            out_pval_thr.innerHTML = 'Current P-value threshold: ' + Math.pow(
+                10, -this.value
+            );
+        }         
+        
+        update_plots(Math.pow(
+            10, -input_pval_thr.value
+        ));
+    }
+    
                 
     $(document).ready(function() {
+                
+        init_pval_bar_and_plots();
+                
+        
         draw_region_coverage(window.icdstats, 'l10pvalue', window.variant.ref);
         $('.coverage_metric_buttons').change(function () {
             var v = $(this).attr('id').replace('_covmet_button', '');
@@ -145,7 +235,7 @@
             </ul>
             {% endif %}
 
-            <p>{{ debug_message  }}</p>
+            <p>{{ debug_message }}</p>
 
             <hr/>
         </div>
@@ -400,8 +490,8 @@
         <hr />
     </div>    
 
-</div>
 
+</div>
 
 
 <!--One need to place this svg plot object outside of Twitter Bootstrap framework-->
@@ -416,7 +506,26 @@
 <div id="plot_lor", style="height: 100%">
 </div>
 
-
+<div class="container">
+    <hr />
+    <div class="row">
+        <div class="col-md-3">
+            <p id='out_pval_thr'></p>
+        </div>
+        <div class="col-md-6">
+            <div class="slidecontainer">
+                <input type="range" min="0" max="{{ pval_slider_max }}" value="0" class="slider" id="input_pval_thr">            
+            </div>
+        </div>            
+        <div class="col-md-3">
+            <p>      
+                <button class="btn btn-large btn-primary" type="button" id="btn_plot_update" onclick="btn_plot_update_onclick()">
+                    Update plots
+                </button>
+            </p>    
+        </div>
+    </div>
+</div>
 
 
 <script>
@@ -565,25 +674,5 @@
     });
 
 </script>
-
-<script>
-    plotly_plot(
-        'plot_pval', 
-        {{ plot_pval_data | tojson | safe }}, 
-        '-log10(P-value) of PheWAS', 
-        '-log10(P-value)', 
-        plotly_axis_titlefont
-    );        
-
-    plotly_plot(
-        'plot_lor', 
-        {{ plot_lor_data | tojson | safe }}, 
-        'log(OR) or BETA of PheWAS', 
-        'log(OR) or BETA', 
-        plotly_axis_titlefont
-    );        
-    
-</script>
-
 
 {% endblock %}

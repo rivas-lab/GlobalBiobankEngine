@@ -719,6 +719,7 @@ def variant_icd_page(variant_str):
             ordered_csqs=ordered_csqs,
             debug_message='',
             #plot_pval_data = [{'x': [1, 2, 3], 'y': [1,2, 3]}],
+            pval_slider_max = variant_page_pval_slider_max(icdstats),
             plot_pval_data = variant_page_plot_pval_data(icdstats),
             plot_lor_data  = variant_page_plot_lor_data(icdstats),
         )
@@ -741,7 +742,7 @@ def variant_page_data_prep_sub(icdstats, sort_key='log10pvalue'):
         for key in keys:
             plot_d_dict[group][key] = list(plot_df[plot_df['Group'] == group][key])
     for group in groups:
-        for key in ['OR', 'LOR', 'L95OR', 'U95OR', 'pvalue', 'SE']:
+        for key in ['OR', 'LOR', 'L95OR', 'U95OR', 'pvalue', 'SE', 'log10pvalue']:
             plot_d_dict[group][key] = [float(x) for x in plot_d_dict[group][key]]
     for group in groups:
         #error_bar = {'L95OR': -1, 'U95OR': 1}
@@ -751,27 +752,42 @@ def variant_page_data_prep_sub(icdstats, sort_key='log10pvalue'):
         plot_d_dict[group]['196SE'] = list( 1.96 * np.array(plot_d_dict[group]['SE']) )
 
     for group in groups:
-        if group in set(['INI', 'INI_FC']):
+        if group in set(['INI', 'INI_FC', 'BROADQT']):
             beta_or_lor = 'BETA'
+            beta_or_lor_val = plot_d_dict[group]['LOR']
+            beta_or_lor_l95 = np.array(plot_d_dict[group]['LOR']) - 1.96 * np.array(plot_d_dict[group]['SE'])
+            beta_or_lor_u95 = np.array(plot_d_dict[group]['LOR']) + 1.96 * np.array(plot_d_dict[group]['SE'])
+
         else:
-            beta_or_lor = 'log(OR)'
+            beta_or_lor = 'OR'
+            beta_or_lor_val = np.exp(np.array(plot_d_dict[group]['LOR']))
+            beta_or_lor_l95 = np.exp(np.array(plot_d_dict[group]['LOR']) - 1.96 * np.array(plot_d_dict[group]['SE']))
+            beta_or_lor_u95 = np.exp(np.array(plot_d_dict[group]['LOR']) + 1.96 * np.array(plot_d_dict[group]['SE']))
+
         group_len = len(plot_d_dict[group]['icd'])
         plot_d_dict[group]['text'] = [
-            '{}. Case: {}, P-value: {:.3e}, {} = {:.5f} (95% [{:.5f}, {:.5f}])'.format(
-                ''.join([c if c != '_' else ' ' for c in x[0]]), x[1], x[2], x[3], x[4], x[5], x[6]
+            '{}. Case: {}, P-value: {:.3e}, {} = {:.5f} (95% [{:.5f}, {:.5f}]), SE = {:.5f}'.format(
+                ''.join([c if c != '_' else ' ' for c in x[0]]), x[1], x[2], x[3], x[4], x[5], x[6], x[7]
             ) for x in zip(
                 plot_d_dict[group]['Name'],
                 plot_d_dict[group]['Case'],
                 plot_d_dict[group]['pvalue'],
                 [beta_or_lor] * group_len,
-                plot_d_dict[group]['LOR'],
-                np.array(plot_d_dict[group]['LOR']) - 1.96 * np.array(plot_d_dict[group]['SE']),
-                np.array(plot_d_dict[group]['LOR']) + 1.96 * np.array(plot_d_dict[group]['SE']),
+                beta_or_lor_val,
+                beta_or_lor_l95,
+                beta_or_lor_u95,
+                plot_d_dict[group]['SE'],
                 #plot_d_dict[group]['L95OR'],
                 #plot_d_dict[group]['U95OR'],
             )
         ]
     return plot_d_dict
+
+
+def variant_page_pval_slider_max(icdstats):
+#    return 100
+    plot_d_dict = variant_page_data_prep_sub(icdstats, sort_key='log10pvalue')
+    return np.max([np.max(v['log10pvalue']) for v in plot_d_dict.values()]) 
 
 
 def variant_page_plot_pval_data(icdstats):
@@ -782,7 +798,7 @@ def variant_page_plot_pval_data(icdstats):
         'y':    plot_d_dict[group]['l10pval'],
         'text': plot_d_dict[group]['text'],
         'name': group,
-        'type': 'scattergl',
+        'type': 'scatter',
         'mode': 'markers',
         'marker': {'size': 16, },
         'hoverinfo':'x+text', 
