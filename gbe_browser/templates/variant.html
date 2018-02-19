@@ -22,9 +22,7 @@
 <script type="text/javascript" src="{{ url_for('static', filename='dimple.v2.3.0.js') }}"></script>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
-<script type="text/javascript">
-
-
+<script type="text/javascript">    
     // Set ICD 10 chapter dictionary
     icd10_chapters = {
         A: "Certain infectious and parasitic diseases",
@@ -146,7 +144,7 @@
         plotly_plot(
             'plot_pval', 
             plot_apply_pval_filter(plot_pval_data, plot_pval_filter), 
-            '-log10(P-value) of PheWAS', 
+            '-log10(P-value) of PheWAS (chr{{ variant.chrom }}:{{ variant.pos }})', 
             '-log10(P-value)', 
             window.plotly_axis_titlefont
         );        
@@ -154,7 +152,7 @@
         plotly_plot(
             'plot_lor', 
             plot_apply_pval_filter(plot_lor_data, plot_pval_filter),         
-            'log(OR) or BETA of PheWAS', 
+            'log(OR) or BETA of PheWAS (chr{{ variant.chrom }}:{{ variant.pos }})', 
             'log(OR) or BETA', 
             window.plotly_axis_titlefont
         );        
@@ -187,26 +185,8 @@
     }
     
                 
-    $(document).ready(function() {
-                
-        init_pval_bar_and_plots();
-                
-        
-        draw_region_coverage(window.icdstats, 'l10pvalue', window.variant.ref);
-        $('.coverage_metric_buttons').change(function () {
-            var v = $(this).attr('id').replace('_covmet_button', '');
-            $('.coverage_subcat_selectors').hide();
-            if (v == 'covered') {
-                $('#over_x_select_container').show();
-                v = $('#over_x_select').val(); 
-            } else {
-                $('#average_select_container').show();
-                v = $("#average_select").val();
-            }
-            draw_region_coverage(window.base_coverage, v, window.variant.ref);
-        });
-        
-
+    $(document).ready(function() {                
+        init_pval_bar_and_plots();                                
     });
 </script>
 {% endblock %}
@@ -490,15 +470,10 @@
         <hr />
     </div>    
 
-
 </div>
 
 
-<!--One need to place this svg plot object outside of Twitter Bootstrap framework-->
-<div id="ratioChartContainer", style="height: 100%">
-</div>
-
-<hr/>
+<!--One need to place this plot objects outside of Twitter Bootstrap framework-->
 
 <div id="plot_pval", style="height: 100%">
 </div>
@@ -528,151 +503,6 @@
 </div>
 
 
-<script>
-    d3.select("html").style("height", "100%");
-    d3.select("body").style("height", "100%");
 
-    var svg = dimple.newSvg("#ratioChartContainer", "100%", "100%");
-    var data = window.icdstats; 
-
-    var myChart = new dimple.chart(svg, data);
-
-    var x = myChart.addCategoryAxis("x", "Code");
-    x.showGridlines = true;
-    x.addGroupOrderRule("l10pval",true);
-
-    var y = myChart.addMeasureAxis("y","l10pval");
-
-    var z = myChart.addMeasureAxis("z", "l10pval");
-    z.overrideMin = 0;
-    z.overrideMax = 20;
-
-    var s = myChart.addSeries(["Name","Case","pvalue","OR","L95OR","U95OR","Group"], dimple.plot.bubble);
-
-    // Size the bubbles by volume
-    s.addOrderRule("Group");
-    // Control bubble sizes by setting the max and min values
-    s.lineWeight = 4;
-    s.lineMarkers = true;
-
-    var myLegend = myChart.addLegend("40%", "5%", "50%","20%", "right");
-
-    myChart.series[0].getTooltipText = function (e) {
-        var rows = [];
-        // Add the series categories
-        if (this.categoryFields !== null && this.categoryFields !== undefined && this.categoryFields.length > 0) {
-            this.categoryFields.forEach(function (c, i) {
-                if (c !== null && c !== undefined && e.aggField[i] !== null && e.aggField[i] !== undefined) {
-                    // If the category name and value match don't display the category name
-                    rows.push(c + (e.aggField[i] !== c ? ': ' + e.aggField[i] : ''));
-                }
-            }, this);
-        }
-
-        if (this.x) {
-            this.x._getTooltipText(rows, e);
-        }
-        if (this.y) {
-            this.y._getTooltipText(rows, e);
-        }
-        if (this.z) {
-            //    this.z._getTooltipText(rows, e);
-        }
-        if (this.c) {
-            //    this.c._getTooltipText(rows, e);
-        }	
-        //debugger;
-        //as an example of something custom
-        // rows.push('something custom here	
-        // Get distinct text rows to deal with cases where 2 axes have the same dimensionality
-        return rows; //rows.filter(function (elem, pos) { return rows.indexOf(elem) === pos; });
-    }    
-
-    myChart.draw();
-
-    // Define tooltip
-    var tooltip = d3.select("body")
-    .append("div")
-    .style("position", "absolute")
-    .style("z-index", "3")
-    .style("visibility", "hidden")
-    .attr("font-size","x-small")
-    .attr('text-anchor', 'middle')
-    //.style("opactiy", "0.8")
-    .style("background", "#E3EAF0")
-    .style("border-radius", "8px")
-    .style("border", "#C6D6E1")
-    .style("padding", "4px")
-    .text("Click to toggle");
-
-
-    // This is a critical step.  By doing this we orphan the legend. This
-    // means it will not respond to graph updates.  Without this the legend
-    // will redraw when the chart refreshes removing the unchecked item and
-    // also dropping the events we define below.
-    myChart.legends = [];
-
-    // Get a unique list of Owner values to use when filtering
-    var filterValues = dimple.getUniqueValues(data, "Group");
-    // Get all the rectangles from our now orphaned legend
-    myLegend.shapes.selectAll("rect")
-    // Add a click event to each rectangle
-    // e object contents: key fill stroke opacity series aggField
-    // Add dictionary with icd10 chapter descriptions for hover over
-        .on("mouseover", function(e){return tooltip.style("visibility", "visible")
-        .html("Click to toggle" + "<br/>" + "Group: " + e.aggField.slice(-1)[0] + "<br/>" + icd10_chapters[e.aggField.slice(-1)[0]]);})	
-        .on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
-        .on("mouseout", function(){return tooltip.style("visibility", "hidden");})
-        .on("click", function (e) {
-        // This indicates whether the item is already visible or not
-        var hide = false;
-        var newFilters = [];
-        // If the filters contain the clicked shape hide it
-        filterValues.forEach(function (f) {
-            if (f === e.aggField.slice(-1)[0]) {
-                hide = true;
-            } else {
-                newFilters.push(f);
-            }
-        });
-
-        // Hide the shape or show it
-        if (hide) {
-            d3.select(this).style("opacity", 0.2);
-        } else {
-            newFilters.push(e.aggField.slice(-1)[0]);
-            d3.select(this).style("opacity", 0.8);
-        }
-
-        // Update the filters
-        filterValues = newFilters;
-        // Filter the data
-        myChart.data = dimple.filterData(data, "Group", filterValues);
-        // Passing a duration parameter makes the chart animate. Without
-        // it there is no transition
-        myChart.draw(800);
-
-        x.titleShape.text("Phenotype coding");
-        y.titleShape.text("-log10(P-value)");
-        myLegend.shapes.selectAll("text").style("font-size", "12px");
-        myLegend.shapes.selectAll("text").style("font-family", "Helvetica Neue");
-        x.shapes.selectAll("text").style("font-size", "12px");
-        x.shapes.selectAll("text").style("font-family", "Helvetica Neue");
-        y.shapes.selectAll("text").style("font-size", "12px");
-        y.shapes.selectAll("text").style("font-family", "Helvetica Neue");
-        x.titleShape.style("font-size", "14px");
-        x.titleShape.style("font-family", "Helvetica Neue");
-        y.titleShape.style("font-size", "14px");
-        y.titleShape.style("font-family", "Helvetica Neue");
-        x.shapes.selectAll("text")
-            .style("cursor", "pointer")
-            .filter(function(d){ return typeof(d) == "string"; })
-            .on("click", function(d){
-            document.location.href = "/coding/" + d;
-        })
-
-    });
-
-</script>
 
 {% endblock %}
