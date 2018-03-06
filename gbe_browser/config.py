@@ -200,10 +200,9 @@ ICD_AFFYID_STORE_QUERY = """
     redimension(
       equi_join(
         grouped_aggregate({icd_array}, count(*), affyid, chrom, pos),
-        {affyid_index_array},
+        apply({affyid_index_array}, affyid_idx, affyid_idx),
         'left_names=affyid',
         'right_names=affyid',
-        'keep_dimensions=1',
         'algorithm=hash_replicate_right'),
       {icd_affyid_schema},
       false),
