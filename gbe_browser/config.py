@@ -199,7 +199,7 @@ ICD_AFFYID_STORE_QUERY = """
   store(
     redimension(
       equi_join(
-        project({icd_array}, affyid),
+        grouped_aggregate({icd_array}, count(*), affyid, chrom, pos),
         {affyid_index_array},
         'left_names=affyid',
         'right_names=affyid',
