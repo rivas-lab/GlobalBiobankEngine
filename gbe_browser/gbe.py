@@ -66,28 +66,28 @@ app.debug=False
 
 # Get Google API information
 # client_secrets.json must be obtained from the Google Developers Console
-with open('client_secrets.json') as secrets:
-    secret_data = json.load(secrets)
-google_client_id = secret_data['web']['client_id']
-google_client_secret = secret_data['web']['client_secret']
-redirect_uri = "/" + secret_data['web']['redirect_uris'][0].split('/')[-1]
+#with open('client_secrets.json') as secrets:
+#    secret_data = json.load(secrets)
+#google_client_id = secret_data['web']['client_id']
+#google_client_secret = secret_data['web']['client_secret']
+#redirect_uri = "/" + secret_data['web']['redirect_uris'][0].split('/')[-1]
 
-SECRET_KEY = 'development key'
-app.secret_key = SECRET_KEY
-oauth = OAuth()
+#SECRET_KEY = 'development key'
+#app.secret_key = SECRET_KEY
+#oauth = OAuth()
 
 # Define google oauth protocol
-google = oauth.remote_app('google',
-                          base_url='https://www.google.com/accounts/',
-                          authorize_url='https://accounts.google.com/o/oauth2/auth',
-                          request_token_url=None,
-                          request_token_params={'scope': 'https://www.googleapis.com/auth/userinfo.email',
-                                                'response_type': 'code'},
-                          access_token_url='https://accounts.google.com/o/oauth2/token',
-                          access_token_method='POST',
-                          access_token_params={'grant_type': 'authorization_code'},
-                          consumer_key=google_client_id,
-                          consumer_secret=google_client_secret)
+#google = oauth.remote_app('google',
+#                          base_url='https://www.google.com/accounts/',
+#                          authorize_url='https://accounts.google.com/o/oauth2/auth',
+#                          request_token_url=None,
+#                          request_token_params={'scope': 'https://www.googleapis.com/auth/userinfo.email',
+#                                                'response_type': 'code'},
+#                          access_token_url='https://accounts.google.com/o/oauth2/token',
+#                          access_token_method='POST',
+#                          access_token_params={'grant_type': 'authorization_code'},
+#                          consumer_key=google_client_id,
+#                          consumer_secret=google_client_secret)
 
 
 class permission_groups():
@@ -590,14 +590,15 @@ def run_mr(lof=True, missense=True, genes=None, phenidarr = ['ICD1462','ICD1463'
 
 @app.route('/')
 def homepage():
-    if check_credentials():
-        return redirect(url_for('search_page'))
-    return render_template('homepage.html')
+#    if check_credentials():
+#        return redirect(url_for('search_page'))
+#    return render_template('homepage.html')
+    return render_template('search_page.html')
 
 @app.route('/search')
 def search_page():
-    if not check_credentials():
-        return redirect(url_for('login'))
+#    if not check_credentials():
+#        return redirect(url_for('login'))
     return render_template('search_page.html')
 
 
@@ -638,8 +639,8 @@ def awesome():
 
 @app.route('/variant/<variant_str>')
 def variant_icd_page(variant_str):
-    if not check_credentials():
-        return redirect(url_for('login'))
+  #  if not check_credentials():
+  #      return redirect(url_for('login'))
     db = get_db()
     try:
         chrom, pos = variant_str.split('-')
@@ -832,8 +833,8 @@ def variant_page_plot_lor_data(icdstats):
 
 @app.route('/coding/<icd_str>')
 def icd_page(icd_str):
-    if not check_credentials():
-        return redirect(url_for('login'))
+#    if not check_credentials():
+#        return redirect(url_for('login'))
     db = get_db()
     try:
         # icdlabel = str(icd_str)
@@ -869,8 +870,8 @@ def icd_page(icd_str):
 
 @app.route('/codinguncertain/<icd_str>')
 def icduncertain_page(icd_str):
-    if not check_credentials():
-        return redirect(url_for('login'))
+  #  if not check_credentials():
+  #      return redirect(url_for('login'))
     db = get_db()
     try:
         # icdlabel = str(icd_str)
@@ -907,8 +908,8 @@ def icduncertain_page(icd_str):
 
 @app.route('/coding/gene/<icd_str>')
 def codinggene_page(icd_str):
-    if not check_credentials():
-        return redirect(url_for('login'))
+  #  if not check_credentials():
+  #      return redirect(url_for('login'))
     db = get_db()
     try:
         # icdlabel = str(icd_str)
@@ -944,8 +945,8 @@ def codinggene_page(icd_str):
 
 @app.route('/coding/phenotype/<icd_str>')
 def codingphenotype_page(icd_str):
-    if not check_credentials():
-        return redirect(url_for('login'))
+  #  if not check_credentials():
+  #      return redirect(url_for('login'))
     db = get_db()
     try:
         # icdlabel = str(icd_str)
@@ -980,8 +981,8 @@ def codingphenotype_page(icd_str):
 
 @app.route('/target/1')
 def target_page():
-    if not check_credentials():
-        return redirect(url_for('login'))
+  #  if not check_credentials():
+  #      return redirect(url_for('login'))
     db = get_db()
     try:
         passing = False
@@ -989,8 +990,8 @@ def target_page():
 
         for p in [.00001]:
             icd = lookups.get_icd_variant_by_pvalue(db, p)
-            if len(icd):
-                break
+#            if len(icd):
+#                break
 
         #     vars = lookups.get_significant_prot(db, p, 0)
         #     print(vars)
@@ -1013,8 +1014,8 @@ def target_page():
 
 @app.route('/power')
 def power_page():
-    if not check_credentials():
-        return redirect(url_for('login'))
+  #  if not check_credentials():
+  #      return redirect(url_for('login'))
     try:
         return render_template(
             'power.html'
@@ -1026,10 +1027,10 @@ def power_page():
 
 @app.route('/decomposition-dev')
 def decomposition_dev_page():    
-    if not check_credentials():
-        return redirect(url_for('login'))
-    elif not check_credentials(permission_group=p_groups.get('rivas-lab')):
-        abort(404)
+  #  if not check_credentials():
+  #      return redirect(url_for('login'))
+  #  elif not check_credentials(permission_group=p_groups.get('rivas-lab')):
+  #      abort(404)
 
     db = get_db()
     
@@ -1051,10 +1052,10 @@ def decomposition_dev_page():
 
 @app.route('/decomposition-internal/<dataset>')
 def decomposition_internal_page(dataset):    
-    if not check_credentials():
-        return redirect(url_for('login'))
-    elif not check_credentials(permission_group=p_groups.get('rivas-lab')):
-        abort(404)
+  #  if not check_credentials():
+  #      return redirect(url_for('login'))
+  #  elif not check_credentials(permission_group=p_groups.get('rivas-lab')):
+  #      abort(404)
     db = get_db()
     
     init_idx_pc  = 0
@@ -1082,8 +1083,8 @@ def decomposition_app_page():
     abort(404)
 
 def decomposition_app_page_null():
-    if not check_credentials():
-        return redirect(url_for('login'))
+ #   if not check_credentials():
+ #       return redirect(url_for('login'))
     db = get_db()
     
     try:
@@ -1103,10 +1104,10 @@ def decomposition_app_page_null():
 
 @app.route('/decomposition/<dataset>')
 def decomposition_page(dataset):    
-    if not check_credentials():
-        return redirect(url_for('login'))
-    elif not check_credentials(permission_group=p_groups.get('rivas-lab')):
-        abort(404)
+ #   if not check_credentials():
+ #       return redirect(url_for('login'))
+ #   elif not check_credentials(permission_group=p_groups.get('rivas-lab')):
+ #       abort(404)
     db = get_db()
     
     
@@ -1157,8 +1158,8 @@ def decomposition_page(dataset):
 
 @app.route('/hla-assoc')
 def hla_assoc_page():
-    if not check_credentials():
-        return redirect(url_for('login'))
+ #   if not check_credentials():
+ #       return redirect(url_for('login'))
     db = get_db()
 
     try:
@@ -1223,8 +1224,8 @@ def get_prot_variant_table(lor, p):
 
 @app.route('/intensity/<affy_str>')
 def intensity_page(affy_str):
-    if not check_credentials():
-        return redirect(url_for('login'))
+ #   if not check_credentials():
+ #       return redirect(url_for('login'))
     db = get_db()
     try:
         n_UKBL = 11
@@ -1439,8 +1440,8 @@ def geneaggregate_page(gene_id):
 
 @app.route('/coding/geneaggregate/<icd_str>')
 def icdaggregate_page(icd_str):
-    if not check_credentials():
-        return redirect(url_for('login'))
+#    if not check_credentials():
+#        return redirect(url_for('login'))
     db = get_db()
     try:
         # icdlabel = str(icd_str)
@@ -1477,8 +1478,8 @@ def icdaggregate_page(icd_str):
 
 @app.route('/coding/gene-mh/<icd_str>')
 def icd_genemh_page(icd_str):
-    if not check_credentials():
-        return redirect(url_for('login'))
+ #   if not check_credentials():
+ #       return redirect(url_for('login'))
     db = get_db()
     try:
         # icdlabel = str(icd_str)
@@ -1516,8 +1517,10 @@ def icd_genemh_page(icd_str):
 
 @app.route('/coding/decomposition-risk/<icd_str>')
 def decomposition_risk_page(icd_str):
-    if not check_credentials():
-        return redirect(url_for('login'))
+ #   if not check_credentials():
+ #       return redirect(url_for('login'))
+ #   elif not check_credentials(permission_group=p_groups.get('rivas-lab')):
+ #       abort(404)
     db = get_db()
     try:
         # icdlabel = str(icd_str)
@@ -1723,8 +1726,8 @@ class LoginForm(Form):
     age = StringField('age', validators=[DataRequired()])
 
 def get_gene_page_content(gene_id):
-    if not check_credentials():
-        return redirect(url_for('login'))
+ #   if not check_credentials():
+ #       return redirect(url_for('login'))
     db = get_db()
     try:
         cache_key = 't-gene-{}'.format(gene_id)
@@ -1803,8 +1806,8 @@ def get_gene_page_content(gene_id):
 
 
 def get_gene_interactive_page_content(gene_id):
-    if not check_credentials():
-        return redirect(url_for('login'))
+ #   if not check_credentials():
+ #       return redirect(url_for('login'))
     db = get_db()
     try:
         cache_key = 't-gene-{}'.format(gene_id)
@@ -1885,8 +1888,8 @@ def get_gene_interactive_page_content(gene_id):
 
 
 def get_geneaggregate_page_content(gene_id):
-    if not check_credentials():
-        return redirect(url_for('login'))
+  #  if not check_credentials():
+  #      return redirect(url_for('login'))
     db = get_db()
     try:
         t = None
@@ -1967,8 +1970,8 @@ def get_geneaggregate_page_content(gene_id):
 
 @app.route('/transcript/<transcript_id>')
 def transcript_page(transcript_id):
-    if not check_credentials():
-        return redirect(url_for('login'))
+  #  if not check_credentials():
+  #      return redirect(url_for('login'))
     db = get_db()
     try:
         cache_key = 't-transcript-{}'.format(transcript_id)
@@ -2035,8 +2038,8 @@ def transcript_page(transcript_id):
 
 @app.route('/region/<region_id>')
 def region_page(region_id):
-    if not check_credentials():
-        return redirect(url_for('login'))
+  #  if not check_credentials():
+  #      return redirect(url_for('login'))
     db = get_db()
     try:
         region = region_id.split('-')
@@ -2086,8 +2089,8 @@ def region_page(region_id):
 
 @app.route('/dbsnp/<rsid>')
 def dbsnp_page(rsid):
-    if not check_credentials():
-        return redirect(url_for('login'))
+  #  if not check_credentials():
+  #      return redirect(url_for('login'))
     db = get_db()
     try:
         variants = lookups.get_variants_by_rsid(db, rsid)
@@ -2348,8 +2351,8 @@ def mrp(key):
 
 @app.route('/gcorr')
 def gcorr_page():
-    if not check_credentials():
-        return redirect(url_for('login'))
+#    if not check_credentials():
+#        return redirect(url_for('login'))
     return render_template('gcorr.html')
 
 ### Dash app ###
@@ -2448,14 +2451,14 @@ def login_page():
     return render_template('login_page.html')
 
 
-@app.route(redirect_uri)
-@google.authorized_handler
+#@app.route(redirect_uri)
+#@google.authorized_handler
 def authorized(resp):
     access_token = resp['access_token']
     session['access_token'] = access_token, ''
     return redirect(url_for('search_page'))
 
-@google.tokengetter
+#@google.tokengetter
 def get_acess_token():
     return session.get('access_token')
 

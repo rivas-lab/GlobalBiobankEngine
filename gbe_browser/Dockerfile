@@ -8,5 +8,9 @@ ADD requirements-scidb.txt /opt/biobankengine
 WORKDIR /opt/biobankengine
 RUN pip install -r requirements.txt
 RUN pip install -r requirements-scidb.txt
+RUN pip install dash==0.21.0  # The core dash backend
+RUN pip install dash-renderer==0.11.3  # The dash front-end
+RUN pip install dash-html-components==0.8.0  # HTML components
+RUN pip install dash-core-components==0.18.1  # Supercharged components
 EXPOSE 8000
 ENV SCIDB_URL='http://172.18.0.1:8080'

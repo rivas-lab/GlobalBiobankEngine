@@ -357,7 +357,7 @@ def get_icd_variant_by_pvalue(db, pvalue=0.001):
               or_val,
               pvalue,
               log10pvalue),
-            filter(icd_info, Cases >= 100),
+            filter(icd_info, Cases >= 500),
             icd.icd_idx,
             icd_info.icd_idx) as icd_join,
         'left_names=chrom,pos',

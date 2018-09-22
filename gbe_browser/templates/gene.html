@@ -118,6 +118,13 @@ div.transbox
                                 <i class="fa fa-external-link"></i>
                             </a>
                         </dd> 
+                        <dt>OMIA</dt>
+                        <dd>
+                            <a href="http://omia.org/results/?query={{ gene.gene_name }}&search_type=simple" target="_blank">
+                                {{ gene.gene_name }}
+                                <i class="fa fa-external-link"></i>
+                            </a>
+                        </dd> 
                     <dt>Other</dt>
                     <dd>
                         <div class="dropdown">
@@ -170,7 +177,7 @@ div.transbox
             </div>
 	    <div class="col-md-5" id="container5">
 	      <h4>Top five phenotypes with rare variant aggregate analysis</h4>
-	      <h5><a href="https://biobankengine.stanford.edu/geneaggregate/{{gene.gene_id}}">More detailed dive</a></h5>
+              <p>Learn more about <a href="https://biobankengine.stanford.edu/faq#bayes">Bayes Factors</a></p>
 
 
 <script>
@@ -238,14 +245,17 @@ d3.csv("/static/mrpgene/gene/" + gene.gene_name + ".01_00001.gene.out", function
         document.location.href = "/coding/" + d;
     });
 
-  svg.append("g")
+   svg.append("g")
       .attr("class", "y axis")
       .call(yAxis)
-    .append("text")
+      .append("text")
+      .attr("class", "manlabel")
       .attr("transform", "rotate(-90)")
-      .attr("y", 6)
+      .attr("x", -10)
+      .attr("y", -50)
       .attr("dy", ".71em")
-      .style("text-anchor", "end");
+      .style("text-anchor", "end").attr("font-size", "17px")
+      .text("-log10(p-value)");
 
   svg.selectAll("bar")
       .data(data)
