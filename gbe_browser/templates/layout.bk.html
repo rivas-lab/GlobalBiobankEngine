@@ -1,22 +1,31 @@
 <!doctype html>
 
 <style>
+
+
 .footer {
+
     height: auto;
     text-align: center;
 
     position: fixed;
     bottom: 0%;
     min-width: 100%;
+
+
+
 }
+
+
+
 </style>
 
 <head>
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}" />
     <title>Global Biobank Engine</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="keywords" content="Global Biobank Engine, GBE, Biobank, Medical Genetics, Human Genetics, UK Biobank, UKBB, Manuel Rivas, Stanford, Therapeutics, drug targets, PCSK9, inflammatory bowel disease, cancer, breast cancer, colon cancer, gallstones, parkinson's disease, alzheimer's disease, type 2 diabetes, diabetes, colorectal cancer, crohns disease, ulcerative colitis, Carlos Bustamante, Biomedical Data Science, Artificial intelligence, machine learning, statistical learning, Data science, deep learning, health data, population health, global health, risk models, disease, disease risk prediction, Precision Medicine, Precision Health">
-    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='genome.css') }}">
+<meta name="keywords" content="Global Biobank Engine, GBE, Biobank, Medical Genetics, Human Genetics, UK Biobank, UKBB, Manuel Rivas, Stanford, Therapeutics, drug targets, PCSK9, inflammatory bowel disease, cancer, breast cancer, colon cancer, gallstones, parkinson's disease, alzheimer's disease, type 2 diabetes, diabetes, colorectal cancer, crohns disease, ulcerative colitis, Carlos Bustamante, Biomedical Data Science, Artificial intelligence, machine learning, statistical learning, Data science, deep learning, health data, population health, global health, risk models, disease, disease risk prediction, Precision Medicine, Precision Health">
+        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='genome.css') }}">
     <link rel=stylesheet type=text/css href="{{ url_for('static', filename='typeaheadjs.css') }}">
     <link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
     <script type="text/javascript" src="{{ url_for('static', filename='jquery-1.11.1.min.js') }}"></script>
@@ -62,7 +71,7 @@
             var bestPictures = new Bloodhound({
               datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
               queryTokenizer: Bloodhound.tokenizers.whitespace,
-              remote: '/{{ namespace }}/autocomplete/%QUERY'
+              remote: '/autocomplete/%QUERY'
             });
 
             bestPictures.initialize();
@@ -78,13 +87,12 @@
                 }
             );
             $('.awesomebar').bind('typeahead:selected', function(obj, datum) {
-                window.location.href = '/{{ namespace }}/awesome?query=' + datum.value;
+             <!--   window.location.href = '/awesome?query=' + datum.value; -->
             }); 
         });
     </script>
 
-{% block head %}
-{% endblock %}
+{% block head %}{% endblock %}
 </head>
 
 <body>
@@ -99,10 +107,10 @@
             </button>
             <a class="navbar-brand" href="/" style="color: white; font-weight: bold; float: left; font-size: 15px;">Global Biobank Engine</a>
             <div class="col-xs-5" id="navbar_form_container">
-                <form action="/{{namespace}}/awesome" class="navbar-form" role="search">
+                <form action="/awesome" class="navbar-form" role="search">
                     <div class="form-group" id="navbar-awesomebar">
                         <input type="submit" style="display: none;"/>
-                        <input id="navbar-searchbox-input" name="query" class="form-control awesomebar" type="text" placeholder="Gene, phenotype, variant, or region"/>
+                        <input id="navbar-searchbox-input" name="query" class="form-control awesomebar" type="text" placeholder="Gene, transcript, variant, or region"/>
                         <input type="submit" style="position: absolute; left: -9999px"/>
                     </div>
                 </form>
@@ -111,16 +119,15 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="navbar-collapse">
             <ul class="nav navbar-nav navbar-right">
-	      <li><a href="/" style="color:white; font-width: bold;">{{namespace}}</a></li>
                 <li><a href="/about" style="color: white; font-weight: bold;">About</a></li>
                 <li><a href="/downloads" style="color: white; font-weight: bold;">Downloads</a></li>
+                <li><a href="/terms" style="color: white; font-weight: bold;">Terms</a></li>
+                <li><a href="/contact" style="color: white; font-weight: bold;">Contact</a></li>
                 <li><a href="/hla-assoc" style="color: white; font-weight: bold;">HLA Alleles</a></li>
                 <li><a href="/power" style="color: white; font-weight: bold;">Power</a></li>
-	      <li><a href="/sex-effects" style="color: white; font-weight: bold;">Sex Effects</a></li>
                 <li><a href="/gcorr" style="color: white; font-weight: bold;">Genetic correlation</a></li>
-                <li><a href="/degas" style="color: white; font-weight: bold;">DeGAs</a></li>
-                <li><a href="/dprs" style="color: white; font-weight: bold;">DeGAs-Risk</a></li>
-                <li><a href="/snpnetcox" style="color: white; font-weight: bold;">snpnet-Cox</a></li>
+                <li><a href="/degas" style="color: white; font-weight: bold;">Decomposition</a></li>
+                <li><a href="/prs" style="color: white; font-weight: bold;">PRS</a></li>
                 <li><a href="/faq" style="color: white; font-weight: bold;">FAQ</a></li>
             </ul>
         </div><!-- /.navbar-collapse -->
@@ -131,7 +138,6 @@ function googleTranslateElementInit() {
   new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'es,fi,ja', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
 }
 </script><script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-
 {#<div id="header">#}
 {#    <div class="container">#}
 {#        <span>#}
@@ -152,8 +158,9 @@ function googleTranslateElementInit() {
 {#        </div>#}
 {#    </div>#}
 {#</div>#}
+{% block body %}{% endblock %}
 
-{% block body %}
-{% endblock %}
+
+
 </body>
 

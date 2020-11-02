@@ -1,39 +1,30 @@
-<script type="text/javascript">
-    window.is_gene = typeof window.transcripts_in_gene != 'undefined';
-</script>
 <script type="text/template" id="variant-table-template">
-
-{% if transcripts_in_gene is defined %}
-    <span style="float:left">
-        <small>&dagger; denotes a consequence that is for a non-canonical transcript</small>
-    </span>
-{% endif %}
 <table id="variant_table" class="tablesorter">
     <thead>
         <tr>
-            <th class="tooltip-table-header" data-tooltip="chr:pos reference/alternate &#xa;(dbSNP135 rsID)">
+            <th class='tooltip-table-header' data-tooltip="chr:pos reference/alternate &#xa;(dbSNP135 rsID)">
                 Variant</th>
-            <th class='tooltip-table-header' data-tooltip="hg19 genomic position">Position</th>
+<!--            <th class='tooltip-table-header' data-tooltip="hg19 genomic position">Position</th>
             <th class='tooltip-table-header' data-tooltip="Filter">Filter</th>
             <th class='tooltip-table-header' data-tooltip="First 3 associated gene symbols, comma separated">Gene symbol</th>
-            <th class="tooltip-table-header" data-tooltip="HGVS annotation (protein change, where defined, or transcript change for splice variants, otherwise empty)">Consequence</th>
-            <th class="tooltip-table-header" data-tooltip="Variant Effect Predictor (VEP) &#xa; annotation using Gencode 75.&#xa; Worst across all transcripts of this gene.">Annotation</th>
-    <!--        <th class="tooltip-table-header" data-tooltip="">ENCODE Annotation</th> -->
-	    <th class="tooltip-table-header" data-tooltip="Phenotype code &#xa;">Phenotype code</th>
-            <th class="tooltip-table-header" data-tooltip="ExAC NFE alternate allele frequency &#xa;">
-                ExAC NFE AF</th>
-            <th class="tooltip-table-header" data-tooltip="Odds ratio corresponding to min(p-value)">Odds Ratio</th>
-            <th class="tooltip-table-header" data-tooltip="Minimum p-value &#xa;the graphic displays &#xa; p-value on a  &#xa; discrete scale: &#xa; <0.01, <0.001, < 1e-4, <1e-5">
-P-value</th>
+            <th class='tooltip-table-header' data-tooltip="HGVS annotation (protein change, where defined, or transcript change for splice variants, otherwise empty)">Consequence</th>
+            <th class='tooltip-table-header' data-tooltip="Variant Effect Predictor (VEP) &#xa; annotation using Gencode 75.&#xa; Worst across all transcripts of this gene.">Annotation</th>
+  
+	    <th class='tooltip-table-header' data-tooltip="Phenotype code &#xa;">Phenotype code</th>
+            <th class='tooltip-table-header' data-tooltip="UKB alternate allele frequency &#xa;">
+                UKB AF</th>
+            <th class='tooltip-table-header' data-tooltip="Odds ratio corresponding to min(p-value)">Odds Ratio</th>
+            <th class='tooltip-table-header' data-tooltip="Minimum p-value &#xa;the graphic displays &#xa; p-value on a  &#xa; discrete scale: &#xa; <0.01, <0.001, < 1e-4, <1e-5">
+P-value</th> -->
               </tr>
     </thead>
     <tbody>
     <% _.each(table_variants, function(variant) { %>
-        <tr class="table_variant" id="variant_<%= variant.variant_id %>"
-            category="<%= variant.category %>" filter_status="<%= variant.filter %>" frequency="<%= variant.allele_freq %>">
+        <tr class="table_variant" id="variant_<%= variant.variant_identity %>"
+            category="<%= variant.category %>" filter_status="<%= variant.filter %>" frequency="<%= variant.ukbb_freq %>">
             <!-- VARIANT FIELD -->
             <td>
-                <a href="/variant/<%= variant.chrom %>-<%= variant.pos %>" target="_blank">
+	      <a href="/<%= window.namespace %>/variant/<%= variant.chrom %>-<%= variant.pos %>-<%= variant.ref %>-<%= variant.alt %>" target="_blank">
                 <%= variant.chrom %>:<%= variant.pos %>
                 <% if (variant.ref.length > 20) { %>
                     <%= variant.ref.slice(0,20) %>...
@@ -51,10 +42,10 @@ P-value</th>
                 </a>
             </td>
             <!-- VARIANT POSITION -->
-            <td> <%= variant.pos %></td>
-            <td> <%= variant.filter %></td>
+  <!--          <td> <%= variant.pos %></td>
+            <td> <%= variant.filter %></td> -->
             <!-- GENE -->
-            <td>
+<!--            <td>
             <% var gene_array = variant.gene_name.split(','); %>
             <% var symbol_array = variant.gene_symbol.split(','); %>
             <% var gene_links = []; %>
@@ -65,40 +56,40 @@ P-value</th>
                 <% } %>
             <% } %>
             </td>
-
+-->
             <!-- CONSEQUENCE -->
-            <td>
+  <!--          <td>
                 <% if (variant.HGVSp != '') { %>
-                    <%= variant.HGVSp %><% if (is_gene & variant.CANONICAL != 'YES') { %>&dagger;<% } %>
+                    <%= variant.HGVSp %><% if (1 > 0) { %>&dagger;<% } %>
                 <% } else { %>
                     <% if (variant.major_consequence == 'splice_donor_variant' | variant.major_consequence == 'splice_acceptor_variant' | variant.major_consequence == 'splice_region_variant') { %>
                         <% if (variant.HGVSc.length > 20) { %>
                             <%= variant.HGVSc.slice(0,20) %>...<% } else { %>
-                            <%= variant.HGVSc %><% } %><% if (is_gene & variant.CANONICAL != 'YES') { %>&dagger;<% } %>
+                            <%= variant.HGVSc %><% } %><% if (1 > 0) { %>&dagger;<% } %>
                     <% } %>
                 <% } %>
             </td>
+-->
             <!-- ANNOTATION -->
-            <td class="<%= variant.category %>" data-consequence="<%= variant.major_consequence %>"><b>
+ <!--           <td class="<%= variant.category %>" data-consequence="<%= variant.major_consequence %>"><b>
                 <% if (variant.major_consequence) { %>
                     <%= variant.major_consequence.replace('_variant', '').replace(/_/g, ' ').replace('utr', 'UTR').replace('3 prime', "3'").replace('5 prime', "5'").replace('nc ', "non-coding ") %>
                 <% } %>
             </b> </td>
-	    console.log(variant)
+-->
 	    <!-- ICD code info --> 
 	<!--    <td class='tooltip-table-header' data-tooltip=<%= {{icd[0].Name}} %>><%= {{icd[0].Name}} %></td> -->
-            <!-- ENCODE ANNOTATION -->
-<!--            <td></td> -->
             <!-- EXAC AF -->
-            <td>
-                <% if (variant.exac_nfe != -9) { %>
-                    <%= variant.exac_nfe %>
+<!--            <td>
+                <% if (variant.ukbb_freq != -9) { %>
+                    <%= variant.ukbb_freq %>
                 <% } else { %>
 
                 <% } %>
             </td>
+-->
             <!-- ODDS RATIO -->
-            <td>
+ <!--           <td>
                 <% if (variant.or_val != -9) { %>
                 <% if (variant.or_val == 0) { %>
                     <% '< 1e-16' %>
@@ -113,8 +104,9 @@ P-value</th>
 		        <%  } %>
                 <% } %>
             </td>
+-->
             <!-- P-VALUE -->
-            <td>
+ <!--           <td>
                 <% if (variant.pvalue != -9) { %>
                     <% if (variant.pvalue < .000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) { %>
                     <%= '< 1e-16' %>
@@ -129,10 +121,8 @@ P-value</th>
                 <% } %>
 
                 <% } %>
-                <div id="variant_af_box_<%= variant.variant_id %>" style="float: right;"></div>
             </td>
-
-
+-->
         </tr>
     <% }); %>
     </tbody>

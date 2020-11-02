@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+{% block head %}
+    <!-- Render context vars in JS here -->
+    <script type="text/javascript">
+        window.icd = {{ icd_str|tojson|safe }};
+    	window.namespace = {{ namespace|tojson|safe }};
+        window.page_name = window.icd;
+    </script>
+
+    <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js">
+    </script>
+
+    <script>
+        console.log(window.icd);
+    </script>
+{% endblock %}
+
+{% block body %}
+<div class="container" style="font-size: 16px;">
+    <div class="row" id="container-pheno-info">
+        <div class="col col-md-12">
+            <h1><span>Sparse polygenic risk scores (PRS) with BASIL / snpnet</span></h1>
+        </div>
+    </div>
+
+    <hr/>
+    <div class="row">
+
+            <h1><span>Code Phenotype: {{icd[0].Name}}</span></h1>
+
+        <hr/>
+     <dl class="dl-horizontal" style="margin-bottom: 0px;">
+                        <dt>Code:</dt>
+			{% if icd[0].icd %}
+                        <dt>Case Count or N:</dt>
+                        {% else %}
+                        <dt>Case Count or N:</dt>
+                        {% endif %}
+                        <dt>Single variant results:</dt>
+                        <dd>{{ icd[0].icd.replace('ICD','') }}</dd>
+                                             <dd>{{ icd[0].Case }}
+                                             </dd>
+                        <dd><a href="/{{namespace}}/coding/{{ icd[0].icd}}">{{ icd[0].icd.replace('ICD','') }}</a></dd>
+
+
+
+                    </dl>
+           <hr />
+    <div class="row" id="container-eval">
+        <div class="col col-md-12" id="container-eval-plot">
+            <h2 align="center">Summary of the predictive performance</h2>
+            <img class="img-responsive" src={{ snpnet_plot |tojson|safe }} alt={{ icd_str|tojson|safe }}>
+        </div>
+    </div>
+</div>
+{% endblock %}

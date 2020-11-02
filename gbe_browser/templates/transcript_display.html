@@ -40,14 +40,14 @@ function gene_chart(data, new_data, variant_data, _transcript) {
     var coding_coordinate_params = get_coding_coordinate_params(_transcript, true);
     var chart_width = gene_chart_width;
     var metric = 'log10pvalue';
-    var metricor = 'odds_ratio';
+    var metricor = 'beta';
     var exon_x_scale = d3.scale.linear()
         .domain([0, coding_coordinate_params.size])
         .range([0, chart_width]);
     var maxn = d3.max(data, function(d) { return d[metric] }) + 2;
     var maxnor = d3.max(data, function(d) { return d[metricor] }) + .3;
     var minor =  d3.min(data, function(d) { return d[metricor] }) - .3;
-    var minor = minor < 0 ? 0 : minor;
+    var minor = minor < -5 ? -5 : minor;
     var maxnor = maxnor < 100 ? 4 : 4;
     var max_cov = (metric == 'log10pvalue') ? maxn : maxnor;
     var min_cov = (metric == 'log10pvalue') ? 0 : minor;
@@ -88,7 +88,7 @@ function gene_chart(data, new_data, variant_data, _transcript) {
  <!-- stuff i added -->
         .attr("data-toggle", "tooltip")
         .attr('filter_status', function(d) {
-            return d.flag;
+            return d.filter;
         })
         .attr('category', function(d) {
             return d.category;
@@ -203,7 +203,7 @@ function gene_chart(data, new_data, variant_data, _transcript) {
                 output += '<br/>' + d.HGVSp;
             }
             output += '<br/>P-value: ' + d.minpval.toPrecision(3);
-            output += '<br/>Odds Ratio: ' + d.minor.toPrecision(3);
+            output += '<br/>Beta: ' + d.minor.toPrecision(3);
             return output;
         } else {
             return 'None';
@@ -308,11 +308,11 @@ function variant_colors(d) {
 
 function change_coverage_chart(data, new_data, variant_data, _transcript, scale_type, metric, skip_utrs, container) {
     var coords = skip_utrs ? 'pos_coding_noutr' : 'pos_coding';
-    var metricor = 'odds_ratio';
+    var metricor = 'beta';
     var maxn = d3.max(data, function(d) { return d[metric] }) + 2;
     var maxnor = d3.max(data, function(d){ return d[metricor]}) + .3;
     var minor =  d3.min(data, function(d) { return d[metricor] }) - .3;
-    var minor = minor < 0 ? 0 : minor;
+    var minor = minor < -5 ? -5 : minor;
     var maxnor = maxnor < 100 ? maxnor : 4;
     var max_cov = (metric == 'log10pvalue') ? maxn : maxnor;
     var min_cov = (metric == 'log10pvalue') ? 0 : minor;
@@ -356,7 +356,7 @@ function change_coverage_chart(data, new_data, variant_data, _transcript, scale_
 <!-- stuff i added -->
         .attr("data-toggle", "tooltip")
         .attr('filter_status', function(d) {
-            return d.flag;
+            return d.filter;
         })
         .attr('category', function(d) {
             return d.category;

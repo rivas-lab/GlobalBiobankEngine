@@ -5,39 +5,66 @@
 <div class="container" style="font-size: 16px;">
     <div class="row">
         <div class="col">
-            <h1>Decomposition of genetic effects across disease outcomes, biomarkers, and lifestyle measures</h1>
-            <p>Yosuke Tanigawa and Manuel A. Rivas</p>
-            <p>Y.T. developed the web application. M.A.R designed the study.</p>
+		<h2>
+			Components of genetic associations across 2,138 phenotypes in the UK Biobank highlight adipocyte biology
+		</h2>
+                <h3>
+			Tanigawa et al., Nature Communications 2019
+                </h3>
+		<p>
+			Motivated by the polygenicity and pleiotropy of genetic associations in complex traits,
+			we developed a method called Decomposition of Genetic Associations (DeGAs) that operates on
+			a series of genome-wide summary statistics across multiple phenotypes.
+			Please check <a href="https://doi.org/10.1038/s41467-019-11953-9" target="_blank">our publication</a> for more information.
+			Yosuke also summarized highlights of the study <a href="https://yosuketanigawa.com/publication/2019-09-06-DeGAs" target="_blank">here</a>.
+		</p>
+                <img src="../static/decomposition_methods.png" alt="Decomposition - Methods overview" width="800">
+                <p>
+			Y.T. developed the DeGAs web application. M.A.R supervised computational aspects of the study.
+		</p>
         </div>
     </div>
     
     <div class="row">
         <div class="col">
-             <img src="../static/decomposition_methods.png" alt="Decomposition - Methods overview" width="800">
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col">
-            <h2 align="center">Video Tutorial for Decomposition App</h2>
+            <h2 align="center">Video Tutorial for DeGAs App</h2>
             <p>
-                Yosuke explains the decomposition app and teaches viewers how to interpret scores and plots using examples. 
+                Yosuke explains the DeGAs app and teaches viewers how to interpret scores and plots using examples. 
                 The <a href="../decomposition/codingNonMHC_z_nonCenter_p0001_100PCs">coding variants</a> is used as an example.
             </p>
             <iframe width="600" height="450" src="https://www.youtube.com/embed/vI89vgU4oSE" frameborder="0" allowfullscreen></iframe>
         </div>
     </div>
 
+    <a name="download"></a>
+    <div class="row">
+        <div class="col">
+            <h2 align="center">The analysis codes and datasets used in the DeGAs paper</h2>
+            <p>
+		The analysis scripts used in the study are available on <a href="https://github.com/rivas-lab/public-resources/tree/master/uk_biobank/DeGAs" target="_blank">our GitHub repository</a>.
+	    </p>
+            <p>
+		The 3 datasets analyzed in the study are available on <a href="https://doi.org/10.35092/yhjc.9202247.v1" target="_blank">figshare</a>.
+            </p>
+	    <iframe src="https://widgets.figshare.com/articles/9202247/embed?show_title=1" width="100%" height="300em" style="border:none;" allowfullscreen="true" frameborder="0"></iframe>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col col-md-12">
-            <h2>Available datasets</h2>
-            <p>The following datasets are available now:</p>
+    <h2>Tanigawa et al. 2019, Nature Communications datasets</h2>
+            <p>We provide the interactive DeGAs app for the three datasets analyzed in the paper:</p>
+            <ul id="dataset_list_published">
+                <li><a href="../decomposition/dev_allNonMHC_z_center_p0001_100PCs_20180129">All (the LD independent coding and non-coding variants)</a></li>
+                <li><a href="../decomposition/dev_codingNonMHC_z_center_p0001_100PCs_20180129">The coding variants dataset</a></li>
+                <li><a href="../decomposition/dev_PTVsNonMHC_z_center_p0001_100PCs_20180129">The protein-truncating variants (PTVs) dataset</a></li>
+            </ul>  
+
+            <h2>Other available datasets in the DeGAs app</h2>
+            <p>Additionally, following datasets with different parameters are also available in our DeGAs app:</p>
             <ul id="dataset_list">
             {% for dataset in dataset_list %}
                 <li><a href="../decomposition/{{ dataset }}">{{ dataset }}</a></li>
-<!--
-                <li><a href="../decomposition-internal/{{ dataset }}">{{ dataset }}</a></li>
--->
             {% endfor %}
             </ul>  
             <h3>Naming convention</h3>
@@ -55,3 +82,4 @@
     
 </div>
 {% endblock %}
+

@@ -3,6 +3,7 @@
     <!-- Render context vars in JS here -->
     <script type="text/javascript">
         window.icd = {{ icd|tojson|safe }};
+        window.namespace = {{ namespace|tojson|safe }};
         window.page_name = window.icd[0].icd_id;
     </script>
 
@@ -25,7 +26,7 @@
                 </style>
 
 
-    <div class="container">
+    <div class="container-fluid">
         <div class="row">
 
             <h1><span class="hidden-xs">Code Phenotype: {{icd[0].Name}}</span></h1>
@@ -43,10 +44,9 @@
                         <dd>{{ icd[0].icd.replace('ICD','') }}</dd>
                                              <dd>{{ icd[0].Case }}
                                              </dd>
-                        <dd><a href="/coding/gene/{{ icd[0].icd}}">{{ icd[0].icd.replace('ICD','') }}</a></dd>
-                        <dd><a href="/coding/{{ icd[0].icd}}">{{ icd[0].icd.replace('ICD','') }}</a></dd>
-			
-			<a href = "http://biobank.ctsu.ox.ac.uk/crystal/field.cgi?id={{ icd[0].icd.replace('INI','') }}"><object align="middle" data="http://biobank.ctsu.ox.ac.uk/crystal/graphs/c{{ icd[0].icd.replace('INI','') }}.png"></a>
+                        <dd><a href="/{{namespace}}/coding/gene-mh/{{ icd[0].icd}}">{{ icd[0].icd.replace('ICD','') }}</a></dd>
+                        <dd><a href="/{{namespace}}/coding/{{ icd[0].icd}}">{{ icd[0].icd.replace('ICD','') }}</a></dd>
+			<a href = "https://biobank.ctsu.ox.ac.uk/crystal/field.cgi?id={{ icd[0].icd.replace('INI','') }}"><object align="middle" data="https://biobank.ctsu.ox.ac.uk/crystal/crystal/graphs/c{{ icd[0].icd.replace('INI','') }}.png"></a>
                            <img src="https://upload.wikimedia.org/wikipedia/commons/8/80/Comingsoon.png"></img>
 			  </object>
                     </dl>

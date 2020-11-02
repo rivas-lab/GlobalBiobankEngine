@@ -207,15 +207,15 @@ function gene_chart(data, new_data, variant_data, _transcript) {
         .attr('category', function(d) {
             return d.category;
         })
-        .attr('variant_id', function(d) {
-            return d.variant_id;
+        .attr('variant_identity', function(d) {
+            return d.variant_identity;
         })
         .on('mouseover', function(d) {
-            $('#variant_' + d.variant_id).find('td').addClass('table_hover');
+            $('#variant_' + d.variant_identity).find('td').addClass('table_hover');
             tip.show(d);
         })
         .on('mouseout', function(d) {
-            $('#variant_' + d.variant_id).find('td').removeClass('table_hover');
+            $('#variant_' + d.variant_identity).find('td').removeClass('table_hover');
             tip.hide(d);
         })
         //Circle

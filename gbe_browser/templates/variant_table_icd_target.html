@@ -1,6 +1,6 @@
 {% block variant_table %}
 {% include 'variant_selectors.html' %}
-{% include "variant_table_template_icd_target.html" %}
+{% include "variant_table_template_icd_targeted.html" %}
 <script>
     var populate_variant_table = function() {
 
@@ -93,7 +93,7 @@
 
               function get_af_category(d) {
             if (!d.pvalue) {
-                return [0, '0'];
+                return [7, '<1e-6'];
             } else if (d.pvalue <= 1/1000000){
                 return [7, '<1e-6'];
             } else if (d.pvalue <= 1/100000) {
@@ -123,10 +123,10 @@
 
         var svg;
         $.each(data, function(i, d) {
-            d3.select('#variant_af_box_' + d.variant_id).attr("data-tooltip", "Shows minimum p-value \n on a discrete " +
+            d3.select('#variant_af_box_' + d.variant_identity).attr("data-tooltip", "Shows minimum p-value \n on a discrete " +
                     "scale: \n <1e-6, <1e-5, \n <1e-4, <0.001, 0.01-0.001, \n 0.05-0.01, >0.05. \n This particular variant is \n " +
                     get_af_category(d)[1] + ".");
-            svg = d3.select('#variant_af_box_' + d.variant_id)
+            svg = d3.select('#variant_af_box_' + d.variant_identity)
                 .append("svg")
                 .attr("width", width)
                 .attr("height", height)

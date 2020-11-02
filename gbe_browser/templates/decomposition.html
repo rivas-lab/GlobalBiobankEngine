@@ -258,10 +258,10 @@ function update_contribution_plots(pc) {
     gene_contribution_plot.on('plotly_click', function(data){
         var pts = '';
         for(var i=0; i < data.points.length; i++){
-            var gene = data.points[i].text;
+            var gene = data.points[i].x;
         }
         if( ! document.getElementById("var_contribution_no").checked ){            
-            window.open("https://biobankengine.stanford.edu/gene/" + gene);            
+            window.open("https://biobankengine.stanford.edu/RIVAS_HG19/gene/" + gene);            
         }
     });   
     
@@ -446,7 +446,7 @@ function update_pc_var(pc_idx_x, pc_idx_y) {
 function update_phe(phe_idx) {
     $(".variable_phe").text(label_phe[phe_idx]);
     $(".variable_phe_link").html(                  
-        "<a href='https://biobankengine.stanford.edu/coding/"
+        "<a href='https://biobankengine.stanford.edu/RIVAS_HG19/coding/"
         + label_phe_code[phe_idx] + "'>" 
         + label_phe[phe_idx]
         + "</a>"
@@ -455,23 +455,23 @@ function update_phe(phe_idx) {
 //    update_phe_loading(phe_idx, 'Phenotype squared loading score (' + label_phe[phe_idx] + ')'); 
     
     if( ! document.getElementById("phe_contribution_no").checked ){
-        window.open("https://biobankengine.stanford.edu/coding/" + label_phe_code[phe_idx]);
+        window.open("https://biobankengine.stanford.edu/RIVAS_HG19/coding/" + label_phe_code[phe_idx]);
     }
 }   
 
 function update_var(var_idx) {
     $(".variable_var").text(label_var[var_idx]);
     $(".variable_var_link").html(                                
-        "<a href='https://biobankengine.stanford.edu/variant/" 
-        + label_var[var_idx] + "'>" 
-        + label_var[var_idx]
+        "<a href='https://biobankengine.stanford.edu/RIVAS_HG19/awesome?query=" 
+        + label_var[var_idx].replace('-',':') + "'>" 
+        + label_var[var_idx].replace('-',':')
         + "</a>"
     ); 
     update_var_cosine(var_idx, 'Variant squared cosine score (' + label_var[var_idx] + ')');
 //    update_var_loading(var_idx, 'Variant squared loading score (' + label_var[var_idx] + ')');    
     
     if( ! document.getElementById("var_contribution_no").checked ){
-        window.open("https://biobankengine.stanford.edu/variant/" + label_var[var_idx]);
+        window.open("https://biobankengine.stanford.edu/RIVAS_HG19/awesome?query=" + label_var[var_idx].replace('-',':'));
     }    
 }  
     
@@ -642,10 +642,17 @@ function get_data(json_file){
 <div class="container" style="font-size: 16px;">
     <div class="row">
         <div class="col">
-            <h1>Decomposition of genetic effects across disease outcomes, biomarkers, and lifestyle measures</h1>
-            <h5>Version 0.01</h5>
+		<h2>
+			Components of genetic associations across 2,138 phenotypes in the UK Biobank highlight adipocyte biology
+			<br>
+			Tanigawa et al. 2019, Nature Communications
+		</h2>
+<p>
+                        Please check <a href="https://www.nature.com/articles/s41467-019-11953-9">our publication</a> for more information.
+                </p>
+            <h5>Version 0.10</h5>
             <p>Yosuke Tanigawa and Manuel A. Rivas</p>
-            <p>Y.T. developed the web application. M.A.R designed the study.</p>
+            <p>Y.T. developed the web application. M.A.R designed and supervised the study.</p>
         </div>
     </div>
     

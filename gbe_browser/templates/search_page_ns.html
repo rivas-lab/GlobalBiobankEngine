@@ -1,7 +1,9 @@
+
 {% extends "layout.html" %}
 {% block body %}
     <head>
 <style>
+
 .dropdown-submenu {
  position: relative;
 }
@@ -21,14 +23,9 @@
     cursor: pointer;
 }
 
-
-
 .dropbtn1:hover, .dropbtn:focus {
     background-color: #B6B1A9;
 }
-
-
-
 
 .button {
     background-color: #428bca; /* Green */
@@ -50,9 +47,6 @@
     color: white;
     text-decoration: none;
 }
-
-
-
 
 #myInput {
     border-box: box-sizing;
@@ -119,10 +113,19 @@
   padding : 5px 15px;
 }
 
-
-
 </style>
 </head>
+   <script type="text/javascript">
+     window.namespace = {{ namespace|tojson|safe }};
+        window.ns = {{ ns|tojson|safe }};
+        window.formset = {{ formset|tojson|safe }};
+</script>
+ <script src="https://www.google.com/recaptcha/api.js"></script>
+<script>
+   function onSubmit(token) {
+     document.getElementById("demo-form").submit();
+   }
+ </script>
 
     <script>
         $('#navbar_form_container').hide();
@@ -160,9 +163,6 @@ function filterFunction() {
     }
 }
 
-
-
-
 function myFunction2() {
     document.getElementById("myDropdown2").classList.toggle("show");
 }
@@ -181,8 +181,6 @@ function filterFunction2() {
         }
     }
 }
-
-
 
 function myFunction3() {
     document.getElementById("myDropdown3").classList.toggle("show");
@@ -203,9 +201,6 @@ function filterFunction3() {
     }
 }
 
-
-
-
 function myFunction4() {
     document.getElementById("myDropdown4").classList.toggle("show");
 }
@@ -224,8 +219,6 @@ function filterFunction4() {
         }
     }
 }
-
-
 
 function myFunction5() {
     document.getElementById("myDropdown5").classList.toggle("show");
@@ -246,9 +239,6 @@ function filterFunction5() {
     }
 }
 
-
-
-
 function myFunction6() {
     document.getElementById("myDropdown6").classList.toggle("show");
 }
@@ -268,9 +258,6 @@ function filterFunction6() {
     }
 }
 
-
-
-
 function myFunction7() {
     document.getElementById("myDropdown7").classList.toggle("show");
 }
@@ -289,10 +276,6 @@ function filterFunction7() {
         }
     }
 }
-
-
-
-
 
 function myFunction8() {
     document.getElementById("myDropdown8").classList.toggle("show");
@@ -314,34 +297,41 @@ function filterFunction8() {
 }
 </script>
 
-
-
-
-    <div class="container">
-        <h1 id="home-title">Global Biobank Engine <a href="/about" style="color: black;"></a></li></h1>
+    <div class="container-fluid">
+        <h1 id="home-title">Global Biobank Engine<a href="/about" style="color: black;"></a></li></h1>
+<center><img align="middle" src="static/GBE.png" style="height: 50%; width: 50%"></img></center>
+<p align="center" class="lead">
+{% if ns[0].name == "UK Biobank Array European" %}
+                    <span class="label label-success">UK Biobank array - Meta-analysis (White British, European, African, South Asian, East Asian, Admixed)</span>
+                    {% else %}
+                    <span class="label label-success">{{ ns[0].name }}</span>
+                    {% endif %}
+</p>
         <div class="row">
-            <div class="col-md-12">
-  <form method=post enctype=multipart/form-data>
+            <div class="col-xl-12">
+    <form method=post enctype=multipart/form-data>
               <select name="functionassocset" id="functionassocset" class="selectpicker" data-live-search="true"  data-width="fit"/>
 <option selected disabled hidden value="default">Select an association set</option>
 <option value="RIVAS_HG19" data-tokens="uk biobank array european">UK Biobank array - Meta-analysis (White British, European, African, South Asian, East Asian, Admixed)</option>
 <option value="RIVAS_HG38" data-tokens="uk biobank exomes european">UK Biobank exome - European</option>
+<option value="BBJ_HG19" data-tokens="Biobank Japan overlap array">Biobank Japan</option>
+<option value="MVP_HG19" data-tokens="Million Veterans Program overlap array">Million Veterans Program</option>
+<option value="META_HG19" data-tokens="Meta analysis overlap array">Meta analysis UK Biobank, Biobank Japan, MVP</option>
 </select>
 <input type="submit" value="Submit" name="submit" class="btn btn-info">
 </form>
                 <div id="home-searchbox">
-                    <form action="/awesome/{{ ns[0].id }}">
+                    <form action="/{{ ns[0].id }}/awesome">
                         <input type="submit" style="display: none;"/>
                         <input id="home-searchbox-input" name="query" class="form-control input-lg awesomebar" type="text" placeholder="Search for a gene or variant or region or phenotype"/>
                         <input type="submit" style="position: absolute; left: -9999px"/>
                     </form>
                     <p class="text-muted">
-                        Examples - Gene: <a href="/awesome?query=F5">F5</a></li>,
-                        Transcript: <a href="/transcript/ENST00000367797">ENST00000367797</a></li>,
-                        Variant: <a href="/variant/1-169519049">1:169519049</a></li>,
-                      RS ID: <a href="/awesome?query=rs6025">rs6025</a></li>,
-                      Region: <a href="/region/10-114686614-114786614">10:114686614-114786614</a></li>,
-                      Phenotype: <a href="/coding/HC382">asthma</a></li>
+                      Examples for UK Biobank array - Gene: <a href="/RIVAS_HG19/awesome?query=F5">F5</a></li>,
+                      Variant: <a href="/RIVAS_HG19/variant/1-169519049-T-C">1:169519049-T-C</a></li>,
+                      RS ID: <a href="/RIVAS_HG19/awesome?query=rs6025">rs6025</a></li>,
+                      Region: <a href="/RIVAS_HG19/region/10-114686614-114786614">10:114686614-114786614</a></li>,
+                      Phenotype: <a href="/RIVAS_HG19/coding/HC382">Asthma</a></li>
                      </p>
                 </div>
             </div>
@@ -354,10 +344,15 @@ function filterFunction8() {
 
                 <div class="row" style="font-size: 16px;">
 	  <div class="col-md-8">
+<div class="alert alert-danger" role="alert">
+ COVID-19 resources available at: <a href="https://github.com/rivas-lab/covid19">https://github.com/rivas-lab/covid19</a>
+</div>
 <h3 align="center">Genetic Association Results</h3>
-        <p><b>Note: </b>We present summary statistic results from the UK Biobank hospital in-patient health-related outcomes summary information data (<a href="http://biobank.ctsu.ox.ac.uk/showcase/field.cgi?id=41202">Data-Field 41202</a>); computational grouping of phenotypes with cancer (<a href="http://biobank.ctsu.ox.ac.uk/crystal/label.cgi?id=100092">Category 100092</a>) registry, death registry data (<a href="http://biobank.ctsu.ox.ac.uk/crystal/label.cgi?id=100093">Category 100093</a>), algorithmically-defined outcomes (<a href="http://biobank.ctsu.ox.ac.uk/crystal/label.cgi?id=42">Category 42</a>), and verbal questionnaire data (<a href="http://biobank.ctsu.ox.ac.uk/crystal/label.cgi?id=100071">Category 100071</a>); and manually curated grouping of phenotypes.</p> We are also actively adding genetic association results from other studies, which will contribute to several activities in Global Biobank Engine.
-   <p>
+        <p><b>Note: </b>We have aggregated summary statistics from over 750,000 individuals across three population cohorts: <a href="https://www.ukbiobank.ac.uk/">UK Biobank</a>, <a href="https://www.ncbi.nlm.nih.gov/projects/gap/cgi-bin/study.cgi?study_id=phs001672.v3.p1">Million Veterans Program</a> and <a href="https://biobankjp.org/english/index.html">Biobank Japan</a>. We are continuously adding data from other population cohorts in Global Biobank Engine. Please contact us if you want it to be featured. </p>
 
+<p>For UK Biobank we present summary statistic results from the UK Biobank hospital in-patient health-related outcomes summary information data (<a href="http://biobank.ctsu.ox.ac.uk/showcase/field.cgi?id=41202">Data-Field 41202</a>); computational grouping of phenotypes with cancer (<a href="http://biobank.ctsu.ox.ac.uk/crystal/label.cgi?id=100092">Category 100092</a>) registry, death registry data (<a href="http://biobank.ctsu.ox.ac.uk/crystal/label.cgi?id=100093">Category 100093</a>), algorithmically-defined outcomes (<a href="http://biobank.ctsu.ox.ac.uk/crystal/label.cgi?id=42">Category 42</a>), and verbal questionnaire data (<a href="http://biobank.ctsu.ox.ac.uk/crystal/label.cgi?id=100071">Category 100071</a>); and manually curated grouping of phenotypes.  </p>
+   <p>
+<!--
 <h3 align="left">Browseable phenotypes</h3>
 <div class="btn-group-vertical" role="group" align="left" style="width: 100%;">
 
@@ -422,7 +417,7 @@ function filterFunction8() {
 <a class="dropdown-item" href="coding/cancer1042"> vaginal cancer (58)</a>
 <a class="dropdown-item" href="coding/cancer1067"> adrenal cancer (55)</a>
 <a class="dropdown-item" href="coding/cancer1082"> heart / mediastinum cancer (51)</a>
-<!--<a class="dropdown-item" href="coding/cancer1012"> gum cancer (47)</a>
+<a class="dropdown-item" href="coding/cancer1012"> gum cancer (47)</a>
 <a class="dropdown-item" href="coding/cancer1031"> meningeal cancer / malignant meningioma (46)</a>
 <a class="dropdown-item" href="coding/cancer1087"> fallopian tube cancer (44)</a>
 <a class="dropdown-item" href="coding/cancer1029"> peripheral nerve/autonomic nerve cancer (37)</a>
@@ -434,11 +429,10 @@ function filterFunction8() {
 <a class="dropdown-item" href="coding/cancer1008"> ear cancer (16)</a>
 <a class="dropdown-item" href="coding/cancer1080"> trachea cancer (15)</a>
 <a class="dropdown-item" href="coding/cancer1075"> retinoblastoma (12)</a>
-<a class="dropdown-item" href="coding/cancer1076"> kaposis sarcoma (10)</a> -->
+<a class="dropdown-item" href="coding/cancer1076"> kaposis sarcoma (10)</a> 
 </div>
 </div>
 </div>
-<!--
 <div class="btn-group" role="group">
 <div class="dropdown" align="center">
 <button onclick="myFunction2()" class="button dropdown-toggle" data-toggle="dropdown">Common diseases</button>
@@ -492,7 +486,7 @@ function filterFunction8() {
 </div>
 </div>
 </div>
--->
+
 <div class="btn-group" role="group">
 <div class="dropdown" align="center">
 <button onclick="myFunction3()" class="button dropdown-toggle" data-toggle="dropdown">Family History</button>
@@ -535,7 +529,7 @@ function filterFunction8() {
 <a class="dropdown-item" href="coding/HC125"> anaemia (15944)</a>
 <a class="dropdown-item" href="coding/HC78"> arthritis (nos) (15332)</a>
 <a class="dropdown-item" href="coding/HC188"> cholelithiasis/gall stones (14940)</a>
-<!--<a class="dropdown-item" href="coding/HC43"> unclassifiable (14357)</a>-->
+<a class="dropdown-item" href="coding/HC43"> unclassifiable (14357)</a>
 <a class="dropdown-item" href="coding/HC243"> inguinal hernia (14042)</a>
 <a class="dropdown-item" href="coding/HC225"> cholecystitis (12963)</a>
 <a class="dropdown-item" href="coding/HC281"> atrial fibrillation (12665)</a>
@@ -858,7 +852,7 @@ function filterFunction8() {
 <a class="dropdown-item" href="coding/HC286"> plantar fascitis (174)</a>
 <a class="dropdown-item" href="coding/HC26"> iritis (166)</a>
 <a class="dropdown-item" href="coding/HC2"> myocarditis (165)</a>
-<!--<a class="dropdown-item" href="coding/HC152"> deliberate self-harm/suicide attempt (161)</a>-->
+<a class="dropdown-item" href="coding/HC152"> deliberate self-harm/suicide attempt (161)</a>
 <a class="dropdown-item" href="coding/HC341"> fracture face / orbit / eye socket (159)</a>
 <a class="dropdown-item" href="coding/HC46"> renal failure requiring dialysis (156)</a>
 <a class="dropdown-item" href="coding/HC289"> vitiligo (155)</a>
@@ -919,7 +913,7 @@ function filterFunction8() {
 <a class="dropdown-item" href="coding/HC409"> male infertility (56)</a>
 <a class="dropdown-item" href="coding/HC148"> wolff parkinson white / wpw syndrome (56)</a>
 <a class="dropdown-item" href="coding/HC66"> myelofibrosis (54)</a>
-<!--<a class="dropdown-item" href="coding/HC372"> uterine problem (52)</a>
+<a class="dropdown-item" href="coding/HC372"> uterine problem (52)</a>
 <a class="dropdown-item" href="coding/HC244"> carcinoid syndrome/tumour (52)</a>
 <a class="dropdown-item" href="coding/HC279"> myeloproliferative disorder (51)</a>
 <a class="dropdown-item" href="coding/HC354"> kidney nephropathy (50)</a>
@@ -961,11 +955,10 @@ function filterFunction8() {
 <a class="dropdown-item" href="coding/HC29"> yellow fever (7)</a>
 <a class="dropdown-item" href="coding/HC403"> varicella zoster virus (4)</a>
 <a class="dropdown-item" href="coding/HC335"> pancytopenia (4)</a>
-<a class="dropdown-item" href="coding/HC65"> hepatitis d (0)</a> -->
+<a class="dropdown-item" href="coding/HC65"> hepatitis d (0)</a> 
 </div>
 </div>
 </div>
-
 
 
 <div class="btn-group" role="group">
@@ -982,8 +975,8 @@ function filterFunction8() {
 <a class="dropdown-item" href="coding/INI30060"> Mean_corpuscular_haemoglobin_concentration (328025)</a>
 <a class="dropdown-item" href="coding/INI30070"> Red_blood_cell_(erythrocyte)_distribution_width (328031)</a>
 <a class="dropdown-item" href="coding/INI30080"> Platelet_count (328031)</a>
-<!--<a class="dropdown-item" href="coding/INI30090"> Platelet_crit (327881)</a>
-<a class="dropdown-item" href="coding/INI30100"> Mean_platelet_(thrombocyte)_volume (328027)</a>-->
+<a class="dropdown-item" href="coding/INI30090"> Platelet_crit (327881)</a>
+<a class="dropdown-item" href="coding/INI30100"> Mean_platelet_(thrombocyte)_volume (328027)</a>
 <a class="dropdown-item" href="coding/INI30110"> Platelet_distribution_width (327880)</a>
 <a class="dropdown-item" href="coding/INI30120"> Lymphocyte_count (327479)</a>
 <a class="dropdown-item" href="coding/INI30130"> Monocyte_count (327479)</a>
@@ -1001,11 +994,11 @@ function filterFunction8() {
 <a class="dropdown-item" href="coding/INI30250"> Reticulocyte_count (322934)</a>
 <a class="dropdown-item" href="coding/INI30260"> Mean_reticulocyte_volume (322934)</a>
 <a class="dropdown-item" href="coding/INI30270"> Mean_sphered_cell_volume (322755)</a>
-<!--<a class="dropdown-item" href="coding/INI30280"> Immature_reticulocyte_fraction (322755)</a>
+<a class="dropdown-item" href="coding/INI30280"> Immature_reticulocyte_fraction (322755)</a>
 <a class="dropdown-item" href="coding/INI30290"> High_light_scatter_reticulocyte_percentage (322755)</a>
 <a class="dropdown-item" href="coding/INI30300"> High_light_scatter_reticulocyte_count (322755)</a>
 <a class="dropdown-item" href="coding/INI30500"> Microalbumin_in_urine (104119)</a>
-<a class="dropdown-item" href="coding/INI30510"> Creatinine_(enzymatic)_in_urine (327981)</a> -->
+<a class="dropdown-item" href="coding/INI30510"> Creatinine_(enzymatic)_in_urine (327981)</a> 
 <a class="dropdown-item" href="coding/INI30520"> Potassium_in_urine (327299)</a>
 <a class="dropdown-item" href="coding/INI30530"> Sodium_in_urine (327302)</a>
 </div>
@@ -1021,7 +1014,7 @@ function filterFunction8() {
 
 <a class="dropdown-item" href="coding/INI48"> Waist_circumference (336659)</a>
 <a class="dropdown-item" href="coding/INI49"> Hip_circumference (336620)</a>
-<!--<a class="dropdown-item" href="coding/INI50"> Standing_height (336500)</a> -->
+<a class="dropdown-item" href="coding/INI50"> Standing_height (336500)</a> 
 <a class="dropdown-item" href="coding/INI84"> Cancer_year/age_first_occurred (29993)</a>
 <a class="dropdown-item" href="coding/INI87"> Non-cancer_illness_year/age_first_occurred (256433)</a>
 <a class="dropdown-item" href="coding/INI93"> Systolic_blood_pressure,_manual_reading (30077)</a>
@@ -1067,9 +1060,9 @@ function filterFunction8() {
 <a class="dropdown-item" href="coding/INI30520"> Potassium_in_urine (327299)</a>
 <a class="dropdown-item" href="coding/INI30530"> Sodium_in_urine (327302)</a>
 <a class="dropdown-item" href="coding/INI3526"> Mother's_age_at_death (205977)</a>
-<!--<a class="dropdown-item" href="coding/INI10694"> Forced_vital_capacity_(FVC)_(pilot) (291)</a>
+<a class="dropdown-item" href="coding/INI10694"> Forced_vital_capacity_(FVC)_(pilot) (291)</a>
 <a class="dropdown-item" href="coding/INI10695"> Forced_expiratory_volume_in_1-second_(FEV1)_(pilot) (291)</a>
-<a class="dropdown-item" href="coding/INI10696"> Peak_expiratory_flow_(PEF)_(pilot) (291)</a>-->
+<a class="dropdown-item" href="coding/INI10696"> Peak_expiratory_flow_(PEF)_(pilot) (291)</a>
 <a class="dropdown-item" href="coding/INI134"> Number_of_self-reported_cancers (337163)</a>
 <a class="dropdown-item" href="coding/INI135"> Number_of_self-reported_non-cancer_illnesses (337163)</a>
 <a class="dropdown-item" href="coding/INI137"> Number_of_treatments/medications_taken (337163)</a>
@@ -1961,8 +1954,6 @@ function filterFunction8() {
 </div>
 </div>
 
-<!--
-
 <div class="btn-group" role="group">
 <div class="dropdown" align="center">
 <button onclick="myFunction8()" class="button">Medications</button>
@@ -2055,7 +2046,7 @@ function filterFunction8() {
 <a class="dropdown-item" href="coding/MED85">calcium+vitamin_d_500units_tablet (531)</a>
 <a class="dropdown-item" href="coding/MED86">valsartan (511)</a>
 <a class="dropdown-item" href="coding/MED87">qvar_50_inhaler (504)</a>
-<!--<a class="dropdown-item" href="coding/MED88">venlafaxine (490)</a>
+<a class="dropdown-item" href="coding/MED88">venlafaxine (490)</a>
 <a class="dropdown-item" href="coding/MED89">beclomethasone (487)</a>
 <a class="dropdown-item" href="coding/MED90">flixonase_50micrograms_aqueous_nasal_spray (463)</a>
 <a class="dropdown-item" href="coding/MED91">premarin_625micrograms_tablet (459)</a>
@@ -2267,7 +2258,6 @@ function filterFunction8() {
 </div>
 </div>
 -->
-</div>
 
  <h3 align="center"> <a href="/about" style="color: black;">Terms of use</a></h3>
                     <div class="alert alert-info" role="alert">
@@ -2277,7 +2267,7 @@ function filterFunction8() {
 </p>
 </div>
  <h3 align="center">Tutorial</h3>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/lSYgC0U7t4o" frameborder="0" allowfullscreen></iframe>
+<center><iframe width="560" height="315" src="https://www.youtube.com/embed/lSYgC0U7t4o" frameborder="0" allowfullscreen></iframe></center>
   </div>
 
               <div class="col-md-4">
@@ -2285,11 +2275,14 @@ function filterFunction8() {
 				Recent News </button>
 		    <div id="demo" class="collapse" >
               <h3 align="center">Up next</h3>
-		<h4>October 10-18, 2017</h4> - Imputation results upload with (<a href="http://www.nealelab.is/">Neale Lab</a>).
+	      <h4>September, 5 2019</h4> - Biobank Japan summary statistics added.
+	      <h4>September, 5 2019</h4> - Million Veterans Program summary statistics added.
+	      <h4>September, 5 2019</h4> - UK Biobank exome sequencing summary statistics added.
+	      <h4>September, 5 2019</h4> - <a href="https://biobankengine.stanford.edu/prs">PRS app</a> added.
 		<h4>November 21, 2017</h4> - HLA Disease Map added (<a href="https://biobankengine.stanford.edu/hla-assoc">Here</a>).
 		<h4>October 25, 2017</h4> - Update of gene-based results: Top 100 genes per phenotype and top 100 phenotypes per gene.
 		<h4>October 18, 2017</h4> - Release of genetic parameters app I: <a href="https://biobankengine.stanford.edu/gcorr">genetic correlation</a>.
-		<h4>October 18, 2017</h4> - Release of <a href="https://biobankengine.stanford.edu/decomposition-app">decomposition app</a>.
+		<h4>October 18, 2017</h4> - Release of <a href="https://biobankengine.stanford.edu/degas">decomposition app</a>.
 		<h4>September 1, 2017</h4> - Check out quantitative measures II.
 		<h4>August 24, 2017</h4> - <a href="https://biobankengine.stanford.edu/power">GBE Power App available</a>.
 		<h4>August 18, 2017</h4> - Support for gene-based results: top five phenotypes per gene (independent effects model; more documentation soon).
@@ -2308,13 +2301,10 @@ function filterFunction8() {
                 <h4>April 1, 2017</h4> - Internal release.
 		</div>
 		  <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#demo2">
-				Lab manuscripts </button>
+				Lab manuscripts</button>
 		    <div id="demo2" class="collapse" >
-                bioRxiv preprints
-		<h4>August 28, 2017</h4> - <a href="http://www.biorxiv.org/content/early/2017/08/23/179762">Medical relevance of protein-truncating variants across 337,208 individuals in the UK Biobank study</a> (<a href="https://www.youtube.com/watch?v=JpFFjjoTMLk">video journal club</a>)
-		<h4>October 27, 2017</h4> - <a href="https://www.biorxiv.org/content/early/2017/10/27/210302">Large-scale phenome-wide association study of PCSK9 loss-of-function variants demonstrates protection against ischemic stroke</a> 
-		<h4>October 27, 2017</h4> - <a href="https://www.biorxiv.org/content/early/2017/10/27/206961">Vulnerabilities of transcriptome-wide association studies</a> 
-		<h4>January 31, 2018</h4> - <a href="https://www.biorxiv.org/content/early/2018/01/31/257162">Bayesian model comparison for rare variant association studies of multiple phenotypes</a> 
+
+{% include 'publications_contents.html' %}
 		      </div>
 		  </div>
             
@@ -2327,9 +2317,6 @@ function filterFunction8() {
 <img width=579 height=170 src="static/images/RivasLab_png.png"></img>
 </a> -->
 </p>
-      <p align="center">
-    This research has been conducted using the <a href="http://www.ukbiobank.ac.uk/">UK Biobank Resource</a>
-</p>
 
 
    </footer>
@@ -2337,7 +2324,6 @@ function filterFunction8() {
 
 </div>
 
-
-
 {% endblock %}
 </div>
+

@@ -57,13 +57,14 @@
         BROADQT: "Broad quantitative traits",
         BROADBIN: "Broad binary phenotypes",
         BIN: "Additional binary traits"
+    
     };
 
     window.variant = {{ variant|tojson|safe }};
     window.icdstats = {{ icdstats|tojson|safe }};
     window.consequence = {{ consequences|tojson|safe }};
     window.ordered_csqs = {{ ordered_csqs|tojson|safe }};
-
+    window.namespace = {{ namespace|tojson|safe }};
     // data for plots with Plotly
     window.plot_pval_data_all = {{ plot_pval_data | tojson | safe }};
     window.plot_lor_data_all  = {{ plot_lor_data | tojson | safe }};
@@ -88,7 +89,7 @@
             for(item of ['x', 'y', 'text']){
                 filtered_d[item] = group_d[item].filter(function(d, i){
                     return precomputed_filter[group_idx][i];
-                })                
+                }) 
             }
             return filtered_d;          
         });
@@ -127,7 +128,7 @@
         plot_by_group.on('plotly_click', function(data){
             var pts = '';
             for(var i=0; i < data.points.length; i++){
-                url = 'https://biobankengine.stanford.edu/coding/' + data.points[i].x;
+                url = 'https://biobankengine.stanford.edu/' + window.namespace + '/coding/' + data.points[i].x;
             }
             window.open(url);
         });
@@ -192,7 +193,7 @@
 {% endblock %}
 
 {% block body %}
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col-md-12"> 
             <h1>
@@ -206,7 +207,7 @@
             </h5>
             <ul>
                 {% for allele in variant.orig_alt_alleles %}
-                {% if allele != variant.variant_id %}
+                {% if allele != variant.variant_identity %}
                 <li>
                     <a href="/variant/{{ allele }}">{{ allele }}</a>
                 </li>
@@ -235,7 +236,17 @@
                 <dd>
                     {{ variant.filter }}
                 </dd>
-
+		<dt>MAF</dt>
+		<dd>
+		  {{'%1.2e' % variant.maf|float }} 
+            {% if "enrichp" in variant %}
+		  {% if variant.enrichp|float < 0.0001 %}
+		     , enrichment: {{ '%1.2f' % 2.71828**variant.enrichlogor|float }}
+					  {% else %}
+					  {% endif %}
+					  {% else %}
+			{% endif %}
+		  </dd>
                 {% if variant.rsid and variant.rsid != "." %}
                 <dt>dbSNP</dt>
                 <dd><a href="http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs={{ variant.rsid }}" target="_blank">{{ variant.rsid }}</a></dd>
@@ -260,17 +271,17 @@
 
                 <dt>UCSC</dt>
                 <dd>
-                    <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&highlight=hg19.chr{{ variant.chrom }}%3A{{ variant.pos }}-{{ variant.pos + variant.ref|length - 1 }}&position=chr{{ variant.chrom }}%3A{{ variant.pos - 25 }}-{{ variant.pos + variant.ref|length - 1 + 25 }}" target="_blank">{{ variant.variant_id }}<i class="fa fa-external-link"></i></a>
+                    <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&highlight=hg19.chr{{ variant.chrom }}%3A{{ variant.pos }}-{{ variant.pos + variant.ref|length - 1 }}&position=chr{{ variant.chrom }}%3A{{ variant.pos - 25 }}-{{ variant.pos + variant.ref|length - 1 + 25 }}" target="_blank">{{ variant.variant_identity }}<i class="fa fa-external-link"></i></a>
                 </dd>
 
-                <dt>ExAC</dt>    
+                <dt>gnomAD</dt>    
                 <dd> 
-                    <a href="http://exac.broadinstitute.org/variant/{{ variant.variant_id}}" target="_blank">{{ variant.variant_id }}<i class="fa fa-external-link"></i></a>
+                    <a href="http://gnomad.broadinstitute.org/variant/{{ variant.variant_identity}}" target="_blank">{{ variant.variant_identity }}<i class="fa fa-external-link"></i></a>
                 </dd>
 
                 <dt>IBD</dt>
                 <dd> 
-                    <a href="http://ibd.broadinstitute.org/variant/{{ variant.variant_id}}" target="_blank">{{ variant.variant_id }}<i class="fa fa-external-link"></i></a>
+                    <a href="http://ibd.broadinstitute.org/variant/{{ variant.variant_identity}}" target="_blank">{{ variant.variant_identity }}<i class="fa fa-external-link"></i></a>
                 </dd>
 
                 {% if False %}
@@ -310,7 +321,7 @@
         <div class="col-md-6">                
             <div id="annotation_container">
 
-                {% if variant.variant_id %}
+                {% if variant.variant_identity %}
                 <div class="section_header">Annotations</div>
                 {% if variant.vep_annotations %}
                 <p>This variant falls on {{ variant.transcripts|length }} transcripts in {{ variant.genes|length }} genes:</p>
@@ -322,9 +333,9 @@
                             <ul>
                                 {% for gene in consequences[consequence] %}
                                 <li>
-                                    <a href="/gene/{{ gene }}">
+                                    <a href="/{{ namespace }}/gene/{{ consequences[consequence][gene][0].SYMBOL }}">
                                         {% if consequences[consequence][gene][0].SYMBOL %}
-                                        {{ consequences[consequence][gene][0].SYMBOL }}
+                                        {{ consequences[consequence][gene][0].SYMBOL}}
                                         {% else %}
                                         {{ gene }}
                                         {% endif %}
@@ -338,7 +349,7 @@
                                         <ul class="dropdown-menu" role="menu" aria-labelledby="transcript_dropdown">
                                             {% for annotation in consequences[consequence][gene] %}
                                             <li role="presentation">
-                                                <a role="menuitem" tabindex="-1" href="/transcript/{{ annotation.Feature }}">
+                                                <a role="menuitem" tabindex="-1" href="/{{ namespace }}/transcript/{{ annotation.Feature }}">
                                                     {{ annotation.Feature }}
                                                     {% if annotation.CANONICAL == 'YES' %}
                                                     *
@@ -362,7 +373,7 @@
                                     </span>
                                     {% else %}
                                     {% set annotation = consequences[consequence][gene][0] %}
-                                    - <a href="/transcript/{{ annotation.Feature }}">
+                                    - <a href="/{{ namespace }}/transcript/{{ annotation.Feature }}">
                                     {{ annotation.Feature }}
                                     {% if annotation.CANONICAL == 'YES' %}
                                     *
@@ -392,7 +403,7 @@
                             <ul>
                                 {% for gene in consequences[consequence] %}
                                 <li>
-                                    <a href="/gene/{{ gene }}">
+                                    <a href="/{{ namespace }}/gene/{{ gene }}">
                                         {% if consequences[consequence][gene][0].SYMBOL %}
                                         {{ consequences[consequence][gene][0].SYMBOL }}
                                         {% else %}
@@ -408,7 +419,7 @@
                                         <ul class="dropdown-menu" role="menu" aria-labelledby="transcript_dropdown">
                                             {% for annotation in consequences[consequence][gene] %}
                                             <li role="presentation">
-                                                <a role="menuitem" tabindex="-1" href="/transcript/{{ annotation.Feature }}">
+                                                <a role="menuitem" tabindex="-1" href="/{{ namespace }}/transcript/{{ annotation.Feature }}">
                                                     {{ annotation.Feature }}
                                                     {% if annotation.CANONICAL == 'YES' %}
                                                     *
@@ -432,7 +443,7 @@
                                     </span>
                                     {% else %}
                                     {% set annotation = consequences[consequence][gene][0] %}
-                                    - <a href="/transcript/{{ annotation.Feature }}">
+                                    - <a href="/{{ namespace }}/transcript/{{ annotation.Feature }}">
                                     {{ annotation.Feature }}
                                     {% if annotation.CANONICAL == 'YES' %}
                                     *

@@ -123,10 +123,10 @@
 
         var svg;
         $.each(data, function(i, d) {
-            d3.select('#variant_af_box_' + d.variant_id).attr("data-tooltip", "Shows minimum p-value \n on a discrete " +
+            d3.select('#variant_af_box_' + d.variant_identity).attr("data-tooltip", "Shows minimum p-value \n on a discrete " +
                     "scale: \n <1e-6, <1e-5, \n <1e-4, <0.001, 0.01-0.001, \n 0.05-0.01, >0.05. \n This particular variant is \n " +
                     get_af_category(d)[1] + ".");
-            svg = d3.select('#variant_af_box_' + d.variant_id)
+            svg = d3.select('#variant_af_box_' + d.variant_identity)
                 .append("svg")
                 .attr("width", width)
                 .attr("height", height)
