@@ -1,27 +1,29 @@
 import itertools
 import re
-import scidbpy
-
+#import scidbpy
+import scidbbiobank 
 import config
 import utils
-
-
+import logging
+import numpy 
+import pandas 
+logging.basicConfig(filename='loglookups.txt', level=logging.DEBUG)
 UNSUPPORTED_QUERIES = set((
-    'CMD1G',
-    'CMH9',
-    'CMPD4',
-    'ENSG00000155657',
-    'ENST00000342175',
-    'ENST00000342992',
-    'ENST00000359218',
-    'ENST00000460472',
-    'ENST00000589042',
-    'ENST00000591111',
-    'FLJ32040',
-    'LGMD2J',
-    'MYLK5',
-    'TMD',
-    'TTN',
+    'CMD1G'
+#    'CMH9',
+#    'CMPD4',
+#    'ENSG00000155657',
+#    'ENST00000342175',
+#    'ENST00000342992',
+#    'ENST00000359218',
+#    'ENST00000460472',
+#    'ENST00000589042',
+#    'ENST00000591111',
+#    'FLJ32040',
+#    'LGMD2J',
+#    'MYLK5',
+#    'TMD',
+#    'TTN',
 ))
 
 RSID_FORMAT = '{chrom}-{pos}-{ref}-{alt}'
@@ -62,6 +64,8 @@ def numpy2dict(ar):
             for de in ar.dtype.descr if de[0] != 'notused'
         )
         for el in ar]
+
+
 
 
 def parse_vep_annotations(csq, gene_id=None, transcript_id=None):
@@ -108,9 +112,9 @@ def cast_pos_info(gene):
 
 
 def add_xpos(gene):
-    if gene and all(k in gene.keys() for k in ('chrom', 'start', 'stop')):
+    if gene and all(k in gene.keys() for k in ('chrom', 'start', 'end')):
         gene['xstart'] = gene['chrom'] * config.XOFF + gene['start']
-        gene['xstop'] = gene['chrom'] * config.XOFF + gene['stop']
+        gene['xstop'] = gene['chrom'] * config.XOFF + gene['end']
     return gene
 
 
@@ -170,8 +174,86 @@ def exists_icd(db, icd):
       aggregate(
         filter(icd_info, icd = 'RH141'),
         count(*));
+
+    SciDBnew: 
+    res = db.get_phenotype_fields(association_set=str(db.list_association_sets()['name'][0]))
+    resphe = [res['description'] == icd]
+    return bool(resphe.empty)
     """
-    return exists(db, config.ICD_INFO_ARRAY, 'icd', "'{}'".format(icd))
+    res = db.get_phenotype_fields(association_set=str(db.list_association_sets()['name'][0]))
+    resphe = res[res['description'] == icd]
+    return not bool(resphe.empty)
+
+def get_phe_title(db, phename):
+    """
+    Search bar
+    SciDBnew: 
+    res = str(list(phef[phef['description'] == "asthma_diagnosed_by_doctor"]['title'])[0])
+    """
+    phef = db.get_phenotype_fields(association_set=str(db.list_association_sets()['name'][0]))
+    if phef.empty:
+        return None
+    else:
+        res = str(list(phef[phef['description'] == phename]['title'])[0])
+    return res
+
+
+def get_phe_name(db, icd):
+    """
+    Search bar
+    SciDBnew: 
+
+    icdres['shortname'] = icdres.apply(lambda row: str(df[df['title'] == row['title']]['notes'].squeeze()).split(';')[1].split('=')[1], axis = 1)
+    logging.info('shortname')
+    icdres['Case'] = icdres.apply(lambda row: str(df[df['title'] == row['title']]['notes'].squeeze()).split(';')[0].split('=')[1], axis = 1)
+    icdres['gene_name'], icdres['gene_symbol'], icdres['HGVSp'], icdres['HGVSc'] = zip(*icdres['annotations'].map(utils.return_gene_vep))
+    #icdres.apply(lambda row: utils.return_gene_vep(row['annotations']), axis = 1)                                                                                                
+    logging.info(icdres['gene_symbol'])
+    logging.info('Case')
+    icdres['log10pvalue'] = icdres.apply(lambda row: -numpy.log10(row['pvalue']), axis = 1)
+    logging.info('l10pval')
+    icdres['icd'] = icdres['title']
+    logging.info('icd')
+    if icdres.loc[icdres['odds_ratio'].isna()].shape[0] < icdres.loc[icdres['beta'].isna()].shape[0]:
+        icdres['or_val'] = icdres['odds_ratio']
+
+    res = str(list(phef[phef['description'] == "asthma_diagnosed_by_doctor"]['title'])[0])
+    """
+    phef = db.get_phenotype_fields(association_set=str(db.list_association_sets()['name'][0]))
+    if phef.empty:
+        return None
+    else:
+        res = str(phef[phef['title'] == icd]['notes'].squeeze()).split(';')[1].split('=')[1]
+    return res
+
+
+def get_phe_case(db, icd):
+    """
+    Search bar
+    SciDBnew: 
+
+    icdres['shortname'] = icdres.apply(lambda row: str(df[df['title'] == row['title']]['notes'].squeeze()).split(';')[1].split('=')[1], axis = 1)
+    logging.info('shortname')
+    icdres['Case'] = icdres.apply(lambda row: str(df[df['title'] == row['title']]['notes'].squeeze()).split(';')[0].split('=')[1], axis = 1)
+    icdres['gene_name'], icdres['gene_symbol'], icdres['HGVSp'], icdres['HGVSc'] = zip(*icdres['annotations'].map(utils.return_gene_vep))
+    #icdres.apply(lambda row: utils.return_gene_vep(row['annotations']), axis = 1)                                                                                                
+    logging.info(icdres['gene_symbol'])
+    logging.info('Case')
+    icdres['log10pvalue'] = icdres.apply(lambda row: -numpy.log10(row['pvalue']), axis = 1)
+    logging.info('l10pval')
+    icdres['icd'] = icdres['title']
+    logging.info('icd')
+    if icdres.loc[icdres['odds_ratio'].isna()].shape[0] < icdres.loc[icdres['beta'].isna()].shape[0]:
+        icdres['or_val'] = icdres['odds_ratio']
+
+    res = str(list(phef[phef['description'] == "asthma_diagnosed_by_doctor"]['title'])[0])
+    """
+    phef = db.get_phenotype_fields(association_set=str(db.list_association_sets()['name'][0]))
+    if phef.empty:
+        return None
+    else:
+        res = str(phef[phef['title'] == icd]['notes'].squeeze()).split(';')[0].split('=')[1]
+    return res
 
 
 def get_icd_by_chrom_pos(db, chrom, start, stop=None, icd=None):
@@ -192,25 +274,27 @@ def get_icd_by_chrom_pos(db, chrom, start, stop=None, icd=None):
         'right_names=icd_idx',
         'keep_dimensions=1',
         'algorithm=hash_replicate_right');
+    SciDBnew:
+    db.get_association_data(association_set=assocset, chromosome=22, position = 32334104)
     """
     if not stop:
         stop = start
-    if not icd:
-        icd_info_filter = config.ICD_INFO_ARRAY
-    else:
-        icd_info_filter = 'filter({icd_info_array}, {cond})'.format(
-            icd_info_array=config.ICD_INFO_ARRAY,
-            cond=' or '.join("icd = '{}'".format(i) for i in icd))
-    return numpy2dict(
-        db.iquery(
-            config.ICD_CHROM_POS_LOOKUP_QUERY.format(
-                icd_info_filter=icd_info_filter,
-                chrom=chrom,
-                start=start,
-                stop=stop),
-            schema=config.ICD_CHROM_POS_LOOKUP_SCHEMA,
-            fetch=True,
-            atts_only=True))
+#    if not icd:
+#        icd_info_filter = config.ICD_INFO_ARRAY
+#    else:
+#        icd_info_filter = 'filter({icd_info_array}, {cond})'.format(
+#            icd_info_array=config.ICD_INFO_ARRAY,
+#            cond=' or '.join("icd = '{}'".format(i) for i in icd))
+#    return numpy2dict(
+#        db.iquery(
+#            config.ICD_CHROM_POS_LOOKUP_QUERY.format(
+#                icd_info_filter=icd_info_filter,
+#                chrom=chrom,
+#                start=start,
+#                stop=stop),
+#            schema=config.ICD_CHROM_POS_LOOKUP_SCHEMA,
+#            fetch=True,
+#            atts_only=True))
 
 
 def get_icd_affyid(db, affyid):
@@ -238,7 +322,7 @@ def get_icd_affyid(db, affyid):
             atts_only=True))
 
 
-def get_icd_variant_by_icd_id_pvalue(db, icd_id, pvalue=0.001):
+def get_icd_variant_by_icd_id_pvalue(db, icd_id, field_identifier, pvalue=0.001):
     """
     e.g.,
     UI:
@@ -273,16 +357,102 @@ def get_icd_variant_by_icd_id_pvalue(db, icd_id, pvalue=0.001):
         'right_names=chrom,pos',
         'keep_dimensions=1',
         'algorithm=merge_right_first');
+
+    SciDBnew: 
+    bb.get_association_data(association_set=assocset,
+          chromosome=22, start=32300000, end=32400000, pvalue_max=1, field_id = int(df[df['title'] == 'HC382']['field_id']))   
     """
-    pdecimal = config.ICD_PVALUE_MAP.get(pvalue, 0)
-    return format_variants(
-        numpy2dict(
-            db.iquery(
-                config.ICD_VARIANT_LOOKUP_QUERY.format(
-                    icd=icd_id, pdecimal=pdecimal),
-                schema=config.VARIANT_X_ICD_X_INFO_SCHEMA,
-                fetch=True,
-                atts_only=True)))
+    assocset = str(db.list_association_sets()['name'][0])
+    df = db.get_phenotype_fields(association_set=assocset, include_pvalue_threshold=True)
+    if 'enrichlogor' in list(db.get_variant_fields()['name']):
+        icdres = db.get_association_data(association_set=assocset, pvalue_max = pvalue, field_id = field_identifier, variant_fields = ('chrom','pos','ref','alt', 'variant_identity', 'major_consequence', 'category', 'gene_name', 'gene_symbol', 'HGVSp', 'HGVSc',  'consequence', 'all_filters', 'maf', 'ukbb_freq', 'ld', 'rsid', 'enrichp', 'enrichlogor'), association_fields = ('pvalue', 'title', 'beta', 'odds_ratio', 'beta', 'se'), se_range=(0, 0.21))
+    else:
+        icdres = db.get_association_data(association_set=assocset, pvalue_max = pvalue, field_id = field_identifier, variant_fields = ('chrom','pos','ref','alt', 'variant_identity', 'major_consequence', 'category', 'gene_name', 'gene_symbol', 'HGVSp', 'HGVSc',  'consequence', 'all_filters',  'maf', 'ukbb_freq', 'ld', 'rsid'), association_fields = ('pvalue', 'title', 'beta', 'odds_ratio', 'beta', 'se'), se_range=(0, 0.21))
+   # icdres = db.get_association_data(association_set=assocset, pvalue_max = pvalue, variant_fieldsfield_id = field_identifier, association_fields = ('pvalue', 'title', 'beta', 'odds_ratio', 'beta', 'se'))
+#    icdres = db.get_association_data(association_set=assocset, field_id = field_identifier)
+    ## SE filter
+#    icdres['variant_id'] = icdres.apply(lambda row: RSID_FORMAT.format(
+#            chrom=row['chrom'],
+#            pos=row['pos'],
+#            ref=row['ref'],
+#            alt=row['alt']), axis = 1)
+#    icdres.loc[~icdres.consequence.isin(utils.csq_order),'consequence'] = 'intergenic'
+#    icdres['major_consequence'] = icdres['consequence']
+#    icdres['category'] = icdres.apply(lambda row: utils.add_category_to_variant(row['consequence']), axis = 1)
+#    icdres = icdres[icdres.se <= .2] 
+    icdres['filter'] = icdres.apply(lambda row: 'PASS' if (row['all_filters'] != 1 and row['all_filters'] != 2 and row['all_filters'] != 3) else 'FAIL', axis = 1)
+    icdres['pvalue'] = icdres.apply(lambda row: row['pvalue'] if row['pvalue'] != 0 else 1e-300, axis = 1)
+   # icdres['Name'] =  icdres.apply(lambda row: df[df['title'] == row['title']]['description'].squeeze(), axis = 1)
+    icdres['shortname'] = icdres.apply(lambda row: str(df[df['title'] == row['title']]['notes'].squeeze()).split(';')[1].split('=')[1], axis = 1)
+    icdres['Name'] = icdres['shortname']
+    icdres['Case'] = icdres.apply(lambda row: str(df[df['title'] == row['title']]['notes'].squeeze()).split(';')[0].split('=')[1], axis = 1)
+#    icdres['gene_name'], icdres['gene_symbol'], icdres['HGVSp'], icdres['HGVSc'] = zip(*icdres['annotations'].map(utils.return_gene_vep)) 
+   # icdres = icdres.drop(columns=['annotations'])
+    #icdres.apply(lambda row: utils.return_gene_vep(row['annotations']), axis = 1)
+    icdres['log10pvalue'] = icdres.apply(lambda row: -numpy.log10(row['pvalue']), axis = 1)
+    icdres['icd'] = icdres['title']
+    if icdres.loc[icdres['odds_ratio'].isna()].shape[0] < icdres.loc[icdres['beta'].isna()].shape[0]:
+        icdres['or_val'] = icdres['odds_ratio']
+        icdres['lor_val'] = icdres.apply(lambda row: numpy.log(row['odds_ratio']), axis = 1)
+    else:
+        icdres['or_val'] = icdres['beta']
+        icdres['lor_val'] = icdres['beta']
+ #   icdres['ukbb_freq'] = icdres['maf']
+  #  logging.info(icdres)
+    return icdres
+
+
+
+
+
+def get_icd_variant_by_beta_pvalue(db, pvalue=0.00000005, betaabs = -.2):
+    """
+    """
+    assocset = str(db.list_association_sets()['name'][0])
+    df = db.get_phenotype_fields(association_set=assocset, include_pvalue_threshold=True)
+    if 'enrichlogor' in list(db.get_variant_fields()['name']):
+        icdres = db.get_association_data(association_set=assocset, pvalue_max = pvalue, variant_fields = ('chrom','pos','ref','alt', 'variant_identity', 'major_consequence', 'category', 'gene_name', 'gene_symbol', 'HGVSp', 'HGVSc',  'consequence', 'all_filters', 'maf', 'ukbb_freq', 'ld', 'rsid', 'enrichp', 'enrichlogor'), association_fields = ('pvalue', 'title', 'beta', 'odds_ratio', 'beta', 'se'), se_range=(0, 0.21), beta_range = (None, betaabs))
+    else:
+        icdres = db.get_association_data(association_set=assocset, pvalue_max = pvalue, variant_fields = ('chrom','pos','ref','alt', 'variant_identity', 'major_consequence', 'category', 'gene_name', 'gene_symbol', 'HGVSp', 'HGVSc',  'consequence', 'all_filters',  'maf', 'ukbb_freq', 'ld', 'rsid'), association_fields = ('pvalue', 'title', 'beta', 'odds_ratio', 'beta', 'se'), se_range=(0, 0.21), beta_range = (None, betaabs))
+    if 'enrichlogor' in list(db.get_variant_fields()['name']):
+        icdres2 = db.get_association_data(association_set=assocset, pvalue_max = pvalue, variant_fields = ('chrom','pos','ref','alt', 'variant_identity', 'major_consequence', 'category', 'gene_name', 'gene_symbol', 'HGVSp', 'HGVSc',  'consequence', 'all_filters', 'maf', 'ukbb_freq', 'ld', 'rsid', 'enrichp', 'enrichlogor'), association_fields = ('pvalue', 'title', 'beta', 'odds_ratio', 'beta', 'se'), se_range=(0, 0.21), beta_range = (-(betaabs), None))
+    else:
+        icdres2 = db.get_association_data(association_set=assocset, pvalue_max = pvalue, variant_fields = ('chrom','pos','ref','alt', 'variant_identity', 'major_consequence', 'category', 'gene_name', 'gene_symbol', 'HGVSp', 'HGVSc',  'consequence', 'all_filters',  'maf', 'ukbb_freq', 'ld', 'rsid'), association_fields = ('pvalue', 'title', 'beta', 'odds_ratio', 'beta', 'se'), se_range=(0, 0.21), beta_range = (-betaabs, None))
+    icdres = icdres.append(icdres2)
+   # icdres = db.get_association_data(association_set=assocset, pvalue_max = pvalue, variant_fieldsfield_id = field_identifier, association_fields = ('pvalue', 'title', 'beta', 'odds_ratio', 'beta', 'se'))
+#    icdres = db.get_association_data(association_set=assocset, field_id = field_identifier)
+    ## SE filter
+#    icdres['variant_id'] = icdres.apply(lambda row: RSID_FORMAT.format(
+#            chrom=row['chrom'],
+#            pos=row['pos'],
+#            ref=row['ref'],
+#            alt=row['alt']), axis = 1)
+#    icdres.loc[~icdres.consequence.isin(utils.csq_order),'consequence'] = 'intergenic'
+#    icdres['major_consequence'] = icdres['consequence']
+#    icdres['category'] = icdres.apply(lambda row: utils.add_category_to_variant(row['consequence']), axis = 1)
+#    icdres = icdres[icdres.se <= .2] 
+    icdres['filter'] = icdres.apply(lambda row: 'PASS' if (row['all_filters'] != 1 and row['all_filters'] != 2 and row['all_filters'] != 3) else 'FAIL', axis = 1)
+    icdres['pvalue'] = icdres.apply(lambda row: row['pvalue'] if row['pvalue'] != 0 else 1e-300, axis = 1)
+   # icdres['Name'] =  icdres.apply(lambda row: df[df['title'] == row['title']]['description'].squeeze(), axis = 1)
+    icdres['shortname'] = icdres.apply(lambda row: str(df[df['title'] == row['title']]['notes'].squeeze()).split(';')[1].split('=')[1], axis = 1)
+    icdres['Name'] = icdres['shortname']
+    cond = icdres['shortname'].str.contains('Diet') | icdres['shortname'].str.contains('drinking habits') | icdres['shortname'].str.contains('bone mineral density') | icdres['shortname'].str.contains('drinking session') 
+    icdres = icdres.drop(icdres[cond].index.values)
+    icdres['Case'] = icdres.apply(lambda row: str(df[df['title'] == row['title']]['notes'].squeeze()).split(';')[0].split('=')[1], axis = 1)
+#    icdres['gene_name'], icdres['gene_symbol'], icdres['HGVSp'], icdres['HGVSc'] = zip(*icdres['annotations'].map(utils.return_gene_vep)) 
+   # icdres = icdres.drop(columns=['annotations'])
+    #icdres.apply(lambda row: utils.return_gene_vep(row['annotations']), axis = 1)
+    icdres['log10pvalue'] = icdres.apply(lambda row: -numpy.log10(row['pvalue']), axis = 1)
+    icdres['icd'] = icdres['title']
+    if icdres.loc[icdres['odds_ratio'].isna()].shape[0] < icdres.loc[icdres['beta'].isna()].shape[0]:
+        icdres['or_val'] = icdres['odds_ratio']
+        icdres['lor_val'] = icdres.apply(lambda row: numpy.log(row['odds_ratio']), axis = 1)
+    else:
+        icdres['or_val'] = icdres['beta']
+        icdres['lor_val'] = icdres['beta']
+ #   icdres['ukbb_freq'] = icdres['maf']
+  #  logging.info(icdres)
+    return icdres
 
 def get_icd_variant_by_icd_id_pvalue_uncertain(db, icd_id, pvalue=0.001):
     """
@@ -331,7 +501,7 @@ def get_icd_variant_by_icd_id_pvalue_uncertain(db, icd_id, pvalue=0.001):
                 atts_only=True)))
 
 
-def get_icd_variant_by_pvalue(db, pvalue=0.001):
+def get_icd_variant_by_pvalue(db, pvalue=0.001,orvalue=0):
     """
     e.g.,
     UI:
@@ -366,10 +536,11 @@ def get_icd_variant_by_pvalue(db, pvalue=0.001):
         'algorithm=merge_right_first');
     """
     pdecimal = config.ICD_PVALUE_MAP.get(pvalue, 0)
+    print(pvalue,pdecimal)
     return format_variants(
         numpy2dict(
             db.iquery(
-                config.ICD_VARIANT_SCAN_QUERY.format(pdecimal=pdecimal),
+                config.ICD_VARIANT_SCAN_QUERY.format(pdecimal=pdecimal,orvalue=orvalue,pvalue=pvalue),
                 schema=config.VARIANT_X_ICD_X_INFO_SCHEMA,
                 fetch=True,
                 atts_only=True)))
@@ -443,6 +614,35 @@ def get_gene_by_id(db, gene_id):
     return res
 
 
+def get_gene_by_id_new(db, gene_id):
+    """
+    e.g.,
+    UI:
+      https://biobankengine.stanford.edu/gene/ENSG00000107404
+
+    MongoDB:
+      db.genes.find({'gene_id': 'ENSG00000107404'}, fields={'_id': False})
+
+    SciDB:
+      equi_join(
+        equi_join(
+            gene,
+            filter(gene_index, gene_id = 'ENSG00000107404'),
+            'left_names=gene_idx',
+            'right_names=gene_idx',
+            'algorithm=hash_replicate_right'),
+        transcript_index,
+        'left_names=transcript_idx',
+        'right_names=transcript_idx',
+        'algorithm=hash_replicate_right');
+
+    SciDBnew:
+    genedf = bb.get_genes(gene_name='APOC3', exact_match=True)
+    """
+    genedf = db.get_genes(gene_name=gene_id, exact_match=True)
+    return genedf
+
+
 def exists_gene_id(db, gene_id):
     """
     Search bar
@@ -454,12 +654,15 @@ def exists_gene_id(db, gene_id):
       aggregate(
         filter(gene_index, gene_id = 'ENSG00000198734'),
         count(*));
-    """
-    return exists(db,
-                  config.GENE_INDEX_ARRAY,
-                  'gene_id',
-                  "'{}'".format(gene_id))
 
+    SciDBnew: 
+    ## needs to be updated
+    res = bb.get_genes(gene_id='ENSG00000198734', exact_match=True)
+    bool(res.empty)
+    ### True or False 
+    """
+    res = db.get_genes(gene_id=gene_id, exact_match=True)
+    return res
 
 def get_genes_in_region(db, chrom, start, stop):
     """
@@ -479,15 +682,12 @@ def get_genes_in_region(db, chrom, start, stop):
         'left_names=gene_idx',
         'right_names=gene_idx',
         'algorithm=hash_replicate_right');
+    SciDBnew:
+    bb.get_genes_in_region(namespace='RIVAS_HG38', chromosome=2, start=202201384, end=202201886)
     """
-    return numpy2dict(
-        db.iquery(
-            config.GENE_REGION_QUERY.format(
-                chrom=chrom, start=start, stop=stop),
-            schema=config.GENE_REGION_SCHEMA,
-            fetch=True,
-            atts_only=True))
-
+    res = db.get_genes_in_region(namespace=str(db.namespace), chromosome=int(chrom), start=int(start), end=int(stop))
+    logging.info(res)
+    return res
 
 def get_gene_id_by_name(db, gene_name):
     """
@@ -506,16 +706,15 @@ def get_gene_id_by_name(db, gene_name):
           'right_names=gene_idx',
           'algorithm=hash_replicate_right'),
         gene_id);
+
+    SciDBnew: 
+     bb.get_genes(gene_name='RP11-150', exact_match=True)
     """
-    # TODO other_names
-    res = db.iquery(
-        config.GENE_ID_BY_NAME_QUERY.format(gene_name=gene_name),
-        schema=config.GENE_ID_BY_NAME_SCHEMA,
-        fetch=True,
-        atts_only=True)
-    if not res:
+    # TODO - this needs to be updated 7.18.2019 MRivas
+    res = db.get_genes(gene_name = gene_name, exact_match=True)
+    if res.empty:
         return None
-    return res[0]['gene_id']['val']
+    return res['name'][0]
 
 
 def exists_transcript_id(db, transcript_id):
@@ -530,12 +729,19 @@ def exists_transcript_id(db, transcript_id):
       aggregate(
         filter(transcript_index, transcript_id = 'ENST00000450546'),
         count(*));
-    """
-    return exists(db,
-                  config.TRANSCRIPT_INDEX_ARRAY,
-                  'transcript_id',
-                  "'{}'".format(transcript_id))
 
+    SciDBnew: 
+    res = bb.get_transcript(transcript_id='RP11-150', exact_match=True)
+    ## needs to be updated
+    bool(res.empty)
+    ### True or False 
+
+    """
+    res = db.get_transcripts(str(db.namespace), transcript_eid=str(transcript_id))
+    if res.empty:
+        return None
+    else:
+        return res
 
 def get_transcript_gene(db, transcript_id):
     """
@@ -569,7 +775,7 @@ def get_transcript_gene(db, transcript_id):
 # -- -
 # -- - VARIANT - --
 # -- -
-def get_variants_chrom_pos_by_rsid_limit2(db, rsid):
+def get_variants_chrom_pos_by_rsid_limit2(db, rsidentifier):
     """
     Search bar
 
@@ -577,31 +783,25 @@ def get_variants_chrom_pos_by_rsid_limit2(db, rsid):
       db.variants.find({'rsid': 'rs6025'}, fields={'_id': False}))
 
     SciDB:
-      limit(
+          limit(
         project(
           filter(variant, rsid = 6025),
           rsid),
         2);
+    SciDBnew:
+     bb.get_variants(rsid=['rs34221567', 'rs148534902', 'rs200712517'])
+
     """
-    if not rsid.startswith('rs'):
+    if rsidentifier.startswith('rs'):
+        res = db.get_variants(rsid = rsidentifier)
+    else:
         return None
-    rsid_int = None
-    try:
-        rsid_int = int(rsid.lstrip('rs'))
-    except Exception:
+    if res.empty:
         return None
-
-    res = db.iquery(
-        config.VARIANT_CHROM_POS_BY_RSID_QUERY.format(rsid=rsid_int),
-        schema=config.VARIANT_CHROM_POS_BY_RSID_SCHEMA,
-        fetch=True)
-    if not res:
-        return None
-
     return res
 
 
-def get_variant_ann_by_chrom_pos(db, chrom, start):
+def get_variant_ann_by_chrom_pos(db, chrom, start, ref, alt):
     """
     e.g.,
     UI:
@@ -613,21 +813,35 @@ def get_variant_ann_by_chrom_pos(db, chrom, start):
     SciDB:
       between(vairant, 1, 39381448,
                        1, 39381448);
+
+    SciDBnew: 
+    db.get_variants(chromosome=22, position=(32334104, 38877475))
+    
     """
-    variants = format_variants(
-        numpy2dict(
-            db.iquery(
-                config.VARIANT_LIMIT_QUERY.format(chrom=chrom, start=start),
-                schema=config.VARIANT_LIMIT_SCHEMA,
-                fetch=True)),
-        add_ann=True)
-    variant = variants[0] if len(variants) else None
-    if variant is None or 'rsid' not in variant:
+    # variants = format_variants(
+    #     numpy2dict(
+    #         db.iquery(
+    #             config.VARIANT_LIMIT_QUERY.format(chrom=chrom, start=start),
+    #             schema=config.VARIANT_LIMIT_SCHEMA,
+    #             fetch=True)),
+    #     add_ann=True)
+    vl = pandas.DataFrame([[chrom, start, ref, alt]], columns = ['chrom','pos','ref','alt']) 
+    if 'enrichlogor' in list(db.get_variant_fields()['name']):
+        #variants = db.get_variants(chromosome=chrom, position=start, variant_fields = ['chrom','pos','ref','alt', 'variant_identity', 'major_consequence', 'category', 'gene_name', 'gene_symbol', 'HGVSp', 'HGVSc',  'consequence', 'all_filters',  'annotations', 'maf', 'ukbb_freq', 'ld', 'rsid', 'enrichlogor','enrichp'])
+        variants = db.get_variants(variant_list = vl,  variant_fields = ['ref','alt', 'variant_identity', 'major_consequence', 'category', 'gene_name', 'gene_symbol', 'HGVSp', 'HGVSc',  'consequence', 'all_filters',  'annotations', 'maf', 'ukbb_freq', 'ld', 'rsid', 'enrichlogor','enrichp'])
+    else:
+#        variants = db.get_variants(chromosome=chrom, position=start, variant_fields = ['chrom','pos','ref','alt', 'variant_identity', 'major_consequence', 'category', 'gene_name', 'gene_symbol', 'HGVSp', 'HGVSc',  'consequence', 'all_filters',  'annotations', 'maf', 'ukbb_freq', 'ld', 'rsid'])
+        variants = db.get_variants(variant_list = vl, variant_fields = ['ref','alt', 'variant_identity', 'major_consequence', 'category', 'gene_name', 'gene_symbol', 'HGVSp', 'HGVSc',  'consequence', 'all_filters',  'annotations', 'maf', 'ukbb_freq', 'ld', 'rsid'])
+   # refl = [ref]
+   # altl = [alt]
+   # variants.query('ref == @refl and alt == @altl', inplace = True)
+    variant = variants if len(variants) else None
+    if variant is None:
         return variant
-    if variant['rsid'] == '.' or variant['rsid'] is None:
-        rsid = get_dbsnp(db, chrom, start)
-        if rsid:
-            variant['rsid'] = 'rs{}'.format(rsid)
+#    if variant['rsid'] == '.' or variant['rsid'] is None:
+#        rsid = get_dbsnp(db, chrom, start)
+#        if rsid:
+#            variant['rsid'] = 'rs{}'.format(rsid)
     return variant
 
 
@@ -705,19 +919,14 @@ def get_variants_in_region(db, chrom, start, stop):
     SciDB:
       between(variant, 16, 50727514,
                        16, 50766988);
+    SciDBnew:
+    bb.get_variants(chromosome=(21, 22), start=32300000, end=32400000)
     """
     # TODO add SEARCH_LIMIT
     if stop is None:
         stop = start
-    return format_variants(
-        numpy2dict(
-            db.iquery(
-                config.VARIANT_LOOKUP_QUERY.format(
-                    chrom=chrom, start=start, stop=stop),
-                schema=config.VARIANT_LOOKUP_SCHEMA,
-                fetch=True)),
-        add_ann=True)
-
+    res = db.get_variants(chromosome=int(chrom), start=int(start), end=int(stop), variant_fields = ('chrom','pos','ref','alt', 'variant_identity', 'major_consequence', 'category', 'gene_name', 'gene_symbol', 'HGVSp', 'HGVSc',  'consequence', 'all_filters',  'maf', 'ukbb_freq', 'ld', 'rsid'))
+    return res
 
 # -- -
 # -- - COVERAGE - --
@@ -813,24 +1022,18 @@ def get_variants_from_dbsnp(db, rsid):
         'left_names=chrom,pos',
         'right_names=chrom,pos',
         'algorithm=hash_replicate_left');
+
+    SciDBnew:
+     bb.get_variants(rsid=['rs34221567', 'rs148534902', 'rs200712517'])
     """
     if not rsid.startswith('rs'):
         return None
-    rsid_int = None
-    try:
-        rsid_int = int(rsid.lstrip('rs'))
-    except Exception:
+    rsidarr = []
+    rsidarr.append(rsid)
+    res = db.get_variants(rsid=rsidarr)
+    if res.empty:
         return None
-
-    res = db.iquery(
-        config.DBSNP_VARIANT_LOOKUP_QUERY.format(rsid=rsid_int),
-        schema=config.DBSNP_VARIANT_LOOKUP_SCHEMA,
-        fetch=True,
-        atts_only=True)
-    if not res:
-        return None
-    res0 = res[0]
-    return '{}-{}'.format(res0['chrom']['val'], res0['pos']['val'])
+    return '{}-{}-{}-{}'.format(res['chrom'][0], res['pos'][0], res['ref'][0], res['alt'][0])
 
 
 # -- -
@@ -843,13 +1046,13 @@ def get_awesomebar_suggestions(g, query):
 
     """
     regex = re.compile('^' + re.escape(query), re.IGNORECASE)
-    results = [r for r in g.autocomplete_strings if regex.match(r)][:20]
+    results = [r for r in g.autocomplete_strings if regex.match(r)][:50]
     return results
 
 
 def get_awesomebar_result(db, query):
     """Similar to the above, but this is after a user types enter We need to
-    figure out what they meant - could be gene, variant, region, icd10
+    figure out what they meant - could be gene, variant, region, phenotype
 
     Return tuple of (datatype, identifier)
     Where datatype is one of 'gene', 'variant', or 'region'
@@ -862,7 +1065,7 @@ def get_awesomebar_result(db, query):
     - if query is an ensembl ID, return it
     - if a gene symbol, return that gene's ensembl ID
     - if an RSID, return that variant's string
-
+    - if a phenotype ID, return that phenotype
 
     Finally, note that we don't return the whole object here - only
     it's identifier.  This could be important for performance later
@@ -870,44 +1073,47 @@ def get_awesomebar_result(db, query):
     """
     query = query.strip()
     (query_lower, query_upper) = (query.lower(), query.upper())
-    print 'Query: %s' % query
-
+    query = str(query)
+    query_lower = str(query_lower)
+    query_upper = str(query_upper)
     if query_upper in UNSUPPORTED_QUERIES:
         return 'error', query
 
     # Variant
-    variants = get_variants_chrom_pos_by_rsid_limit2(db, query_lower)
-    if variants:
+    variants = get_variants_chrom_pos_by_rsid_limit2(db, query)
+    if variants is not None and not variants.empty:
         if len(variants) == 1:
-            variant = variants[0]
-            variant_id = '{}-{}'.format(variant['chrom'], variant['pos'])
+            variant = variants            
+            variant_id = '{}-{}-{}-{}'.format(variant['chrom'][0], variant['pos'][0], variant['ref'][0], variant['alt'][0])
             return 'variant', variant_id
         else:
             return 'dbsnp_variant_set', query_lower
-
-    variant_id = get_variants_from_dbsnp(db, query.lower())
+    ## variant id
+    variant_id = get_variants_from_dbsnp(db, query_lower)
     if variant_id:
         return 'variant', variant_id
-
+    ## gene id - here now - needs to be updated
     gene_id = get_gene_id_by_name(db, query_upper)
     if gene_id:
         return 'gene', gene_id
 
-    # Ensembl formatted queries
+    # Ensembl formatted queries - here now - needs to be updated
     if query_upper.startswith('ENS'):
         # Gene
-        if exists_gene_id(db, query_upper):
-            return 'gene', query_upper
+        if query_upper.startswith('ENSG'):
+            if exists_gene_id(db, query_upper):
+                return 'gene', query_upper
 
-        # Transcript
-        if exists_transcript_id(db, query_upper):
-            return 'transcript', query_upper
+        # Transcript - here now - needs to be updated
+        if exists_transcript_id(db, query_upper) is not None:
+            res = exists_transcript_id(db, query_upper) 
+            return 'region', '{}-{}-{}'.format(res['chrom'][0], res['start'][0], res['end'][0])
 
-    # ICD10 formatted queries
-    if query_upper.startswith('ICD'):
-        # ICD10
-        if exists_icd(db, query_upper):
-            return 'icd10', query_upper
+    # GBE ID formatted queries - here now - needs to be updated
+    if exists_icd(db, query):
+        # HC382
+        phe_title = get_phe_title(db, query) 
+        return 'gbe', phe_title
 
     # From here on out, only region queries
     if query_upper.startswith('CHR'):

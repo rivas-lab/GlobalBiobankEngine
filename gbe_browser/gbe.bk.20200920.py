@@ -563,8 +563,6 @@ def icdprs_page(namespace,icd_str):
         abort(404)
 
 
-
-
 @app.route('/<namespace>/coding/dprs/<icd_str>')
 def icddprs_page(namespace,icd_str):
     try:
@@ -758,57 +756,6 @@ def snpnetcox_page():
         print('Failed on MRP Shiny Error=', traceback.format_exc())
         abort(404)
 
-@app.route('/cgauge')
-def cguage_page():
-    namespace = 'RIVAS_HG19'
-    try:
-        return render_template(
-            'cgauge.html',
-            namespace = namespace
-            )
-    except Exception as e:
-        print('Failed on cgauge Error=', traceback.format_exc())
-        abort(404)
-
-@app.route('/biomarkers')
-def biomarkers_page():
-    namespace = 'RIVAS_HG19'
-    try:
-        return render_template(
-            'biomarkers.html',
-            namespace = namespace
-            )
-    except Exception as e:
-        print('Failed on cgauge Error=', traceback.format_exc())
-        abort(404)
-
-@app.route('/<namespace>/snpnet/<icd_str>')
-def snpnet_page(namespace, icd_str):
-    namespace = 'RIVAS_HG19'
-    db = get_db(namespace)
-    try:
-        cutoff = None
-        icd = None
-        for p in [.001]:
-            assocset = str(db.list_association_sets()['name'][0])
-            df = db.get_phenotype_fields(association_set=assocset, include_pvalue_threshold=True)
-            field_identifier = int(df[df['title'] == icd_str]['field_id'])
-            pvalthr = float(df[df['title'] == icd_str]['pvalue_threshold'])
-            shortname = str(df[df['title'] == icd_str]['notes'].squeeze().split(';')[1].split('=')[1])
-            casecnt = str(df[df['title'] == icd_str]['notes'].squeeze().split(';')[0].split('=')[1])
-            pvalthr = max(5e-7, pvalthr)
-            cuttoff = pvalthr
-        icd = [{'Case': casecnt, 'Name': shortname, 'icd': icd_str}]
-        return render_template(
-            'snpnet.html',
-            icd=icd,
-            namespace=namespace,
-            icd_str=icd_str,
-            snpnet_plot='/static/PRS_map/{}.plot.png'.format(icd_str)
-        )
-    except Exception as e:
-        print('Failed on snpnet.html  Error=', traceback.format_exc())
-        abort(404)
 
 @app.route('/<namespace>/coding_breakdown/<icd_str>')
 def coding_breakdown_page(namespace, icd_str):
@@ -1808,4 +1755,4 @@ def apply_caching(response):
 
 
 if __name__ == "__main__":
-    app.run(host = "0.0.0.0", port = 6000, debug=False, use_debugger=False, use_reloader=True, threaded=True)
+    app.run(host = "0.0.0.0", port = 6000, debug=True, use_debugger=True, use_reloader=True, threaded=True)

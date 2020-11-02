@@ -37,7 +37,7 @@ from scipy import stats
 from flask_wtf import Form, RecaptchaField
 from wtforms import StringField, BooleanField
 from wtforms.validators import DataRequired
-### New SciDB requirements
+### New SciDB requirements 
 import requests
 requests.packages.urllib3.disable_warnings(
     requests.packages.urllib3.exceptions.SNIMissingWarning)
@@ -47,7 +47,7 @@ requests.packages.urllib3.disable_warnings(
 import warnings
 
 from scidbbiobank import connect
-###### End SciDB requirements
+###### End SciDB requirements 
 
 
 from dash_apps import *
@@ -115,7 +115,7 @@ f = open('/biobankengine/app/static/.credentials','r').readlines()
 uname = f[0].rstrip()
 pwd = f[1].rstrip()
 DB = connect(scidb_url=os.getenv('SCIDB_URL',None), scidb_auth=(uname, pwd), namespace='RIVAS_HG19')
-### End SciDB connect
+### End SciDB connect 
 
 
 
@@ -138,7 +138,7 @@ def get_db(name_space):
     # if not hasattr(g, 'db_conn'):
     #     g.db_conn = connect_db()
     # return g.db_conn
-    DB = connect(scidb_url=os.getenv('SCIDB_URL',None), scidb_auth=(uname, pwd), namespace=name_space)
+    DB = connect(scidb_url=os.getenv('SCIDB_URL',None), scidb_auth=('scidbadmin', 'Paradigm4'), namespace=name_space)
     DB.set_limit(15000)
     return DB
 
@@ -164,7 +164,7 @@ def homepage():
         ns = [{'id': namespace, 'name' : ' '.join(nsdesc['name'][0].split('_'))}]
         return render_template(
             'search_page_ns.html',
-            ns=ns,
+            ns=ns, 
             namespace=namespace,
             formset=namespace
             )
@@ -180,7 +180,7 @@ def search_page():
         ns = [{'id': namespace, 'name' : ' '.join(nsdesc['name'][0].split('_'))}]
         return render_template(
             'search_page_ns.html',
-            ns=ns,
+            ns=ns, 
             namespace=namespace,
             formset=namespace
             )
@@ -191,8 +191,8 @@ def searchnamespace_page(namespace):
 #    if not check_credentials():
 #        return redirect(url_for('login'))
     if request.method == 'POST':
-        #  print(dir(request))
-        #  print(request.form.keys())
+        #  print(dir(request))                                                                                                                                                                                                                                                                                                                                 
+        #  print(request.form.keys())                                                                                                                                                                                                                                                                                                                          
         namespace = request.form['functionassocset']
         db = get_db(namespace)
         nsdesc = db.list_association_sets()
@@ -200,7 +200,7 @@ def searchnamespace_page(namespace):
         ns = [{'id': namespace, 'name' : ' '.join(nsdesc['name'][0].split('_'))}]
         return render_template(
             'search_page_ns.html',
-            ns=ns,
+            ns=ns, 
             namespace=namespace,
             formset=namespace
             )
@@ -211,7 +211,7 @@ def searchnamespace_page(namespace):
         ns = [{'id': namespace, 'name' : ' '.join(nsdesc['name'][0].split('_'))}]
         return render_template(
             'search_page_ns.html',
-            ns=ns,
+            ns=ns, 
             namespace=namespace,
             formset=namespace
             )
@@ -278,8 +278,8 @@ def variant_icd_page(namespace, variant_str):
             variant = {
                 'chrom': chrom,
                 'pos': pos,
-                'ref' : ref,
-                'alt' : alt,
+                'ref' : ref, 
+                'alt' : alt, 
                 'xpos': get_xpos(chrom, int(pos))
             }
         consequences = None
@@ -311,7 +311,7 @@ def variant_icd_page(namespace, variant_str):
                 annotation['HGVS'] = utils.get_proper_hgvs(annotation)
                 consequences[annotation['major_consequence']][annotation['Gene']].append(annotation)
         assocset = str(db.list_association_sets()['name'][0])
-        #vl = pandas.DataFrame([[chrom, pos, ref, alt]], columns = ['chrom','pos','ref','alt'])
+        #vl = pandas.DataFrame([[chrom, pos, ref, alt]], columns = ['chrom','pos','ref','alt']) 
         icdstats = db.get_association_data(association_set=assocset, chromosome =chrom, position=pos, pvalue_max = .01,  association_fields = ('pvalue', 'title', 'beta', 'odds_ratio', 'beta', 'se') )
         #icdstats = db.get_association_data(association_set=assocset, variant_list = vl, association_fields = ('pvalue', 'title', 'beta', 'odds_ratio', 'beta', 'se'))
         icdstats.query('ref == @refl and alt == @altl', inplace = True)
@@ -448,7 +448,7 @@ def variant_page_data_prep_sub(icdstats, sort_key='log10pvalue'):
 def variant_page_pval_slider_max(icdstats):
 #    return 100
     plot_d_dict = variant_page_data_prep_sub(icdstats, sort_key='log10pvalue')
-    return np.max([np.max(v['log10pvalue']) for v in plot_d_dict.values()])
+    return np.max([np.max(v['log10pvalue']) for v in plot_d_dict.values()]) 
 
 
 def variant_page_plot_pval_data(icdstats):
@@ -462,9 +462,9 @@ def variant_page_plot_pval_data(icdstats):
         'type': 'scatter',
         'mode': 'markers',
         'marker': {'size': 16, },
-        'hoverinfo':'x+text',
+        'hoverinfo':'x+text', 
     } for group in groups]
-
+ 
     return plot_d
 
 
@@ -485,9 +485,9 @@ def variant_page_plot_lor_data(icdstats):
         'type': 'scatter',
         'mode': 'markers',
         'marker': {'size': 16, },
-        'hoverinfo':'x+text',
+        'hoverinfo':'x+text', 
     } for group in groups]
-
+ 
     return plot_d
 
 
@@ -531,7 +531,7 @@ def icd_page(namespace,icd_str):
         'icd.html',
         icd=icd,
         icd2=icd,
-        cutoff=cutoff,
+        cutoff=cutoff, 
         namespace=namespace)
 #    except Exception as e:
 #        print('Failed on icd:', icd_str, '; Error=', traceback.format_exc())
@@ -561,8 +561,6 @@ def icdprs_page(namespace,icd_str):
     except Exception as e:
         print('Failed on icd:', icd_str, '; Error=', traceback.format_exc())
         abort(404)
-
-
 
 
 @app.route('/<namespace>/coding/dprs/<icd_str>')
@@ -758,92 +756,21 @@ def snpnetcox_page():
         print('Failed on MRP Shiny Error=', traceback.format_exc())
         abort(404)
 
-@app.route('/cgauge')
-def cguage_page():
-    namespace = 'RIVAS_HG19'
-    try:
-        return render_template(
-            'cgauge.html',
-            namespace = namespace
-            )
-    except Exception as e:
-        print('Failed on cgauge Error=', traceback.format_exc())
-        abort(404)
-
-@app.route('/biomarkers')
-def biomarkers_page():
-    namespace = 'RIVAS_HG19'
-    try:
-        return render_template(
-            'biomarkers.html',
-            namespace = namespace
-            )
-    except Exception as e:
-        print('Failed on cgauge Error=', traceback.format_exc())
-        abort(404)
-
-@app.route('/<namespace>/snpnet/<icd_str>')
-def snpnet_page(namespace, icd_str):
-    namespace = 'RIVAS_HG19'
-    db = get_db(namespace)
-    try:
-        cutoff = None
-        icd = None
-        for p in [.001]:
-            assocset = str(db.list_association_sets()['name'][0])
-            df = db.get_phenotype_fields(association_set=assocset, include_pvalue_threshold=True)
-            field_identifier = int(df[df['title'] == icd_str]['field_id'])
-            pvalthr = float(df[df['title'] == icd_str]['pvalue_threshold'])
-            shortname = str(df[df['title'] == icd_str]['notes'].squeeze().split(';')[1].split('=')[1])
-            casecnt = str(df[df['title'] == icd_str]['notes'].squeeze().split(';')[0].split('=')[1])
-            pvalthr = max(5e-7, pvalthr)
-            cuttoff = pvalthr
-        icd = [{'Case': casecnt, 'Name': shortname, 'icd': icd_str}]
-        return render_template(
-            'snpnet.html',
-            icd=icd,
-            namespace=namespace,
-            icd_str=icd_str,
-            snpnet_plot='/static/PRS_map/{}.plot.png'.format(icd_str)
-        )
-    except Exception as e:
-        print('Failed on snpnet.html  Error=', traceback.format_exc())
-        abort(404)
-
 @app.route('/<namespace>/coding_breakdown/<icd_str>')
 def coding_breakdown_page(namespace, icd_str):
     namespace = 'RIVAS_HG19'
-#    if not check_credentials():
-#        return redirect(url_for('login'))
-    db = get_db(namespace)
-    cutoff = None
-    icd = None
-    for p in [.000001]:
-        assocset = str(db.list_association_sets()['name'][0])
-        df = db.get_phenotype_fields(association_set=assocset, include_pvalue_threshold=True)
-        field_identifier = int(df[df['title'] == icd_str]['field_id'])
-        pvalthr = p
-        pvalthr = max(5e-7, pvalthr)
-        icd = lookups.get_icd_variant_by_icd_id_pvalue(db, icd_str, field_identifier, pvalthr)
-        icd = icd.to_dict(orient='records')
-        if len(icd):
-            cutoff = pvalthr
-            break
-    if icd is None or len(icd) == 0:
-        icd = [{'Case': 'NA', 'Name': 'NA', 'icd': icd_str}]
     try:
         return render_template(
             'upset.html',
-            icd=icd,
-            namespace=namespace
-        )
+            namespace = namespace,
+            icd_str=icd_str
+            )
     except Exception as e:
         print('Failed on upset.html  Error=', traceback.format_exc())
         abort(404)
 
-
 @app.route('/degas')
-def decomposition_dev_page():
+def decomposition_dev_page():    
         # this list file will be automatically updated by cron job that calls the following script:
         # https://github.com/rivas-lab/decomposition/blob/master/src/decomposition_dataset_list.sh
     with open('/biobankengine/app/static/decomposition/decomposition_datasets.lst') as f:
@@ -854,11 +781,11 @@ def decomposition_dev_page():
         namespace=namespace,
         dataset_list = dataset_list,
     )
-
+    
 
 @app.route('/decomposition-internal/<dataset>')
-def decomposition_internal_page(dataset):
-
+def decomposition_internal_page(dataset):    
+    
     init_idx_pc  = 0
     init_idx_phe = 0
     init_idx_var = 0
@@ -866,71 +793,71 @@ def decomposition_internal_page(dataset):
     namespace = 'RIVAS_HG19'
     try:
         return render_template(
-            'decomposition-internal.html',
+            'decomposition-internal.html',    
             init_idx_pc  = init_idx_pc,
             init_idx_phe = init_idx_phe,
             init_idx_var = init_idx_var,
             dataset = dataset,
             namespace = namespace,
             debug_str = debug_str
-        )
-
+        )            
+    
     except Exception as e:
         print('Unknown Error=', traceback.format_exc())
         abort(404)
 
 
 @app.route('/decomposition-app')
-def decomposition_app_page():
+def decomposition_app_page():    
     abort(404)
 
 def decomposition_app_page_null():
     db = get_db()
-
+    
     try:
         with open('./static/decomposition/decomposition-app.lst') as f:
             dataset_list = f.read().splitlines()
         namespace = 'RIVAS_HG19'
         return render_template(
-            'decomposition-app.html',
+            'decomposition-app.html',    
             dataset_list = dataset_list,
             namespace = namespace
         )
-
+    
     except Exception as e:
         print('Unknown Error=', traceback.format_exc())
         abort(404)
-
-
+        
+        
 
 @app.route('/decomposition/<dataset>')
-def decomposition_page(dataset):
-
+def decomposition_page(dataset):    
+    
     if(dataset == 'PTVs'):
         init_idx_pc  = 6
         init_idx_phe = 429
-        init_idx_var = 8503
+        init_idx_var = 8503    
     else:
         init_idx_pc  = 0
         init_idx_phe = 0
         init_idx_var = 0
-
+        
     debug_str = 'debug'
     namespace = 'RIVAS_HG19'
     try:
         if(dataset == "20170930_EMBL-Stanford_coding-nonMHC_z"):
             return render_template(
-                'decomposition-20170930.html',
+                'decomposition-20170930.html',    
                 init_idx_pc  = init_idx_pc,
                 init_idx_phe = init_idx_phe,
                 init_idx_var = init_idx_var,
                 dataset = dataset,
-                namespace = namespace,
+                namespace = namespace, 
                 debug_str = debug_str
             )
         elif(dataset[:8] == "20171011"):
             return render_template(
-                'decomposition-20171011.html',
+                'decomposition-20171011.html',    
                 init_idx_pc  = init_idx_pc,
                 init_idx_phe = init_idx_phe,
                 init_idx_var = init_idx_var,
@@ -940,15 +867,15 @@ def decomposition_page(dataset):
                 )
         else:
             return render_template(
-                'decomposition.html',
+                'decomposition.html', 
                 namesspace = namespace,
                 init_idx_pc  = init_idx_pc,
                 init_idx_phe = init_idx_phe,
                 init_idx_var = init_idx_var,
                 dataset = dataset,
                 debug_str = debug_str
-            )
-
+            )            
+    
     except Exception as e:
         print('Unknown Error=', traceback.format_exc())
         abort(404)
@@ -971,7 +898,7 @@ def prs_page():
         namespace = 'RIVAS_HG19'
         if request.method == 'POST':
             namespace = request.form['functionassocset']
-        return render_template('prs.html',
+        return render_template('prs.html', 
                                namespace = namespace)
 
     except Exception as e:
@@ -984,7 +911,7 @@ def dprs_page():
         namespace = 'RIVAS_HG19'
         if request.method == 'POST':
             namespace = request.form['functionassocset']
-        return render_template('dprs.html',
+        return render_template('dprs.html', 
                                namespace = namespace)
 
     except Exception as e:
@@ -1050,8 +977,8 @@ def intensity_page(namespace, affy_str):
     try:
         n_UKBL = 11
         n_UKBB = 95
-
-
+        
+        
         print('Rendering Intensity page: %s' % affy_str)
         #variant = lookups.get_icd_affyid(db, affy_str)
         # print(variant)
@@ -1120,7 +1047,7 @@ def get_gene_page_content_all(namespace, gene_id, phens):
            #     transcript['xstart'] - EXON_PADDING,
            #     transcript['xstop'] + EXON_PADDING)
             if 'ALL' in phens:
-                df = db.get_association_data(association_set=assocset, gene_name=gene_id, pad=500, pvalue_max=.000001)
+                df = db.get_association_data(association_set=assocset, gene_name=gene_id, pad=500, pvalue_max=.000001)  
                 sefilter = .2
                 columns = ['pvalue','title','beta','all_filters','se']
                 ndf = dfv.apply(lambda row: pandas.Series([1,"NA",0,0,"NA"], index = columns) if df[df['variant_identity'] == row['variant_identity']]['pvalue'].empty else (pandas.Series([numpy.log(x) if i == 2 else x for i, x in enumerate(df.iloc[df[df['variant_identity'] == row['variant_identity']]['pvalue'].idxmin(),:][['pvalue','title','odds_ratio', 'all_filters','se']])], index = columns) if numpy.isnan(df.iloc[df[df['variant_identity'] == row['variant_identity']]['pvalue'].idxmin(),:]['beta']) and df[df['variant_identity'] == row['variant_identity']].query('se <= .2')['pvalue'].empty else (df.iloc[df[df['variant_identity'] == row['variant_identity']]['pvalue'].idxmin(),:][['pvalue','title','beta', 'all_filters','se']] if df[df['variant_identity'] == row['variant_identity']].query('se <= .2')['pvalue'].empty else (pandas.Series([numpy.log(x) if i == 2 else x for i, x in enumerate(df.iloc[df[df['variant_identity'] == row['variant_identity']].query('se <= .2')['pvalue'].idxmin(),:][['pvalue','title','odds_ratio', 'all_filters','se']])], index = columns) if numpy.isnan(df.iloc[df[df['variant_identity'] == row['variant_identity']].query('se <= .2')['pvalue'].idxmin(),:]['beta']) else ( df.iloc[df[df['variant_identity'] == row['variant_identity']].query('se <= .2')['pvalue'].idxmin(),:][['pvalue','title','beta', 'all_filters','se']])))), axis = 1)
@@ -1168,10 +1095,10 @@ def get_gene_page_content_all(namespace, gene_id, phens):
             t = render_template(
                 'gene.html',
                 gene=genedf,
-                variants_in_gene=variants_in_gene,
+                variants_in_gene=variants_in_gene, 
                 coverage_stats=coverage_stats,
                 variants_in_transcript=variants_in_transcript,
-                 gbuild=gbuild,
+                 gbuild=gbuild, 
                 namespace=namespace)
         print('Rendering gene: %s' % gene_idx)
         return t
@@ -1180,7 +1107,7 @@ def get_gene_page_content_all(namespace, gene_id, phens):
 
 
 
-#### Compare Betas for two phenotypes
+#### Compare Betas for two phenotypes 
 
 @app.route('/<namespace>/comparebeta', methods=['GET', 'POST'])
 def compare_page(namespace):
@@ -1222,7 +1149,7 @@ def get_compare_page_content_all(namespace, phens):
                     field_identifier = int(dfphen[dfphen['title'] == phetitle]['field_id'])
                     phenidarr.append(field_identifier)
             if 'PASS' in phens:
-                a = 1
+                a = 1 
             else:
                 df1 = db.get_association_data(association_set=assocset, pvalue_max=.00000005, field_id = phenidarr[0], variant_fields = ['ref','alt'])
                 df2 = db.get_association_data(association_set=assocset, pvalue_max=.00000005, field_id = phenidarr[1], variant_fields = ['ref','alt'])
@@ -1248,16 +1175,16 @@ def get_compare_page_content_all(namespace, phens):
             ndf['shortname1'] = ndf.apply(lambda row: 'NA' if (row['minicd_icd1'] == "NA" or len(str(dfphen[dfphen['title'] == row['minicd_icd1']]['notes'].squeeze()).split(';')) <=  1) else str(dfphen[dfphen['title'] == row['minicd_icd1']]['notes'].squeeze()).split(';')[1].split('=')[1], axis = 1)
             ndf['shortname2'] = ndf.apply(lambda row: 'NA' if (row['minicd_icd2'] == "NA" or len(str(dfphen[dfphen['title'] == row['minicd_icd2']]['notes'].squeeze()).split(';')) <=  1) else str(dfphen[dfphen['title'] == row['minicd_icd2']]['notes'].squeeze()).split(';')[1].split('=')[1], axis = 1)
             ndfmap = ndf.query('filter == "PASS"', inplace = False)
-            slope, intercept, r_value, p_value, std_err = stats.linregress(ndfmap['minicd_lor1'],ndfmap['minicd_lor2'])
+            slope, intercept, r_value, p_value, std_err = stats.linregress(ndfmap['minicd_lor1'],ndfmap['minicd_lor2'])   
             ftline = list(slope*ndf['minicd_lor1'] + intercept)
             coverage_stats = ndf.to_dict('records')
             variants_in_gene = coverage_stats
             gbuild = namespace.split('_')[1].lower()
             t = render_template(
                 'comparebetas.html',
-                variants_in_gene=variants_in_gene,
+                variants_in_gene=variants_in_gene, 
                 coverage_stats=coverage_stats,
-                gbuild=gbuild,
+                gbuild=gbuild, 
                 namespace=namespace,
                 ftline=ftline,
                 p_value=p_value,
@@ -1320,7 +1247,7 @@ def gene_interactive_page(namespace, gene_id):
                 functionphen = request.form['phenotypes']
                 phenidarr = []
                 phenidarr.append(str(functionphen))
-                # From models-example.py
+                # From models-example.py             
                 gene_variant = lookups.get_gene_variant(DB, gene_names=genes, icds=phenidarr)
                 keys_M = []
                 for gv in gene_variant:
@@ -1332,14 +1259,14 @@ def gene_interactive_page(namespace, gene_id):
                 major_consequence_M = gene_variant['consequence']['val']
                 HGVSp_M = gene_variant['hgvsp']['val']
 
-                # -- -
-                # -- - M x N NumPy Arrays - --
-                # -- -
+                # -- -                                                                                                                                                                       
+                # -- - M x N NumPy Arrays - --                                                                                                                                               
+                # -- -                                                                                                                                                                       
                 se_M_N = None
                 lor_M_N = None
                 for icd in icds:
-                    # SciDB lookup
-                    # ---
+                    # SciDB lookup                                                                                                                                                            
+                    # ---                                                                                                                                                                     
                     variant_icd = lookups.get_variant_icd(DB, gene_names=genes, icds=phenidarr)
                     se = variant_icd['se']['val']
                     if se_M_N is None:
@@ -1468,7 +1395,7 @@ def decomposition_risk_page(icd_str):
     except Exception as e:
         print('Failed on decomposition risk page:', icd_str, ';Error=', e)
         abort(404)
-
+        
 
 @app.route('/<namespace>/transcript/<transcript_id>')
 def transcript_page(namespace, transcript_id):
@@ -1585,7 +1512,7 @@ def region_page(namespace, region_id):
                 variants_in_region=variants_in_region,
                 chrom=chrom,
                 start=start,
-                stop=stop,
+                stop=stop, 
                 namespace=namespace,
                 gbuild=gbuild
  #               coverage=coverage_array
@@ -1738,7 +1665,7 @@ def set_possible_phenos(pheno_categories, case_cutoff):
         case_cutoff = int(case_cutoff)
     except:
         case_cutoff = MIN_CASES
-    poss = PHENOS[(PHENOS['GBE_category'].isin(pheno_categories)) &
+    poss = PHENOS[(PHENOS['GBE_category'].isin(pheno_categories)) & 
                   (PHENOS['GBE_N'] >= case_cutoff)]
     return([{'label':x, 'value':x} for x in sorted(poss['phenotype'])])
 
@@ -1760,33 +1687,33 @@ def set_possible_phenos(pheno_categories, case_cutoff):
     ]
 )
 def update_table(
-    selected_phenos,
-    cluster_method,
-    pheno_categories,
+    selected_phenos, 
+    cluster_method, 
+    pheno_categories, 
     z_cutoff,
     case_cutoff,
-    gcorr_min,
-    gcorr_max,
-    gcorr_radio,
-    pi2_min,
-    pi2_max,
-    pi2_radio,
+    gcorr_min, 
+    gcorr_max, 
+    gcorr_radio, 
+    pi2_min, 
+    pi2_max, 
+    pi2_radio, 
     show_zero_estimates,
     size_var,
 ):
     return(
         gcorr_scatter(
-            selected_phenos,
-            cluster_method,
+            selected_phenos, 
+            cluster_method, 
             pheno_categories,
-            z_cutoff,
+            z_cutoff, 
             case_cutoff,
             gcorr_min,
             gcorr_max,
             gcorr_radio,
-            pi2_min,
-            pi2_max,
-            pi2_radio,
+            pi2_min, 
+            pi2_max, 
+            pi2_radio, 
             show_zero_estimates,
             size_var,
         )
@@ -1808,4 +1735,4 @@ def apply_caching(response):
 
 
 if __name__ == "__main__":
-    app.run(host = "0.0.0.0", port = 6000, debug=False, use_debugger=False, use_reloader=True, threaded=True)
+    app.run(host = "0.0.0.0", port = 6000, debug=True, use_debugger=True, use_reloader=True, threaded=True)

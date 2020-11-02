@@ -1,4 +1,7 @@
 from operator import itemgetter
+import re
+import itertools
+vep_field_names = ['Allele', 'Consequence', 'IMPACT', 'SYMBOL', 'Gene', 'Feature_type', 'Feature', 'BIOTYPE', 'EXON', 'INTRON', 'HGVSc', 'HGVSp', 'cDNA_position', 'CDS_position', 'Protein_position', 'Amino_acids', 'Codons', 'Existing_variation',  'DISTANCE', 'ALLELE_NUM','STRAND', 'VARIANT_CLASS', 'MINIMISED', 'SYMBOL_SOURCE', 'HGNC_ID', 'CANONICAL', 'TSL', 'APPRIS', 'CCDS', 'ENSP', 'SWISSPROT', 'TREMBL', 'UNIPARC',  'SIFT2','SIFT', 'PolyPhen', 'DOMAINS', 'HGVS_OFFSET', 'GMAF', 'AFR_MAF', 'AMR_MAF', 'EAS_MAF', 'EUR_MAF', 'SAS_MAF', 'AA_MAF', 'EA_MAF', 'ExAC_MAF', 'ExAC_Adj_MAF', 'ExAC_AFR_MAF', 'ExAC_AMR_MAF', 'ExAC_EAS_MAF', 'ExAC_FIN_MAF', 'ExAC_NFE_MAF', 'ExAC_OTH_MAF', 'ExAC_SAS_MAF', 'CLIN_SIG', 'SOMATIC', 'PHENO', 'PUBMED', 'MOTIF_NAME', 'MOTIF_POS', 'HIGH_INF_POS', 'MOTIF_SCORE_CHANGE', 'LoF', 'LoF_filter', 'LoF_flags', 'LoF_info']
 AF_BUCKETS = [0.0001, 0.0002, 0.0005, 0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1]
 METRICS = [
     'BaseQRankSum',
@@ -12,6 +15,20 @@ METRICS = [
     'ReadPosRankSum',
     'VQSLOD'
 ]
+
+def return_gene_vep(vep_annotation):
+    info_field = dict([(x.split('=', 1)) if '=' in x else (x, x) for x in re.split(';(?=\w)', vep_annotation)])
+    consequence_array = info_field['CSQ'].split(',') if 'CSQ' in info_field else []
+    annotations = [dict(zip(vep_field_names, x.split('|'))) for x in consequence_array]
+    coding_annotations = [ann for ann in annotations if 'Feature' in ann and ann['Feature'].startswith('ENST')]
+    vep_annotations = [ann for ann in coding_annotations]
+    genes = list(set(ann['Gene'] for ann in vep_annotations))
+    gene = ','.join(genes[:3])
+    symbol = ','.join(
+            itertools.islice(set(ann['SYMBOL'] for ann in vep_annotations), 3))
+    HGVSp = ','.join(list({annotation['HGVSp'] for annotation in vep_annotations})).lstrip(',').split(',')[0]
+    HGVSc = ','.join(list({annotation['HGVSc'] for annotation in vep_annotations})).lstrip(',').split(',')[0]
+    return (gene, symbol, HGVSp, HGVSc)
 
 
 def add_transcript_coordinate_to_variants(variant_list, transcript):
@@ -163,6 +180,8 @@ csq_order = ["transcript_ablation",
 "feature_truncation",
 "intergenic_variant",
 "intergenic",
+'mature_miR""_variant',
+'""'
 ""]
 
 csq_order_dict = dict(zip(csq_order, range(len(csq_order))))

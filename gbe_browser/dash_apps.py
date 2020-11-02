@@ -25,7 +25,7 @@ def initialize():
     # Maximum number of phenotypes to display
     max_phenos = 100
     
-    fn = os.path.join('static/gcorr/opt_corr.tsv.gz')
+    fn = os.path.join('/biobankengine/app/static/gcorr/opt_corr.tsv.gz')
     data = pd.read_table(fn, index_col=0)
     t = data.copy(deep=True)
     t.index = ['_'.join(list(reversed(x.split('_')))) for x in t.index]
@@ -37,20 +37,25 @@ def initialize():
         t.loc[:, columns[0]] = b
     data = pd.concat([data, t])
     
-    fn = os.path.join('static/gcorr/traits.tsv.gz')
+    fn = os.path.join('/biobankengine/app/static/gcorr/traits.tsv.gz')
     phenos = pd.read_table(fn, index_col=0)
     phenos = phenos.loc[sorted(list(set(data.p1_code) | set(data.p2_code)))]
-    phenos['phenotype'] = (phenos['phenotype'].apply(lambda x: x.replace('_', ' ')).values
-                           + ' (' + pd.Series(phenos.index) + ')').values
+    phenos['phenotype'] = (
+        phenos['GBE_short_name'] + ' (' +
+        pd.Series(phenos.index, index=phenos.index) + ')'
+    ).values
+    #phenos['phenotype'] = (phenos['phenotype'].apply(lambda x: x.replace('_', ' ')).values
+    #                       + ' (' + pd.Series(phenos.index) + ')').values
     data.loc[:, 'p1'] = phenos.loc[data['p1_code'], 'phenotype'].values
     data.loc[:, 'p2'] = phenos.loc[data['p2_code'], 'phenotype'].values
-    pheno_categories = list(set(phenos['category']))
+    pheno_categories = list(set(phenos['GBE_category']))
     name_to_code = pd.Series(
         dict(zip(list(data['p1']) + list(data['p2']),
                  list(data['p1_code']) + list(data['p2_code']))),
     )
     vc = pd.Series(list(data.p1) + list(data.p2)).value_counts()
-    starting_phenos = list(set(list(vc.head(40).index)) - set(['Lupus (RH51)', 'systemic lupus erythematosis/sle (HC352)']))
+    starting_phenos = list(vc.head(40).index)
+   # starting_phenos = list(set(list(vc.head(40).index)) - set(['Lupus (RH51)', 'systemic lupus erythematosis/sle (HC352)']))
 
     return(data, phenos, starting_phenos, pheno_categories, min_z, min_cases,
            name_to_code, plot_height, plot_width, max_phenos)
@@ -62,7 +67,7 @@ gcorr_layout = html.Div(children=[
     html.Div([
         dcc.Graph(
             id='gcorr-scatter',
-            figure={'layout': {'title': 'Dash Data Visualization'}},
+           figure={'layout': {'title': 'Dash Data Visualization'}},
             config={'displayModeBar': False},
         ),
     ], style={'height':'{}px'.format(PLOT_HEIGHT),
@@ -233,7 +238,7 @@ gcorr_layout = html.Div(children=[
         html.Div([
             html.Div([
                 html.P('SELECT phenotypes in the dropdown menu to add them to '
-                       'the plot.\nWARNING: The plot designed to display 40 or '
+                       'the plot.\nWARNING: The plot is designed to display 40 or '
                        'less phenotypes at the same time.'),
             ], style={'margin-left': '10px'}),
             dcc.Dropdown(id='pheno-dropdown',
@@ -286,11 +291,11 @@ def make_plot_df(
     # needed. 
     if len(pheno_categories) < len(PHENO_CATEGORIES):
         c = PHENOS.loc[NAME_TO_CODE.loc[selected_phenos], 
-                       'category'].isin(pheno_categories)
+                       'GBE_category'].isin(pheno_categories)
         selected_phenos = [selected_phenos[i] for i in
                            range(len(selected_phenos)) if c[i]]
     if case_cutoff > MIN_CASES:
-        c = set(PHENOS[PHENOS['numcases'] >= case_cutoff]['phenotype'])
+        c = set(PHENOS[PHENOS['GBE_N'] >= case_cutoff]['phenotype'])
         selected_phenos = [x for x in selected_phenos if x in c]
     # Restrict to data from the selected phenotypes.
     tdf = DATA[DATA.p1.isin(selected_phenos) & DATA.p2.isin(selected_phenos)]

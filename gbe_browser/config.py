@@ -65,7 +65,8 @@ ICD_AFFYID_SCHEMA = """
    pos:   int64>
   [affyid_idx = 0:*:0:100000]"""
 
-ICD_PVALUE_MAP = dict(zip((.001, .0001, .00001), range(1, 4)))
+ICD_PVALUE_MAP = dict(zip((.001, .0001, .00001, .000001, .0000001), range(1, 6)))
+#ICD_PVALUE_MAP = dict(zip((.001, .0001, .00001, .000001), range(1, 5)))
 
 ICD_INFO_APPEND_QUERY = """
   insert(
