@@ -1,0 +1,27 @@
+version: "2.1"
+services:
+    nginx:
+        image: nginx
+        volumes:
+            - "./docker/nginx/conf.d:/etc/nginx/conf.d"
+            - "./docker/nginx/ssl:/etc/nginx/ssl"
+            - "./docker/nginx/html:/usr/share/nginx/html"
+        ports:
+            - "80:80"
+            - "443:443"
+        depends_on:
+            - gbbe
+        restart: always
+        network_mode: "host" # possible workaround to docker/ubuntu14 kernel bug https://github.com/moby/moby/issues/5618
+
+    gbbe:
+        image: gbbe-python:7
+        ports:
+            - 6000:6000
+        environment:
+#            - SCIDB_URL=http://172.18.0.1:8080
+            - SCIDB_URL=http://localhost:8080
+        volumes:
+            - "./gbe_browser:/biobankengine/app"
+        restart: always
+        network_mode: "host" # possible workaround to docker/ubuntu14 kernel bug https://github.com/moby/moby/issues/5618
