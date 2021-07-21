@@ -26,14 +26,11 @@ Run MongoDB.  For installation see [their website](https://docs.mongodb.com/manu
 ```
 mongod --dbpath database
 ```
-First, load the database 
-```
-cd gbe_browser
-python manage.py load_db
-```
+
 Leave MongoDB running and open a new terminal.  In the new window run the following commands to load the database.
 
 ```
+cd gbe_browser
 python manage.py load_base_coverage
 python manage.py load_variants_file
 python manage.py load_gene_models
