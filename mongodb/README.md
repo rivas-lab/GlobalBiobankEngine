@@ -1,6 +1,11 @@
 # Global Biobank Engine
 A framework for exploring and sharing genetic data from large genetic datasets.
+## Pulling data
 
+```
+git lfs pull --all
+
+```
 ## Setup
 
 #### 1. Install requirements
