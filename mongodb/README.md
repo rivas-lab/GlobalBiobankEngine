@@ -7,7 +7,7 @@ A framework for exploring and sharing genetic data from large genetic datasets.
 
 ```
 pip install -r gbe_browser/requirements.txt
-Rscript gbe_browser/install_R_requirements.R
+
 ```
 We recommend using Python 2.7.
 
