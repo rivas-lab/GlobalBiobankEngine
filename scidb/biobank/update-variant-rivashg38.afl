@@ -1,0 +1,49 @@
+set_namespace(RIVAS_HG38);           // Step 1: Set variant namespace
+
+store(
+  join(
+    VARIANT,
+    redimension(
+      equi_join(
+        project(VARIANT, ref, alt),
+        apply(
+          aio_input(
+            '/opt/biobankengine/GlobalBioBankEngineRepo/gbe_data/annot.RIVAS_HG38.txt',              // Step 2: Set variant updte file path
+            num_attributes:12),          // Step 3: Set number of attributes
+
+          chrom_match,       int64(a0),
+          pos_match,         int64(a1),
+          ref_match,         a2,
+          alt_match,         a3,
+
+          variant_identity,  a4,        // Step 4: List new attributes
+          major_consequence, a5,
+          category,          a6,
+          gene_name,         a7,
+          gene_symbol,       a8,
+          HGVSp,             a9,
+          HGVSc,             a10,
+          ukbb_freq,         double(a11)
+        ),
+
+        left_names:(chrom, pos, ref, alt),
+        right_names:(chrom_match, pos_match, ref_match, alt_match),
+        keep_dimensions:true,
+        left_outer:true,
+        algorithm:'hash_replicate_left'),
+
+      <
+       variant_identity  : string,      // Step 5: List new attributes
+       major_consequence : string,
+       category	         : string,
+       gene_name         : string,
+       gene_symbol       : string,
+       HGVSp	         : string,
+       HGVSc	         : string,
+       ukbb_freq         : double
+      >
+
+      [variant_id = 0:*:0:10000;
+       chrom      = 1:24:0:1;
+       pos        = 1:*:0:1000000])),
+  VARIANT_UPDATED);

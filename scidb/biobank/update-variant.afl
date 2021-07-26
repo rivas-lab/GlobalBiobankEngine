@@ -1,0 +1,39 @@
+set_namespace(NAMESPACE);             // Step 1: Set variant namespace
+
+store(
+  join(
+    VARIANT,
+    redimension(
+      equi_join(
+        project(VARIANT, ref, alt),
+        apply(
+          aio_input(
+            'FILE_PATH',              // Step 2: Set variant updte file path
+            num_attributes:7),        // Step 3: Set number of attributes
+
+          chrom_match,       int64(a0),
+          pos_match,         int64(a1),
+          ref_match,         a2,
+          alt_match,         a3,
+
+          major_consequence, a4,      // Step 4: List new attributes
+          category,          a5,
+          odds_ratio,        dcast(a6, double(null))
+        ),
+
+        left_names:(chrom, pos, ref, alt),
+        right_names:(chrom_match, pos_match, ref_match, alt_match),
+        keep_dimensions:true,
+        left_outer:true,
+        algorithm:'hash_replicate_left'),
+
+    <
+     major_consequence : string,      // Step 5: List new attributes
+     category          : string,
+     odds_ratio        : double
+    >
+
+    [variant_id = 0:*:0:10000;
+     chrom      = 1:22:0:1;
+     pos        = 1:*:0:1000000])),
+  VARIANT_UPDATED);

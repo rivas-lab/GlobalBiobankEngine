@@ -1,0 +1,39 @@
+create_namespace(LOAD);
+create array LOAD.ASSOCIATION_SET
+  <name               : string,
+   variant_namespace  : string NOT NULL,
+   number_of_fields   : int64,
+   number_of_variants : int64,
+   date_modified      : datetime,
+   note               : string>
+  [id = 0:*:0:1];
+
+create array LOAD.PHENOTYPE_SET
+  <name                   : string,
+   note                   : string,
+   number_of_participants : int64,
+   number_of_fields       : int64,
+   date_modified          : datetime>
+  [id = 0:*:0:1];
+
+
+create_namespace(RIVAS_HG19);
+store(
+  apply(
+    build(<description:string>[i=0:0], 'RIVAS_HG19'),
+    number_of_participants, 0,
+    number_of_variants,     0,
+    assembly,               'hg19'),
+  RIVAS_HG19.NAMESPACE_DESCRIPTION);
+store(LOAD.ASSOCIATION_SET, RIVAS_HG19.ASSOCIATION_SET);
+
+
+create_namespace(RIVAS_HG38);
+store(
+  apply(
+    build(<description:string>[i=0:0], 'RIVAS_HG38'),
+    number_of_participants, 0,
+    number_of_variants,     0,
+    assembly,               'hg38'),
+  RIVAS_HG38.NAMESPACE_DESCRIPTION);
+store(LOAD.ASSOCIATION_SET, RIVAS_HG38.ASSOCIATION_SET);

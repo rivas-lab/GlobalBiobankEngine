@@ -1,0 +1,74 @@
+set no fetch;
+
+store(
+  redimension(
+    equi_join(
+      equi_join(
+        apply(
+          sort(
+            project(
+              apply(
+                aio_input(
+                  '/opt/biobankengine/GlobalBioBankEngineRepo/gbe_data/gencode-gene.gtf',
+                  // '/opt/biobankengine/GlobalBioBankEngineRepo/gbe_data/gencode-gene.v29.annotation.gtf',
+                  num_attributes:9),
+                chrom,    iif(substr(a0, 3, 4) = 'X',
+                            23,
+                            iif(substr(a0, 3, 4) = 'Y',
+                              24,
+                              iif(substr(a0, 3, 4) = 'M',
+                                25,
+                                dcast(substr(a0, 3, 5), int64(null))))),
+                start,    int64(a3),
+                end,      int64(a4),
+                strand,   a6,
+                name,     rsub(a8, 's/.*gene_name "([^"]*).*/$1/'),
+                gene_eid, rsub(a8, 's/.*gene_id "([^.]*).*/$1/')),
+              chrom,
+              start,
+              end,
+              strand,
+              name,
+              gene_eid),
+            chrom,
+            start),
+          gene_id, $n),
+        project(
+          apply(
+            aio_input(
+              '/opt/biobankengine/GlobalBioBankEngineRepo/gbe_data/canonical_transcripts.txt',
+              num_attributes:2),
+            canonical_gene_eid,       a0,
+            canonical_transcript_eid, a1),
+          canonical_gene_eid,
+          canonical_transcript_eid),
+        left_names:gene_eid,
+        right_names:canonical_gene_eid,
+        left_outer:true),
+      project(
+        apply(
+          grouped_aggregate(
+            apply(
+              aio_input(
+                '/opt/biobankengine/GlobalBioBankEngineRepo/gbe_data/omim_info-gene.txt',
+                num_attributes:2),
+              omim_gene_eid,      a0,
+              omim_accession_ext, a1 + ';'),
+            sum(omim_accession_ext) as omim_accession_agg,
+            omim_gene_eid),
+          omim_accession, rsub(omim_accession_agg, 's/(.*);$/$1/')),
+        omim_gene_eid,
+        omim_accession),
+      left_names:gene_eid,
+      right_names:omim_gene_eid,
+      left_outer:true),
+    <chrom                    : int64,
+     name                     : string,
+     start                    : int64,
+     end                      : int64,
+     strand                   : string,
+     gene_eid                 : string,
+     canonical_transcript_eid : string,
+     omim_accession           : string>
+    [gene_id = 0:*:0:1000]),
+  LOAD.GENE);

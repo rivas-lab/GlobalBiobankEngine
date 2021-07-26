@@ -1,0 +1,45 @@
+set no fetch;
+
+store(
+  redimension(
+    apply(
+      sort(
+        project(
+	  apply(
+	    aio_input(
+	      '/opt/biobankengine/GlobalBioBankEngineRepo/gbe_data/icd10ukbb.ukbiobank.combined.vcf',
+    	      'header=1',
+	      'num_attributes=8'),
+            chrom, int64(a0),
+            pos,   int64(a1),
+            ref,   a3,
+       	    alt,   a4,
+            rsid,  iif(a2 = '.', null, a2),
+            csq,   rsub(a7, 's/.*CSQ=([^;]*).*/$1/')),
+          chrom,
+          pos,
+          ref,
+          alt,
+          rsid,
+          csq),
+        chrom,
+        pos),
+      gene,        iif(csq = 'NaN', null,
+                     rsub(csq, 's/([^|]*\|){4}([^|]*)\|.*/$2/')),
+      consequence, iif(csq = 'NaN', null,
+                     rsub(csq, 's/[^|]*\|([^|]*)\|.*/$1/')),
+      impact,      iif(csq = 'NaN', null,
+                     rsub(csq, 's/([^|]*\|){2}([^|]*)\|.*/$2/')),
+      annotations, iif(csq = 'NaN', null, csq),
+      variant_id,  n),
+    <ref         : string,
+     alt         : string,
+     rsid        : string,
+     gene        : string,
+     consequence : string,
+     impact      : string,
+     annotations : string>
+    [variant_id = 0:*:0:10000;
+     chrom      = 1:22:0:1;
+     pos        = 1:*:0:1000000]),
+  LOAD.VARIANT);

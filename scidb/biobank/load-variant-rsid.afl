@@ -1,0 +1,81 @@
+set no fetch;
+
+set_namespace(RIVAS_HG38);
+
+store(
+  join(
+    project(
+      VARIANT,
+      ref,
+      alt,
+      gene,
+      consequence,
+      impact,
+      hgvsp,
+      lof,
+      miss,
+      miss_bileve,
+      miss_wcsg,
+      hwep,
+      maf,
+      ld,
+      wcsg_only,
+      bileve_only,
+      missingness,
+      hwe,
+      mcpi,
+      gnomad_filter,
+      mgi,
+      mgi_notes,
+      all_filters,
+      annotations,
+      variant_identity,
+      major_consequence,
+      category,
+      gene_name,
+      gene_symbol,
+      HGVSp,
+      HGVSc,
+      ukbb_freq),
+    redimension(
+      equi_join(
+        project(VARIANT, alt, ref),
+        project(
+          filter(
+            apply(
+              aio_input(
+                '/opt/biobankengine/GlobalBioBankEngineRepo/gbe_data/dbsnp151_hg38.split.txt',
+                num_attributes:5,
+                header:1),
+              chrom_match, iif(a0 = 'X',
+                               23,
+                               iif(a0 = 'Y',
+                                   24,
+                                   iif(a0 = 'MT',
+                                       25,
+                                       dcast(a0, int64(null))))),
+              pos_match,   int64(a1),
+              rsid,        iif(substr(a2, 0, 2) = 'rs', a2, null),
+              id,          iif(substr(a2, 0, 2) = 'rs',
+                               dcast(substr(a2, 2, strlen(a2)), int64(null)),
+                               null),
+              ref_match,   a3,
+              alt_match,   a4),
+            chrom_match <= 24),
+          chrom_match,
+          pos_match,
+          ref_match,
+          alt_match,
+          rsid,
+          id),
+        left_names:(chrom, pos, ref, alt),
+        right_names:(chrom_match, pos_match, ref_match, alt_match),
+        left_outer:true,
+        keep_dimensions:true),
+      <rsid : string,
+       id   : int64>
+      [variant_id = 0:*:0:10000;
+       chrom      = 1:24:0:1;
+       pos        = 1:*:0:1000000],
+      false)),
+  VARIANT_UPDATED_RSID);

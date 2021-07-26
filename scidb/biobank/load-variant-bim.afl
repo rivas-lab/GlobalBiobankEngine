@@ -1,0 +1,51 @@
+set no fetch;
+
+store(
+  redimension(
+    apply(
+      sort(
+        project(
+	  apply(
+	    aio_input(
+	      '/opt/biobankengine/GlobalBioBankEngineRepo/gbe_data/bims_combined.vep.cf.tsv',
+    	      header:1,
+	      num_attributes:15),
+            chrom,       int64(a0),
+            pos,         int64(a1),
+            ref,         a2,
+            alt,         a3,
+            rsid,        iif(substr(a5, 0, 2) = 'rs', a5, null),
+            id,          iif(substr(a5, 0, 2) = 'rs',
+                           dcast(substr(a5, 2, strlen(a5)), int64(null)),
+                           null),
+            gene,        a6,
+            consequence, a8,
+            csq,         a14),
+          chrom,
+          pos,
+          ref,
+          alt,
+          rsid,
+          id,
+          gene,
+          consequence,
+          csq),
+        chrom,
+        pos,
+        100000),
+      impact,      iif(csq = '.', null,
+                     rsub(csq, 's/([^|]*\|){2}([^|]*)\|.*/$2/')),
+      annotations, iif(csq = '.', null, csq),
+      variant_id,  $n),
+    <ref         : string,
+     alt         : string,
+     rsid        : string,
+     id          : int64,
+     gene        : string,
+     consequence : string,
+     impact      : string,
+     annotations : string>
+    [variant_id = 0:*:0:10000;
+     chrom      = 1:22:0:1;
+     pos        = 1:*:0:1000000]),
+  LOAD.VARIANT);

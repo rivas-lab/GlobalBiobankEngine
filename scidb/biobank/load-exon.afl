@@ -1,0 +1,44 @@
+set no fetch;
+
+store(
+  redimension(
+    apply(
+      sort(
+        project(
+          apply(
+            aio_input(
+              '/opt/biobankengine/GlobalBioBankEngineRepo/gbe_data/gencode-exon.gtf',
+              // '/opt/biobankengine/GlobalBioBankEngineRepo/gbe_data/gencode-exon.v29.annotation.gtf',
+              num_attributes:9),
+            chrom,    iif(substr(a0, 3, 4) = 'X',
+                        23,
+                        iif(substr(a0, 3, 4) = 'Y',
+                          24,
+                          iif(substr(a0, 3, 4) = 'M',
+                            25,
+                            dcast(substr(a0, 3, 5), int64(null))))),
+            start,          int64(a3),
+            end,            int64(a4),
+            feature_type,   a2,
+            strand,         a6,
+            gene_eid,       rsub(a8, 's/.*gene_id "([^.]*).*/$1/'),
+            transcript_eid, rsub(a8, 's/.*transcript_id "([^.]*).*/$1/')),
+          chrom,
+          start,
+          end,
+          feature_type,
+          strand,
+          gene_eid,
+          transcript_eid),
+        chrom,
+        start),
+      exon_id, $n),
+    <chrom          : int64,
+     start          : int64,
+     end            : int64,
+     feature_type   : string,
+     strand         : string,
+     gene_eid       : string,
+     transcript_eid : string>
+    [exon_id = 0:*:0:1000]),
+  LOAD.EXON);

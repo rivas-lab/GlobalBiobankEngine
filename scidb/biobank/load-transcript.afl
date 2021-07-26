@@ -1,0 +1,41 @@
+set no fetch;
+
+store(
+  redimension(
+    apply(
+      sort(
+        project(
+          apply(
+            aio_input(
+              '/opt/biobankengine/GlobalBioBankEngineRepo/gbe_data/gencode-transcript.gtf',
+              // '/opt/biobankengine/GlobalBioBankEngineRepo/gbe_data/gencode-transcript.v29.annotation.gtf',
+              num_attributes:9),
+            chrom,    iif(substr(a0, 3, 4) = 'X',
+                        23,
+                        iif(substr(a0, 3, 4) = 'Y',
+                          24,
+                          iif(substr(a0, 3, 4) = 'M',
+                            25,
+                            dcast(substr(a0, 3, 5), int64(null))))),
+            start,          int64(a3),
+            end,            int64(a4),
+            strand,         a6,
+            gene_eid,       rsub(a8, 's/.*gene_id "([^.]*).*/$1/'),
+            transcript_eid, rsub(a8, 's/.*transcript_id "([^.]*).*/$1/')),
+          chrom,
+          start,
+          end,
+          strand,
+          gene_eid,
+          transcript_eid),
+        chrom,
+        start),
+      transcript_id, $n),
+    <chrom          : int64,
+     start          : int64,
+     end            : int64,
+     strand         : string,
+     gene_eid       : string,
+     transcript_eid : string>
+    [transcript_id = 0:*:0:1000]),
+  LOAD.TRANSCRIPT);
