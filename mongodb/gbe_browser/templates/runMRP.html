@@ -1,0 +1,605 @@
+{% extends "layout.html" %}
+{% block body %}
+<style>
+input[type=submit] {
+    width: 100%;
+    background-color: #8C1515;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+input[type=submit]:hover {
+    background-color: #8D3C1E;
+}
+</style>
+<head>
+  <script>
+  function myFunction() {
+      var x = document.createElement("INPUT");
+      x.setAttribute("type", "file");
+      document.body.appendChild(x);
+  }
+  </script>
+
+</head>
+
+<div class="container">
+    <div class="row" style="font-size: 16px;">
+    <form method=post enctype=multipart/form-data>
+         <h1> MRP Inference Engine </h1>
+       MRP is a statistical framework for variant association studies that considers correlation, scale, and location of genetic effects across a group of genetic variants, phenotypes, and studies.
+       <hr>
+
+        <label for="gene_text">List genes, one per row:</label>
+        <br>
+        <textarea id="gene_text" Name="gene_text" rows="4" cols="20"></textarea>
+<br>
+
+          <label for="file">Or upload a file of gene names, one per row:</label>
+          <input type="file" id="file">
+
+
+
+            <label for="function">Select the types of variants MRP should consider:</label>
+          <select class="selectpicker" id="function", name="function" data-style="btn-primary" data-width="fit">
+            <option value="['missense_variant','lof_variant']">Missense + PTV</option>
+            <option value="['missense_variant']">Missense</option>
+            <option value="['lof_variant']">PTV</option>
+          </select>
+
+           <br>
+            <label for="functionfdr">Select the false discovery rate (FDR):</label>
+          <select id="functionfdr", name="functionfdr" class="selectpicker" data-style="btn-primary" data-width="fit">
+            <option value="[1]">1%</option>
+            <option value="[5]">5%</option>
+            <option value="[10]">10%</option>
+          </select>
+
+<br>
+<label for="functionphen">Select the phenotype(s):</label>
+	      <select name="phenotypes[]" class="selectpicker" data-live-search="true"  multiple="multiple" data-width="fit" />
+<option value="FH1065">High blood pressure (199068)</option>
+<option value="FH1001">Lung cancer (123832)</option>
+<option value="FH1220">Diabetes (79177)</option>
+<option value="FH1113">Chronic bronchitis/emphysema (78578)</option>
+<option value="FH1019">Bowel cancer (74244)</option>
+<option value="FH1002">Breast cancer (62401)</option>
+<option value="FH1286">Severe depression (54576)</option>
+<option value="FH1263">Alzheimer's disease/dementia (51794)</option>
+<option value="FH1044">Prostate cancer (34359)</option>
+<option value="FH1262">Parkinson's disease (21755)</option>
+<option value="cancer1003">skin cancer (19170)</option>
+<option value="cancer1060">non-melanoma skin cancer (16791)</option>
+<option value="cancer1002">breast cancer (11243)</option>
+<option value="cancer1044">prostate cancer (6460)</option>
+<option value="cancer1037">female genital tract cancer (4947)</option>
+<option value="cancer1020">large bowel cancer/colorectal cancer (4382)</option>
+<option value="cancer1059">malignant melanoma (4099)</option>
+<option value="cancer1038">male genital tract cancer (3449)</option>
+<option value="cancer1022">colon cancer/sigmoid cancer (3251)</option>
+<option value="cancer1041">cervical cancer (2815)</option>
+<option value="cancer1084">respiratory / intrathoracic cancer (2392)</option>
+<option value="cancer1023">rectal cancer (2026)</option>
+<option value="cancer1035">bladder cancer (1997)</option>
+<option value="cancer1001">lung cancer (1981)</option>
+<option value="cancer1047">lymphoma (1852)</option>
+<option value="cancer1085">bone metastases / bony secondaries (1780)</option>
+<option value="cancer1040">uterine/endometrial cancer (1610)</option>
+<option value="cancer1053">non-hodgkins lymphoma (1429)</option>
+<option value="cancer1039">ovarian cancer (1208)</option>
+<option value="cancer1034">kidney/renal cell cancer (1093)</option>
+<option value="cancer1048">leukaemia (870)</option>
+<option value="cancer1045">testicular cancer (678)</option>
+<option value="cancer1017">oesophageal cancer (667)</option>
+<option value="cancer1004">cancer of lip/mouth/pharynx/oral cavity (659)</option>
+<option value="cancer1055">chronic lymphocytic (596)</option>
+<option value="cancer1026">pancreas cancer (593)</option>
+<option value="cancer1018">stomach cancer (568)</option>
+<option value="cancer1032">brain cancer / primary malignant brain tumour (555)</option>
+<option value="cancer1065">thyroid cancer (513)</option>
+<option value="cancer1050">multiple myeloma (501)</option>
+<option value="cancer1024">liver/hepatocellular cancer (437)</option>
+<option value="cancer1052">hodgkins lymphoma / hodgkins disease (432)</option>
+<option value="cancer1056">chronic myeloid (413)</option>
+<option value="cancer1006">larynx/throat cancer (362)</option>
+<option value="cancer1019">small intestine/small bowel cancer (329)</option>
+<option value="cancer1011">tongue cancer (317)</option>
+<option value="cancer1074">acute myeloid leukaemia (288)</option>
+<option value="cancer1068">sarcoma/fibrosarcoma (236)</option>
+<option value="cancer1030">eye and/or adnexal cancer (213)</option>
+<option value="cancer1063">primary bone cancer (208)</option>
+<option value="cancer1025">gallbladder/bile duct cancer (203)</option>
+<option value="cancer1077">mouth cancer (197)</option>
+<option value="cancer1064">mesothelioma (181)</option>
+<option value="cancer1043">vulval cancer (131)</option>
+<option value="cancer1015">parotid gland cancer (127)</option>
+<option value="cancer1005">salivary gland cancer (121)</option>
+<option value="cancer1086">appendix cancer (99)</option>
+<option value="cancer1079">oropharynx / oropharyngeal cancer (79)</option>
+<option value="cancer1036">other cancer of urinary tract (74)</option>
+<option value="cancer1046">penis cancer (67)</option>
+<option value="cancer1007">nasal cavity cancer (62)</option>
+<option value="cancer1033">spinal cord or cranial nerve cancer (59)</option>
+<option value="cancer1010">lip cancer (59)</option>
+<option value="cancer1042">vaginal cancer (58)</option>
+<option value="cancer1067">adrenal cancer (55)</option>
+<option value="cancer1082">heart / mediastinum cancer (51)</option>
+<option value="cancer1012">gum cancer (47)</option>
+<option value="cancer1031">meningeal cancer / malignant meningioma (46)</option>
+<option value="cancer1087">fallopian tube cancer (44)</option>
+<option value="cancer1029">peripheral nerve/autonomic nerve cancer (37)</option>
+<option value="cancer1081">thymus cancer / malignant thymoma (26)</option>
+<option value="cancer1009">sinus cancer (26)</option>
+<option value="cancer1066">parathyroid cancer (24)</option>
+<option value="cancer1051">myelofibrosis or myelodysplasia (19)</option>
+<option value="cancer1088">malignant insulinoma (16)</option>
+<option value="cancer1008">ear cancer (16)</option>
+<option value="cancer1080">trachea cancer (15)</option>
+<option value="cancer1075">retinoblastoma (12)</option>
+<option value="cancer1076">kaposis sarcoma (10)</option>
+<option value="HC215">hypertension (107407)</option>
+<option value="HC273">essential hypertension (64234)</option>
+<option value="HC382">asthma (43626)</option>
+<option value="HC269">high cholesterol (43054)</option>
+<option value="HC310">hiatus hernia (41260)</option>
+<option value="HC285">other joint disorder (31606)</option>
+<option value="HC164">gastro-oesophageal reflux (gord) / gastric reflux (30231)</option>
+<option value="HC376">osteoarthritis (29946)</option>
+<option value="HC49">hayfever/allergic rhinitis (20724)</option>
+<option value="HC41">depression (20461)</option>
+<option value="HC221">diabetes (20440)</option>
+<option value="HC61">haemorrhoids / piles (19958)</option>
+<option value="HC219">hypothyroidism/myxoedema (19920)</option>
+<option value="HC25">cataract (19448)</option>
+<option value="HC132">angina (18473)</option>
+<option value="HC125">anaemia (15944)</option>
+<option value="HC78">arthritis (nos) (15332)</option>
+<option value="HC188">cholelithiasis/gall stones (14940)</option>
+<option value="HC43">unclassifiable (14357)</option>
+<option value="HC243">inguinal hernia (14042)</option>
+<option value="HC225">cholecystitis (12963)</option>
+<option value="HC281">atrial fibrillation (12665)</option>
+<option value="HC36">pneumonia (12614)</option>
+<option value="HC440">atrial flutter (12186)</option>
+<option value="HC86">migraine (12180)</option>
+<option value="HC326">heart attack/myocardial infarction (12138)</option>
+<option value="HC261">eczema/dermatitis (11643)</option>
+<option value="HC64">irritable bowel syndrome (11556)</option>
+<option value="HC404">urinary tract infection/kidney infection (11509)</option>
+<option value="HC401">varicose veins (10153)</option>
+<option value="HC316">dyspepsia / indigestion (10003)</option>
+<option value="HC60">oesophagitis/barretts oesophagus (9528)</option>
+<option value="HC22">osteoporosis (9135)</option>
+<option value="HC7">back pain (8709)</option>
+<option value="HC118">constipation (8691)</option>
+<option value="HC362">respiratory infection (8173)</option>
+<option value="HC295">carpal tunnel syndrome (8152)</option>
+<option value="HC179">iron deficiency anaemia (7811)</option>
+<option value="HC153">joint pain (7726)</option>
+<option value="HC442">chronic obstructive airways disease/copd (7287)</option>
+<option value="HC294">renal/kidney failure (7081)</option>
+<option value="HC166">deep venous thrombosis (dvt) (6929)</option>
+<option value="HC328">gout (6278)</option>
+<option value="HC185">cellulitis (6168)</option>
+<option value="HC83">fracture forearm / wrist (6014)</option>
+<option value="HC237">back problem (5950)</option>
+<option value="HC176">prolapsed disc/slipped disc (5942)</option>
+<option value="HC339">fracture lower leg / ankle (5881)</option>
+<option value="HC276">glaucoma (5863)</option>
+<option value="HC110">stroke (5783)</option>
+<option value="HC106">emphysema/chronic bronchitis (5601)</option>
+<option value="HC430">rheumatoid arthritis (5587)</option>
+<option value="HC79">appendicitis (5533)</option>
+<option value="HC31">uterine fibroids (5417)</option>
+<option value="HC205">endometriosis (5391)</option>
+<option value="HC15">sciatica (5152)</option>
+<option value="HC85">enlarged prostate (5078)</option>
+<option value="HC38">psoriasis (5074)</option>
+<option value="HC371">bronchitis (4987)</option>
+<option value="HC135">anxiety/panic attacks (4986)</option>
+<option value="HC203">pulmonary embolism +/- dvt (4968)</option>
+<option value="HC299">heart failure/pulmonary odema (4657)</option>
+<option value="HC156">nasal polyps (4608)</option>
+<option value="HC57">fracture radius (4584)</option>
+<option value="HC239">subdural haemorrhage/haematoma (4451)</option>
+<option value="HC323">head injury (4399)</option>
+<option value="HC298">chronic sinusitis (4395)</option>
+<option value="HC146">pleural effusion (4391)</option>
+<option value="HC418">cervical spondylosis (4317)</option>
+<option value="HC142">synovitis (4303)</option>
+<option value="HC437">epilepsy (4210)</option>
+<option value="HC364">sleep apnoea (4082)</option>
+<option value="HC262">diverticular disease/diverticulitis (4036)</option>
+<option value="HC95">inflammatory bowel disease (3783)</option>
+<option value="HC55">hyperthyroidism/thyrotoxicosis (3647)</option>
+<option value="HC357">duodenal ulcer (3621)</option>
+<option value="HC1">bowel / intestinal obstruction (3599)</option>
+<option value="HC385">peripheral vascular disease (3517)</option>
+<option value="HC77">allergy or anaphylactic reaction to drug (3397)</option>
+<option value="HC274">umbilical hernia (3311)</option>
+<option value="HC302">retinal detachment (3247)</option>
+<option value="HC201">ulcerative colitis (3147)</option>
+<option value="HC402">spinal stenosis (3114)</option>
+<option value="HC435">ear/vestibular disorder (3088)</option>
+<option value="HC158">spine arthritis/spondylitis (3031)</option>
+<option value="HC119">disc degeneration (2984)</option>
+<option value="HC443">headaches (not migraine) (2974)</option>
+<option value="HC282">whooping cough / pertussis (2964)</option>
+<option value="HC123">muscle/soft tissue problem (2836)</option>
+<option value="HC427">ovarian cyst or cysts (2831)</option>
+<option value="HC400">transient ischaemic attack (tia) (2828)</option>
+<option value="HC129">muscle or soft tissue injuries (2822)</option>
+<option value="HC374">kidney stone/ureter stone/bladder stone (2812)</option>
+<option value="HC133">anal fissure (2721)</option>
+<option value="HC283">cystitis (2713)</option>
+<option value="HC6">eye/eyelid problem (2698)</option>
+<option value="HC131">svt / supraventricular tachycardia (2653)</option>
+<option value="HC331">tonsiltis (2608)</option>
+<option value="HC121">peritonitis (2585)</option>
+<option value="HC136">connective tissue disorder (2515)</option>
+<option value="HC366">allergy/hypersensitivity/anaphylaxis (2491)</option>
+<option value="HC144">chickenpox (2458)</option>
+<option value="HC314">fracture hand (2438)</option>
+<option value="HC396">fracture shoulder / scapula (2429)</option>
+<option value="HC209">gastric/stomach ulcers (2408)</option>
+<option value="HC165">type 2 diabetes (2389)</option>
+<option value="HC58">benign breast lump (2354)</option>
+<option value="HC406">fracture neck of femur / hip (2335)</option>
+<option value="HC231">heart valve problem/heart murmur (2326)</option>
+<option value="HC311">measles / morbillivirus (2120)</option>
+<option value="HC392">pancreatitis (2106)</option>
+<option value="HC303">malabsorption/coeliac disease (2094)</option>
+<option value="HC395">bladder problem (not cancer) (2066)</option>
+<option value="HC405">vaginal prolapse/uterine prolapse (2041)</option>
+<option value="HC424">fracture skull / head (2012)</option>
+<option value="HC28">bronchiectasis (1939)</option>
+<option value="HC204">bursitis (1929)</option>
+<option value="HC193">heart arrhythmia (1884)</option>
+<option value="HC155">joint disorder (1861)</option>
+<option value="HC82">cerebral palsy (1844)</option>
+<option value="HC423">respiratory failure (1819)</option>
+<option value="HC200">fracture tibia (1811)</option>
+<option value="HC140">urinary frequency / incontinence (1767)</option>
+<option value="HC290">fracture upper arm / humerus / elbow (1749)</option>
+<option value="HC62">tuberculosis (tb) (1739)</option>
+<option value="HC322">crohns disease (1652)</option>
+<option value="HC320">meningitis (1640)</option>
+<option value="HC8">gall bladder disease (1639)</option>
+<option value="HC34">pleurisy (1627)</option>
+<option value="HC234">allergy or anaphylactic reaction to food (1621)</option>
+<option value="HC259">aortic stenosis (1593)</option>
+<option value="HC334">fracture sternum (1587)</option>
+<option value="HC431">emphysema (1581)</option>
+<option value="HC98">stomach disorder (1570)</option>
+<option value="HC386">helicobacter pylori (1564)</option>
+<option value="HC72">chronic fatigue syndrome (1559)</option>
+<option value="HC32">other renal/kidney problem (1502)</option>
+<option value="HC240">fracture finger (1498)</option>
+<option value="HC380">fracture ulna (1485)</option>
+<option value="HC151">multiple sclerosis (1467)</option>
+<option value="HC134">bone disorder (1459)</option>
+<option value="HC96">polymyalgia rheumatica (1421)</option>
+<option value="HC109">gestational hypertension/pre-eclampsia (1418)</option>
+<option value="HC353">other neurological problem (1406)</option>
+<option value="HC42">spontaneous pneumothorax/recurrent pneumothorax (1398)</option>
+<option value="HC139">breast cysts (1398)</option>
+<option value="HC116">tinnitus / tiniitis (1369)</option>
+<option value="HC263">nasal/sinus disorder (1327)</option>
+<option value="HC414">cardiomyopathy (1309)</option>
+<option value="HC76">fracture foot (1270)</option>
+<option value="HC223">fracture pelvis (1269)</option>
+<option value="HC45">mumps / epidemic parotitis (1228)</option>
+<option value="HC178">stress (1216)</option>
+<option value="HC415">aortic aneurysm (1210)</option>
+<option value="HC253">meniere's disease (1199)</option>
+<option value="HC52">aortic dissection (1186)</option>
+<option value="HC74">female infertility (1185)</option>
+<option value="HC422">ankylosing spondylitis (1184)</option>
+<option value="HC346">fibromyalgia (1166)</option>
+<option value="HC88">heart/cardiac problem (1148)</option>
+<option value="HC216">pneumothorax (1143)</option>
+<option value="HC438">hepatitis (1138)</option>
+<option value="HC389">urticaria (1125)</option>
+<option value="HC254">uterine polyps (1122)</option>
+<option value="HC340">menorrhagia (unknown cause) (1112)</option>
+<option value="HC398">fracture wrist / colles fracture (1096)</option>
+<option value="HC308">hypertrophic cardiomyopathy (hcm / hocm) (1096)</option>
+<option value="HC307">colitis/not crohns or ulcerative colitis (1095)</option>
+<option value="HC255">subarachnoid haemorrhage (1091)</option>
+<option value="HC184">aortic aneurysm rupture (1085)</option>
+<option value="HC202">trapped nerve/compressed nerve (1084)</option>
+<option value="HC206">parkinsons disease (1082)</option>
+<option value="HC182">osteopenia (1063)</option>
+<option value="HC4">nephritis (1061)</option>
+<option value="HC16">rectal or colon adenoma/polyps (1057)</option>
+<option value="HC169">pernicious anaemia (1048)</option>
+<option value="HC0">scoliosis (1047)</option>
+<option value="HC149">rheumatic fever (1011)</option>
+<option value="HC161">prostatitis (984)</option>
+<option value="HC44">bile duct obstruction/ascending cholangitis (980)</option>
+<option value="HC107">miscarriage (978)</option>
+<option value="HC355">rectal prolapse (965)</option>
+<option value="HC233">mania/bipolar disorder/manic depression (958)</option>
+<option value="HC91">psoriatic arthropathy (954)</option>
+<option value="HC104">osteomyelitis (948)</option>
+<option value="HC361">anorexia/bulimia/other eating disorder (902)</option>
+<option value="HC180">thyroid problem (not cancer) (894)</option>
+<option value="HC150">rosacea (880)</option>
+<option value="HC195">ureteric obstruction/hydronephrosis (870)</option>
+<option value="HC373">fracture rib (853)</option>
+<option value="HC170">sarcoidosis (841)</option>
+<option value="HC260">fracture fibula (798)</option>
+<option value="HC222">arterial embolism (782)</option>
+<option value="HC171">alcoholic liver disease / alcoholic cirrhosis (778)</option>
+<option value="HC196">labyrinthitis (764)</option>
+<option value="HC84">pulmonary fibrosis (748)</option>
+<option value="HC17">diabetic eye disease (728)</option>
+<option value="HC267">tennis elbow / lateral epicondylitis (725)</option>
+<option value="HC383">bph / benign prostatic hypertrophy (720)</option>
+<option value="HC102">vertigo (712)</option>
+<option value="HC379">infective/viral hepatitis (709)</option>
+<option value="HC198">hyperparathyroidism (699)</option>
+<option value="HC113">irregular heart beat (689)</option>
+<option value="HC53">spinal injury (683)</option>
+<option value="HC93">dry eyes (672)</option>
+<option value="HC54">peptic ulcer (662)</option>
+<option value="HC271">epicondylitis (655)</option>
+<option value="HC194">liver/biliary/pancreas problem (640)</option>
+<option value="HC224">rubella / german measles (638)</option>
+<option value="HC143">retinal problem (601)</option>
+<option value="HC257">femoral hernia (597)</option>
+<option value="HC342">prostate problem (not cancer) (594)</option>
+<option value="HC363">fracture clavicle / collar bone (591)</option>
+<option value="HC68">disorder of adrenal gland (588)</option>
+<option value="HC287">infectious mononucleosis / glandular fever / epstein barr virus (ebv) (588)</option>
+<option value="HC39">lichen planus (586)</option>
+<option value="HC370">other respiratory problems (585)</option>
+<option value="HC275">gastritis/gastric erosions (573)</option>
+<option value="HC246">schizophrenia (568)</option>
+<option value="HC280">peripheral neuropathy (567)</option>
+<option value="HC172">gynaecological disorder (not cancer) (562)</option>
+<option value="HC117">abdominal hernia (557)</option>
+<option value="HC397">scarlet fever / scarlatina (555)</option>
+<option value="HC321">sjogren's syndrome/sicca syndrome (555)</option>
+<option value="HC101">eye trauma (536)</option>
+<option value="HC114">pericardial effusion (531)</option>
+<option value="HC40">nervous breakdown (530)</option>
+<option value="HC232">abnormal smear (cervix) (527)</option>
+<option value="HC347">blistering/desquamating skin disorder (525)</option>
+<option value="HC284">fracture nose (522)</option>
+<option value="HC351">blepharitis / eyelid infection (519)</option>
+<option value="HC433">lymphoedema (516)</option>
+<option value="HC3">ectopic pregnancy (514)</option>
+<option value="HC293">fracture patella / knee (511)</option>
+<option value="HC291">polycystic ovaries/polycystic ovarian syndrome (511)</option>
+<option value="HC12">testicular problems (not cancer) (492)</option>
+<option value="HC432">mitral valve prolapse (487)</option>
+<option value="HC69">polycythaemia vera (482)</option>
+<option value="HC421">other abdominal problem (478)</option>
+<option value="HC375">alcohol dependency (477)</option>
+<option value="HC278">cerebral aneurysm (477)</option>
+<option value="HC256">fracture toe (476)</option>
+<option value="HC352">systemic lupus erythematosis/sle (474)</option>
+<option value="HC327">fracture metatarsal (461)</option>
+<option value="HC445">oesophageal varicies (456)</option>
+<option value="HC390">trigemminal neuralgia (447)</option>
+<option value="HC384">throat or larynx disorder (423)</option>
+<option value="HC47">malaria (421)</option>
+<option value="HC417">sclerosing cholangitis (420)</option>
+<option value="HC167">raynaud's phenomenon/disease (410)</option>
+<option value="HC208">parathyroid gland problem (not cancer) (400)</option>
+<option value="HC270">encephalitis (398)</option>
+<option value="HC105">shingles (391)</option>
+<option value="HC122">disorder or pituitary gland (390)</option>
+<option value="HC33">spinal cord disorder (389)</option>
+<option value="HC59">thyroiditis (388)</option>
+<option value="HC220">interstitial lung disease (380)</option>
+<option value="HC173">fracture shaft of femur (373)</option>
+<option value="HC419">otosclerosis (368)</option>
+<option value="HC296">fracture thumb (367)</option>
+<option value="HC48">aplastic anaemia (366)</option>
+<option value="HC317">breast fibroadenoma (365)</option>
+<option value="HC338">giant cell/temporal arteritis (360)</option>
+<option value="HC226">herpes simplex (359)</option>
+<option value="HC277">menopausal symptoms / menopause (357)</option>
+<option value="HC210">non-infective hepatitis (354)</option>
+<option value="HC306">insomnia (348)</option>
+<option value="HC344">post-natal depression (346)</option>
+<option value="HC103">thyroid goitre (346)</option>
+<option value="HC35">sick sinus syndrome (344)</option>
+<option value="HC408">polio / poliomyelitis (343)</option>
+<option value="HC348">bell's palsy/facial nerve palsy (338)</option>
+<option value="HC157">jaundice (unknown cause) (338)</option>
+<option value="HC181">eye infection (337)</option>
+<option value="HC318">vocal cord polyp (336)</option>
+<option value="HC217">neck problem/injury (332)</option>
+<option value="HC441">hypopituitarism (327)</option>
+<option value="HC197">clotting disorder/excessive bleeding (327)</option>
+<option value="HC177">dupuytren's contracture (326)</option>
+<option value="HC89">food intolerance (321)</option>
+<option value="HC420">psychological/psychiatric problem (320)</option>
+<option value="HC230">disc problem (320)</option>
+<option value="HC304">burns N/A (319)</option>
+<option value="HC162">brain abscess/intracranial abscess (316)</option>
+<option value="HC315">fracture neck / cervical fracture (315)</option>
+<option value="HC24">mrsa / methicillin resistant staphylococcus aureus (314)</option>
+<option value="HC332">post-traumatic stress disorder (309)</option>
+<option value="HC247">breast disease (not cancer) (308)</option>
+<option value="HC126">polycystic kidney (308)</option>
+<option value="HC356">retinal artery/vein occlusion (307)</option>
+<option value="HC337">type 1 diabetes (307)</option>
+<option value="HC242">pericarditis (297)</option>
+<option value="HC412">tendonitis / tendinitis / tenosynovitis (295)</option>
+<option value="HC14">fracture vertebra / crush fracture / vertebral collapse (294)</option>
+<option value="HC5">myositis/myopathy (292)</option>
+<option value="HC51">paraplegia (292)</option>
+<option value="HC436">acne/acne vulgaris (292)</option>
+<option value="HC413">hereditary/genetic haematological disorder (291)</option>
+<option value="HC434">macular degeneration (283)</option>
+<option value="HC428">low platelets/platelet disorder (280)</option>
+<option value="HC248">allergy to house dust mite (278)</option>
+<option value="HC9">renal failure not requiring dialysis (270)</option>
+<option value="HC250">acute infective polyneuritis/guillain-barre syndrome (269)</option>
+<option value="HC410">cervical intra-epithelial neoplasia (cin) / precancerous cells cervix (268)</option>
+<option value="HC252">leg claudication/ intermittent claudication (265)</option>
+<option value="HC300">benign / essential tremor (258)</option>
+<option value="HC154">pelvic inflammatory disease/ pid (254)</option>
+<option value="HC10">dysmenorrhoea / dysmenorrhea (249)</option>
+<option value="HC11">septicaemia / sepsis (246)</option>
+<option value="HC212">oesophageal disorder (242)</option>
+<option value="HC429">hiv/aids (241)</option>
+<option value="HC251">liver failure/cirrhosis (241)</option>
+<option value="HC227">erectile dysfunction / impotence (241)</option>
+<option value="HC313">primary biliary cirrhosis (240)</option>
+<option value="HC391">pyloric stenosis (228)</option>
+<option value="HC292">vasculitis (227)</option>
+<option value="HC218">motor neurone disease (221)</option>
+<option value="HC56">monoclonal gammopathy/not myeloma (219)</option>
+<option value="HC63">pituitary adenoma/tumour (218)</option>
+<option value="HC268">varicose ulcer (215)</option>
+<option value="HC241">cranial nerve problem/palsy (206)</option>
+<option value="HC191">peripheral nerve injury (205)</option>
+<option value="HC359">adrenocortical insufficiency/addison's disease (203)</option>
+<option value="HC330">myasthenia gravis (202)</option>
+<option value="HC115">contact dermatitis (202)</option>
+<option value="HC124">undescended testicle (199)</option>
+<option value="HC358">optic neuritis (196)</option>
+<option value="HC324">obsessive compulsive disorder (ocd) (195)</option>
+<option value="HC21">mitral valve disease (195)</option>
+<option value="HC130">housemaid's knee (prepatellar bursitis) (194)</option>
+<option value="HC264">hepatitis a (193)</option>
+<option value="HC128">peripheral nerve disorder (192)</option>
+<option value="HC90">myasthenia gravis (187)</option>
+<option value="HC87">spina bifida (187)</option>
+<option value="HC163">scleroderma/systemic sclerosis (187)</option>
+<option value="HC369">gestational diabetes (182)</option>
+<option value="HC213">pericardial problem (179)</option>
+<option value="HC444">fracture jaw (174)</option>
+<option value="HC286">plantar fascitis (174)</option>
+<option value="HC26">iritis (166)</option>
+<option value="HC2">myocarditis (165)</option>
+<option value="HC152">deliberate self-harm/suicide attempt (161)</option>
+<option value="HC341">fracture face / orbit / eye socket (159)</option>
+<option value="HC46">renal failure requiring dialysis (156)</option>
+<option value="HC289">vitiligo (155)</option>
+<option value="HC309">brain haemorrhage (150)</option>
+<option value="HC305">mitral stenosis (145)</option>
+<option value="HC13">lichen sclerosis (139)</option>
+<option value="HC168">cervical polyps (136)</option>
+<option value="HC301">asbestosis (133)</option>
+<option value="HC329">benign neuroma (132)</option>
+<option value="HC249">hepatitis c (132)</option>
+<option value="HC312">wegners granulmatosis (131)</option>
+<option value="HC27">gastrointestinal bleeding (127)</option>
+<option value="HC288">alopecia / hair loss (120)</option>
+<option value="HC394">mitral regurgitation / incompetence (119)</option>
+<option value="HC100">gastroenteritis/dysentry (118)</option>
+<option value="HC325">chronic/degenerative neurological problem (112)</option>
+<option value="HC187">chronic laryngitis (111)</option>
+<option value="HC160">fibrocystic disease (109)</option>
+<option value="HC388">diabetic neuropathy/ulcers (108)</option>
+<option value="HC229">chronic skin ulcers (105)</option>
+<option value="HC112">pyelonephritis (105)</option>
+<option value="HC92">allergy to elastoplast (100)</option>
+<option value="HC81">essential thrombocytosis (100)</option>
+<option value="HC67">hepatitis b (100)</option>
+<option value="HC333">lung abscess (98)</option>
+<option value="HC319">cushings syndrome (97)</option>
+<option value="HC127">hydatiform mole (94)</option>
+<option value="HC99">neutropenia/lymphopenia (92)</option>
+<option value="HC345">neurological injury/trauma (92)</option>
+<option value="HC111">meningioma / benign meningeal tumour (92)</option>
+<option value="HC94">dementia/alzheimers/cognitive impairment (90)</option>
+<option value="HC37">parathyroid hyperplasia/adenoma (90)</option>
+<option value="HC30">aortic regurgitation / incompetence (90)</option>
+<option value="HC18">pemphigoid/pemphigus (86)</option>
+<option value="HC368">diabetes insipidus (85)</option>
+<option value="HC350">hyperprolactinaemia (85)</option>
+<option value="HC377">oesophageal stricture (83)</option>
+<option value="HC360">grave's disease (81)</option>
+<option value="HC238">acromegaly (81)</option>
+<option value="HC20">cervical erosion (81)</option>
+<option value="HC211">dermatomyositis (79)</option>
+<option value="HC145">thyroid radioablation therapy (77)</option>
+<option value="HC189">hyperaldosteronism/conn's syndrome (72)</option>
+<option value="HC174">haemochromatosis (72)</option>
+<option value="HC399">incisional hernia (71)</option>
+<option value="HC73">dermatopolymyositis (69)</option>
+<option value="HC23">fibrosing alveolitis/unspecified alveolitis (69)</option>
+<option value="HC393">allergy to nickel (66)</option>
+<option value="HC387">polymyositis (66)</option>
+<option value="HC190">scrotal problem (not cancer) (66)</option>
+<option value="HC137">anal problem (66)</option>
+<option value="HC411">thalassaemia (64)</option>
+<option value="HC207">soft tissue inflammation (64)</option>
+<option value="HC381">venous thromboembolic disease (63)</option>
+<option value="HC236">ovarian problem (61)</option>
+<option value="HC97">pleural plaques (not known asbestosis) (58)</option>
+<option value="HC147">diphtheria (58)</option>
+<option value="HC409">male infertility (56)</option>
+<option value="HC148">wolff parkinson white / wpw syndrome (56)</option>
+<option value="HC66">myelofibrosis (54)</option>
+<option value="HC372">uterine problem (52)</option>
+<option value="HC244">carcinoid syndrome/tumour (52)</option>
+<option value="HC279">myeloproliferative disorder (51)</option>
+<option value="HC354">kidney nephropathy (50)</option>
+<option value="HC192">bowel / intestinal perforation (50)</option>
+<option value="HC235">other demyelinating disease (49)</option>
+<option value="HC343">glomerulnephritis (47)</option>
+<option value="HC228">infection of nervous system (43)</option>
+<option value="HC186">paget's disease (43)</option>
+<option value="HC349">bowen's disease (42)</option>
+<option value="HC336">iga nephropathy (42)</option>
+<option value="HC138">polyartertis nodosa (42)</option>
+<option value="HC407">pancreatic disease (39)</option>
+<option value="HC70">aortic valve disease (38)</option>
+<option value="HC367">other substance abuse/dependency (37)</option>
+<option value="HC258">haemophilia (37)</option>
+<option value="HC199">cervical problem (35)</option>
+<option value="HC272">stevens johnson syndrome (32)</option>
+<option value="HC416">retinitis pigmentosa (31)</option>
+<option value="HC120">typhoid fever (29)</option>
+<option value="HC425">adrenal tumour (28)</option>
+<option value="HC365">schistosomiasis/bilharzia (27)</option>
+<option value="HC297">dengue fever (24)</option>
+<option value="HC183">spinal abscess (22)</option>
+<option value="HC141">antiphospholipid syndrome (22)</option>
+<option value="HC159">opioid dependency (20)</option>
+<option value="HC265">bowel / intestinal infarction (19)</option>
+<option value="HC245">bile duct disease (18)</option>
+<option value="HC214">empyema (18)</option>
+<option value="HC266">other venous/lymphatic disease (17)</option>
+<option value="HC80">sickle cell disease (16)</option>
+<option value="HC75">alpha-1 antitrypsin deficiency (15)</option>
+<option value="HC175">ischaemic stroke (15)</option>
+<option value="HC19">phaeochromocytoma (14)</option>
+<option value="HC108">giardia / giardiasis (14)</option>
+<option value="HC71">microscopic polyarteritis (13)</option>
+<option value="HC378">diabetic nephropathy (11)</option>
+<option value="HC439">hepatitis e (8)</option>
+<option value="HC50">chlamydia (7)</option>
+<option value="HC29">yellow fever (7)</option>
+<option value="HC403">varicella zoster virus (4)</option>
+<option value="HC335">pancytopenia (4)</option>
+<option value="HC65">hepatitis d (0)</option>
+	            </select>
+
+
+
+      <p align='center' style="margin-left:19.5em; margin-right:19.5em; padding: 1em 1em 1em 1em;">
+       <input type="submit" value="Run MRP" name="submit_button">
+      </p>
+      <hr>
+      <p>For more information on the statisical methods behind MRP, see Rivas et al. "Bayesian models for high-dimensional rare variant association studies" In progess.</p>
+
+    </form>
+
+
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,431 @@
+{% extends "layout.html" %}
+{% block body %}
+<style>
+input[type=submit] {
+    width: 100%;
+    background-color: #8C1515;
+    color: white;
+    padding: 8px 20px;
+    margin: 0px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.dot {
+  stroke: #000;
+}
+
+.tooltip {
+  position: absolute;
+  width: 200px;
+  height: 28px;
+  pointer-events: none;
+}
+
+                        .bar { fill:#b3995d; }
+
+</style>
+    <!-- Render context vars in JS here -->
+    <script type="text/javascript">
+      window.icd = {{ icd|tojson|safe }};
+        window.page_name = window.icd[0].icd_id;
+    </script>
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-68395741-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+    <script>
+        filtered_variants = _.filter(window.table_variants, function(d) {
+            return d.filter == 'PASS';
+        });
+        $('#number_of_variants').replaceWith(filtered_variants.length);
+        lof_filtered_variants = _.filter(window.table_variants, function(d) {
+            return d.filter == 'PASS' && d.category == 'lof_variant';
+        });
+        $('#number_of_lof_variants').replaceWith(lof_filtered_variants.length);
+    </script>
+
+    <style>
+div.transbox
+{
+  background-color: #ffffff;
+  border: 2px solid gray;
+
+}
+    </style>
+    <script>
+        $(document).ready(function() {
+            $("#variants_loading").hide();
+            $("#variants_table_container").show();
+        });
+    </script>
+    <div class="container" id="container">
+<div class="row">
+
+            <h1><span class="hidden-xs">Code Phenotype: {{icd[0].Name}}</span></h1>
+
+        <hr/>
+     <dl class="dl-horizontal" style="margin-bottom: 0px;">
+                        <dt>Code:</dt>
+			{% if icd[0].icd %}
+			<dt>Case Count (Disease) or Individuals (QTs):</dt>
+			{% else %}
+			<dt>Case Count:</dt>
+			{% endif %}
+                        
+                        <dd>{{ icd[0].icd.replace('ICD','') }}</dd>
+                                             <dd>{{ icd[0].Case }}
+                                             </dd>
+
+
+
+                    </dl>
+           <hr />
+         </div>
+
+	    <div class="col-md-5" id="container5">
+	     
+
+            </div>
+          </div>         
+
+        <div class="row">
+            <div class="col-md-10 col-md-offset-1">
+                <h3>Genome-wide aggregate analysis</h3>
+                <h4>Missense + PTV (MAF <= 1%)</h4>
+                <div class="row" id="containeraggregaterarelowfreq">
+<script>
+function GetTopFivePhenotypes(arrayData){  //sorting to top 5 phenotypes
+  arrayData.sort(function(a, b) {
+                   return parseFloat(b["as.numeric.subset.d..key.....l10bfsim...value."]) - parseFloat(a["as.numeric.subset.d..key.....l10bfsim...value."]);
+                 });
+  return arrayData.slice(0, 100);
+}
+
+var margin = {top: 20, right: 20, bottom: 300, left: 40},
+    width = total_width - margin.left - margin.right,
+    height = 800 - margin.top - margin.bottom;
+
+
+var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
+
+var y = d3.scale.linear().range([height, 0]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .ticks(10);
+
+var tip = d3.tip()
+  .attr('class', 'd3-tip')
+  .offset([-10, 0])
+  .html(function(d) {
+    return "<strong>log 10 Bayes Factor:</strong> <span style='color:red'>" + d3.format(".2f")(d["as.numeric.subset.d..key.....l10bfsim...value."]) + "</span><br><strong>Gene: </strong><span style='color:red'>" + d["subset.d..key.....l10bf...gene_name"];
+  })
+
+
+var svg1 = d3.select("#containeraggregaterarelowfreq").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", 
+          "translate(" + margin.left + "," + margin.top + ")");
+
+svg1.call(tip);
+
+d3.csv("/static/mrpgene/phe/" + icd[0].icd + ".01_00001.out", function(error, data) {
+  if (error) throw error;
+   data = GetTopFivePhenotypes(data);
+
+  x.domain(data.map(function(d) { return d["subset.d..key.....l10bf...gene_name"]; }));
+  y.domain([-.5, d3.max(data, function(d) { return +d["as.numeric.subset.d..key.....l10bfsim...value."]; })]);
+
+  svg1.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis)
+    .selectAll("text")
+      .style("text-anchor", "end")
+      .attr("dx", "-.8em")
+      .attr("dy", "-.55em")
+      .attr("transform", "rotate(-90)" )
+      .style("cursor", "pointer")
+      .filter(function(d){ return typeof(d) == "string"; });
+
+  svg1.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end");
+
+  svg1.selectAll(".dot")
+      .data(data)
+    .enter().append("circle")
+      .style("fill", "steelblue")
+      .attr("class", "dot")
+      .attr("r", 3.5)
+      .attr("cx", function(d) { return x(d["subset.d..key.....l10bf...gene_name"]); })
+      .attr("width", x.rangeBand())
+      .attr("cy", function(d) { return y(d["as.numeric.subset.d..key.....l10bfsim...value."]); })
+      .attr("height", function(d) { return height - y(d["as.numeric.subset.d..key.....l10bfsim...value."]); })
+          .on('mouseover', tip.show)
+      .on('mouseout', tip.hide)
+    .on("click", function(d){
+    document.location.href = "https://biobankengine.stanford.edu/awesome?query=" + d["subset.d..key.....l10bf...gene_name"];
+    });
+
+});
+//        .on("mousemove", function(d){
+ //          tooltip
+  //           .style("left", d3.event.pageX - 50 + "px")
+   //           .style("top", d3.event.pageY - 70 + "px")
+    //          .style("display", "inline-block")
+     //         .html((d["coding"]) + "<br>" + "log10BF: " + (d3.format(".2f")(d["l10bf"])));
+      //  })
+//.on("mouseout", function(d){ tooltip.style("display", "none");});
+
+</script>
+
+</div>
+                <div class="row" id="containeraggregaterare">
+                <h4>Missense + PTV (.001% <= MAF <= .1%)</h4>
+<script>
+function GetTopFivePhenotypes(arrayData){  //sorting to top 5 phenotypes
+  arrayData.sort(function(a, b) {
+                   return parseFloat(b["as.numeric.subset.d..key.....l10bfsim...value."]) - parseFloat(a["as.numeric.subset.d..key.....l10bfsim...value."]);
+                 });
+  return arrayData.slice(0, 100);
+}
+
+var margin = {top: 20, right: 20, bottom: 300, left: 40},
+    width = total_width - margin.left - margin.right,
+    height = 800 - margin.top - margin.bottom;
+
+
+var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
+
+var y = d3.scale.linear().range([height, 0]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .ticks(10);
+
+var tip = d3.tip()
+  .attr('class', 'd3-tip')
+  .offset([-10, 0])
+  .html(function(d) {
+    return "<strong>log 10 Bayes Factor:</strong> <span style='color:red'>" + d3.format(".2f")(d["as.numeric.subset.d..key.....l10bfsim...value."]) + "</span><br><strong>Gene: </strong><span style='color:red'>" + d["subset.d..key.....l10bf...gene_name"];
+  })
+
+
+var svg2 = d3.select("#containeraggregaterare").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", 
+          "translate(" + margin.left + "," + margin.top + ")");
+
+svg2.call(tip);
+
+d3.csv("/static/mrpgene/phe/" + icd[0].icd +  ".001_00001.out", function(error, data) {
+  if (error) throw error;
+   data = GetTopFivePhenotypes(data);
+
+  x.domain(data.map(function(d) { return d["subset.d..key.....l10bf...gene_name"]; }));
+  y.domain([-.5, d3.max(data, function(d) { return +d["as.numeric.subset.d..key.....l10bfsim...value."]; })]);
+
+  svg2.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis)
+    .selectAll("text")
+      .style("text-anchor", "end")
+      .attr("dx", "-.8em")
+      .attr("dy", "-.55em")
+      .attr("transform", "rotate(-90)" )
+      .style("cursor", "pointer")
+      .filter(function(d){ return typeof(d) == "string"; });
+
+  svg2.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end");
+
+  svg2.selectAll(".dot")
+      .data(data)
+    .enter().append("circle")
+      .style("fill", "steelblue")
+      .attr("class", "dot")
+      .attr("r", 3.5)
+      .attr("cx", function(d) { return x(d["subset.d..key.....l10bf...gene_name"]); })
+      .attr("width", x.rangeBand())
+      .attr("cy", function(d) { return y(d["as.numeric.subset.d..key.....l10bfsim...value."]); })
+      .attr("height", function(d) { return height - y(d["as.numeric.subset.d..key.....l10bfsim...value."]); })
+          .on('mouseover', tip.show)
+      .on('mouseout', tip.hide)
+    .on("click", function(d){
+    document.location.href = "https://biobankengine.stanford.edu/awesome?query=" + d["subset.d..key.....l10bf...gene_name"];
+    });
+
+});
+//        .on("mousemove", function(d){
+ //          tooltip
+  //           .style("left", d3.event.pageX - 50 + "px")
+   //           .style("top", d3.event.pageY - 70 + "px")
+    //          .style("display", "inline-block")
+     //         .html((d["coding"]) + "<br>" + "log10BF: " + (d3.format(".2f")(d["l10bf"])));
+      //  })
+//.on("mouseout", function(d){ tooltip.style("display", "none");});
+
+</script>
+
+</div>
+          <div class="row" id="containeraggregateptv">
+           <h4>PTV (All)</h4>
+
+
+
+<script>
+function GetTopFivePhenotypes(arrayData){  //sorting to top N phenotypes
+  arrayData.sort(function(a, b) {
+                   return parseFloat(b["as.numeric.subset.d..key.....l10bfsim...value."]) - parseFloat(a["as.numeric.subset.d..key.....l10bfsim...value."]);
+                 });
+  return arrayData.slice(0, 100);
+}
+
+var margin = {top: 20, right: 20, bottom: 300, left: 40},
+    width = total_width - margin.left - margin.right,
+    height = 800 - margin.top - margin.bottom;
+
+
+var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
+
+var y = d3.scale.linear().range([height, 0]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .ticks(10);
+
+var tip = d3.tip()
+  .attr('class', 'd3-tip')
+  .offset([-10, 0])
+  .html(function(d) {
+    return "<strong>log 10 Bayes Factor:</strong> <span style='color:red'>" + d3.format(".2f")(d["as.numeric.subset.d..key.....l10bfsim...value."]) + "</span><br><strong>Gene: </strong><span style='color:red'>" + d["subset.d..key.....l10bf...gene_name"];
+  })
+
+
+var svg3 = d3.select("#containeraggregateptv").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", 
+          "translate(" + margin.left + "," + margin.top + ")");
+
+svg3.call(tip);
+
+d3.csv("/static/mrpgene/phe/" + icd[0].icd + ".00001.out", function(error, data) {
+  if (error) throw error;
+   data = GetTopFivePhenotypes(data);
+
+  x.domain(data.map(function(d) { return d["subset.d..key.....l10bf...gene_name"]; }));
+  y.domain([-.5, d3.max(data, function(d) { return +d["as.numeric.subset.d..key.....l10bfsim...value."]; })]);
+
+  svg3.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis)
+    .selectAll("text")
+      .style("text-anchor", "end")
+      .attr("dx", "-.8em")
+      .attr("dy", "-.55em")
+      .attr("transform", "rotate(-90)" )
+      .style("cursor", "pointer")
+      .filter(function(d){ return typeof(d) == "string"; });
+   
+  svg3.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end");
+
+  svg3.selectAll(".dot")
+      .data(data)
+    .enter().append("circle")
+      .style("fill", "steelblue")
+      .attr("class", "dot")
+      .attr("r", 3.5)
+      .attr("cx", function(d) { return x(d["subset.d..key.....l10bf...gene_name"]); })
+      .attr("width", x.rangeBand())
+      .attr("cy", function(d) { return y(d["as.numeric.subset.d..key.....l10bfsim...value."]); })
+      .attr("height", function(d) { return height - y(d["as.numeric.subset.d..key.....l10bfsim...value."]); })
+          .on('mouseover', tip.show)
+      .on('mouseout', tip.hide)
+    .on("click", function(d){
+    document.location.href = "https://biobankengine.stanford.edu/awesome?query=" + d["subset.d..key.....l10bf...gene_name"];
+    });
+
+});
+//        .on("mousemove", function(d){
+ //          tooltip
+  //           .style("left", d3.event.pageX - 50 + "px")
+   //           .style("top", d3.event.pageY - 70 + "px")
+    //          .style("display", "inline-block")
+     //         .html((d["coding"]) + "<br>" + "log10BF: " + (d3.format(".2f")(d["l10bf"])));
+      //  })
+//.on("mouseout", function(d){ tooltip.style("display", "none");});
+
+</script>
+
+                </div>
+            </div>
+        </div>
+
+{% endblock %}
+
+
+
+
+
+

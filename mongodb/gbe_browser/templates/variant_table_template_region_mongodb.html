@@ -1,0 +1,79 @@
+<script type="text/javascript">
+
+</script>
+<script type="text/template" id="variant-table-template">
+
+{% if transcripts_in_gene is defined %}
+    <span style="float:left">
+        <small>&dagger; denotes a consequence that is for a non-canonical transcript</small>
+    </span>
+{% endif %}
+<table id="variant_table" class="tablesorter">
+    <thead>
+        <tr>
+            <th class="tooltip-table-header" data-tooltip="chr:pos reference/alternate &#xa;(dbSNP142 rsID)">
+                Variant</th>
+                <th class='tooltip-table-header' data-tooltip="genomic position">Position</th>
+                <th class='tooltip-table-header' data-tooltip="Filter">Filter</th>
+              <th class="tooltip-table-header" data-tooltip="HGVS annotation (protein change, where defined, or transcript change for splice variants, otherwise empty)">Consequence</th>
+                           <th class="tooltip-table-header" data-tooltip="Variant Effect Predictor (VEP) &#xa; annotation using Gencode 75.&#xa; Worst across all transcripts of this gene.">Annotation</th>
+            <th class="tooltip-table-header" data-tooltip="Minor allele frequency &#xa;">
+                MAF</th>
+              </tr>
+    </thead>
+    <tbody>
+    <% _.each(table_variants, function(variant) { %>
+        <tr class="table_variant" id="variant_<%= variant.variant_id %>"
+            category="<%= variant.category %>" filter_status="<%= variant.filter %>" frequency="<%= variant.allele_freq %>">
+            <td>
+                <a href="/variant/<%= variant.chrom %>-<%= variant.pos %>-<%= variant.ref %>-<%= variant.alt %>" target="_blank">
+                <%= variant.chrom %>:<%= variant.pos %>
+                <% if (variant.ref.length > 20) { %>
+                    <%= variant.ref.slice(0,20) %>...
+                <% } else { %>
+                    <%= variant.ref %>
+                <% } %> /
+                <% if (variant.alt.length > 20) { %>
+                    <%= variant.alt.slice(0,20) %>...
+                <% } else { %>
+                    <%= variant.alt %>
+                <% } %>
+                <% if (variant.rsid != '.') { %>
+                    (<%= variant.rsid %>)
+                <% } %>
+                </a>
+            </td>
+            <td> <%= variant.pos %></td>
+            <td> <%= variant.filter %></td>
+                <td>
+                <% if (variant.HGVSp != '') { %>
+                    <%= variant.HGVSp %>
+                <% } else { %>
+                    <% if (variant.major_consequence == 'splice_donor_variant' | variant.major_consequence == 'splice_acceptor_variant' | variant.major_consequence == 'splice_region_variant') { %>
+                        <% if (variant.HGVSc.length > 100) { %>
+                            <%= variant.HGVSc.slice(0,100) %>...<% } else { %>
+                            <%= variant.HGVSc %><% } %>><% if( 1 ){ %>&dagger;<% } %>
+                    <% } %>
+                <% } %>
+            </td>
+                 <td class="<%= variant.category %>" data-consequence="<%= variant.major_consequence %>"><b>
+                <% if (variant.major_consequence) { %>
+                    <%= variant.major_consequence.replace('_variant', '').replace(/_/g, ' ').replace('utr', 'UTR').replace('3 prime', "3'").replace('5 prime', "5'").replace('nc ', "non-coding ") %>
+                <% } %>
+            </b> </td>
+                      <td> 
+                <% if (variant.allele_freq != -9) { %>
+                <% if (variant.allele_freq > .5) { %>
+                    <%= (1 - variant.allele_freq) %>
+               <% } else { %>
+                    <%= variant.allele_freq %>
+                <% } %>     
+               <% } else { %>
+
+                <% } %>    
+            </td>
+        </tr>
+    <% }); %>
+    </tbody>
+</table>
+</script>

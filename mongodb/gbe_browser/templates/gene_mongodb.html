@@ -1,0 +1,316 @@
+{% extends "layout.html" %}
+{% block body %}
+<style>
+input[type=submit] {
+    width: 100%;
+    background-color: #8C1515;
+    color: white;
+    padding: 8px 20px;
+    margin: 0px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+
+</style>
+    <!-- Render context vars in JS here -->
+    <script type="text/javascript">
+        window.gene = {{ gene|tojson|safe }};
+        window.transcript = {{ transcript|tojson|safe }};
+        window.table_variants = {{ variants_in_gene|tojson|safe }};
+        window.variants_in_transcript = {{ variants_in_transcript|tojson|safe }};
+        window.coverage_stats = {{ coverage_stats|tojson|safe }};
+        window.page_name = window.gene.gene_id;
+    </script>
+
+ <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://d3js.org/d3-scale.v3.min.js"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-68395741-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+    <script>
+        filtered_variants = _.filter(window.table_variants, function(d) {
+            return d.filter == 'PASS';
+        });
+        $('#number_of_variants').replaceWith(filtered_variants.length);
+        lof_filtered_variants = _.filter(window.table_variants, function(d) {
+            return d.filter == 'PASS' && d.category == 'lof_variant';
+        });
+        $('#number_of_lof_variants').replaceWith(lof_filtered_variants.length);
+    </script>
+
+    <style>
+div.transbox
+{
+  background-color: #ffffff;
+  border: 2px solid gray;
+
+}
+    </style>
+    <script>
+        $(document).ready(function() {
+            $("#variants_loading").hide();
+            $("#variants_table_container").show();
+        });
+    </script>
+    <div class="container-fluid">
+        <div class="col-md-10 col-xs-offset-1 col-md-offset-1">
+	  {% if not gene.di %}
+            <h1>Gene: {{ gene.gene_name }}</h1>
+	   {% endif %}
+	  {% if gene.di %}
+            <h1 style="color:black">Gene: {{ gene.gene_name }}</h1>
+	   {% endif %}
+            <hr/>
+        </div>
+        <div class="row">
+            <div class="col-md-6 col-xs-10 col-xs-offset-1 col-md-offset-0">
+                <dl class="dl-horizontal">
+                    {% if gene.full_gene_name %}
+                        <dt>{{ gene.gene_name }}</dt>
+                        <dd>{{ gene.full_gene_name }}</dd>
+                    {% endif %}
+                    <dt>Number of variants</dt>
+                    <dd><span id="number_of_variants"></span> (Including filtered: {{ variants_in_gene|length }})</dd>
+{#                    <dt>Number of PTVs</dt>#}
+{#                    <dd><span id="number_of_lof_variants"></span> (Including filtered: {{ lof_variants_in_gene|length }})</dd>#}
+
+{#                    <dt>LoF rate</dt>#}
+{#                    <dd>{{ '%0.4g' % composite_lof_frequency }}</dd>#}
+                    <dt class="hidden-xs">UCSC Browser</dt>
+                    <dd class="hidden-xs">
+                        <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ gene.chrom }}%3A{{ gene.start - 1 }}-{{ gene.stop - 1 }}" target="_blank">
+                            {{ gene.chrom }}:{{ gene.start - 1 }}-{{ gene.stop - 1 }}
+                            <i class="fa fa-external-link"></i>
+                        </a>
+                    </dd>
+                    <dt class="hidden-xs">ExAC</dt>
+                    <dd class="hidden-xs">
+                        <a href="http://exac.broadinstitute.org/gene/{{ gene.gene_id }}" target="_blank">
+                            {{ gene.gene_name }}
+                            <i class="fa fa-external-link"></i>
+                        </a>
+                    </dd>
+                    {% if gene.omim_accession %}
+                        <dt>OMIM</dt>
+                        <dd>
+                            <a href="http://omim.org/entry/{{ gene.omim_accession }}" target="_blank">
+                                {{ gene.gene_name }}
+                                <i class="fa fa-external-link"></i>
+                            </a>
+                        </dd>
+                    {% endif %}
+<!--                        <dt>Mouse Knockout</dt>
+                        <dd>
+                            <a href="http://www.mousephenotype.org/data/search/gene?kw={{ gene.gene_name }}" target="_blank">
+                                {{ gene.gene_name }}
+                                <i class="fa fa-external-link"></i>
+                            </a>
+                        </dd> -->
+                    <dt>Other</dt>
+                    <dd>
+                        <div class="dropdown">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="external_ref_dropdown" data-toggle="dropdown">
+                                External References
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu" aria-labelledby="external_ref_dropdown">
+                                <li role="presentation" class="visible-xs-block">
+                                    <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ gene.chrom }}%3A{{ gene.start - 1 }}-{{ gene.stop - 1 }}" target="_blank">
+                                        UCSC Browser
+                                        <i class="fa fa-external-link"></i>
+                                    </a>
+                                </li>
+                                <li role="presentation" class="visible-xs-block">
+                                    <a href="http://www.genecards.org/cgi-bin/carddisp.pl?gene={{ gene.gene_name }}" target="_blank">
+                                        GeneCards
+                                        <i class="fa fa-external-link"></i>
+                                    </a>
+                                </li>
+                                <li role="presentation">
+                                    <a role="menuitem" tabindex="-1" href="http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?g={{ gene.gene_id }}" target="_blank">
+                                        Ensembl <i class="fa fa-external-link"></i>
+                                    </a>
+                                </li>
+                                <li role="presentation">
+                                    <a role="menuitem" tabindex="-1" href="http://en.wikipedia.org/{{ gene.gene_name }}" target="_blank">
+                                        Wikipedia <i class="fa fa-external-link"></i>
+                                    </a>
+                                </li>
+                                <li role="presentation">
+                                    <a role="menuitem" tabindex="-1" href="http://www.ncbi.nlm.nih.gov/pubmed?term={{ gene.gene_name }}" target="_blank">
+                                        PubMed Search <i class="fa fa-external-link"></i>
+                                    </a>
+                                </li>
+                                <li role="presentation">
+                                    <a role="menuitem" tabindex="-1" href="http://www.wikigenes.org/?search={{ gene.gene_name }}" target="_blank">
+                                        Wikigenes <i class="fa fa-external-link"></i>
+                                    </a>
+                                </li>
+                                <li role="presentation">
+                                    <a role="menuitem" tabindex="-1" href="http://www.gtexportal.org/home/gene/{{ gene.gene_name }}" target="_blank">
+                                        GTEx (Expression) <i class="fa fa-external-link"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+			</dd>
+                </dl>
+            </div>
+	    <div class=" col-md-5">
+
+
+            </div>
+          </div>         
+
+
+        <div class="row">
+            <div class="col-md-10 col-md-offset-1">
+                <h3>Gene summary</h3>
+		  <div id="containergene">
+		     <script>
+
+var graphDiv = document.getElementById('containergene')
+let xl = []
+let yl = []
+let category = []
+let textarr = []
+let namearr = []		    
+let yl2 = []
+let se = [] 
+let links = []
+for(var i=0; i < window.table_variants.length; i++){
+		    category.push(window.table_variants[i].filter + ":" + window.table_variants[i].category)
+					     xl.push(window.table_variants[i].pos)
+					     yl.push(window.table_variants[i].minl10pval)
+				     yl2.push(window.table_variants[i].minor)
+		 links.push( '/variant/' + window.table_variants[i].variant_id)
+    se.push(window.table_variants[i].se)
+    textarr.push(window.table_variants[i].variant_id);
+		 namearr.push(window.table_variants[i].variant_id);
+}
+
+var data = [
+{
+x: xl,
+y: yl, 
+ids: links,
+        text: textarr,
+hovertemplate:  '%{text}',
+mode: 'markers',
+type: 'scatter', 
+transforms: [{
+                 type: 'groupby',
+                 groups: category
+}], 
+visible: "legendonly"
+},
+
+{
+x: xl,
+y: yl2, 
+ids: links,
+error_y: {
+type: 'data',
+array: se,
+visible: true
+},
+        text: textarr,
+hovertemplate:  '%{text}',
+yaxis: 'y2',
+xaxis: 'x',
+mode: 'markers',
+type: 'scatter',
+transforms: [{
+                 type: 'groupby',
+                 groups: category
+}],
+visible: "legendonly",
+showlegend: true
+}
+
+];
+var layout = {
+  title: 'Gene statistics plot',
+  xaxis: {
+    title: 'Genomic position',
+    showgrid: false,
+    zeroline: false
+  },
+  yaxis: {
+    title: '-log10(P)',
+    showline: false
+  },
+ yaxis2: {
+    title: 'Beta',
+    showline: false
+  },
+showlegend: true,
+grid: {
+    rows: 2,
+    columns: 1,
+    roworder: 'top to bottom'}
+};
+Plotly.newPlot(graphDiv, data, layout);
+
+
+
+graphDiv.on('plotly_click', function(data){
+		 var pts = ''; 
+		 for(var i=0; i < data.points.length; i++){
+				  link = data.points[i].id;
+				  }
+    
+    // Note: window navigation here.
+    window.open(link,"_blank");
+
+});
+</script>
+
+
+
+		    </div>
+                    {% if variants_in_gene %}
+                        {% set chrom = gene.chrom %}
+                        {% include 'variant_table_mongodb.html' %}
+                    {% else %}
+                        No variants in this gene.
+                    {% endif %}
+
+
+                <h3>Pathway</h3>
+<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#Pathway" aria-expanded="false" aria-controls="Pathway">
+    Open Targets Reactome Pathway
+  </button>
+</p>
+<div class="collapse" id="Pathway">
+  <div class="card card-body">
+<iframe src="https://www.targetvalidation.org/target/{{ gene.gene_eid }}?view=sec:affected_pathway" title="Reactome Pathway" width="100%" height="1200px">
+</iframe>
+  </div>
+</div>
+</div>
+
+            </div>
+
+
+        </div>
+{% endblock %}
+
+
+
+
+
+

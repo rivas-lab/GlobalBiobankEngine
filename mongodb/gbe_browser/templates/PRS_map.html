@@ -1,0 +1,100 @@
+{% extends "layout.html" %}
+{% block head %}
+    <!-- Render context vars in JS here -->
+    <script type="text/javascript">
+        window.icd = {{ icd|tojson|safe }};
+        window.icd2 = window.icd;
+    	window.namespace = {{ namespace|tojson|safe }};
+        window.page_name = window.icd[0].icd;
+    </script>
+
+    <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js">
+    </script>
+
+    <script>
+        filtered_variants = _.filter(window.table_variants, function(d) {
+            return d.filter == 0;
+        });
+        $('#number_of_variants').replaceWith(filtered_variants.length);
+        lof_filtered_variants = _.filter(window.table_variants, function(d) {
+            return d.filter == 'PASS' && d.category == 'lof_variant';
+        });$('#number_of_lof_variants').replaceWith(lof_filtered_variants.length);
+    </script>
+
+    <style>
+        h3{background-color:#826aa5;color:#fff;padding:3px;}
+        h3 span{float:right;font-size:28px;font-weight:normal;padding:1px;}
+        h3 span a{color:#fff;text-decoration:none;}
+    </style>
+
+    <script>
+        console.log(window.icd);
+    </script>
+
+{% endblock %}
+
+{% block body %}
+
+<div class="container" style="font-size: 16px;">
+
+    <div class="row" id="container-pheno-info">
+        <div class="col col-md-12">
+            <h1><span>Case definition breakdown: {{ icd[0].shortname }}</span></h1>
+            <hr/>
+            <dl class="dl-horizontal" style="margin-bottom: 0px;">
+                <dt>Code:</dt>
+                <dt>Case Count or N:</dt>
+                <dt>Gene-based results (experimental):</dt>
+                <dt>Phenotype distribution:</dt>
+
+                <dd>{{ icd[0].icd.replace('ICD','') }}</dd>
+                <dd>{{ icd[0].Case }}</dd>
+                <dd><a href="/{{namespace}}/coding/gene-mh/{{ icd[0].icd}}">{{ icd[0].icd.replace('ICD','') }}</a></dd>
+                <dd><a href="/{{namespace}}/coding/phenotype/{{ icd[0].icd}}">{{ icd[0].icd.replace('ICD','') }}</a></dd>
+            </dl>
+        </div>
+    </div>
+
+    <hr/>
+
+    <div class="row" id="container-upset">
+        <div class="col col-md-12" id="upset_plot_all">
+            <h2 align="center">All (The entire 500k individuals)</h2>
+            <img src="/static/highconfidenceqc_upset/{{ icd[0].icd }}.png" alt="UpSetR plot for {{ icd[0].icd }}, all 500k">
+        </div>
+    </div>
+
+    <div class="row" id="container-upset">
+        <div class="col col-md-6" id="upset_plot_white_british">
+            <h2 align="center">White British (unrelated individuals)</h2>
+            <img src="/static/highconfidenceqc_upset/{{ icd[0].icd }}.white_british.png" alt="UpSetR plot for {{ icd[0].icd }}, White British subset">
+        </div>
+        <div class="col col-md-6" id="upset_plot_non_british_white">
+            <h2 align="center">non-British White (unrelated individuals)</h2>
+            <img src="/static/highconfidenceqc_upset/{{ icd[0].icd }}.non_british_white.png" alt="UpSetR plot for {{ icd[0].icd }}, non-British White subset">
+        </div>
+    </div>
+
+    <div class="row" id="container-upset">
+        <div class="col col-md-6" id="upset_plot_african">
+            <h2 align="center">African (unrelated individuals)</h2>
+            <img src="/static/highconfidenceqc_upset/{{ icd[0].icd }}.african.png" alt="UpSetR plot for {{ icd[0].icd }}, African subset">
+        </div>
+        <div class="col col-md-6" id="upset_plot_s_asian">
+            <h2 align="center">South Asian (unrelated individuals)</h2>
+            <img src="/static/highconfidenceqc_upset/{{ icd[0].icd }}.s_asian.png" alt="UpSetR plot for {{ icd[0].icd }}, South Asian subset">
+        </div>
+    </div>
+
+    <div class="row" id="container-upset">
+        <div class="col col-md-6" id="upset_plot_e_asian">
+            <h2 align="center">East Asian (unrelated individuals)</h2>
+            <img src="/static/highconfidenceqc_upset/{{ icd[0].icd }}.e_asian.png" alt="UpSetR plot for {{ icd[0].icd }}, East Asian subset">
+        </div>
+        <div class="col col-md-6" id="upset_plot_others">
+            <h2 align="center">Others (unrelated individuals)</h2>
+            <img src="/static/highconfidenceqc_upset/{{ icd[0].icd }}.others.png" alt="UpSetR plot for {{ icd[0].icd }}, Others subset">
+        </div>
+    </div>
+</div>
+{% endblock %}

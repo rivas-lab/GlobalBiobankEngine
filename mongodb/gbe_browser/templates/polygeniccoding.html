@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+{% block body %}
+      		    
+
+    <style>
+                        h3{background-color:#826aa5;color:#fff;padding:3px;}
+                        h3 span{float:right;font-size:28px;font-weight:normal;padding:1px;}
+                        h3 span a{color:#fff;text-decoration:none;}
+
+                </style>
+    </style>
+   
+    <div class="container">
+        <div class="row">
+	<h1><span class="hidden-xs">Multivariate Polygenic Mixture Model (coding variants)</h1>
+  <hr/>
+  </div>
+     
+        <div class="panel panel-primary">
+      <div class="panel-heading">MVPMM</div>
+      <div class="panel-body">MVPMM is a mixture model developed by Dr. Chris DeBoever and <a href="http://rivaslab.stanford.edu">Prof. Manuel A. Rivas</a> using <a href="http://mc-stan.org">STAN</a>. Manuscript in preparation. Information criteria to be added.</p></div>
+    </div>
+
+    				
+
+  <div style="display: flex; justify-content: center;">
+     
+            				
+     <img src="/static/images/PolygenicCoding/PolygenicCoding_{{ polygenic_key }}.svg" height=40% width=100% align="middle"> </img>
+
+                
+    </div>     
+         
+  <div style="display: flex; justify-content: center;">
+     
+     <img src="/static/images/PolygenicCoding/PolygenicCoding_{{ polygenic_key }}.svg2.svg" height=40% width=100% align="middle"> </img>
+
+                
+    </div>     
+         
+  </div>
+     
+{% endblock %}

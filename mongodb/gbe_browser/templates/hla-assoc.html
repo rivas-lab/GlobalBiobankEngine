@@ -1,0 +1,1748 @@
+{% extends "layout.html" %}
+{% block head %}
+<!-- Plotly example 1
+Yosuke Tanigawa
+2017/11/14
+The description is in README.md
+-->
+
+<!--
+    title tag is in layout.html
+    <title>HLA Haplotypes ()</title>
+-->
+<!--
+    I (Yosuke) will remove this as we have already included from layout.html.
+    However, that is JQuery 1.11.1 for some reason. We may need to update the dependencies.
+-->
+<!--    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.71/jquery.csv-0.71.min.js"></script>
+<!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.8.3/jquery.csv.js"></script> -->
+<!--
+    <script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
+-->    
+    <!-- Plotly.js -->
+    <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script> 
+    
+    <script>        
+        var genes = ["A", "B", "C","DPA1","DPB1","DQA1","DQB1","DRB1","DRB3","DRB4","DRB5"];
+        var phe_folder = "/static/hla-assoc/hap_post_plot/"
+         var file_dr = "/static/hla-assoc/";
+        var strat_folder = "/static/hla-assoc/frequency_stratification/";
+        var thresh1 = 0.01;
+        var thresh2 = 0.05;
+
+        function add(a, b) {
+          return a + b;
+        }
+
+
+    function freq_donut(gene) {
+      var freq, allel;
+
+      Plotly.d3.csv(file_dr + "donut/" + gene + "_freq.csv", function(err, rows){
+        function unpack(rows, key) {
+          return rows.map(function(row) { return row[key]; });
+        }
+        freq = unpack(rows, 'frequency').map(Number);
+        //console.log(freq);
+        allel = unpack(rows, 'allelotype');
+        //console.log(freq);
+        var sum_all = freq.reduce(add,0);
+        //console.log(Array.isArray(freq));
+
+        // only show percent if frequency > 3%
+        var mod_text = [];
+        for (var i = 0; i < freq.length; i++) {
+          if (freq[i]/sum_all > 0.03) {
+            mod_text.push(allel[i]);
+          } else {
+            mod_text.push(null);
+          }
+
+        }
+
+        var data = [{
+          values: freq,
+          labels: allel,
+          text: mod_text,
+          textinfo: 'text',
+          hoverinfo: 'label+percent',
+          hole: .4,
+          type: 'pie',
+          textfont: {
+            color: "white"
+          }
+
+
+        }];
+        //console.log("working version:")
+        //console.log(data);
+        var layout = {
+          title: 'HLA ' + gene + ' allelotype frequency',
+          annotations: [
+          {
+            font: {
+              size: 20
+            },
+            showarrow: false,
+            text: freq.length,
+            x: 0.5,
+            y: 0.5
+          }
+          ],
+          showlegend: false,
+          height: 600,
+          width: 800
+        };
+        Plotly.newPlot('plotly_div', data, layout);
+      });
+    }
+
+    function done() {
+        console.log('All data has been loaded :).');
+    }
+
+    function freq_donut_list(gene_list) {
+      var data = [];
+      var trace;
+      var count = 0;
+      var buffer = 0.02;
+      var w = 1/gene_list.length;
+      var num_alleles = [];
+      console.log(w);
+      for (var i = 0; i < gene_list.length; i++) {
+        (function(foo){
+          var allel = [], freq = [];
+          d3.csv(file_dr + "donut/" + gene_list[i] + "_freq.csv", function(d) {
+            for (var j = 0; j < d.length; j++) {
+              allel.push(d[j].allelotype);
+              f = d[j].frequency;
+              //console.log(f);
+              freq.push(parseInt(f));
+              //console.log(data[0].allelotype);
+            }
+            //freq = freq_1.map(Number);
+            //console.log("list version:")
+            //console.log(freq);
+            //console.log(data);
+
+            num_alleles.push(freq.length);
+            var sum_all = freq.reduce(add,0);
+            var mod_text = [];
+            //console.log(freq.length);
+            for (var j = 0; j < freq.length; j++) {
+              if (freq[j]/sum_all > 0.03) {
+                mod_text.push(allel[j]);
+              } else {
+                mod_text.push(null);
+              }
+
+            }
+            console.log(i);
+            console.log([i*w + buffer, (i+1)*w - buffer]);
+            trace = {
+              values: freq,
+              labels: allel,
+              text: mod_text,
+              textinfo: 'text',
+              domain: {
+                x: [i*w + buffer, (i+1)*w - buffer]
+
+              },
+              hoverinfo: 'label+percent',
+              hole: .4,
+              type: 'pie',
+              textfont: {
+                color: "white"
+              }
+            };
+            data.push(trace);
+            count++; 
+            if (count >= gene_list.length) done(); 
+          });
+        }(i));
+        
+          //console.log(allel);
+          //console.log(typeof(freq_1));
+          //console.log(freq_1);
+          //console.log(freq_1.length);
+          //for (var k = 0; k < freq_1.length; k++){
+          //  console.log(freq_1[k]);
+          //}
+          //freq = freq_1.map(Number);
+          //var freq = freq_1.map(function (x) { 
+          //    return parseInt(x, 10); 
+          //});
+          //console.log(freq);
+
+          //console.log(Array.isArray(freq));
+
+
+      }
+        
+      function done() {
+        console.log(data);
+        var layout = {
+          title: 'HLA ' + gene + ' allelotype frequency',
+          annotations: [
+          {
+            font: {
+              size: 20
+            },
+            showarrow: false,
+            
+            text: num_alleles[0],
+            x: 0.5,
+            y: 0.5
+            
+          }
+          ],
+          showlegend: false,
+          height: 600,
+          width: 800
+        };
+        Plotly.newPlot('plotly_div', data, layout);
+      }
+        
+      
+    }
+
+    function freq_donut_list_class1(gene_list) {
+      var data = [];
+      //var trace;
+      var buffer = 0.02;
+      var w = 1/gene_list.length;
+      var num_alleles = [];
+      console.log(w);
+      
+      
+      var allel0 = [], freq0 = [];
+      d3.csv(file_dr + "donut/" + gene_list[0] + "_freq.csv", function(d) {
+        for (var j = 0; j < d.length; j++) {
+          allel0.push(d[j].allelotype);
+          var f = d[j].frequency;
+          //console.log(f);
+          freq0.push(parseInt(f));
+          //console.log(data[0].allelotype);
+        }
+        console.log("allele 0:")
+        console.log(allel0);
+        //freq = freq_1.map(Number);
+        //console.log("list version:")
+        //console.log(freq);
+        //console.log(data);
+
+        num_alleles.push(freq0.length);
+        var sum_all0 = freq0.reduce(add,0);
+        var mod_text0 = [];
+        //console.log(freq.length);
+        for (var j = 0; j < freq0.length; j++) {
+          if (freq0[j]/sum_all0 > 0.1) {
+            mod_text0.push(allel0[j]);
+          } else {
+            mod_text0.push(null);
+          }
+
+        }
+        console.log(0);
+        console.log([0*w + buffer, (0+1)*w - buffer]);
+        var trace0 = {
+          values: freq0,
+          labels: allel0,
+          //text: mod_text0,
+          textinfo: 'none',
+          domain: {
+            x: [0*w + buffer, (0+1)*w - buffer]
+
+          },
+          hoverinfo: 'label+percent',
+          hole: .4,
+          type: 'pie',
+          textfont: {
+            color: "white"
+          }
+        };
+        data.push(trace0);
+        
+        
+        
+          //console.log(allel);
+          //console.log(typeof(freq_1));
+          //console.log(freq_1);
+          //console.log(freq_1.length);
+          //for (var k = 0; k < freq_1.length; k++){
+          //  console.log(freq_1[k]);
+          //}
+          //freq = freq_1.map(Number);
+          //var freq = freq_1.map(function (x) { 
+          //    return parseInt(x, 10); 
+          //});
+          //console.log(freq);
+
+          //console.log(Array.isArray(freq));
+
+
+      });
+      
+      
+        var allel1 = [], freq1 = [];
+        d3.csv(file_dr + "donut/" + gene_list[1] + "_freq.csv", function(d) {
+          for (var j = 0; j < d.length; j++) {
+            allel1.push(d[j].allelotype);
+            var f = d[j].frequency;
+            //console.log(f);
+            freq1.push(parseInt(f));
+            //console.log(data[0].allelotype);
+          }
+          console.log("allele 1:")
+          console.log(allel1);
+          //freq = freq_1.map(Number);
+          //console.log("list version:")
+          //console.log(freq);
+          //console.log(data);
+
+          num_alleles.push(freq1.length);
+          var sum_all1 = freq1.reduce(add,0);
+          var mod_text1 = [];
+          //console.log(freq.length);
+          for (var j = 0; j < freq1.length; j++) {
+            if (freq1[j]/sum_all1 > 0.1) {
+              mod_text1.push(allel1[j]);
+            } else {
+              mod_text1.push(null);
+            }
+
+          }
+          console.log(1);
+          console.log([1*w + buffer, (1+1)*w - buffer]);
+          var trace1 = {
+            values: freq1,
+            labels: allel1,
+            //text: mod_text1,
+            textinfo: 'none',
+            domain: {
+              x: [1*w + buffer, (1+1)*w - buffer]
+
+            },
+            hoverinfo: 'label+percent',
+            hole: .4,
+            type: 'pie',
+            textfont: {
+              color: "white"
+            }
+          };
+          data.push(trace1);
+
+
+
+          console.log("pushed");
+        
+        
+          //console.log(allel);
+          //console.log(typeof(freq_1));
+          //console.log(freq_1);
+          //console.log(freq_1.length);
+          //for (var k = 0; k < freq_1.length; k++){
+          //  console.log(freq_1[k]);
+          //}
+          //freq = freq_1.map(Number);
+          //var freq = freq_1.map(function (x) { 
+          //    return parseInt(x, 10); 
+          //});
+          //console.log(freq);
+
+          //console.log(Array.isArray(freq));
+
+        }); 
+      
+        var allel2 = [], freq2 = [];
+        d3.csv(file_dr + "donut/" + gene_list[2] + "_freq.csv", function(d) {
+          for (var j = 0; j < d.length; j++) {
+            allel2.push(d[j].allelotype);
+            var f = d[j].frequency;
+            //console.log(f);
+            freq2.push(parseInt(f));
+            //console.log(data[0].allelotype);
+          }
+          console.log("allele 2:")
+          console.log(allel2);
+          //freq = freq_1.map(Number);
+          //console.log("list version:")
+          //console.log(freq);
+          //console.log(data);
+
+          num_alleles.push(freq2.length);
+          var sum_all2 = freq2.reduce(add,0);
+          var mod_text2 = [];
+          //console.log(freq.length);
+          for (var j = 0; j < freq2.length; j++) {
+            if (freq2[j]/sum_all2 > 0.03) {
+              mod_text2.push(allel2[j]);
+            } else {
+              mod_text2.push(null);
+            }
+
+          }
+          console.log(1);
+          console.log([1*w + buffer, (1+1)*w - buffer]);
+          var trace2 = {
+            values: freq2,
+            labels: allel2,
+            //text: mod_text2,
+            textinfo: 'none',
+            domain: {
+              x: [2*w + buffer, (2+1)*w - buffer]
+
+            },
+            hoverinfo: 'label+percent',
+            hole: .4,
+            type: 'pie',
+            textfont: {
+              color: "white"
+            }
+          };
+          data.push(trace2);
+
+
+
+          console.log("pushed");
+        
+        
+          //console.log(allel);
+          //console.log(typeof(freq_1));
+          //console.log(freq_1);
+          //console.log(freq_1.length);
+          //for (var k = 0; k < freq_1.length; k++){
+          //  console.log(freq_1[k]);
+          //}
+          //freq = freq_1.map(Number);
+          //var freq = freq_1.map(function (x) { 
+          //    return parseInt(x, 10); 
+          //});
+          //console.log(freq);
+
+          //console.log(Array.isArray(freq));
+
+          
+
+        console.log("num alleles:");
+        console.log(num_alleles);
+
+        console.log(data);
+        var layout = {
+          title: 'HLA class I allelotype frequency',
+          annotations: [
+          {
+            font: {
+              size: 20
+            },
+            showarrow: false,
+            
+            text: 55,
+            x: 0.14,
+            y: 0.5
+            
+          },
+          {
+            font: {
+              size: 20
+            },
+            showarrow: false,
+            
+            text:"HLA-A",
+            x: 0.11,
+            y: 0.8,
+            
+          },
+          {
+            font: {
+              size: 20
+            },
+            showarrow: false,
+            
+            text: 127,
+            x: 0.5,
+            y: 0.5
+            
+          },
+          {
+            font: {
+              size: 20
+            },
+            showarrow: false,
+            
+            text:"HLA-B",
+            x: 0.5,
+            y: 0.8,
+            
+          },
+          {
+            font: {
+              size: 20
+            },
+            showarrow: false,
+            
+            text: 32,
+            x: 0.85,
+            y: 0.5
+            
+          },
+          {
+            font: {
+              size: 20
+            },
+            showarrow: false,
+            
+            text:"HLA-C",
+            x: 0.88,
+            y: 0.8,
+            
+          }
+          ],
+          showlegend: false,
+          height: 600,
+          width: 800
+        };
+        console.log("layout");
+        console.log(layout);
+        Plotly.newPlot('plotly_div', data, layout);
+      
+      });
+      
+    
+  }
+
+    function freq_donut_list_class2(gene_list) {
+      var data = [];
+      //var trace;
+      var buffer = 0.02;
+      var w = 1/(gene_list.length/2);
+      var h = 1/2;
+      var num_alleles = [];
+      console.log(w);
+      
+      
+      var allel0 = [], freq0 = [];
+      d3.csv(file_dr + "donut/" + gene_list[0] + "_freq.csv", function(d) {
+        for (var j = 0; j < d.length; j++) {
+          allel0.push(d[j].allelotype);
+          var f = d[j].frequency;
+          //console.log(f);
+          freq0.push(parseInt(f));
+          //console.log(data[0].allelotype);
+        }
+        console.log("allele 0:")
+        console.log(allel0);
+        //freq = freq_1.map(Number);
+        //console.log("list version:")
+        //console.log(freq);
+        //console.log(data);
+
+        num_alleles.push(freq0.length);
+        var sum_all0 = freq0.reduce(add,0);
+        var mod_text0 = [];
+        //console.log(freq.length);
+        for (var j = 0; j < freq0.length; j++) {
+          if (freq0[j]/sum_all0 > 0.1) {
+            mod_text0.push(allel0[j]);
+          } else {
+            mod_text0.push(null);
+          }
+
+        }
+        console.log(0);
+        console.log([0*w + buffer, (0+1)*w - buffer]);
+        var trace0 = {
+          values: freq0,
+          labels: allel0,
+          //text: mod_text0,
+          textinfo: 'none',
+          domain: {
+            x: [0*w + buffer, (0+1)*w - buffer],
+            y: [0.65]
+            
+
+          },
+          hoverinfo: 'label+percent',
+          hole: .4,
+          type: 'pie',
+          textfont: {
+            color: "white"
+          }
+        };
+        data.push(trace0);
+        
+        
+        
+          //console.log(allel);
+          //console.log(typeof(freq_1));
+          //console.log(freq_1);
+          //console.log(freq_1.length);
+          //for (var k = 0; k < freq_1.length; k++){
+          //  console.log(freq_1[k]);
+          //}
+          //freq = freq_1.map(Number);
+          //var freq = freq_1.map(function (x) { 
+          //    return parseInt(x, 10); 
+          //});
+          //console.log(freq);
+
+          //console.log(Array.isArray(freq));
+
+
+      });
+      
+      
+        var allel1 = [], freq1 = [];
+        d3.csv(file_dr + "donut/" + gene_list[1] + "_freq.csv", function(d) {
+          for (var j = 0; j < d.length; j++) {
+            allel1.push(d[j].allelotype);
+            var f = d[j].frequency;
+            //console.log(f);
+            freq1.push(parseInt(f));
+            //console.log(data[0].allelotype);
+          }
+          console.log("allele 1:")
+          console.log(allel1);
+          //freq = freq_1.map(Number);
+          //console.log("list version:")
+          //console.log(freq);
+          //console.log(data);
+
+          num_alleles.push(freq1.length);
+          var sum_all1 = freq1.reduce(add,0);
+          var mod_text1 = [];
+          //console.log(freq.length);
+          for (var j = 0; j < freq1.length; j++) {
+            if (freq1[j]/sum_all1 > 0.1) {
+              mod_text1.push(allel1[j]);
+            } else {
+              mod_text1.push(null);
+            }
+
+          }
+          console.log(1);
+          console.log([1*w + buffer, (1+1)*w - buffer]);
+          var trace1 = {
+            values: freq1,
+            labels: allel1,
+            //text: mod_text1,
+            textinfo: 'none',
+            domain: {
+              x: [1*w + buffer, (1+1)*w - buffer],
+              y: [0.65]
+
+            },
+            hoverinfo: 'label+percent',
+            hole: .4,
+            type: 'pie',
+            textfont: {
+              color: "white"
+            }
+          };
+          data.push(trace1);
+
+
+
+          console.log("pushed");
+        
+        
+          //console.log(allel);
+          //console.log(typeof(freq_1));
+          //console.log(freq_1);
+          //console.log(freq_1.length);
+          //for (var k = 0; k < freq_1.length; k++){
+          //  console.log(freq_1[k]);
+          //}
+          //freq = freq_1.map(Number);
+          //var freq = freq_1.map(function (x) { 
+          //    return parseInt(x, 10); 
+          //});
+          //console.log(freq);
+
+          //console.log(Array.isArray(freq));
+
+        }); 
+      
+        var allel2 = [], freq2 = [];
+        d3.csv(file_dr + "donut/" + gene_list[2] + "_freq.csv", function(d) {
+          for (var j = 0; j < d.length; j++) {
+            allel2.push(d[j].allelotype);
+            var f = d[j].frequency;
+            //console.log(f);
+            freq2.push(parseInt(f));
+            //console.log(data[0].allelotype);
+          }
+          console.log("allele 2:")
+          console.log(allel2);
+          //freq = freq_1.map(Number);
+          //console.log("list version:")
+          //console.log(freq);
+          //console.log(data);
+
+          num_alleles.push(freq2.length);
+          var sum_all2 = freq2.reduce(add,0);
+          var mod_text2 = [];
+          //console.log(freq.length);
+          for (var j = 0; j < freq2.length; j++) {
+            if (freq2[j]/sum_all2 > 0.03) {
+              mod_text2.push(allel2[j]);
+            } else {
+              mod_text2.push(null);
+            }
+
+          }
+          console.log(1);
+          console.log([1*w + buffer, (1+1)*w - buffer]);
+          var trace2 = {
+            values: freq2,
+            labels: allel2,
+            //text: mod_text2,
+            textinfo: 'none',
+            domain: {
+              x: [2*w + buffer, (2+1)*w - buffer],
+              y: [0.65]
+
+            },
+            hoverinfo: 'label+percent',
+            hole: .4,
+            type: 'pie',
+            textfont: {
+              color: "white"
+            }
+          };
+          data.push(trace2);
+
+
+
+          console.log("pushed");
+        
+        
+          //console.log(allel);
+          //console.log(typeof(freq_1));
+          //console.log(freq_1);
+          //console.log(freq_1.length);
+          //for (var k = 0; k < freq_1.length; k++){
+          //  console.log(freq_1[k]);
+          //}
+          //freq = freq_1.map(Number);
+          //var freq = freq_1.map(function (x) { 
+          //    return parseInt(x, 10); 
+          //});
+          //console.log(freq);
+
+          //console.log(Array.isArray(freq));
+
+        });
+
+        var allel3 = [], freq3 = [];
+        d3.csv(file_dr + "donut/" + gene_list[3] + "_freq.csv", function(d) {
+          for (var j = 0; j < d.length; j++) {
+            allel3.push(d[j].allelotype);
+            var f = d[j].frequency;
+            //console.log(f);
+            freq3.push(parseInt(f));
+            //console.log(data[0].allelotype);
+          }
+    
+          //freq = freq_1.map(Number);
+          //console.log("list version:")
+          //console.log(freq);
+          //console.log(data);
+
+          num_alleles.push(freq3.length);
+          var sum_all3 = freq3.reduce(add,0);
+          var mod_text3 = [];
+          //console.log(freq.length);
+          for (var j = 0; j < freq3.length; j++) {
+            if (freq3[j]/sum_all3 > 0.03) {
+              mod_text3.push(allel3[j]);
+            } else {
+              mod_text3.push(null);
+            }
+
+          }
+          console.log(1);
+          console.log([1*w + buffer, (1+1)*w - buffer]);
+          var trace3 = {
+            values: freq3,
+            labels: allel3,
+            //text: mod_text2,
+            textinfo: 'none',
+            domain: {
+              x: [3*w + buffer, (3+1)*w - buffer],
+              y: [.65]
+
+            },
+            hoverinfo: 'label+percent',
+            hole: .4,
+            type: 'pie',
+            textfont: {
+              color: "white"
+            }
+          };
+          data.push(trace3);
+
+
+
+          console.log("pushed");
+        
+        });
+
+        var allel4 = [], freq4 = [];
+        d3.csv(file_dr + "donut/" + gene_list[4] + "_freq.csv", function(d) {
+          for (var j = 0; j < d.length; j++) {
+            allel4.push(d[j].allelotype);
+            var f = d[j].frequency;
+            //console.log(f);
+            freq4.push(parseInt(f));
+            //console.log(data[0].allelotype);
+          }
+    
+          //freq = freq_1.map(Number);
+          //console.log("list version:")
+          //console.log(freq);
+          //console.log(data);
+
+          num_alleles.push(freq4.length);
+          var sum_all4 = freq4.reduce(add,0);
+          var mod_text4 = [];
+          //console.log(freq.length);
+          for (var j = 0; j < freq4.length; j++) {
+            if (freq4[j]/sum_all4 > 0.03) {
+              mod_text4.push(allel4[j]);
+            } else {
+              mod_text4.push(null);
+            }
+
+          }
+          
+          var trace4 = {
+            values: freq4,
+            labels: allel4,
+            //text: mod_text2,
+            textinfo: 'none',
+            domain: {
+              x: [0*w + buffer, (0+1)*w - buffer],
+              y: [0]
+
+            },
+            hoverinfo: 'label+percent',
+            hole: .4,
+            type: 'pie',
+            textfont: {
+              color: "white"
+            }
+          };
+          data.push(trace4);
+
+        });
+
+        var allel5 = [], freq5 = [];
+        d3.csv(file_dr + "donut/" + gene_list[5] + "_freq.csv", function(d) {
+          for (var j = 0; j < d.length; j++) {
+            allel5.push(d[j].allelotype);
+            var f = d[j].frequency;
+            //console.log(f);
+            freq5.push(parseInt(f));
+            //console.log(data[0].allelotype);
+          }
+    
+          //freq = freq_1.map(Number);
+          //console.log("list version:")
+          //console.log(freq);
+          //console.log(data);
+
+          num_alleles.push(freq5.length);
+          var sum_all5 = freq5.reduce(add,0);
+          var mod_text5 = [];
+          //console.log(freq.length);
+          for (var j = 0; j < freq5.length; j++) {
+            if (freq5[j]/sum_all5 > 0.03) {
+              mod_text5.push(allel5[j]);
+            } else {
+              mod_text5.push(null);
+            }
+
+          }
+          
+          var trace5 = {
+            values: freq5,
+            labels: allel5,
+            //text: mod_text2,
+            textinfo: 'none',
+            domain: {
+              x: [1*w + buffer, (1+1)*w - buffer],
+              y: [0]
+
+            },
+            hoverinfo: 'label+percent',
+            hole: .4,
+            type: 'pie',
+            textfont: {
+              color: "white"
+            }
+          };
+          data.push(trace5);
+
+      });
+
+        var allel6 = [], freq6 = [];
+        d3.csv(file_dr + "donut/" + gene_list[6] + "_freq.csv", function(d) {
+          for (var j = 0; j < d.length; j++) {
+            allel6.push(d[j].allelotype);
+            var f = d[j].frequency;
+            //console.log(f);
+            freq6.push(parseInt(f));
+            //console.log(data[0].allelotype);
+          }
+    
+          //freq = freq_1.map(Number);
+          //console.log("list version:")
+          //console.log(freq);
+          //console.log(data);
+
+          num_alleles.push(freq6.length);
+          var sum_all6 = freq6.reduce(add,0);
+          var mod_text6 = [];
+          //console.log(freq.length);
+          for (var j = 0; j < freq6.length; j++) {
+            if (freq6[j]/sum_all6 > 0.03) {
+              mod_text6.push(allel6[j]);
+            } else {
+              mod_text6.push(null);
+            }
+
+          }
+          
+          var trace6 = {
+            values: freq6,
+            labels: allel6,
+            //text: mod_text2,
+            textinfo: 'none',
+            domain: {
+              x: [2*w + buffer, (2+1)*w - buffer],
+              y: [0]
+
+            },
+            hoverinfo: 'label+percent',
+            hole: .4,
+            type: 'pie',
+            textfont: {
+              color: "white"
+            }
+          };
+          data.push(trace6);
+
+      });
+
+        var allel7 = [], freq7 = [];
+        d3.csv(file_dr + "donut/" + gene_list[7] + "_freq.csv", function(d) {
+          for (var j = 0; j < d.length; j++) {
+            allel7.push(d[j].allelotype);
+            var f = d[j].frequency;
+            //console.log(f);
+            freq7.push(parseInt(f));
+            //console.log(data[0].allelotype);
+          }
+    
+          //freq = freq_1.map(Number);
+          //console.log("list version:")
+          //console.log(freq);
+          //console.log(data);
+
+          num_alleles.push(freq7.length);
+          var sum_all7 = freq7.reduce(add,0);
+          var mod_text7 = [];
+          //console.log(freq.length);
+          for (var j = 0; j < freq7.length; j++) {
+            if (freq7[j]/sum_all7 > 0.03) {
+              mod_text7.push(allel7[j]);
+            } else {
+              mod_text7.push(null);
+            }
+
+          }
+          
+          var trace7 = {
+            values: freq7,
+            labels: allel7,
+            //text: mod_text2,
+            textinfo: 'none',
+            domain: {
+              x: [3*w + buffer, (3+1)*w - buffer],
+              y: [0]
+
+            },
+            hoverinfo: 'label+percent',
+            hole: .4,
+            type: 'pie',
+            textfont: {
+              color: "white"
+            }
+          };
+          data.push(trace7);
+          //console.log(allel);
+          //console.log(typeof(freq_1));
+          //console.log(freq_1);
+          //console.log(freq_1.length);
+          //for (var k = 0; k < freq_1.length; k++){
+          //  console.log(freq_1[k]);
+          //}
+          //freq = freq_1.map(Number);
+          //var freq = freq_1.map(function (x) { 
+          //    return parseInt(x, 10); 
+          //});
+          //console.log(freq);
+
+          //console.log(Array.isArray(freq));
+
+          
+
+        console.log("num alleles:");
+        console.log(num_alleles);
+
+        console.log(data);
+        var layout = {
+          title: 'HLA class II allelotype frequency',
+          
+          margin: {
+            //l: 60,
+            //r: 10,
+            b: 0,
+            //t: 10
+          },
+          
+          annotations: [
+          {
+            font: {
+              size: 20
+            },
+            showarrow: false,
+            
+            text: 8,
+            x: 0.11,
+            y: 0.85
+            
+          },
+          {
+            font: {
+              size: 20
+            },
+            showarrow: false,
+            
+            text:"HLA-DPA1",
+            x: 0.04,
+            y: 1,
+            
+          },
+          {
+            font: {
+              size: 20
+            },
+            showarrow: false,
+            
+            text: 36,
+            x: 0.37,
+            y: 0.85
+            
+          },
+          {
+            font: {
+              size: 20
+            },
+            showarrow: false,
+            
+            text:"HLA-DPB1",
+            x: 0.37,
+            y: 1,
+            
+          },
+          {
+            font: {
+              size: 20
+            },
+            showarrow: false,
+            
+            text: 14,
+            x: 0.62,
+            y: 0.85
+            
+          },
+          {
+            font: {
+              size: 20
+            },
+            showarrow: false,
+            
+            text:"HLA-DQA1",
+            x: 0.62,
+            y: 1,
+            
+          },
+          {
+            font: {
+              size: 20
+            },
+            showarrow: false,
+            
+            text: 18,
+            x: 0.9,
+            y: 0.85
+            
+          },
+          {
+            font: {
+              size: 20
+            },
+            showarrow: false,
+            
+            text:"HLA-DQB1",
+            x: 0.95,
+            y: 1,
+            
+          },
+
+          {
+            font: {
+              size: 20
+            },
+            showarrow: false,
+            
+            text: 59,
+            x: 0.1,
+            y: .5
+            
+          },
+          {
+            font: {
+              size: 20
+            },
+            showarrow: false,
+            
+            text:"HLA-DRB1",
+            x: 0.04,
+            y: .65,
+            
+          },
+          {
+            font: {
+              size: 20
+            },
+            showarrow: false,
+            
+            text: 6,
+            x: 0.37,
+            y: 0.5
+            
+          },
+          {
+            font: {
+              size: 20
+            },
+            showarrow: false,
+            
+            text:"HLA-DRB3",
+            x: 0.37,
+            y: 0.65,
+            
+          },
+          {
+            font: {
+              size: 20
+            },
+            showarrow: false,
+            
+            text: 3,
+            x: 0.62,
+            y: 0.5
+            
+          },
+          {
+            font: {
+              size: 20
+            },
+            showarrow: false,
+            
+            text:"HLA-DRB4",
+            x: 0.62,
+            y: .65,
+           },
+
+          {
+            font: {
+              size: 20
+            },
+            showarrow: false,
+            
+            text: 4,
+            x: 0.89,
+            y: 0.5
+            
+          },
+          {
+            font: {
+              size: 20
+            },
+            showarrow: false,
+            
+            text:"HLA-DRB5",
+            x: 0.95,
+            y: .65,
+            
+          
+            
+          }
+          ],
+          showlegend: false,
+          height: 700,
+          width: 800
+        };
+        console.log("layout");
+        console.log(layout);
+        Plotly.newPlot('plotly_div', data, layout);
+      
+      });
+      
+    
+  }
+ function plotly_from_csv_callback(csv_string, plotDivName, label_col_idx, gene, phe_dict, disease_dict, hla_name_dict){
+            var csv_array_of_cols=$.csv.toArrays(csv_string);
+
+            // change to literature allele names
+            var labels = csv_array_of_cols[label_col_idx];            
+            for (var i = 0; i < labels.length; i++) {
+              labels[i] = hla_name_dict[labels[i]];
+            }
+            
+            //Create set of points for each phenotype
+            var x = d3.range(1, 1 + labels.length);
+            var data = [];
+            var trace;
+            for (var i = 1; i < csv_array_of_cols["length"]; i++) {
+              var x_noise = x.slice(0,x.length);
+
+              // add jitter (there will be 0.5 space where there are points and then a 0.5 break)
+              for (var j = 0; j < x_noise.length; j++) {
+                var sign = Math.random();
+                if (sign < 0.5) {
+                  sign = -1;
+                } else {
+                  sign = 1;
+                }
+                x_noise[j] = x_noise[j] + sign*Math.random()*0.25;
+              }
+              var y = csv_array_of_cols[i];
+              y = y.slice(1,);
+              y.unshift("");
+
+              // Create hover text
+              var new_text = [];
+              for (var k = 0; k < x.length; k++) {
+                new_text.push("post prob: " + y[k] + "<br>" + "hap: " + labels[k] + "<br>" + "pheno: " + phe_dict[csv_array_of_cols[i][0]]);
+              }
+              trace = {
+                'x': x_noise, 'y': y, 
+                type: 'scattergl', 'mode': 'markers',
+                name: phe_dict[csv_array_of_cols[i][0]],
+
+                text: new_text,
+                hoverinfo: "text"
+              }
+              data.push(trace);
+            }
+
+            var layout = {
+                hovermode:'closest',
+                hoverinfo: "text",
+                showlegend: false,
+                title: "Posterior probabilities of HLA-" + gene + " alleles for " + csv_array_of_cols["length"] + " phenotypes",
+				  xaxis: {
+				    tickangle: 45,
+                  showticklabels: true,
+                  tickmode: "array",
+                  ticks: "", 
+                  ticktext: labels,
+                  tickvals: x
+				  },
+                yaxis: {
+                  title: "posterior probability",
+                  range: [-0.1,1.1]
+                }
+            };
+
+            Plotly.newPlot(plotDivName, data, layout); 
+            myPlot = document.getElementById(plotDivName); 
+            
+            // Go to GBE page for given phenotype on click
+            myPlot.on('plotly_click', function(data){
+              window.open("https://biobankengine.stanford.edu/coding/" + disease_dict[data.points[0].data.name]);
+            });
+              
+
+        } 
+        
+        function plotly_from_csv(csv_file, plotDivName, label_col_idx, gene, phe_dict, disease_dict, hla_name_dict) {
+
+            $.ajax({
+                url: csv_file,
+                dataType: 'text',
+            }).done(
+                text => plotly_from_csv_callback(
+                    text, plotDivName, label_col_idx, gene, phe_dict, disease_dict, hla_name_dict
+                )
+            );
+        }
+       function odds_plot_freq(csv_file, hap, thresh, phe_dict, hla_name_dict, disease_dict) {
+          var sig_phes = [];
+          var phe_names = [];
+
+          // find significant phenotypes by posterior probability
+          d3.csv(csv_file, function(data) {
+            for (var i = 0; i < data.length; i++) {
+              if (data[i][hap] > thresh) {
+                phe_names.push(phe_dict[data[i][""]]);
+                sig_phes.push(i);
+              } 
+            }
+          });
+
+            // find associated odds values
+            var odds = [];
+            d3.csv(phe_folder + "phe_hap_table_EV.csv", function(data) {            
+              for (var i = 0; i < sig_phes.length; i++) {
+                // take exp(odds)
+                odds.push(data[sig_phes[i]][hap]);
+              }
+            });
+
+            // find associated standard deviations
+            var SDs = [];
+            d3.csv(phe_folder + "phe_hap_table_SD.csv", function(data) {
+            for (var i = 0; i < sig_phes.length; i++) {
+
+              // multiply to get 95% confidence interval
+              SDs.push(data[sig_phes[i]][hap] * 1.959);
+            }
+            // create plot
+            odds_plot_callback(odds,SDs, phe_names, thresh, hap, hla_name_dict, disease_dict);
+          });            
+      }
+        function odds_plot(csv_file, hap, thresh, phe_dict, hla_name_dict, disease_dict) {
+          var sig_phes = [];
+          var phe_names = [];
+
+          // find significant phenotypes by posterior probability
+          d3.csv(csv_file, function(data) {
+            for (var i = 0; i < data.length; i++) {
+              if (data[i][hap] > thresh) {
+                phe_names.push(phe_dict[data[i][""]]);
+                sig_phes.push(i);
+              } 
+            }
+          });
+            // find associated odds values
+            var odds = [];
+            d3.csv(phe_folder + "phe_hap_table_EV.csv", function(data) {            
+              for (var i = 0; i < sig_phes.length; i++) {
+	      // take exp(odds)
+                odds.push(data[sig_phes[i]][hap]);
+              }
+            });
+
+            // find associated standard deviations
+            var SDs = [];
+            d3.csv(phe_folder + "phe_hap_table_SD.csv", function(data) {
+            for (var i = 0; i < sig_phes.length; i++) {
+              // multiply to get 95% confidence interval
+              SDs.push(data[sig_phes[i]][hap] * 1.959);
+            }
+            // create plot
+            odds_plot_callback(odds,SDs, phe_names, thresh, hap, hla_name_dict, disease_dict);
+          });            
+      }
+
+      function odds_plot_callback(odds, SDs, phe_names, thresh, hap, hla_name_dict, disease_dict) {
+           var y = [];
+            for (var i = 1; i < odds.length + 1; i++) {
+              y.push(i);
+            }
+ var new_text = [];
+ 
+             // keep track of biggest value for setting range
+             // (range will always be >= [-2,2])
+             var abs_max = 2;
+             for (var k = 0; k < odds.length; k++) {
+               
+               var odds_minus = round_2(odds[k] - SDs[k]);
+               var odds_plus = round_2(parseFloat(odds[k]) + SDs[k]);
+               var exp_minus = round_2(Math.pow(Math.E,odds[k] - SDs[k]));
+               var exp_plus = round_2(Math.pow(Math.E,parseFloat(odds[k]) + SDs[k]));
+               if (Math.abs(odds_minus) > abs_max) {
+                 abs_max = Math.abs(odds_minus);
+               }
+               if (Math.abs(odds_plus) > abs_max) {
+                 abs_max = Math.abs(odds_plus);
+               }
+               new_text.push("log(odds ratio): " + round_2(odds[k]) + ", (" + odds_minus + "," + odds_plus + ")" + "<br>odds ratio: " + round_2(Math.pow(Math.E,odds[k])) + ", (" + exp_minus + "," + exp_plus + ")"  + "<br>" + "pheno: " + phe_names[k]);
+             }
+             abs_max += 0.1;
+            // create data
+            var data  = [
+              {
+                'x': odds, 'y': y,
+                 type: 'scatter', 'mode': 'markers',
+	          text: new_text,
+                  hoverinfo: "text", 
+                error_x: {
+                  type: 'data',
+                  array: SDs,
+                  visible: true,
+                 }
+              }
+            ];
+            var layout  = {
+              hovermode: 'closest',
+              title: "Posterior log(odds ratios) for phenotypes with posterior probability >" + thresh + " for " + hla_name_dict[hap],
+              hoverinfo: 'text',
+              margin: {
+                l: 300
+              },
+              yaxis: {
+                showgrid: false,
+                showticklabels: true,
+                tickmode: "array",
+                ticks: "", 
+                ticktext: phe_names,
+                tickvals: y
+
+              },
+              xaxis: {
+                title: "posterior log (odds ratios)",
+                range: [-abs_max,abs_max]
+              }
+            };
+            Plotly.newPlot('plotly_div', data, layout);        
+      
+      /*
+            myPlot = document.getElementById('plotly_div'); 
+            
+            // Go to GBE page for given phenotype on click
+            myPlot.on('plotly_click', function(data){
+              console.log("data: " + JSON.stringify(data));
+              window.open("https://biobankengine.stanford.edu/coding/" + disease_dict[data.points[0].data.name]);
+            
+            });
+            */
+            
+          }
+function round_2(x) {
+         return Math.round(x * 100)/100;
+       }
+
+
+      function draw_buttons_freq(gene, thresh, hla_name_dict, disease_dict) {
+
+        // delete all current buttons
+        var myNode = document.getElementById("buttons_0");
+        while (myNode.firstChild) {
+            myNode.removeChild(myNode.firstChild);
+        }
+
+        // find all alleles that have probabilities above the threshold
+        var labels; 
+        var include_haps = [];
+        d3.csv(strat_folder + gene + "_post_" + thresh1 + "_"+ thresh2 +".csv", function(data) {
+          labels = Object.keys(d3.values(data)[0]).slice(1,);
+          for (var j = 0; j < labels.length; j++){
+            var include = false;
+            for (var i = 0; i < data.length; i++) {
+              if (data[i][labels[j]] > thresh){
+                include = true;
+              }
+            }
+            if (include) {
+              include_haps.push(labels[j]);
+            }
+          }
+
+          // add a button for each of these alleles
+          var button;
+          for (var i=0; i<include_haps.length; i++) {
+            button = document.createElement('button');
+            button.innerHTML = hla_name_dict[include_haps[i]];
+            button.id = include_haps[i];
+            button.addEventListener('click', function() {
+              console.log("gene: " + button.id);
+//       odds_plot_freq(gene + 'phe_post_table_' + gene + '.csv', this.id, thresh, phe_dict, hla_name_dict, disease_dict);
+            });
+            document.getElementById('buttons_0').appendChild(button);
+          }
+        });
+      }
+
+
+      function draw_buttons(gene, thresh, hla_name_dict, disease_dict) {
+
+        // delete all current buttons
+        var myNode = document.getElementById("buttons_0");
+        while (myNode.firstChild) {
+            myNode.removeChild(myNode.firstChild);
+        }
+
+        // find all alleles that have probabilities above the threshold
+        var labels; 
+        var include_haps = [];
+        d3.csv(phe_folder + 'phe_post_table_' + gene + '.csv', function(data) {
+          labels = Object.keys(d3.values(data)[0]).slice(1,);
+          for (var j = 0; j < labels.length; j++){
+            var include = false;
+            for (var i = 0; i < data.length; i++) {
+              if (data[i][labels[j]] > thresh){
+                include = true;
+              }
+            }
+            if (include) {
+              include_haps.push(labels[j]);
+            }
+          }
+
+          // add a button for each of these alleles
+          var button;
+          for (var i=0; i<include_haps.length; i++) {
+            button = document.createElement('button');
+            button.innerHTML = hla_name_dict[include_haps[i]];
+            button.id = include_haps[i];
+            button.addEventListener('click', function() {
+              console.log("gene: " + gene);
+              odds_plot(phe_folder + 'phe_post_table_' + gene + '.csv', this.id, thresh, phe_dict, hla_name_dict, disease_dict);
+            });
+            document.getElementById('buttons_0').appendChild(button);
+          }
+        });
+      }
+       
+      // create dictionaries to convert names of phenotypes and alleles 
+      var phe_dict = {};
+      var disease_dict = {};
+      d3.csv(file_dr + "highconfidenceqc_map.csv", function(data) {
+        for (var i = 0; i < data.length; i++) {
+          phe_dict[data[i].code] = data[i].disease;
+          disease_dict[data[i].disease] = [data[i].code];
+        }
+      });
+     d3.csv(file_dr + "cancermap.csv", function(data) {
+        for (var i = 0; i < data.length; i++) {
+          phe_dict[data[i].code.toString()] = data[i].disease;
+          disease_dict[data[i].disease] = [data[i].code.toString()];
+        }
+      });
+      var hla_name_dict = {};
+      d3.csv(file_dr + "ukb_to_asterisk_names.csv", function(data){
+        for (var i = 0; i < data.length; i++) {
+          hla_name_dict[data[i].ukb_names] = data[i].literature_names;
+        }
+      });
+
+        // start with plot from first gene
+        $(document).ready(function () {
+          plotly_from_csv(phe_folder + 'phe_post_table_' + genes[0] + '_adjp.csv', 'plotly_div',  0, genes[0], phe_dict, disease_dict, hla_name_dict);
+        });
+    </script>
+
+{% endblock %}
+
+
+{% block body %}
+<div class="container" style="font-size: 16px;">
+    <div class="row">
+        <div class="col">            
+            <h1>HLA Disease Map</h1>
+            <h5>Version 0.02, 12.27.2017</h5>
+            <p>Julia Eve Olivieri, Chris M. DeBoever, Yosuke Tanigawa and Manuel A. Rivas</p>
+            <p>J.E.O. developed the web application. M.A.R designed the study.</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col col-md-12">
+            <div id='plots'></div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col col-md-12">
+            <div id='odd_plot'></div>
+        </div>
+    </div>
+      
+  
+  
+  <script> 
+    var container = document.getElementById("plots");
+    container.innerHTML += '<div id="plotly_div"></div>';
+
+  </script>
+    
+    <div class="row">
+        <div class="col col-md-12">    
+            <h2>Allelotype Effect Size Plots</h2>
+            <div id='buttons_0'></div>            
+        </div>
+    </div>
+            
+    <script>
+// set threshold for including phenotype in odds plot 
+    thresh = 0.7;
+    draw_buttons(genes[0], thresh, hla_name_dict, disease_dict);
+    </script>
+    
+    <div class="container">
+      <div class="row">
+        <div class="col col-md-12">    
+            <h2>Allelotype Association Plots (Posterior Probability)</h2>           
+        </div>
+      </div>
+<!--      <div class="row">
+          <div class="col col-md-12">    
+              <h3>Frequency stratification</h3>
+              <div id='freq_buttons'></div>
+          </div>
+      </div> -->
+      <div class="row">
+          <div class="col col-md-12">    
+              <h3>Class I</h3>
+              <div id='buttons_1'></div>
+          </div>
+      </div>
+
+      <div class="row">
+          <div class="col col-md-12">    
+              <h3>Class II</h3>
+              <div id='buttons_2'></div>
+          </div>
+      </div>
+    </div>
+    
+    <div class="container">
+      <div class="row">
+        <div class="col col-md-12">    
+            <h2>Allelotype Frequency Plots</h2>         
+        </div>
+      </div>
+      <div class="row">
+          <div class="col col-md-12">    
+              <h3>Overall frequency</h3>
+              <div id='class_buttons'></div>
+          </div>
+      </div>
+
+      <div class="row">
+          <div class="col col-md-12">    
+              <h3>Individual loci</h3>
+              <div id='freq_buttons_donut'></div>
+          </div>
+      </div>
+    </div>
+  
+  <script>
+// create gene buttons
+    var class_1 = genes.slice(0,3);
+    var button;
+    for (var i=0; i<class_1.length; i++) {
+      button = document.createElement('button');
+      button.innerHTML = "HLA-" + class_1[i];
+      button.id = class_1[i];
+      button.addEventListener('click', function() {
+        plotly_from_csv(phe_folder + 'phe_post_table_' + this.id + '.csv', 'plotly_div',  0, this.id, phe_dict, disease_dict, hla_name_dict);
+        gene = this.id;
+        draw_buttons(this.id, thresh, hla_name_dict, disease_dict);
+      });
+      document.getElementById('buttons_1').appendChild(button);
+    }
+    var class_2 = genes.slice(4,);
+    var button;
+    for (i=0; i<class_2.length; i++) {
+    button = document.createElement('button');
+    button.innerHTML = "HLA-" + class_2[i];
+    button.id = class_2[i];
+    button.addEventListener('click', function() {
+      plotly_from_csv(phe_folder + 'phe_post_table_' + this.id + '.csv', 'plotly_div',  0, this.id, phe_dict, disease_dict, hla_name_dict);
+      draw_buttons(this.id, thresh, hla_name_dict, disease_dict);
+    });
+    document.getElementById('buttons_2').appendChild(button);
+}
+
+// make frequency buttons
+
+/*    button = document.createElement('button');
+    button.innerHTML = "rare (<1%)";
+    button.id = "rare";
+    button.addEventListener('click', function() {
+      plotly_from_csv(strat_folder + this.id + '_post_'+ thresh1 + '_' + thresh2 + '.csv', 'plotly_div',  0, this.id, phe_dict, disease_dict, hla_name_dict);
+      gene = this.id;
+      draw_buttons_freq(this.id, thresh, hla_name_dict, disease_dict);
+    });
+    document.getElementById('freq_buttons').appendChild(button);
+
+    button = document.createElement('button');
+    button.innerHTML = "low-frequency (>1%, <5%)";
+    button.id = "uncommon";
+    button.addEventListener('click', function() {
+      plotly_from_csv(strat_folder + this.id + '_post_'+ thresh1 + '_' + thresh2 + '.csv', 'plotly_div',  0, this.id, phe_dict, disease_dict, hla_name_dict);
+      gene = this.id;
+      draw_buttons_freq(this.id, thresh, hla_name_dict, disease_dict);
+    });
+    document.getElementById('freq_buttons').appendChild(button);
+
+    button = document.createElement('button');
+    button.innerHTML = "common (>5%)";
+    button.id = "common";
+    button.addEventListener('click', function() {
+      plotly_from_csv(strat_folder + this.id + '_post_'+ thresh1 + '_' + thresh2 + '.csv', 'plotly_div',  0, this.id, phe_dict, disease_dict, hla_name_dict);
+      gene = this.id;
+      draw_buttons_freq(this.id, thresh, hla_name_dict, disease_dict);
+    });
+    document.getElementById('freq_buttons').appendChild(button);
+*/
+    // create donut buttons
+    button = document.createElement('button');
+    button.innerHTML = "HLA Class I";
+    button.addEventListener('click', function () {
+      freq_donut_list_class1(["A","B","C"]);
+    });
+    document.getElementById('class_buttons').appendChild(button);
+
+    button = document.createElement('button');
+    button.innerHTML = "HLA Class II";
+    button.addEventListener('click', function () {
+      freq_donut_list_class2(["DPA1","DPB1","DQA1","DQB1","DRB1","DRB3","DRB4","DRB5"]);
+    });
+    document.getElementById('class_buttons').appendChild(button);
+    
+    for (var i=0; i<genes.length; i++) {
+      button = document.createElement('button');
+      button.innerHTML = "HLA-" + genes[i];
+      button.id = genes[i];
+      button.addEventListener('click', function() {
+        freq_donut(this.id);
+        gene = this.id;
+        
+      });
+      document.getElementById('freq_buttons_donut').appendChild(button);
+    }
+    </script>
+<!-- <div class="row">
+        <div class="col">
+            <h2 align="center">Video Tutorial for HLA Disease Map</h2>
+            <p>
+                Julia explains the HLA Disease Map app and teaches viewers how to interpret the plots using examples.
+           </p>
+           <iframe width="600" height="450" src="https://www.youtube.com/embed/LVe6H37ZuB8" frameborder="0" allowfullscreen></iframe> 
+        </div>
+    </div>
+-->
+
+</div>
+{% endblock %}
+

@@ -1,0 +1,178 @@
+{% extends "layout.html" %}
+
+{% block head %}
+ <script src="https://igv.org/web/release/2.0.1/dist/igv.min.js"></script>
+  <script src="https://igv.org/web/jb/release/1.0.0/dist/juicebox.min.js"></script>
+  <script src="https://aframe.io/releases/0.8.0/aframe.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/epgg@latest/umd/epgg.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/epgg@latest/umd/epgg.css">
+
+    <script type="text/javascript" src="https://epigenomegateway.wustl.edu/legacy/js/jscolor.min.js"></script>
+    <script type="text/javascript" src="https://epigenomegateway.wustl.edu/legacy/js/base.js"></script>
+    <script type="text/javascript" src="https://epigenomegateway.wustl.edu/legacy/js/session.js"></script>
+    <script type="text/javascript" src="https://epigenomegateway.wustl.edu/legacy/js/bev.js"></script>
+    <script type="text/javascript" src="https://epigenomegateway.wustl.edu/legacy/js/gsm.js"></script>
+    <script type="text/javascript" src="https://epigenomegateway.wustl.edu/legacy/js/session.js"></script>
+    <script type="text/javascript" src="https://epigenomegateway.wustl.edu/legacy/js/fileload.js"></script>
+    <script type="text/javascript" src="https://epigenomegateway.wustl.edu/legacy/js/scp.js"></script>
+    <script type="text/javascript" src="https://epigenomegateway.wustl.edu/legacy/js/geneplot.js"></script>
+    <script type="text/javascript" src="https://epigenomegateway.wustl.edu/legacy/js/validhub.js"></script>
+    <script type="text/javascript" src="https://epigenomegateway.wustl.edu/legacy/js/circlet.js"></script>
+    <script type="text/javascript" src="https://epigenomegateway.wustl.edu/legacy/js/sukn.js"></script>
+    <script type="text/javascript" src="https://epigenomegateway.wustl.edu/legacy/js/personality.js"></script>
+    <script type="text/javascript" src="https://epigenomegateway.wustl.edu/legacy/js/embed.js"></script>
+    <script type="text/javascript" src="https://epigenomegateway.wustl.edu/legacy/js/dataProvider.js"></script>
+    <script type="text/javascript" src="https://epigenomegateway.wustl.edu/legacy/js/hicInterface.js"></script>
+    <script type="text/javascript">
+        window.genes = {{ genes_in_region|tojson|safe }};
+        window.variants = {{ variants_in_region|tojson|safe }};
+        window.table_variants = {{ variants_in_region|tojson|safe }};
+        window.start = {{ start|tojson|safe }};
+        window.stop = {{ stop|tojson|safe }};
+        $(document).ready(function() {
+            update_variants();
+            
+        });
+    </script>
+{% endblock %}
+
+{% block body %}
+    <div class="container_fluid" id=xxx>
+        {% if rsid %}
+            <h1>RSID: {{ rsid }}</h1>
+        {% elif stop == None %}
+            <h1>Region: {{ chrom }}</h1>
+        {% else %}
+            <h1>Region: {{ chrom }} / {{ start }} / {{ stop }}</h1>
+        {% endif %}
+        <br/>
+<!-- <script type='text/javascript'> 
+var windowsize = $(window).width()-200;
+embed_washugb({
+host:'https://epigenomegateway.wustl.edu',
+container:document.getElementById('xxx'),
+coordinate:"chr{{chrom}}:{{start}}-{{stop}}",
+genome:'hg19',
+showFacet4customMetadata:true,
+noDeleteButton:false,
+panelWidth:100,
+foregroundColor:'#ffffff',
+      backgroundColor:'#000000',
+leftSpaceWidth:10,
+rightSpaceWidth:10,
+      showContent:
+ [
+  {
+    type:'quantitativeCategorySeries',
+    name:'epilogos relent observed_aux',
+    height:150,
+    url:'https://egg2.wustl.edu/roadmap/data/byFileType/chromhmmSegmentations/ChmmModels/epilogos/observed_aux/qcat.gz',
+    backgroundcolor:'#000000',
+    mode:'show',
+    categories:{
+    1:['Active_TSS','#ff0000'],
+    2:['Flanking_TSS','#ff4500'],
+    3:['Flanking_TSS_Upstream','#ff4500'],
+    4:['Flanking_TSS_Downstream','#ff4500'],
+    5:['Strong_transcription','#008000'],
+    6:['Weak_transcription','#006400'],
+    7:['Genic_enhancer1','#c2e105'],
+    8:['Genic_enhancer2','#c2e105'],
+    9:['Active_Enhancer1','#ffc34d'],
+    10:['Active_Enhancer2','#ffc34d'],
+    11:['Weak_Enhancer','#ffff00'],
+    12:['ZNF_genes&repeats','#66cdaa'],
+    13:['Heterochromatin','#8a91d0'],
+    14:['Bivalent/Poised_TSS','#cd5c5c'],
+    15:['Bivalent_Enhancer','#bdb76b'],
+    16:['Repressed_PolyComb','#808080'],
+    17:['Weak_Repressed_PolyComb','#c0c0c0'],
+    18:['Quiescent/Low','#ffffff']
+}
+,
+  },
+{
+    "type":"categoryMatrix",
+      "name":"18-state model (observed)",
+      "url":"https://egg2.wustl.edu/roadmap/data/byFileType/chromhmmSegmentations/ChmmModels/compressedStateTracks/hg19_chromHMM_aux18.gz",
+      "mode":"show",
+      "rowcount":127,
+      "rowheight":2,
+      "epg_order":0,
+      "assay_order":0,
+      "etc_order":0,
+      "metadata":{
+      },
+    categories:{
+    1:['Active_TSS','#ff0000'],
+    2:['Flanking_TSS','#ff4500'],
+    3:['Flanking_TSS_Upstream','#ff4500'],
+    4:['Flanking_TSS_Downstream','#ff4500'],
+    5:['Strong_transcription','#008000'],
+    6:['Weak_transcription','#006400'],
+    7:['Genic_enhancer1','#c2e105'],
+    8:['Genic_enhancer2','#c2e105'],
+    9:['Active_Enhancer1','#ffc34d'],
+    10:['Active_Enhancer2','#ffc34d'],
+    11:['Weak_Enhancer','#ffff00'],
+    12:['ZNF_genes&repeats','#66cdaa'],
+    13:['Heterochromatin','#8a91d0'],
+    14:['Bivalent/Poised_TSS','#cd5c5c'],
+    15:['Bivalent_Enhancer','#bdb76b'],
+    16:['Repressed_PolyComb','#808080'],
+    17:['Weak_Repressed_PolyComb','#c0c0c0'],
+    18:['Quiescent/Low','#ffffff']
+}
+
+
+},
+  {type:'native_track', list:[{name:'refGene',mode:'full',color:'#f08330'}]},
+  ],
+  });
+</script> -->
+
+        {% if stop != None %}
+            {% if stop-start > 100000 %}
+                <p>
+                    <span class="label label-danger">Warning:</span> Your region is too large. Please submit a region of at most 100 kb.
+                </p>
+                <p>
+                    If you require larger regions, please see our <a href="/downloads">Downloads</a> page for raw data.
+                </p>
+            {% elif stop < start %}
+                <p>
+                    Invalid region! Ends ({{ stop }}) before it begins ({{ start }}).
+                </p>
+            {% endif %}
+        {% endif %}
+        {% if genes_in_region %}
+            {% if stop != None %}
+<!--                <h3>Coverage summary</h3>
+                <div class="row">
+                    {% include 'region_display.html' %}
+                </div> -->
+            {% endif %}
+            <div class="section_header">Genes</div>
+            <ul>
+                {% for gene in genes_in_region %}
+                    <li><a href="/gene/{{ gene.name }}">{{ gene.name }}</a></li>
+                {% endfor %}
+            </ul>
+            <br/>
+        {% endif %}
+        {% if variants_in_region %}
+            {% if rsid %}
+                <p>This is a dbSNP variant. Here are the possibilities</p>
+            {% else %}
+                <div class="section_header">Variants</div>
+            {% endif %}
+            {% with %}
+                {% set table_variants = variants_in_region %}
+                {% include 'variant_table_region_mongodb.html' %}
+            {% endwith %}
+        {% endif %}
+
+    </div>
+{% endblock %}

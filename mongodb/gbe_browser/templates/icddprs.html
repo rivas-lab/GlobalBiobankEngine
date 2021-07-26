@@ -1,0 +1,86 @@
+{% extends "layout.html" %}
+{% block body %}
+    <!-- Render context vars in JS here -->
+    <script type="text/javascript">
+        window.icd = {{ icd|tojson|safe }};
+        window.page_name = window.icd[0].icd_id;
+    </script>
+<script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script> 
+    <script>
+        filtered_variants = _.filter(window.table_variants, function(d) {
+            return d.filter == 'PASS';
+        });
+        $('#number_of_variants').replaceWith(filtered_variants.length);
+        lof_filtered_variants = _.filter(window.table_variants, function(d) {
+            return d.filter == 'PASS' && d.category == 'lof_variant';
+        });$('#number_of_lof_variants').replaceWith(lof_filtered_variants.length);
+    </script>
+
+    <style>
+
+                        h3{background-color:#826aa5;color:#fff;padding:3px;}
+                        h3 span{float:right;font-size:28px;font-weight:normal;padding:1px;}
+                        h3 span a{color:#fff;text-decoration:none;}
+
+
+@font-face {
+  font-family: 'Glyphicons Halflings';
+  src: url('//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot');
+  src: url('//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'),
+       url('//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff2') format('woff2'),
+       url('//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff') format('woff'),
+       url('//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/fonts/glyphicons-halflings-regular.ttf') format('truetype'),
+       url('//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
+}
+.glyphicon {
+  position: relative;
+  top: 1px;
+  display: inline-block;
+  font: normal normal 16px/1 'Glyphicons Halflings';
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  margin-right: 4px;
+}
+/* Add icons you will be using below */
+.glyphicon-fire:before {
+  content: '\e104';
+}
+.glyphicon-eye-open:before {
+  content: '\e105';
+}
+.glyphicon-cloud-download:before {
+  content: '\e197';
+}
+.img {
+width:50%; height:auto; 
+}
+
+                </style>
+
+
+    <div class="container_fluid">
+            <h1><span>Code Phenotype: {{icd[0].Name}}</span></h1>
+
+        <hr/>
+     <dl class="dl-horizontal" style="margin-bottom: 0px;">
+                        <dt>Code:</dt>
+			{% if icd[0].icd %}
+			<dt>Case Count or N:</dt>
+			{% else %}
+			{% endif %}
+   <dd>{{ icd[0].icd.replace('ICD','') }}</dd>
+                                             <dd>{{ icd[0].Case }}</dd>
+
+                    </dl>
+           <hr />
+
+<h3>DeGAs Polygenic Risk Score results</h3>
+<center>
+<img src="/static/dprs/{{ icd[0].icd}}_test.png" alt="dPRS figure" width="100%" height="auto" />
+</center>
+</div>
+{% endblock %}
+
+
+
+

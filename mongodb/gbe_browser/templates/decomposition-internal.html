@@ -1,0 +1,972 @@
+{% extends "layout.html" %}
+{% block head %}
+    <!-- Plotly.js -->
+    <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<style>
+.dropdown-submenu {
+ position: relative;
+}
+
+.dropdown-submenu .dropdown-menu {
+    top: 0; 
+    left: 100%; 
+    margin-top: -1px;
+}
+
+.dropbtn1 {
+    background-color: #B3995D;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+
+.dropbtn1:hover, .dropbtn:focus {
+    background-color: #B6B1A9;
+}
+
+
+.button {
+    background-color: #428bca; /* Green */
+    border: none;
+    color: white;
+    padding: 16px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    -webkit-transition-duration: 0.1s; /* Safari */
+    transition-duration: 0.1s;
+    cursor: pointer;
+}
+
+.button:hover {
+    background-color: #DAD7CB;
+    color: white;
+    text-decoration: none;
+}
+
+
+#myInput {
+    border-box: box-sizing;
+    background-image: url('searchicon.png');
+    background-position: 14px 12px;
+    background-repeat: no-repeat;
+    font-size: 16px;
+    padding: 14px 20px 12px 45px;
+    border: none;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f6f6f6;
+    min-width: 330px;
+    overflow: auto;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown a:hover {background-color: #ddd}
+
+.show {display:block;}
+
+
+</style>
+
+<!--Drop down menu-->
+
+<script>
+function dropdown_show(div_id) {
+    document.getElementById(div_id).classList.toggle("show");
+}
+        
+function dropdown_filter(div_id, input_id) {
+    var input, filter, ul, li, a, i;
+    input = document.getElementById(input_id);
+    filter = input.value.toUpperCase();
+    div = document.getElementById(div_id);
+    a = div.getElementsByTagName("a");
+    for (i = 0; i < a.length; i++) {
+        if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
+            a[i].style.display = "";
+        } else {
+            a[i].style.display = "none";
+        }
+    }
+}       
+</script>
+
+
+<!-- 2d plot func -->
+<script>
+function make_plot(id, x, y, label, title) {
+    Plotly.newPlot(
+        id,
+        [
+            {
+                x:x,
+                y:y,
+                text:label,
+                type:'scattergl',
+                mode:'markers'
+            }
+        ],
+        {
+            hovermode:'closest',
+            title:title
+        }
+    );
+}
+    
+    
+function make_plot_bar(id, x, y, label, title) {
+    Plotly.newPlot(
+        id,
+        [
+            {
+                x:x,
+                y:y,
+                text:label,
+                type:'bar',
+//                'hoverinfo': 'x+y' 
+                'hoverinfo': 'x+text+y'
+            }
+        ],
+        {
+            hovermode:'closest',        
+            title:title,
+            xaxis: {
+                dtick: 1,
+                //tickangle: 45,
+                tickfont : {
+                    size : 9
+                }
+            }
+        }
+    );
+}  
+</script>
+
+<!-- This script is for plotting -->
+<script>           
+    
+{% for data in ['cos', 'factor', 'loading'] %} 
+    {% for phevar in ['phe', 'var'] %}
+    function get_{{ data }}_{{ phevar }}(idx){
+        return get_json_via_http('/static/decomposition/{{ dataset }}/{{ dataset }}_{{ data }}_{{ phevar }}_' + idx + '.json');
+    }
+    {% endfor %}
+{% endfor %}
+
+{% for data in ['contribution', 'loading'] %} 
+    {% for phevar in ['phe', 'var'] %}
+        {% for type in ['x', 'y', 'l'] %}
+        function get_{{ data }}_{{ phevar }}_{{ type }}(idx){
+            return get_json_via_http('/static/decomposition/{{ dataset }}/{{ dataset }}_{{ data }}_{{ phevar }}_{{ type }}_' + idx + '.json');
+        }
+        {% endfor %}
+    {% endfor %}        
+{% endfor %}
+
+
+
+{% for data in ['bar'] %} 
+    {% for phevar in ['phe', 'gene', 'phe_label', 'gene_label', 'phe_code', 'gene_code'] %}
+    function get_{{ data }}_{{ phevar }}(idx){
+        return get_json_via_http('/static/decomposition/{{ dataset }}/{{ dataset }}_{{ data }}_{{ phevar }}_' + idx + '.json');
+    }
+    {% endfor %}
+{% endfor %}
+
+
+
+function update_contribution_plots(pc) {    
+    var title_phe  = 'Phenotype contribution score (PC' + (pc + 1) + ')';
+    var title_var  = 'Variant contribution score (PC' + (pc + 1) + ')';
+    var title_load_phe  = 'Phenotype squared loading score (PC' + (pc + 1) + ')';
+    var title_load_var  = 'Variant squared loading score (PC' + (pc + 1) + ')';    
+    var title_bar_phe  = 'Top hits in phenotype contribution score (PC' + (pc + 1) + ')';
+    var title_bar_gene = 'Top hits in gene contribution score (PC' + (pc + 1) + ')';
+    
+    make_plot(
+        'phe_contribution_plot', 
+        get_contribution_phe_x(pc), get_contribution_phe_y(pc), get_contribution_phe_l(pc), title_phe
+    );  
+    var phe_contribution_plot = $('#phe_contribution_plot')[0];
+    phe_contribution_plot.on('plotly_click', function(data){
+        var pts = '';
+        for(var i=0; i < data.points.length; i++){
+            phe = data.points[i].x;
+        }
+        update_phe(phe);                                
+    });            
+
+    make_plot(
+        'var_contribution_plot', 
+        get_contribution_var_x(pc), get_contribution_var_y(pc), get_contribution_var_l(pc), title_var
+    );               
+    var var_contribution_plot = $('#var_contribution_plot')[0];    
+    var_contribution_plot.on('plotly_click', function(data){
+        var pts = '';
+        for(var i=0; i < data.points.length; i++){
+            var vari = data.points[i].x;            
+        }
+        update_var(vari);
+    });
+    
+    var bar_phe_code = get_bar_phe_code(pc);
+    var bar_phe_label = get_bar_phe_label(pc);
+    make_plot_bar(
+        'phe_contribution_plot_2', 
+        bar_phe_code, get_bar_phe(pc), 
+        bar_phe_label, title_bar_phe
+    );  
+    var phe_contribution_plot_2 = $('#phe_contribution_plot_2')[0];
+    phe_contribution_plot_2.on('plotly_click', function(data){
+        var pts = '';
+        for(var i=0; i < data.points.length; i++){
+            var phe_code = data.points[i].x;
+        }
+        update_phe(label_phe_code_idx[phe_code]);        
+    });        
+    
+    var bar_gene_code  = get_bar_gene_code(pc);
+    var bar_gene_label = get_bar_gene_label(pc);        
+    make_plot_bar(
+        'gene_contribution_plot', 
+        bar_gene_label, get_bar_gene(pc), 
+        bar_gene_code, title_bar_gene
+    );  
+    var gene_contribution_plot = $('#gene_contribution_plot')[0];
+    gene_contribution_plot.on('plotly_click', function(data){
+        var pts = '';
+        for(var i=0; i < data.points.length; i++){
+            var gene = data.points[i].text;
+        }
+        if( ! document.getElementById("var_contribution_no").checked ){            
+            window.open("https://biobankengine.stanford.edu/gene/" + gene);            
+        }
+    });   
+    
+    
+  
+    make_plot(
+        'phe_loading_plot', 
+        get_loading_phe_x(pc), get_loading_phe_y(pc), 
+        get_loading_phe_l(pc), title_load_phe
+    );  
+    var phe_loading_plot = $('#phe_loading_plot')[0];
+    phe_contribution_plot.on('plotly_click', function(data){
+        var pts = '';
+        for(var i=0; i < data.points.length; i++){
+            phe = data.points[i].x;
+        }
+        update_phe(phe);                                
+    });            
+
+    make_plot(
+        'var_loading_plot', 
+        get_loading_var_x(pc), get_loading_var_y(pc), 
+        get_loading_var_l(pc), title_load_var
+    );               
+    var var_loading_plot = $('#var_loading_plot')[0];    
+    var_loading_plot.on('plotly_click', function(data){
+        var pts = '';
+        for(var i=0; i < data.points.length; i++){
+            var vari = data.points[i].x;            
+        }
+        update_var(vari);
+    });    
+
+    
+}
+    
+    
+function update_phe_cosine(idx, fig_title) {
+    make_plot(
+        'phe_cosine_plot', 
+        idx_pc, get_cos_phe(idx), label_pc,
+        fig_title
+    );        
+    var phe_cosine_plot = $('#phe_cosine_plot')[0];
+    phe_cosine_plot.on('plotly_click', function(data){
+        var pts = '';
+        for(var i=0; i < data.points.length; i++){
+            pc = data.points[i].x;            
+        }
+        update_pc(pc - 1);
+    });  
+}
+ 
+ 
+function update_phe_loading(idx, fig_title) { 
+    make_plot(
+        'phe_loading_given_phe_plot', 
+        idx_pc, get_loading_phe(idx), label_pc,
+        fig_title
+    );        
+    var phe_loading_given_phe_plot = $('#phe_loading_given_phe_plot')[0];
+    phe_loading_given_phe_plot.on('plotly_click', function(data){
+        var pts = '';
+        for(var i=0; i < data.points.length; i++){
+            pc = data.points[i].x;            
+        }
+        update_pc(pc - 1);
+    });     
+    
+}
+
+    
+function update_var_cosine(idx, fig_title) {
+    make_plot(
+        'var_cosine_plot', 
+        idx_pc, get_cos_var(idx), label_pc,
+        fig_title
+    );        
+    var var_cosine_plot = $('#var_cosine_plot')[0];
+    var_cosine_plot.on('plotly_click', function(data){
+        var pts = '';
+        for(var i=0; i < data.points.length; i++){
+            pc = data.points[i].x;            
+        }
+        update_pc(pc - 1);
+    });        
+}    
+  
+ 
+function update_var_loading(idx, fig_title) { 
+    
+    make_plot(
+        'var_loading_given_var_plot', 
+        idx_pc, get_loading_var(idx), label_pc,
+        fig_title
+    );        
+    var var_loading_given_var_plot = $('#var_loading_given_var_plot')[0];
+    var_loading_given_var_plot.on('plotly_click', function(data){
+        var pts = '';
+        for(var i=0; i < data.points.length; i++){
+            pc = data.points[i].x;            
+        }
+        update_pc(pc - 1);
+    });         
+}
+ 
+ 
+function pca_plot_phe(idx_pc_x, idx_pc_y) {
+    make_plot(
+        'pca_plot_phe', 
+        get_factor_phe(idx_pc_x), 
+        get_factor_phe(idx_pc_y), 
+        label_phe,
+        'PCA plot for phenotypes (PC' + (idx_pc_x + 1) + ', PC' + (idx_pc_y + 1) + ')'
+    );        
+}
+    
+ 
+function pca_plot_var(idx_pc_x, idx_pc_y) {
+    make_plot(
+        'pca_plot_var',         
+        get_factor_var(idx_pc_x),
+        get_factor_var(idx_pc_y),
+        label_var,
+        'PCA plot for variants (PC' + (idx_pc_x + 1) + ', PC' + (idx_pc_y + 1) + ')'
+    );        
+}
+    
+ 
+function variance_explained_plot(){
+    make_plot(
+        'var_explained_plot',         
+        idx_pc, 
+        eigen_r, 
+        label_pc,
+        'Scree plot (variance explained plot)'
+    ); 
+    var var_cosine_plot = $('#var_explained_plot')[0];
+    var_cosine_plot.on('plotly_click', function(data){
+        var pts = '';
+        for(var i=0; i < data.points.length; i++){
+            pc = data.points[i].x;            
+        }
+        update_pc(pc - 1);
+    });
+}    
+</script>
+
+
+
+<script>
+function dev_str(str) {
+    $("#dev").text(str);        
+}
+</script>
+
+<script>
+function update_pc(pc_idx) {
+    $(".variable_pc").text(label_pc[pc_idx]);
+    update_contribution_plots(pc_idx);
+}   
+
+function update_pc_phe(pc_idx_x, pc_idx_y) {
+    show_alert("alert-pc_phe");
+    variable_pc_phe_x = pc_idx_x;
+    variable_pc_phe_y = pc_idx_y;
+    $(".variable_pc_phe_x").text(label_pc[pc_idx_x]);
+    $(".variable_pc_phe_y").text(label_pc[pc_idx_y]);
+    pca_plot_phe(pc_idx_x, pc_idx_y);
+} 
+
+function update_pc_var(pc_idx_x, pc_idx_y) {
+    show_alert("alert-pc_var");
+    variable_pc_var_x = pc_idx_x;
+    variable_pc_var_y = pc_idx_y;    
+    $(".variable_pc_var_x").text(label_pc[pc_idx_x]);
+    $(".variable_pc_var_y").text(label_pc[pc_idx_y]);
+    pca_plot_var(pc_idx_x, pc_idx_y);
+} 
+        
+function update_phe(phe_idx) {
+    $(".variable_phe").text(label_phe[phe_idx]);
+    $(".variable_phe_link").html(                  
+        "<a href='https://biobankengine.stanford.edu/coding/"
+        + label_phe_code[phe_idx] + "'>" 
+        + label_phe[phe_idx]
+        + "</a>"
+    );
+    update_phe_cosine(phe_idx, 'Phenotype squared cosine score (' + label_phe[phe_idx] + ')'); 
+    update_phe_loading(phe_idx, 'Phenotype squared loading score (' + label_phe[phe_idx] + ')'); 
+    
+    if( ! document.getElementById("phe_contribution_no").checked ){
+        window.open("https://biobankengine.stanford.edu/coding/" + label_phe_code[phe_idx]);
+    }
+}   
+
+function update_var(var_idx) {
+    $(".variable_var").text(label_var[var_idx]);
+    $(".variable_var_link").html(                                
+        "<a href='https://biobankengine.stanford.edu/variant/" 
+        + label_var[var_idx] + "'>" 
+        + label_var[var_idx]
+        + "</a>"
+    ); 
+    update_var_cosine(var_idx, 'Variant squared cosine score (' + label_var[var_idx] + ')');
+    update_var_loading(var_idx, 'Variant squared loading score (' + label_var[var_idx] + ')');    
+    
+    if( ! document.getElementById("var_contribution_no").checked ){
+        window.open("https://biobankengine.stanford.edu/variant/" + label_var[var_idx]);
+    }    
+}  
+    
+{% for phevar in ['phe', 'var'] %} 
+    function dropdown_update_{{ phevar }}(idx){
+        update_{{ phevar }}(idx);                
+        dropdown_show('dropdown-div-{{ phevar }}');
+    }    
+{% endfor %}
+
+{% for dropdown_name in ['pc_phe', 'pc_var'] %} 
+    function dropdown_update_{{ dropdown_name }}(pc_idx){
+        update_pc(pc_idx);                
+        dropdown_show('dropdown-div-{{ dropdown_name }}');
+    }    
+{% endfor %}
+
+{% for phevar in ['phe', 'var'] %} 
+    function dropdown_update_pc_{{ phevar }}_x(pc_idx){
+        update_pc_{{ phevar }}(pc_idx, variable_pc_{{ phevar }}_y);
+        dropdown_show('dropdown-div-pc_{{ phevar }}_x');
+    }    
+
+    function dropdown_update_pc_{{ phevar }}_y(pc_idx){
+        update_pc_{{ phevar }}(variable_pc_{{ phevar }}_x, pc_idx);
+        dropdown_show('dropdown-div-pc_{{ phevar }}_y');
+    }  
+ 
+{% endfor %}
+
+{% for phegene in ['phe', 'gene'] %} 
+    function draw_bar_{{ phegene }}(){    
+        var title_phe  = 'Global summary of phenotype contribution scores';
+        var title_gene = 'Global summary of gene contribution scores';
+        var layout = {
+            title: title_{{ phegene }},
+            barmode: 'stack',
+            showlegend: false
+        };    
+        Plotly.newPlot(
+            '{{ phegene }}_bar_plot', 
+            stackedbar_{{ phegene }}, 
+            layout
+        ); 
+ 
+        var {{ phegene }}_bar_plot = $('#{{ phegene }}_bar_plot')[0];
+        {{ phegene }}_bar_plot.on('plotly_click', function(data){            
+            for(var i=0; i < data.points.length; i++){
+                var pc = data.points[i].x;            
+            }
+            update_pc(label_pc_idx[pc]);
+        });
+    } 
+{% endfor %}
+
+
+
+</script>
+
+<script>
+function get_txt_via_http(url) {
+    var file_content;
+    var req = new XMLHttpRequest();
+    req.onreadystatechange = function() {
+        if(req.readyState == 4 && req.status == 200){
+            file_content = req.responseText;
+        }
+    };
+    req.open("GET", url, false);
+    req.send(null);
+    return file_content;
+}
+    
+function get_json_via_http(url){
+    return JSON.parse(get_txt_via_http(url));
+}    
+
+function show_alert(id) {
+    $("#" + id).fadeTo(2000, 500).slideUp(500, function(){
+        $("#" + id).slideUp(500);
+    });   
+}
+    
+</script>
+
+
+<script>
+function get_data(json_file){
+    var data_misc = get_json_via_http(json_file); 
+    
+    eigen_v   = data_misc['eigen_v'];
+    eigen_r   = data_misc['eigen_r'];
+    
+    label_phe_code = data_misc['label_phe_code'];
+    label_phe_code_idx = data_misc['label_phe_code_idx'];
+    label_phe      = data_misc['label_phe'];
+    label_var      = data_misc['label_var'];
+    label_gene     = data_misc['label_gene'];    
+    label_pc       = data_misc['label_pc'];
+    label_pc_idx   = data_misc['label_pc_idx'];
+    label_phe_stackedbar  = data_misc['label_phe_stackedbar'];
+    label_gene_stackedbar = data_misc['label_gene_stackedbar'];    
+    
+    stackedbar_phe  = data_misc['stackedbar_phe'];
+    stackedbar_gene = data_misc['stackedbar_gene']; 
+    
+    metadata     = data_misc['metadata']; 
+    
+    idx_phe      = Plotly.d3.range(1, 1 + label_phe.length);
+    idx_var      = Plotly.d3.range(1, 1 + label_var.length);
+    idx_pc       = Plotly.d3.range(1, 1 + label_pc.length);   
+    idx_bar_phe  = Plotly.d3.range(1, 1 + label_phe_stackedbar.length);
+    idx_bar_gene = Plotly.d3.range(1, 1 + label_gene_stackedbar.length);
+}
+
+</script>
+
+
+<script>
+    $(document).ready(function(){
+        $(".alert-info-fetch-data").hide();        
+        document.getElementById("phe_contribution_no").checked = true;
+        document.getElementById("var_contribution_no").checked = true;
+                
+        get_data('/static/decomposition/{{dataset}}/{{dataset}}_misc.json');
+                                
+        for (i = 0; i < label_phe.length; i++) {
+            $("#dropdown-div-phe").append(
+                "<a class=\"dropdown-item\" id='dropdown-phe-" + i + "' onclick=dropdown_update_phe(" + i + ")>" + label_phe[i] + "</a>"
+            );
+        } 
+
+        for (i = 0; i < label_var.length; i++) {
+            $("#dropdown-div-var").append(
+                "<a class=\"dropdown-item\" id='dropdown-var-" + i + "' onclick=dropdown_update_var(" + i + ")>" + label_var[i] + "</a>"
+            );
+        } 
+                  
+        {% for dropdown_name in ['pc_phe', 'pc_var', 'pc_phe_x', 'pc_phe_y', 'pc_var_x', 'pc_var_y'] %}
+            for (i = 0; i < label_pc.length; i++) {            
+                $("#dropdown-div-{{ dropdown_name }}").append(                                
+                    "<a class=\"dropdown-item\" onclick=dropdown_update_{{ dropdown_name }}(" + i + ")>" + label_pc[i] + "</a>"
+                );
+            }        
+        {% endfor %}
+                        
+        variance_explained_plot();
+        update_pc_phe(0, 1);
+        update_pc_var(0, 1);
+         
+        update_pc( {{ init_idx_pc  }});
+        update_phe({{ init_idx_phe }});
+        update_var({{ init_idx_var }});
+         
+        draw_bar_phe(); 
+        draw_bar_gene();
+                      
+        $("#metadata").text(metadata); 
+
+    });
+</script>
+
+{% endblock %}
+
+
+{% block body %}
+
+<div class="container" style="font-size: 16px;">
+    <div class="row">
+        <div class="col">
+            <h1>Decomposition of genetic effects across disease outcomes, biomarkers, and lifestyle measures</h1>
+            <h5>Version 0.01</h5>
+            <p>Yosuke Tanigawa and Manuel A. Rivas</p>
+            <p>Y.T. developed the web application. M.A.R designed the study.</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col col-md-12">
+            <h2>Squared cosine scores</h2>
+            <p>Given a phenotype/variant, we can explorer which principal components are imporant for the selected phenotype/variant.</p>
+        </div>                                    
+    </div>
+    
+    <div class="row">        
+        <div class="col col-md-6">
+            <h3>Phenotype squared cosine score for <span class="variable_phe"></span></h3> 
+            
+            <div class="btn-group" role="group">
+                <div class="dropdown" align="center">
+                    <button onclick="dropdown_show('dropdown-div-phe')" class="button dropdown-toggle" data-toggle="dropdown">
+                        Select a phenotype (current selection: phenotype <span class="variable_phe"></span>)
+                    </button>
+                    <div id="dropdown-div-phe" class="dropdown-content">
+                        <input id="dropdown-input-phe" onkeyup="dropdown_filter('dropdown-div-phe', 'dropdown-input-phe')" type="text" placeholder="Search.." >
+                        <!-- drop down items -->
+                    </div>
+                </div>
+            </div>            
+            
+            <p>Which PCs are important for phenotype <span class="variable_phe_link"></span>?</p>
+            
+            <div id="phe_cosine_plot" style:width: 100%>
+                <!-- Plotly chart will be drawn inside this DIV -->
+            </div>
+        </div>
+        <div class="col col-md-6">
+            <h3>Variant squared cosine score for <span class="variable_var"></span></h3>
+            
+            <div class="btn-group" role="group">
+                <div class="dropdown" align="center">
+                    <button onclick="dropdown_show('dropdown-div-var')" class="button dropdown-toggle" data-toggle="dropdown">
+                        Select a variant (current selection: <span class="variable_var"></span>)
+                    </button>
+                    <div id="dropdown-div-var" class="dropdown-content">
+                        <input id="dropdown-input-var" onkeyup="dropdown_filter('dropdown-div-var', 'dropdown-input-var')" type="text" placeholder="Search.." >
+                        <!-- drop down items -->
+                    </div>
+                </div>
+            </div>            
+                        
+            <p>Which PCs are important for variants <span class="variable_var_link"></span>?</p>        
+            
+            <div id="var_cosine_plot" style:width: 100%>
+                <!-- Plotly chart will be drawn inside this DIV -->
+            </div>
+        </div>
+
+    </div> 
+    
+
+    <div class="row">
+        <div class="col col-md-12">
+            <h2>Squared loading scores</h2>
+            <p>Given a phenotype/variant, which PC has the strongest association?</p>
+            <p>In contrast to cosine scores that characterize a PC space given a phenotype/variant, loading scores quantify the association between a given phenotype/variant and PCs.</p>
+        </div>                                    
+    </div>
+    
+    
+    <div class="row">
+        <div class="col col-md-6">
+            <h3>Squared phenotype loading scores for <span class="variable_phe"></span></h2>
+                        
+            <p>Which PCs shows the strongest association to phenotype <span class="variable_phe_link"></span>?</p>
+                            
+            <div id="phe_loading_given_phe_plot" style:width: 100%>
+            </div>               
+            
+        </div>                                    
+        <div class="col col-md-6">
+            <h3>Squared variant loading scores for <span class="variable_var"></span></h2>
+                        
+            <p>Which PCs shows the strongest association to variant <span class="variable_var_link"></span>?</p>
+                            
+            
+            <p>Currently this plot is disabled</p>
+            <div id="var_loading_given_var_plot" style:width: 100%>
+            </div>               
+            
+        </div>                                    
+    </div>        
+
+    
+    <div class="row">
+        <div class="col col-md-12">
+            <h2>Contribution scores for <span class="variable_pc"></span></h2>
+            <p>Given a PC, we can explorer the contribution of the phenotypes/variants to that component.</p>
+        </div>                                    
+    </div>
+    
+    <div class="row">        
+        <div class="col col-md-6">
+            <h3>Phenotype contribution score</h3> 
+            
+            <div class="btn-group" role="group">
+                <div class="dropdown" align="center">
+                    <button onclick="dropdown_show('dropdown-div-pc_phe')" class="button dropdown-toggle" data-toggle="dropdown">
+                        Select PC (current selection: <span class="variable_pc"></span>)
+                    </button>
+                    <div id="dropdown-div-pc_phe" class="dropdown-content">
+                        <input id="dropdown-input-pc_phe" onkeyup="dropdown_filter('dropdown-div-pc_phe', 'dropdown-input-pc_phe')" type="text" placeholder="Search.." >
+                        <!-- drop down items -->
+                    </div>
+                </div>
+            </div>            
+            
+            <p>Which phenotype is important for <span class="variable_pc"></span> ?</p>
+            
+            <div id="phe_contribution_plot" style:width: 100%>
+                <!-- Plotly chart will be drawn inside this DIV -->
+            </div>
+        
+            <div id="phe_contribution_plot_2" style:width: 100%>
+                <!-- Plotly chart will be drawn inside this DIV -->
+            </div>
+                        
+            <p><input type="radio" name="phe_contribution" id="phe_contribution_no"/> Do not open phenotype page </p>
+            <p><input type="radio" name="phe_contribution" id="phe_contributoin_yes"/> Open the phenotype page on click</p>
+            
+        </div>
+        <div class="col col-md-6">
+            <h3>Variant/Gene contribution score</h3>
+            
+            <div class="btn-group" role="group">
+                <div class="dropdown" align="center">
+                    <button onclick="dropdown_show('dropdown-div-pc_var')" class="button dropdown-toggle" data-toggle="dropdown">
+                        Select PC (current selection: <span class="variable_pc"></span>)
+                    </button>
+                    <div id="dropdown-div-pc_var" class="dropdown-content">
+                        <input id="dropdown-input-pc_var" onkeyup="dropdown_filter('dropdown-div-pc_var', 'dropdown-input-pc_var')" type="text" placeholder="Search.." >
+                        <!-- drop down items -->
+                    </div>
+                </div>
+            </div>            
+                        
+            <p>Which variants are important for <span class="variable_pc"></span> ?</p>
+            
+            <div id="var_contribution_plot" style:width: 100%>
+                <!-- Plotly chart will be drawn inside this DIV -->
+            </div>
+            
+            <div id="gene_contribution_plot" style:width: 100%>
+                <!-- Plotly chart will be drawn inside this DIV -->
+            </div>
+                        
+            <p><input type="radio" name="var_contribution" id="var_contribution_no"/> Do not open variant page </p>
+            <p><input type="radio" name="var_contribution" id="var_contributoin_yes"/> Open the variant/gene page on click</p>
+            
+        </div>
+
+    </div>
+
+    
+    <div class="row">
+        <div class="col col-md-12">
+            <h2>Squared loading scores for <span class="variable_pc"></span></h2>
+            <p>Given a PC, which phenotype/variant has the highest association?</p>
+            <p>In contrast to contribution scores that characterize a given PC, loading scores quantify the association between a given PC and phenotypes/variants.</p>
+        </div>                                    
+    </div>
+    
+    
+    <div class="row">
+        <div class="col col-md-6">
+            <h2>Squared phenotype loading scores</h2>            
+            <div id="phe_loading_plot" style:width: 100%>
+            </div>                        
+        </div>                                    
+        <div class="col col-md-6">
+            <h2>Squared variant loading scores</h2>
+            <div id="var_loading_plot" style:width: 100%>
+            </div>            
+        </div>                                    
+    </div>    
+   
+    
+    <div class="row">
+        <div class="col col-md-12">
+            <h2>Global summary of contribution scores</h2>
+        </div>                                    
+    </div>    
+    
+    <div class="row">        
+        <div class="col col-md-12">
+            <h3>Summary of phenotype contribution scores (phenotypes with 1% > contribution scores are shown)</h3>
+            <div id="phe_bar_plot" style:width: 100%>
+                <!-- Plotly chart will be drawn inside this DIV -->
+            </div>
+
+        </div>
+    </div>
+    <div class="row">    
+        <div class="col col-md-12">
+            <h3>Summary of gene contribution scores (genes with 1% > contribution scores are shown)</h3>
+            <div id="gene_bar_plot" style:width: 100%>
+                <!-- Plotly chart will be drawn inside this DIV -->
+            </div>
+
+        </div>
+        
+    </div>
+    
+    <div class="row">
+        <div class="col col-md-12">
+            <h2>Singular value decomposition of summary statistics matrix</h2>
+        </div>                                    
+    </div>
+    <div class="row">        
+        <div class="col col-md-6">
+            <h3>PCA plot for phenotypes</h3>            
+            
+            {% for axis in ['x', 'y'] %}
+                <div class="btn-group" role="group">
+                    <div class="dropdown" align="center">
+                        <button onclick="dropdown_show('dropdown-div-pc_phe_{{ axis }}')" class="button dropdown-toggle" data-toggle="dropdown">
+                            Select PC ({{ axis }}) (current selection: <span class="variable_pc_phe_{{ axis }}"></span>)
+                        </button>
+                        <div id="dropdown-div-pc_phe_{{ axis }}" class="dropdown-content">
+                            <input id="dropdown-input-pc_phe_{{ axis }}" onkeyup="dropdown_filter('dropdown-div-pc_phe_{{ axis }}', 'dropdown-input-pc_phe_{{ axis }}')" type="text" placeholder="Search.." >
+                            <!-- drop down items -->
+                        </div>
+                    </div>
+                </div>            
+            {% endfor %}
+            
+            <div class="alert alert-info alert-info-fetch-data" id="alert-pc_phe">
+                <button type="button" class="close" data-dismiss="alert">x</button>
+                <strong>Info</strong>
+                Fetching data.
+            </div>
+                                    
+            <div id="pca_plot_phe" style:width: 100%>
+                <!-- Plotly chart will be drawn inside this DIV -->
+            </div>            
+        </div>
+        <div class="col col-md-6">
+            <h3>PCA plot for variants</h3>  
+
+            {% for axis in ['x', 'y'] %}
+                <div class="btn-group" role="group">
+                    <div class="dropdown" align="center">
+                        <button onclick="dropdown_show('dropdown-div-pc_var_{{ axis }}')" class="button dropdown-toggle" data-toggle="dropdown">
+                            Select PC ({{ axis }}) (current selection: <span class="variable_pc_var_{{ axis }}"></span>)
+                        </button>
+                        <div id="dropdown-div-pc_var_{{ axis }}" class="dropdown-content">
+                            <input id="dropdown-input-pc_var_{{ axis }}" onkeyup="dropdown_filter('dropdown-div-pc_var_{{ axis }}', 'dropdown-input-pc_var_{{ axis }}')" type="text" placeholder="Search.." >
+                            <!-- drop down items -->
+                        </div>
+                    </div>
+                </div>            
+            {% endfor %}
+            
+            <div class="alert alert-info alert-info-fetch-data" id="alert-pc_var">
+                <button type="button" class="close" data-dismiss="alert">x</button>
+                <strong>Info</strong>
+                Fetching data.
+            </div>                                                        
+            
+            <div id="pca_plot_var" style:width: 100%>
+                <!-- Plotly chart will be drawn inside this DIV -->
+            </div>                        
+        </div>        
+    </div>    
+    <div class="row">        
+        <div class="col col-md-6">
+            <h3>Scree plot (Variance explained plot)</h3>
+            <div id="var_explained_plot" style:width: 100%>
+                <!-- Plotly chart will be drawn inside this DIV -->
+            </div>
+
+        </div>
+    </div>  
+    
+    
+    <div class="row">
+        <div class="col col-md-12">
+            <h2>About this dataset: {{ dataset }}</h2>
+            <p id="metadata"></p>
+            <p>Note that Coordinated Universal Time (UTC) is 7 hours ahead of Pacific Time </p>
+        </div>                                    
+    </div>
+    
+    <div class="col">
+        <h2 align="center">Video Tutorial for Decomposition App</h2>
+        <p>
+            Yosuke explains the decomposition app and teaches viewers how to interpret scores and plots using examples.
+            The <a href="../decomposition/codingNonMHC_z_nonCenter_p0001_100PCs">coding variants</a> is used as an example.
+        </p>
+        <iframe width="600" height="450" src="https://www.youtube.com/embed/vI89vgU4oSE" frameborder="0" allowfullscreen></iframe>
+    </div>
+
+    <div class="row">
+        <h1>Frequently Asked Questions</h1>
+        <br/>
+        <ul class="media-list">
+            <li class="media">
+                <div class="media-body">
+                    <h4 class="media-heading">How should I cite discoveries made using Global Biobank Engine?</h4>
+     <p>
+                We request that any use of data obtained from the Global Biobank Engine be cited in publications using the following format:
+            </p>
+            <ul>
+                <li>
+                 Global Biobank Engine, Stanford, CA (URL: <a href="http://gbe.stanford.edu/">http://gbe.stanford.edu/</a>) [date (month, year) accessed].</li>
+            </ul>
+            <p>
+                We also ask that the developers of the engine be acknowledged as follows:
+            </p>
+            <ul>
+                <li>The authors would like to thank the Rivas lab for making the resource available.</li>
+            </ul>
+
+           </div>
+        </li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

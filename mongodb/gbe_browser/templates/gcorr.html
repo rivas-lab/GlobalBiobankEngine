@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block body %}
+    <!-- Render context vars in JS here -->
+<div class="container" style="font-size: 16px;">
+    <div class="row">
+        <div class="col">
+            <h1>Genetic Parameters: Genetic correlation</h1>
+            <h5>Version 0.02, 12.27.2017, Updated 11.9.2019</h5>
+            <p>Christopher DeBoever and Manuel A. Rivas</p>
+            <p>C.D. developed the web application and M.A.R designed the study.</p>
+            <p>This app displays the genetic correlation and other genetic parameters for various phenotypes from the UK Biobank.</p>
+            <p>Learn more about the <a href="https://biobankengine.stanford.edu/faq#correlation">parameters used in this app</a></p>
+        </div>
+
+    </div>
+
+<!--    <div class="row">
+        <div class="col">
+		<iframe style="width: 40%; height: 40%" src="https://www.youtube.com/embed/wnCp3-t_r4o?rel=0" frameborder="0" allowfullscreen></iframe>
+        </div>
+    </div> -->
+
+</div>
+	    <iframe id="gcorr_app" width="100%" height="1600" src="https://biobankengine.stanford.edu/gcorr-app-raw" style="border: none; padding-top: 0%; padding-bottom: 0%;" class="embed-responsive-item" frameborder="0"></iframe>
+
+{% endblock %}
