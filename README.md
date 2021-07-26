@@ -1,6 +1,10 @@
 # Global Biobank Engine
 A framework for exploring and sharing genetic data from large genetic datasets.
 
+For full description to setup MongoDB environment see `mongodb/`
+
+For full description to setup SciDB environment see `scidb/`
+
 ## Setup
 
 #### 1. Install requirements
