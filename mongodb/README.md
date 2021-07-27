@@ -1,13 +1,18 @@
 # Global Biobank Engine
 A framework for exploring and sharing genetic data from large genetic datasets.
+## Pulling data
 
+```
+git lfs pull --all
+
+```
 ## Setup
 
 #### 1. Install requirements
 
 ```
 pip install -r gbe_browser/requirements.txt
-Rscript gbe_browser/install_R_requirements.R
+
 ```
 We recommend using Python 2.7.
 
