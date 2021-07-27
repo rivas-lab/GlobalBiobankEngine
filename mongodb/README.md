@@ -80,7 +80,30 @@ python gbe.py
 
 Open a web browser and navigate to `http://127.0.0.1:5000`
 
-For example output of each step see
+## GBE data files
+
+`SITES_VCFS = icd10ukbb.ukbiobank.merge.sort.vcf.gz` variant/sites file annotation,
+
+`GENCODE_GTF = gencode.gtf.gz` Gencode reference transcript file,
+ 
+`CANONICAL_TRANSCRIPT_FILE = canonical_transcripts.txt.gz` canonical transcript file,
+ 
+`OMIM_FILE = omim_info.txt.gz` OMIM mapping file, 
+
+`BASE_COVERAGE_FILES = gbe_data/coverage/Panel2016.*.coverage.txt.gz` variant mapping to maximum -log10(P),
+    
+`ICD_INFO_FILE = gbe_data/icdstats/icdinfo.txt` ICD info file described [here](https://github.com/rivas-lab/GlobalBiobankEngine/tree/master/gbe_data/icdstats),
+   
+`ICD_STATS_FILES = gbe_data/icdassoc/hybrid/*c*.hybrid.rewritewna.gz` logistic regression PLINK output file formats, 
+ 
+`QT_STATS_FILES = gbe_data/icdassoc/hybrid/c*.linear.rewrite.gz` linear regression PLINK output file formats,
+ 
+`DBSNP_FILE = gbe_data/dbsnp150.txt.gz` dbSNP150 variant files.
+
+
+## Sample output
+
+For example output loading MongoDB data see
 
 ```
 python2.7 manage_mongodb.py load_base_coverage
