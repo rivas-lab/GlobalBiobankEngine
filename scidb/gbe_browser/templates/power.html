@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+{% block body %}
+    <!-- Render context vars in JS here -->
+
+
+    <style>
+                        h3{background-color:#826aa5;color:#fff;padding:3px;}
+                        h3 span{float:right;font-size:28px;font-weight:normal;padding:1px;}
+                        h3 span a{color:#fff;text-decoration:none;}
+
+                </style>
+
+
+
+    <div class="container">
+        <div class="row">
+
+
+            <h1><span class="hidden-xs">Power application - evaluate empirical power to detect association</span></h1>
+            <h4><span class="hidden-xs">Version 0.01, 12.27.2017</span></h4>
+<p>Christopher DeBoever and Manuel A. Rivas</p>
+            <p>C.D. led the research project and developed the web application. M.A.R designed and supervised the study.</p>
+	    <iframe id="power_app" src="https://cdeboever3.shinyapps.io/gbe-power-app/" style="border: none; width: 100%; height: 600px" frameborder="0"></iframe>
+
+        </div>
+<div class="alert alert-info" role="alert">
+  <strong>Heads up!</strong>
+This app shows the power to detect genetic associations for collapsed protein-truncating variants (PTVs) in different populations from gnomAD and the UK Biobank (UKB). We estimated collapsed PTV allele frequencies and 95% confidence intervals for each gene that contains PTVs and calculate power using the GeneticsDesign R package. More information on the methods to come.
+
+Created by Chris DeBoever (https://cdeboever3.github.io/)
+    </div>
+
+<div class="row">
+        <div class="col">
+            <h2 align="center">Video Tutorial for Power App</h2>
+            <p>
+                Christopher explains the Power app and teaches viewers how to interpret the plot and table using examples.
+           </p>
+           <iframe width="600" height="450" src="https://www.youtube.com/embed/TsC5tMyHFMQ" gesture=“media” frameborder="0" allowfullscreen></iframe>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

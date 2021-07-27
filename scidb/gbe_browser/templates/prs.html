@@ -1,0 +1,216 @@
+{% extends "layout.html" %}
+{% block head %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.0/css/bootstrap.min.css" integrity="sha512-gSfrSyGfjdjA1G2c+eP7498HCNt+5sJ23zTW7qr2zuO2P7ntIcSGOXP2rHXRY3jh3o36jYRWs8mYX8LEVrAkFA==" crossorigin="anonymous" />
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.min.js" integrity="sha512-qzgd5cYSZcosqpzpn7zF2ZId8f/8CHmFKZ8j7mU4OUXTNRd5g+ZHBPsgKEwoqxCtdQvExE5LprwwPAgoicguNg==" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.widgets.min.js" integrity="sha512-dj/9K5GRIEZu+Igm9tC16XPOTz0RdPk9FGxfZxShWf65JJNU2TjbElGjuOo3EhwAJRPhJxwEJ5b+/Ouo+VqZdQ==" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/extras/jquery.tablesorter.pager.min.js" integrity="sha512-y845ijdup9lDunrcSRQAlFdQICHVhkB5UNguWRX8A3L+guxO7Oow0poojw0PLckhcKij++h85bnyro80fjR9+A==" crossorigin="anonymous"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/css/theme.bootstrap_3.min.css" integrity="sha512-1r2gsUynzocV5QbYgEwbcNGYQeQ4jgHUNZLl+PMr6o248376S3f9k8zmXvsKkU06wH0MrmQacKd0BjJ/kWeeng==" crossorigin="anonymous" />
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/css/jquery.tablesorter.pager.min.css" integrity="sha512-TWYBryfpFn3IugX13ZCIYHNK3/2sZk3dyXMKp3chZL+0wRuwFr1hDqZR9Qd5SONzn+Lja10hercP2Xjuzz5O3g==" crossorigin="anonymous" />
+
+<script>
+  $(function() {
+
+    // NOTE: $.tablesorter.themes.bootstrap is ALREADY INCLUDED in the jquery.tablesorter.widgets.js
+    // file; it is included here to show how you can modify the default classes
+    $.tablesorter.themes.bootstrap = {
+      // these classes are added to the table. To see other table classes available,
+      // look here: http://getbootstrap.com/css/#tables
+      table        : 'table table-bordered table-striped',
+      caption      : 'caption',
+      // header class names
+      header       : 'bootstrap-header', // give the header a gradient background (theme.bootstrap_2.css)
+      sortNone     : '',
+      sortAsc      : '',
+      sortDesc     : '',
+      active       : '', // applied when column is sorted
+      hover        : '', // custom css required - a defined bootstrap style may not override other classes
+      // icon class names
+      icons        : '', // add "bootstrap-icon-white" to make them white; this icon class is added to the <i> in the header
+      iconSortNone : 'bootstrap-icon-unsorted', // class name added to icon when column is not sorted
+      iconSortAsc  : 'glyphicon glyphicon-chevron-up', // class name added to icon when column has ascending sort
+      iconSortDesc : 'glyphicon glyphicon-chevron-down', // class name added to icon when column has descending sort
+      filterRow    : '', // filter row class; use widgetOptions.filter_cssFilter for the input/select element
+      footerRow    : '',
+      footerCells  : '',
+      even         : '', // even row zebra striping
+      odd          : ''  // odd row zebra striping
+    };
+
+    // call the tablesorter plugin and apply the uitheme widget
+    $("#table_prs_trait_list").tablesorter({
+      // this will apply the bootstrap theme if "uitheme" widget is included
+      // the widgetOptions.uitheme is no longer required to be set
+      theme : "bootstrap",
+
+      widthFixed: true,
+
+      headerTemplate : '{content} {icon}', // new in v2.7. Needed to add the bootstrap icon!
+
+      // widget code contained in the jquery.tablesorter.widgets.js file
+      // use the zebra stripe widget if you plan on hiding any rows (filter widget)
+      widgets : [ "uitheme", "filter", "columns", "zebra" ],
+
+      widgetOptions : {
+        // using the default zebra striping class name, so it actually isn't included in the theme variable above
+        // this is ONLY needed for bootstrap theming if you are using the filter widget, because rows are hidden
+        zebra : ["even", "odd"],
+
+        // class names added to columns when sorted
+        columns: [ "primary", "secondary", "tertiary" ],
+
+        // reset filters button
+        filter_reset : ".reset",
+
+        // extra css class name (string or array) added to the filter element (input or select)
+        filter_cssFilter: "form-control",
+
+        // set the uitheme widget to use the bootstrap theme class names
+        // this is no longer required, if theme is set
+        // ,uitheme : "bootstrap"
+
+      }
+    })
+    .tablesorterPager({
+
+      // target the pager markup - see the HTML block below
+      container: $(".ts-pager"),
+
+      // target the pager page select dropdown - choose a page
+      cssGoto  : ".pagenum",
+
+      // remove rows from the table to speed up the sort of large tables.
+      // setting this to false, only hides the non-visible rows; needed if you plan to add/remove rows with the pager enabled.
+      removeRows: false,
+
+      // output string - default is '{page}/{totalPages}';
+      // possible variables: {page}, {totalPages}, {filteredPages}, {startRow}, {endRow}, {filteredRows} and {totalRows}
+      output: '{startRow} - {endRow} / {filteredRows} filtered traits  (out of {totalRows} available traits)'
+
+    });
+  });
+
+  </script>
+{% endblock %}
+
+{% block body %}
+
+<div class="container">
+    <div class="row">
+        <div class="col col-md-12">
+            <h1>Sparse Polygenic Risk Scores (PRSs) with BASIL / snpnet</h1>
+            <hr/>
+            <h5>Version 1.2, 2021.017.23</h5>
+            <p>Yosuke Tanigawa and Manuel A. Rivas</p>
+            <p>Note: this page is under active development.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col col-md-12">
+          <h2 align="center">Browseable phenotypes</h2>
+          <p>
+            Here, we display available sparse PRS models in UK Biobank.
+            One can use sort and/or filter function. For example, you may enter ">1000" in the '# variants' column to select PRS models with more than 1,000 genetic variants.
+          </p>
+          <br>
+          <div id="container_prs_summary" style="font-size:100%;">
+            <!-- https://mottie.github.io/tablesorter/docs/index.html -->
+            <table id="table_prs_trait_list"> <!-- bootstrap classes added by the uitheme widget -->
+              <thead>
+                <tr>
+                    {% for table_col in table_prs_trait_list_cols %}
+                    {% if table_col in table_prs_trait_list_cols_select %}
+                    <th class="filter-select filter-exact" data-placeholder="Select">{{ table_col }}</th>
+                    {% else %}
+                    <th>{{ table_col }}</th>
+                    {% endif %}
+                    {% endfor %}
+                </tr>
+              </thead>
+              <tfoot>
+                <tr>
+                    {% for table_col in table_prs_trait_list_cols %}
+                    <th>{{ table_col }}</th>
+                    {% endfor %}
+                </tr>
+                <tr>
+                  <th colspan="{{ table_prs_trait_list_col_len }}" class="ts-pager form-inline">
+                    <div class="btn-group btn-group-sm" role="group">
+                      <button type="button" class="btn btn-default first"><< First</button>
+                      <button type="button" class="btn btn-default prev">< Prev.</button>
+                    </div>
+                    <span class="pagedisplay"></span>
+                    <div class="btn-group btn-group-sm" role="group">
+                      <button type="button" class="btn btn-default next">Next ></button>
+                      <button type="button" class="btn btn-default last">Last >></button>
+                    </div>
+                    <select class="form-control input-sm pagesize" title="Select page size">
+                      <option selected="selected" value="10">10</option>
+                      <option value="30">30</option>
+                      <option value="50">50</option>
+                      <option value="100">100</option>
+                      <option value="all">All Rows</option>
+                    </select>
+                    <select class="form-control input-sm pagenum" title="Select page number"></select>
+                  </th>
+                </tr>
+              </tfoot>
+              <tbody>
+                {{ table_prs_trait_list_tbody_str|safe }}
+              </tbody>
+            </table>
+          </div>
+          <br>
+          <h3 align="center">Description of the columns</h3>
+          <ul>
+              <li>Trait group: trait categories used in the Global Biobank Engine. Its <a href="https://gbe.stanford.edu/faq#group" target="_blank">FAQ page</a> has more information.</li>
+              <li>Trait: a trait in UK Biobank.</li>
+              <li>Family: it represents whether the PRS model is fit with gaussian model (for continuous response, such as standing height) or binomial model (for binary outcomes, such as disease). We use r2 and AUC as the evaluation metric for gaussian and binomial models, respectively. In this table, we display those evaluation metric computed on the hold-out test set consits of individuals of whiter British ancestry in UK Biobank cohort.</li>
+              <li>Geno: the predictive performence (r2 or AUC) of the predictive model with genotype features alone.</li>
+              <li>Covar: the predictive performence (r2 or AUC) of the predictive model with covariates (age, sex, and genotype PCs) alone.</li>
+              <li>Full: the predictive performence (r2 or AUC) of the full model that have both genotypes and covariates alone.</li>
+              <li>delta: the incremental predictive performence (r2 or AUC) of the full model against the covariate-only model, i.e. the difference between the values in "Full" and "Covar" columns.</li>
+              <li># variants: the number of genetic variants included in the model</li>
+              <li>P (WB): P-value of the incremental predictive performance of the PRS model evaluated on the test set individuals of white British ancestry in UK Biobank. The p-value is before the multiple hypothesis correction.</li>
+              <li>significant?: this indicator variable shows whether the PRS model has a significant (P < 0.05/2000) incremental predictive performance.</li>
+          </ul>
+          <br>
+          <hr/>
+        </div>
+    </div>
+
+    <div class="row">
+      <div class="col col-md-12">
+        <h2 align="center">References</h2>
+        <p>
+          We are preparing a manuscript describing this resource. In the meanwhile, please look and cite our paper describing the BASIL algorithm and R snpnet package that was used to construct the sparse PRS across UK Biobank traits.
+        </p>
+        <p>
+          J. Qian, Y. Tanigawa, W. Du, M. Aguirre, C. Chang, R. Tibshirani, M. A. Rivas, T. Hastie, A fast and scalable framework for large-scale and ultrahigh-dimensional sparse regression with application to the UK Biobank. PLOS Genetics. 16, e1009141 (2020). <a href="https://doi.org/10.1371/journal.pgen.1009141" target="_blank">doi:10.1371/journal.pgen.1009141</a>
+        </p>
+        <h3 align="center">Version info</h3>
+        <ul>
+          <li>2021.07.23. Version 1.2: we add the p-value of the PRS model as well as an indicator variable of the significance of PRS. We also removed some of the duplicated traits.</li>
+          <li>2021.01.16. Version 1.1: initial public release of the results</li>
+        </ul>
+        <br>
+        <hr/>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col col-md-12">
+        <!-- <h2>Methods summary</h2>
+        <h3>Construction of the sparse PRS models</h3>
+        <h3>Evaluation of the PRS models</h3> -->
+      </div>
+    </div>
+</div>
+{% endblock %}
+

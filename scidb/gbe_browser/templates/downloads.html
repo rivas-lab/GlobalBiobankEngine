@@ -1,0 +1,74 @@
+{% extends "layout.html" %}
+{% block body %}
+    <div class="container" style="font-size: 16px;">
+        <h1>Downloads</h1>
+        <p>
+        We provide several datasets to the community. Please also check <a href="/faq#download">our FAQ page</a> for more information.
+	</p>
+
+        <h3>Genetics of 35 blood and urine biomarkers in the UK Biobank</h3>
+        <p>
+	    The analysis scripts and the summary-level datasets (the meta-analyzed GWAS summary statistics, the results from fine-mapping analysis, the snpnet polygenic risk score models, and the multi-PRS models) used in
+	    <a href="https://doi.org/10.1101/660506" target="_blank">
+                Genetics of 35 blood and urine biomarkers in the UK Biobank
+            </a> (Sinnott-Armstrong, Tanigawa, et al., bioRxiv 2019; doi:<a href="https://doi.org/10.1101/660506" target="_blank">10.1101/660506</a>)
+	    are available from <a href="https://github.com/rivas-lab/biomarkers" target="_blank">GitHub</a> and <a href="https://doi.org/10.35092/yhjc.c.5043872.v1">figshare</a>, respectively.
+	</p>
+
+        <h3>Rare protein-altering variants in <i>ANGPTL7</i> lower intraocular pressure and protect against glaucoma</h3>
+        <p>
+	    The analysis scripts and the summary-level datasets (GWAS summary statistics of glaucoma and intraocular pressure) used in
+	    <a href="https://doi.org/10.1371/journal.pgen.1008682" target="_blank">
+		Rare protein-altering variants in <i>ANGPTL7</i> lower intraocular pressure and protect against glaucoma
+            </a> (Tanigawa, et al., PLoS Genetics 2020; doi:<a href="https://doi.org/10.1371/journal.pgen.1008682" target="_blank">10.1371/journal.pgen.1008682</a>)
+	    are available from <a href="https://github.com/rivas-lab/ANGPTL7" target="_blank">GitHub</a> and <a href="https://doi.org/10.35092/yhjc.c.4990529.v1">figshare</a>, respectively.
+	    Please also see <a href="https://yosuketanigawa.com/publication/2020-05-05-ANGPTL7">highlights of the study</a> for more information.</p>
+	</p>
+        <h3>Summary statistics for array meta-analysis</h3>
+	    The meta-analysis summary statistics (version 8.15.2020) available in GBE are available for download from <a href="http://bit.ly/GBE_20200815_metal" target="_blank">Google Drive</a>. The ICDinfo file, i.e. the file mapping the GBE IDs to the phenotype name is available for download from <a href="https://github.com/rivas-lab/public-resources/blob/master/uk_biobank/icdinfo.metal_08152020.tsv">Github</a>.
+
+	</p>
+
+        <h3>Genetic correlation across phenotypes in UK Biobank</h3>
+        <p>
+	    The analysis scripts used in
+	    <a href="https://www.sciencedirect.com/science/article/pii/S0002929720300835" target="_blank">
+		Assessing Digital Phenotyping to Enhance Genetic Studies of Human Diseases
+            </a> (DeBoever, Christopher, et al. "Assessing digital phenotyping to enhance genetic studies of human diseases." The American Journal of Human Genetics 106.5 (2020): 611-622.)
+	    are available from <a href="https://github.com/rivas-lab/mvpmm" target="_blank">GitHub</a>. The table of the genetic correlation estimated from UK Biobank are available for Download in <a href="https://github.com/rivas-lab/public-resources/blob/master/uk_biobank/opt_corr.tsv.gz">Github public resources</a>.
+
+	</p>
+
+        <h3>Polygenic risk modeling with latent trait-related genetic components</h3>
+	<p>Below are downloads corresponding to <a href="https://doi.org/10.1038/s41431-021-00813-0">"Polygenic risk modeling with latent trait-related genetic components"</a> 
+            (Aguirre, et. al.; EJHG 2021). Methods and downloads descriptions for these supplementary files can be found in the manuscript, as well as in the <a href="https://github.com/rivas-lab/degas-risk" target="_blank">project GitHub</a>. The weights for the model instance described in the manuscript (see below) are also available on <a href="https://dx.doi.org/10.6084/m9.figshare.13661210">figshare</a>.
+	       </p>
+	<ul>
+		<li>List of analysis phenotypes: <a href="../static/degas-risk/degas_n_977_traits.tsv">degas_n_977_traits.tsv</a> </li>
+		<li>DeGAs model weights: <a href="../static/degas-risk/all_beta_center_p1e-06_20200506_500PCs.npz">all_beta_center_p1e-06_20200506_500PCs.npz</a> (~0.7GB) </li> 
+		<li>Input summary stats: <a href="../static/degas-risk/all_z_nonCenter_20200427.full_df.pkl.gz">z-stats</a>, <a href="../static/degas-risk/all_beta_nonCenter_20200427.full_df.pkl.gz">betas</a>, <a href="../static/degas-risk/all_p_nonCenter_20200427.full_df.pkl.gz">p-values</a>, and <a href="../static/degas-risk/all_se_nonCenter_20200427.full_df.pkl.gz">standard errors</a> (Warning: each file is ~10GB) </li>
+		<li>Model weights from DeGAs on external data: <a href="../static/degas-risk/neale-lab-ukbb.degas_beta_p1e-6_500PCs.20201221.npz">neale-lab-ukbb.degas_beta_p1e-6_500PCs.20201221.npz</a> (~0.9GB)</li>
+        </ul>
+        <p>Please refer to the manuscript and GitHub (links above) for additional information, including performance measures for risk models derived from these data.
+
+        <h3>Components of genetic associations across 2,138 phenotypes in the UK Biobank highlight adipocyte biology</h3>
+        <p>
+	    The analysis scripts and the summary-level datasets used in
+	    <a href="https://doi.org/10.1038/s41467-019-11953-9" target="_blank">
+	      Components of genetic associations across 2,138 phenotypes in the UK Biobank highlight adipocyte biology
+            </a> (Tanigawa, et al., Nature Communications 2019; doi:<a href="https://doi.org/10.1038/s41467-019-11953-9" target="_blank">10.1038/s41467-019-11953-9</a>)
+	    are available from GitHub and figshare, respectively. Please see <a href="/degas#download">the DeGAs app page</a> for more information.</p>
+	</p>	
+
+        <h3>Summary-level data from CNV associations</h3>
+        <p>Below are downloads corresponding to <a href="10.1016/j.ajhg.2019.07.001">"Phenome-wide Burden of Copy Number Variation in UK Biobank"</a> (Aguirre MA, Rivas MA, Priest JR; <a href="10.1016/j.ajhg.2019.07.001">AJHG 2019</a>, <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6699064/">PMC6699064</a>). Description of methods used for analysis and available data can be found in the manuscript and in the readme below. 
+	       </p>
+	<ul>
+		<li>Readme: <a href="../static/cnvdata/README.20190513.txt">README.txt</a> </li>
+		<li>List of phenotypes with available data: <a href="../static/cnvdata/pheno_index_v2.20190513.txt">pheno_index_v2.20190513.txt</a> </li>
+		<li>CNVs Called: <a href="../static/cnvdata/cnv.ukb.reference_v2.20190626.txt">cnv.ukb.reference_v2.20190626.txt</a> (~31MB) </li>
+		<li>Summary Stats: <a href="../static/cnvdata/cnv.assoc.release_v2.20190513.tar.gz">cnv.assoc.release_v2.20190513.tar.gz</a> (~1.9GB) </li>
+	</ul>
+    </div>
+{% endblock %}
+

@@ -1,0 +1,145 @@
+{% extends "layout.html" %}
+{% block body %}
+    <!-- Render context vars in JS here -->
+    <script type="text/javascript">
+        window.affy = {{ affy|tojson|safe }};
+    </script>
+      		    
+
+    <style>
+        h3{background-color:#826aa5;color:#fff;padding:3px;}
+        h3 span{float:right;font-size:28px;font-weight:normal;padding:1px;}
+        h3 span a{color:#fff;text-decoration:none;}
+                
+        * { margin: 0; padding: 0; }
+        #grid { width: 1300px; }    
+        li { margin: 5px; float: left; list-style: none; }        
+    </style>
+   
+    <div class="container">
+     
+        <dl class="dl-horizontal" style="margin-bottom: 0px;">
+            <dt>Affy ID:</dt>
+            <dd>{{ affy }} </dd> 
+        </dl>
+    </div>
+
+    <!--
+    <div style="display: flex; justify-content: center;">
+        <img src="/static/images/png/{{affy}}.All.png" height=40% width=40% align="middle"> </img>
+    </div>     
+    -->
+
+    <div id="grid">
+    <ul>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b001-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b002-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b003-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b004-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b005-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b006-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b007-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b008-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b009-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b010-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b011-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b012-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b013-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b014-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b015-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b016-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b017-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b018-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b019-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b020-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b021-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b022-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b023-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b024-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b025-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b026-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b027-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b028-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b029-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b030-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b031-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b032-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b033-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b034-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b035-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b036-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b037-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b038-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b039-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b040-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b041-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b042-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b043-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b044-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b045-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b046-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b047-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b048-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b049-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b050-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b051-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b052-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b053-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b054-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b055-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b056-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b057-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b058-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b059-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b060-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b061-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b062-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b063-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b064-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b065-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b066-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b067-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b068-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b069-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b070-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b071-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b072-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b073-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b074-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b075-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b076-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b077-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b078-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b079-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b080-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b081-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b082-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b083-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b084-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b085-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b086-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b087-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b088-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b089-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b090-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b091-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b092-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b093-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b094-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_Batch_b095-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_UKBiLEVEAX_b1-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_UKBiLEVEAX_b2-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_UKBiLEVEAX_b3-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_UKBiLEVEAX_b4-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_UKBiLEVEAX_b5-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_UKBiLEVEAX_b6-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_UKBiLEVEAX_b7-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_UKBiLEVEAX_b8-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_UKBiLEVEAX_b9-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_UKBiLEVEAX_b10-img.png" align="middle" width="300"> </img></li>
+        <li><img src="/static/images/png/{{affy}}/{{affy}}_UKBiLEVEAX_b11-img.png" align="middle" width="300"> </img></li>
+    </ul>
+    </div>
+
+{% endblock %}
+

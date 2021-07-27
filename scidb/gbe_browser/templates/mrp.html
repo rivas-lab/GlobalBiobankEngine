@@ -1,0 +1,596 @@
+{% extends "layout.html" %}
+{% block body %}
+
+    <script type="text/javascript">
+        window.plot_data = {{ plot_data|tojson|safe }};
+        window.gene_data = {{ gene_data|tojson|safe }};
+        window.fdr_data = {{ fdr_data|tojson|safe }};
+    </script>
+
+
+ <div class="container">
+    <div class="row" style="font-size: 16px;">
+
+			<div class="page-header">
+				<h1 class="text-center mrp-title">MRP Mixture Model (MRPMM)</h1>
+			</div>
+		<div class="col-md-1"></div>
+
+
+<style>
+
+  svg {
+  font: 14px sans-serif;
+}
+
+
+
+body {
+  font: 14px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.bar {
+  fill: steelblue;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.tooltip{
+  text-anchor: middle;
+  font-family: sans-serif;
+  font-size: 10px;
+  font-weight: bold;
+  fill:black;
+}
+
+
+    .chart rect {
+  stroke: white;
+  fill-opacity: .6;
+  fill: steelblue;
+
+}
+.bar.positive {
+  fill: steelblue;
+}
+
+.bar.negative {
+  fill: brown;
+}
+
+.axis text {
+  font: 12px sans-serif;
+}
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+
+    .d3_graph {
+        font: 24px sans-serif;
+    }
+    .svg-container {
+        display: inline-block;
+        overflow: hidden;
+        padding-bottom: 100%;
+        position: absolute;
+        vertical-align: middle;
+        width: 100%;
+        height: 100%;
+    }
+
+
+</style>
+
+    <div class="row" style="font-size: 16px;">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.13/d3.min.js"></script>
+
+<!-- <h1>Cluster Assignment Probabilities</h1> -->
+<div class="svg-container">
+<h1>Summary</h1>
+ <div class="panel panel-primary">
+      <div class="panel-heading">Aggregate</div>
+      <div class="panel-body">For the analysis you explored the log10 Bayes Factor for non-zero effect cluster is {{ log10_bf }}. After applying the mixture model to the data we have evidence of {{cluster_num}} cluster(s). </p></div>
+    </div>
+ <div class="panel panel-primary">
+      <div class="panel-heading">Variants</div>
+ <div class="panel-body">At false discovery rate (FDR) control of {{fdr}}: {% for fdr_var in fdr_data %}<a href="../../variant/{{ fdr_var.split(':')[0] + '-' + fdr_var.split(':')[1] + '-' + fdr_var.split(':')[2] + '-' + fdr_var.split(':')[3] }}"> {{ fdr_var }}</a>{% endfor %}.</div>
+</div>
+
+<script>
+
+ var margin = {top: 30, right: 50, bottom: 50, left: 500},
+      width = 600;
+      height = 1200;
+ var tooltip = d3.select("body")
+            .append("div")
+            .attr('text-anchor', 'middle')
+            .style("position", "absolute")
+            .style("z-index", "10")
+            .style("visibility", "hidden")
+            .style("background", "#E3EAF0")
+            .style("border-radius", "8px")
+            .style("border", "#C6D6E1")
+            .style("padding", "4px");
+
+var y = d3.scale.ordinal()
+    .rangeRoundBands([height, 0], .1);
+
+var x = d3.scale.linear()
+    .rangeRound([0, width]);
+
+var color = d3.scale.ordinal()
+    .range([
+"#fee0b6",
+"#762a83",
+"#1b7837",
+"#af8dc3",
+"#f7f7f7",
+"#d9f0d3",
+"#7fbf7b"
+]);
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left");
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+    //.tickFormat(d3.format(".2s"));
+
+var svg = d3.select("div.container").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+
+plot_data.forEach(function(data){
+
+
+  color.domain(d3.keys(data[0]).filter(function(key) { return key != "variant" & key != "varid"; }));
+
+  data.forEach(function(d) {
+    var y0 = 0;
+    d.ages = color.domain().map(function(name) { return {name: name, y0: y0, y1: y0 += +d[name]}; });
+    d.total = d.ages[d.ages.length-1].y1;
+  });
+
+//  data.sort(function(a, b) { return b.total - a.total; });
+
+  y.domain(data.map(function(d) { return d.variant + ":" + d.varid; }));
+  x.domain([0, d3.max(data, function(d) { return d.total; })]);
+
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end");
+      //.text("Population");
+   svg.selectAll("text")
+    .filter(function(d){ return typeof(d) == "string"; })
+    .style("cursor", "pointer")
+    .on("click", function(d){
+        document.location.href = "../../variant/" + d.split(":")[0] + "-" + d.split(":")[1];
+    });
+  var variant = svg.selectAll(".variant")
+      .data(data)
+      .enter().append("g")
+      .attr("class", "g")
+      .attr("transform", function(d) { return "translate(0," + y(d.variant + ":" + d.varid) + ")"; });
+
+   variant.selectAll("rect")
+       .data(function(d) { return d.ages; })
+       .enter().append("rect")
+       .attr("height", y.rangeBand())
+       .attr("x", function(d) { return x(d.y0); })
+       .attr("width", function(d) { return x(d.y1) - x(d.y0); })
+       .style("fill", function(d) { return color(d.name); });
+  
+
+
+  var legend = svg.selectAll(".legend")
+      .data(color.domain().slice().reverse())
+    .enter().append("g")
+      .attr("class", "legend")
+      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+  legend.append("rect")
+      .attr("x", width + 15)
+      .attr("width", 18)
+      .attr("height", 18)
+      .style("fill", color);
+
+  legend.append("text")
+      .attr("x", width + 47)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .style("text-anchor", "end")
+      .text(function(d) { return d-1; });
+
+
+
+});
+
+</script>
+</div>
+
+
+
+
+
+<div class="svg-container">
+<script>
+
+ var margin = {top: 30, right: 50, bottom: 50, left: 300},
+      width = 600;
+      height = 150;
+
+var y = d3.scale.ordinal()
+    .rangeRoundBands([height, 0], .1);
+
+var x = d3.scale.linear()
+    .rangeRound([0, width]);
+
+ var tooltip = d3.select("body")
+            .append("div")
+            .style("position", "absolute")
+            .style("z-index", "10")
+            .style("visibility", "hidden")
+            .text("a simple tooltip");
+
+
+var color = d3.scale.ordinal()
+   .range(["#fee0b6",
+"#762a83",
+"#1b7837",
+"#af8dc3",
+"#f7f7f7",
+"#d9f0d3",
+"#7fbf7b"
+]);
+//.range(["#8C1515", "#B26F16", "#E98300", "#EAAB00", "#009B76", "#007C92", "#0098DB", "#53284F"]);-->
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left");
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+    //.tickFormat(d3.format(".2s"));
+
+var svg = d3.select("div.container").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+
+gene_data.forEach(function(data){
+
+
+  color.domain(d3.keys(data[0]).filter(function(key) { return key != "gene"; }));
+
+  data.forEach(function(d) {
+    var y0 = 0;
+    d.ages = color.domain().map(function(name) { return {name: name, y0: y0, y1: y0 += +d[name]}; });
+    d.total = d.ages[d.ages.length -1].y1;
+  });
+
+  data.sort(function(a, b) { return b.total - a.total; });
+
+  y.domain(data.map(function(d) { return d.gene; }));
+  x.domain([0, d3.max(data, function(d) { return d.total; })]);
+
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end");
+      //.text("Population");
+
+
+  var gene = svg.selectAll(".gene")
+      .data(data)
+      .enter().append("g")
+      .attr("class", "g")
+      .attr("transform", function(d) { return "translate(0," + y(d.gene) + ")"; });
+
+   gene.selectAll("rect")
+       .data(function(d) { return d.ages; })
+       .enter().append("rect")
+       .attr("height", y.rangeBand())
+       .attr("x", function(d) { return x(d.y0); })
+       .attr("width", function(d) { return x(d.y1) - x(d.y0); })
+       .style("fill", function(d) { return color(d.name); });
+  
+
+
+  var legend = svg.selectAll(".legend")
+      .data(color.domain().slice().reverse())
+    .enter().append("g")
+      .attr("class", "legend")
+      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+  legend.append("rect")
+      .attr("x", width + 15)
+      .attr("width", 18)
+      .attr("height", 18)
+      .style("fill", color);
+
+  legend.append("text")
+      .attr("x", width + 47)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .style("text-anchor", "end")
+      .text(function(d) { return d; });
+
+
+
+});
+
+</script>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.13/d3.min.js"></script>
+
+    <script type="text/javascript">
+        window.count = 2
+        //num_figs = 2
+    </script>
+
+  	  {% if num_figs %} 
+
+<div class="panel panel-info">
+      <div class="panel-heading">Model summary</div>
+      <div class="panel-body"> Log10 Bayes Factor : {{ log10_bf }}</div>
+      <div class="panel-body">Clusters : {{ cluster_num }}</div>
+    </div>
+<h2> Cluster Effect Size Estimates </h2> 
+  {% for n in num_figs %}
+    <h2> Cluster {{ n[0] }} </h2> 
+      <div id="cluster_{{ n[0] }}"></div>
+<div class="svg-container">
+<script>
+
+//var data = [["A",0.012], ["B",-0.025], ["C",0.008], ["D",0.023], ["E",-0.009], ["F", 0.005]];
+//console.log({{ n[1]|tojson|safe }});
+var data = {{ n[1]|tojson|safe }};
+console.log(data);
+
+
+
+d3.select("#cluster_".concat("{{ n[0] }}"))
+  .datum(data)
+    .call(columnChart()
+      .width(1200)
+      .height(500)
+      .x(function(d, i) { return d[0]; })
+     // .x(function(d, i) { return i; })
+      .y(function(d, i) { return d[1]; }));
+
+
+function columnChart() {
+  var margin = {top: 30, right: 10, bottom: 50, left: 50},
+      width = 250,
+      height = 250,
+      xRoundBands = 0.2,
+      xValue = function(d) { return d[0]; },
+      yValue = function(d) { return d[1]; },
+      ylValue = function(d) { return d[2]; }, 
+      yuValue = function(d) { return d[3]; },
+      xScale = d3.scale.ordinal(),
+      yScale = d3.scale.linear().domain([-4,4]),
+      yAxis = d3.svg.axis().scale(yScale).orient("left"),
+      xAxis = d3.svg.axis().scale(xScale);
+  //            .tickFormat(function(d, i) { return d[0]; })
+   //           .orient("bottom");
+ var tooltip = d3.select("body")
+            .append("div")
+            .style("position", "absolute")
+            .style("z-index", "10")
+            .style("visibility", "hidden")
+            .text("a simple tooltip");
+
+
+  function chart(selection) {
+    selection.each(function(data) {
+
+      // Convert data to standard representation greedily;
+      // this is needed for nondeterministic accessors.
+      data = data.map(function(d, i) {
+        return [xValue.call(data, d, i), yValue.call(data, d, i), ylValue.call(data, d, i), yuValue.call(data, d, i)];
+      });
+
+      // Update the x-scale.
+      xScale
+          .domain(data.map(function(d) { return d[0];} ))
+          .rangeRoundBands([0, width - margin.left - margin.right], xRoundBands);
+
+
+      // Update the y-scale.
+      yScale
+          //.domain(d3.extent(data.map(function(d) { return d[1];} )))
+          .domain([-4, 4])
+          .range([height - margin.top - margin.bottom, 0])
+          .nice();
+
+
+      // Select the svg element, if it exists.
+      var svg = d3.select(this).selectAll("svg").data([data]);
+
+      // Otherwise, create the skeletal chart.
+      var gEnter = svg.enter().append("svg").append("g");
+      gEnter.append("g").attr("class", "bars");
+      gEnter.append("g").attr("class", "y axis");
+      gEnter.append("g").attr("class", "x axis");
+      gEnter.append("g").attr("class", "x axis zero");
+
+      // Update the outer dimensions.
+      svg .attr("width", width)
+          .attr("height", height);
+
+      // Update the inner dimensions.
+      var g = svg.select("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+     // Update the bars.
+      var bar = svg.select(".bars").selectAll(".bar").data(data);
+      bar.enter().append("rect");
+      bar.exit().remove();
+      bar .attr("class", function(d, i) { return d[1] < 0 ? "bar negative" : "bar positive"; })
+          .attr("x", function(d) { return X(d); })
+          .attr("y", function(d, i) { return d[1] < 0 ? Y0() : Y(d); })
+          .attr("width", xScale.rangeBand())
+          .attr("height", function(d, i) { return Math.abs( yScale(d[1]) - Y0() ); })
+	  .on("mouseover", function(d){return tooltip.style("visibility", "visible").style("background", "#E3EAF0").style("border-radius", "8px").style("border", "#C6D6E1").style("padding", "4px").html("BETA:" + Number((d[1]).toFixed(2)) + "<br> " + "L95BETA: " + Number((d[2]).toFixed(2)) + "<br>" + "U95BETA: " + Number((d[3]).toFixed(2)));})
+          .on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
+          .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
+      bar.enter().append("line")
+	  .style("stroke", "black")
+          .style("stroke-width", 2)
+          .style("stroke-dasharray", ("3, 3"))
+          .style("opacity",".5")
+          .attr("x1", function(d){ return X(d) + xScale.rangeBand()*0.5; })
+          .attr("y1", function(d){ return Math.abs( yScale(d[2]) );})
+          .attr("x2", function(d){ return X(d) + xScale.rangeBand()*0.5; })
+          .attr("y2", function(d){ return Math.abs( yScale(d[3]) );})
+      bar.enter().append("line")
+	  .style("stroke", "black")
+          .style("stroke-width", 2)
+          .style("stroke-dasharray", ("3, 3"))
+          .style("opacity",".5")
+          .attr("x1", function(d){ return xScale(0); })
+          .attr("y1", function(d){ return yScale(0);})
+          .attr("x2", function(d){ return X(d) + xScale.rangeBand(); })
+          .attr("y2", function(d){ return yScale(0);})
+      bar.enter().append("circle")
+          .attr("r",2)
+          .attr('cx', function(d){ return X(d) + xScale.rangeBand()*0.5; })
+          .attr('cy', function(d, i){ return yScale(d[1]); })
+	  .style("stroke", "black")
+          .style("stroke-width", 2)
+          .style("opacity",".5");
+
+
+//          .attr("x1", function(d){return X(d); })
+ //         .attr("y1", function(d, i){ return d[2] })
+  //        .attr("x2", function(d){return X(d) + 1; })
+   //       .attr("y2", function(d, i){ return d[3] })
+    //      .style("stroke", "black");
+
+     
+    // x axis at the bottom of the chart
+     g.select(".x.axis")
+        .attr("transform", "translate(0," + (height - margin.top - margin.bottom) + ")")
+        .call(xAxis.orient("bottom"));
+
+    // zero line
+     g.select(".x.axis.zero")
+        .attr("transform", "translate(0," + Y0() + ")")
+        .call(xAxis.tickFormat("").tickSize(0));
+
+
+      // Update the y-axis.
+      g.select(".y.axis")
+        .call(yAxis);
+
+ g.selectAll("text")
+    .filter(function(d){ return typeof(d) == "string"; })
+    .style("cursor", "pointer")
+    .on("click", function(d){
+        document.location.href = "../coding/" + d;
+    });
+
+
+    });
+  }
+
+
+// The x-accessor for the path generator; xScale ∘ xValue.
+  function X(d) {
+    return xScale(d[0]);
+  }
+
+  function Y0() {
+    return yScale(0);
+  }
+
+  // The x-accessor for the path generator; yScale ∘ yValue.
+  function Y(d) {
+    return yScale(d[1]);
+  }
+
+  chart.margin = function(_) {
+    if (!arguments.length) return margin;
+    margin = _;
+    return chart;
+  };
+
+  chart.width = function(_) {
+    if (!arguments.length) return width;
+    width = _;
+    return chart;
+  };
+
+  chart.height = function(_) {
+    if (!arguments.length) return height;
+    height = _;
+    return chart;
+  };
+
+  chart.x = function(_) {
+    if (!arguments.length) return xValue;
+    xValue = _;
+    return chart;
+  };
+
+  chart.y = function(_) {
+    if (!arguments.length) return yValue;
+    yValue = _;
+    return chart;
+  };
+
+  return chart;
+}
+
+</script>
+
+  {% endfor %}
+
+	   {% endif %}
+
+<h2>Cluster Assignment Probabilities (top) and Proportions (bottom)</h2> 
+<h5><span class="label label-info">Note:</span> Only variants with posterior probability < .2 of belonging to the null cluster are shown.</h5>
+</div>
+</div>
+
+{% endblock %}

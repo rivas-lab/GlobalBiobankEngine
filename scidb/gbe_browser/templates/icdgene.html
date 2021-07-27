@@ -1,0 +1,228 @@
+{% extends "layout.html" %}
+{% block body %}
+    <!-- Render context vars in JS here -->
+    <script type="text/javascript">
+        window.icd = {{ icd|tojson|safe }};
+        window.page_name = window.icd[0].icd_id;
+    </script>
+
+
+    <script>
+        filtered_variants = _.filter(window.table_variants, function(d) {
+            return d.filter == 'PASS';
+        });
+        $('#number_of_variants').replaceWith(filtered_variants.length);
+        lof_filtered_variants = _.filter(window.table_variants, function(d) {
+            return d.filter == 'PASS' && d.category == 'lof_variant';
+        });$('#number_of_lof_variants').replaceWith(lof_filtered_variants.length);
+    </script>
+
+    <style>
+                        h3{background-color:#826aa5;color:#fff;padding:3px;}
+                        h3 span{float:right;font-size:28px;font-weight:normal;padding:1px;}
+                        h3 span a{color:#fff;text-decoration:none;}
+			.bar { fill:#b3995d; }
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #D4D8DA;
+  stroke-width: 1px;
+  shape-rendering: crispEdges;
+}
+.x path {
+			display: none;
+}
+.toolTip {
+			position: absolute;
+  display: none;
+  min-width: 80px;
+  height: auto;
+  background: none repeat scroll 0 0 #ffffff;
+  border: 1px solid #6F257F;
+  padding: 14px;
+  text-align: center;
+}
+
+                </style>
+
+
+    <div class="container" id="container">
+        <div class="row">
+
+            <h1><span class="hidden-xs">Code Phenotype: {{icd[0].Name}}</span></h1>
+
+        <hr/>
+     <dl class="dl-horizontal" style="margin-bottom: 0px;">
+                        <dt>Code:</dt>
+			{% if icd[0].icd %}
+			<dt>Case Count (Disease) or Individuals (QTs):</dt>
+			{% else %}
+			<dt>Case Count:</dt>
+			{% endif %}
+                        
+                        <dd>{{ icd[0].icd.replace('ICD','') }}</dd>
+                                             <dd>{{ icd[0].Case }}
+                                             </dd>
+
+
+
+                    </dl>
+           <hr />
+         </div>
+
+
+	<!-- load the d3.js library --> 
+<script type="text/javascript" src="{{ url_for('static', filename='d3.v4.min.js') }}"></script>   
+<script>
+function GetTopTwentyGenes(arrayData){  //sorting to top 20 function
+  arrayData.sort(function(a, b) {
+                   return parseFloat(b["as.numeric.subset.d..key.....l10bf...value."]) - parseFloat(a["as.numeric.subset.d..key.....l10bf...value."]);
+                 });
+  return arrayData.slice(0, 20); 
+}
+
+
+// set the dimensions and margins of the graph
+// set the dimensions and margins of the graph
+var margin = {top: 20, right: 20, bottom: 30, left: 100},
+    width = 800 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+var svg = d3.select("#container").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom);
+var g = svg.append("g")
+.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    
+var tooltip = d3.select("#container").append("div").attr("class", "toolTip");
+  
+var x = d3.scaleLinear().range([0, width]);
+var y = d3.scaleBand().range([0, height]);
+
+d3.csv("/static/mrpgene/" + icd[0].icd + ".out", function(error, data) {
+  if (error) throw error;
+   data = GetTopTwentyGenes(data);  
+x.domain([0, d3.max(data, function(d) { return d["as.numeric.subset.d..key.....l10bf...value."]; })]);
+    y.domain(data.map(function(d) { return d["subset.d..key.....l10bf...gene_name"]; })).padding(.1);
+
+    g.append("g")
+        .attr("class", "x axis")
+.attr("transform", "translate(0," + height + ")")
+.call(d3.axisBottom(x).ticks(5).tickFormat(function(d) { return parseInt(d); }).tickSizeInner([-height]));
+
+    g.append("g")
+        .attr("class", "y axis")
+        .call(d3.axisLeft(y));
+
+   g.selectAll("text")
+        .style("cursor", "pointer")
+        .filter(function(d){ return typeof(d) == "string"; })
+    .on("click", function(d){
+        document.location.href = "/awesome?query=" + d;
+    });
+
+    g.selectAll(".bar")
+        .data(data)
+      .enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", 0)
+        .attr("height", y.bandwidth())
+        .attr("y", function(d) { return y(d["subset.d..key.....l10bf...gene_name"]); })
+        .attr("width", function(d) { return x(d["as.numeric.subset.d..key.....l10bf...value."]); })
+        .on("mousemove", function(d){
+            tooltip
+              .style("left", d3.event.pageX - 50 + "px")
+              .style("top", d3.event.pageY - 70 + "px")
+              .style("display", "inline-block")
+              .html((d["subset.d..key.....l10bf...gene_name"]) + "<br>" + "log10BF: " + (d3.format(".2f")(d["as.numeric.subset.d..key.....l10bf...value."])));
+        })
+.on("mouseout", function(d){ tooltip.style("display", "none");});
+
+});
+</script>
+
+          <br>
+          Note: only top 20 genes are displayed.
+<div class="alert alert-warning" role="alert">
+  <strong>Warning!</strong> This is an initial look at gene-based results, which will be updated over time with additional QC filters for variants and groupings. In this first look we include missense + PTVs. For interpretation of gene-based results look at <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5034897/">Fuchsberger et al.</a> (recommendation log10BF >= 5). 
+</div>
+
+
+
+      </div>
+    <div class="container" id="container2">
+<div class="alert alert-info" role="alert">
+  <strong>Heads up!</strong> Aggregate analysis for PTVs with estimated minor allele frequency between .01% and 1%.
+</div>
+<script>
+function GetTopTwentyGenesPTV(arrayData){  //sorting to top 20 function
+  arrayData.sort(function(a, b) {
+                   return parseFloat(b["as.numeric.subset.d..key.....l10bfsim...value."]) - parseFloat(a["as.numeric.subset.d..key.....l10bfsim...value."]);
+                 });
+  return arrayData.slice(0, 20); 
+}
+
+
+// set the dimensions and margins of the graph
+// set the dimensions and margins of the graph
+var margin = {top: 20, right: 20, bottom: 30, left: 100},
+    width = 800 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+var svg2 = d3.select("#container2").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom);
+var g2 = svg2.append("g")
+.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    
+var tooltip = d3.select("#container2").append("div").attr("class", "toolTip");
+  
+var x = d3.scaleLinear().range([0, width]);
+var y = d3.scaleBand().range([0, height]);
+
+d3.csv("/static/mrpgene/" + icd[0].icd + ".01_0001_ptv.out", function(error, data) {
+  if (error) throw error;
+   data = GetTopTwentyGenesPTV(data);  
+x.domain([0, d3.max(data, function(d) { return d["as.numeric.subset.d..key.....l10bfsim...value."]; })]);
+    y.domain(data.map(function(d) { return d["subset.d..key.....l10bf...gene_name"]; })).padding(.1);
+
+    g2.append("g")
+        .attr("class", "x axis")
+.attr("transform", "translate(0," + height + ")")
+.call(d3.axisBottom(x).ticks(5).tickFormat(function(d) { return parseInt(d); }).tickSizeInner([-height]));
+
+    g2.append("g")
+        .attr("class", "y axis")
+        .call(d3.axisLeft(y));
+
+   g2.selectAll("text")
+        .style("cursor", "pointer")
+        .filter(function(d){ return typeof(d) == "string"; })
+    .on("click", function(d){
+        document.location.href = "/awesome?query=" + d;
+    });
+
+    g2.selectAll(".bar")
+        .data(data)
+      .enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", 0)
+        .attr("height", y.bandwidth())
+        .attr("y", function(d) { return y(d["subset.d..key.....l10bf...gene_name"]); })
+        .attr("width", function(d) { return x(d["as.numeric.subset.d..key.....l10bfsim...value."]); })
+        .on("mousemove", function(d){
+            tooltip
+              .style("left", d3.event.pageX - 50 + "px")
+              .style("top", d3.event.pageY - 70 + "px")
+              .style("display", "inline-block")
+              .html((d["subset.d..key.....l10bf...gene_name"]) + "<br>" + "log10BF similar effects model: " + (d3.format(".2f")(d["as.numeric.subset.d..key.....l10bfsim...value."])));
+        })
+.on("mouseout", function(d){ tooltip.style("display", "none");});
+
+});
+</script>
+</div>
+
+{% endblock %}

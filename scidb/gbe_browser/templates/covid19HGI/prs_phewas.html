@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+{% block head %}
+<style>
+    .img-fluid {
+        max-width: 100%;
+        height: auto
+      }
+</style>
+{% endblock %}
+{% block body %}
+
+<div class="container">
+    <div class="row">
+        <div class="col col-md-12">
+            <h1>{{ HGI_sx }}</h1>
+            <p>Here, we show the PRS-PheWAS associations for the {{ HGI_sx }} dataset. We analyzed 4 case/control definitions (B2, C2, B1, and A2) from the COVID-19 HGI. For each case/control definition, we used 3 different p-value threshold for LD clumping (<a href="/covid19HGI#methods">Methods</a>). We therefore show 12 (= 4 * 3) plots in this page.</p>
+            <hr/>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col col-md-12">
+            <h2>Supported datasets</h2>
+            <p>
+                We currently display the results of COVID-19 HGI PRS-PheWAS analysis for the following 4 datasets.
+                Please see the <a href="/covid19HGI#methods">Methods</a> for more information.
+            </p>
+            <ul>
+                <li>Go back to the <a href="/covid19HGI">top page</a></li>
+                {% for HGI_suffix in _HGI_suffices %}
+                {% if HGI_suffix == HGI_sx %}
+                <li>PRS PheWAS results for {{ HGI_suffix }} (this page). We also have results for the additional analyses regarding the chr3 regions in the following links.</li>
+                <ul>
+                    <li><a href="B2">B2: Hospitalized covid vs. population</a></li>
+                    <li><a href="C2">C2: Covid vs. population</a></li>
+                    <li><a href="B1">B1: Hospitalized covid vs. not hospitalized covid</a></li>
+                    <li><a href="A2">A2: Very severe respiratory confirmed covid vs. population</a></li>
+                </ul>
+                {% else %}
+                <li>PRS PheWAS results for <a href="/covid19HGI/PRS_PheWAS/{{ HGI_suffix }}">{{ HGI_suffix }}</a></li>
+                {% endif %}
+                {% endfor %}
+            </ul>
+            <hr/>
+        </div>
+    </div>
+
+
+    {% for HGI_cc in _HGI_case_controls %}
+    <div class="row">
+        <div class="col col-md-12">
+            <h2><a href="{{ HGI_cc }}">{{ HGI_cc }}</a></h2>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for clumpp in _clump_p1s %}
+        <div class="col col-md-6">
+            <h3>LD clumping p1: {{ clumpp }}</h3>
+            <img class="img-fluid" src="{{ url_for('static', filename='covid19HGI/fig/UKB_PRS_PheWAS' )}}/{{ HGI_sx }}/{{ _HGI_v }}_{{ HGI_cc }}_{{ HGI_sx }}.clump{{ clumpp }}.png" />
+            <p>
+                The PRS-PheWAS analysis for COVID-19 HGI case/control definition, {{ HGI_cc }}. We constructed LD clumping based PRS (clumping p-value threshold: {{ clumpp }}) and performed PRS-PheWAS analysis using phenotypes in UK Biobank (y-axis). We display the significance (x-axis) and the direction (shape) of the association.
+            </p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="row">
+        <div class="col col-md-12">
+            <hr/>
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+{% endblock %}

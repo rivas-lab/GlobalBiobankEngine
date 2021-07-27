@@ -1,0 +1,193 @@
+{% extends "layout.html" %}
+{% block head %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.0/css/bootstrap.min.css" integrity="sha512-gSfrSyGfjdjA1G2c+eP7498HCNt+5sJ23zTW7qr2zuO2P7ntIcSGOXP2rHXRY3jh3o36jYRWs8mYX8LEVrAkFA==" crossorigin="anonymous" />
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.min.js" integrity="sha512-qzgd5cYSZcosqpzpn7zF2ZId8f/8CHmFKZ8j7mU4OUXTNRd5g+ZHBPsgKEwoqxCtdQvExE5LprwwPAgoicguNg==" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.widgets.min.js" integrity="sha512-dj/9K5GRIEZu+Igm9tC16XPOTz0RdPk9FGxfZxShWf65JJNU2TjbElGjuOo3EhwAJRPhJxwEJ5b+/Ouo+VqZdQ==" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/extras/jquery.tablesorter.pager.min.js" integrity="sha512-y845ijdup9lDunrcSRQAlFdQICHVhkB5UNguWRX8A3L+guxO7Oow0poojw0PLckhcKij++h85bnyro80fjR9+A==" crossorigin="anonymous"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/css/theme.bootstrap_3.min.css" integrity="sha512-1r2gsUynzocV5QbYgEwbcNGYQeQ4jgHUNZLl+PMr6o248376S3f9k8zmXvsKkU06wH0MrmQacKd0BjJ/kWeeng==" crossorigin="anonymous" />
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/css/jquery.tablesorter.pager.min.css" integrity="sha512-TWYBryfpFn3IugX13ZCIYHNK3/2sZk3dyXMKp3chZL+0wRuwFr1hDqZR9Qd5SONzn+Lja10hercP2Xjuzz5O3g==" crossorigin="anonymous" />
+
+<script>
+  $(function() {
+
+    // NOTE: $.tablesorter.themes.bootstrap is ALREADY INCLUDED in the jquery.tablesorter.widgets.js
+    // file; it is included here to show how you can modify the default classes
+    $.tablesorter.themes.bootstrap = {
+      // these classes are added to the table. To see other table classes available,
+      // look here: http://getbootstrap.com/css/#tables
+      table        : 'table table-bordered table-striped',
+      caption      : 'caption',
+      // header class names
+      header       : 'bootstrap-header', // give the header a gradient background (theme.bootstrap_2.css)
+      sortNone     : '',
+      sortAsc      : '',
+      sortDesc     : '',
+      active       : '', // applied when column is sorted
+      hover        : '', // custom css required - a defined bootstrap style may not override other classes
+      // icon class names
+      icons        : '', // add "bootstrap-icon-white" to make them white; this icon class is added to the <i> in the header
+      iconSortNone : 'bootstrap-icon-unsorted', // class name added to icon when column is not sorted
+      iconSortAsc  : 'glyphicon glyphicon-chevron-up', // class name added to icon when column has ascending sort
+      iconSortDesc : 'glyphicon glyphicon-chevron-down', // class name added to icon when column has descending sort
+      filterRow    : '', // filter row class; use widgetOptions.filter_cssFilter for the input/select element
+      footerRow    : '',
+      footerCells  : '',
+      even         : '', // even row zebra striping
+      odd          : ''  // odd row zebra striping
+    };
+
+    // call the tablesorter plugin and apply the uitheme widget
+    $("#table_mrp_trait_list").tablesorter({
+      // this will apply the bootstrap theme if "uitheme" widget is included
+      // the widgetOptions.uitheme is no longer required to be set
+      theme : "bootstrap",
+
+      widthFixed: true,
+
+      headerTemplate : '{content} {icon}', // new in v2.7. Needed to add the bootstrap icon!
+
+      // widget code contained in the jquery.tablesorter.widgets.js file
+      // use the zebra stripe widget if you plan on hiding any rows (filter widget)
+      widgets : [ "uitheme", "filter", "columns", "zebra" ],
+
+      widgetOptions : {
+        // using the default zebra striping class name, so it actually isn't included in the theme variable above
+        // this is ONLY needed for bootstrap theming if you are using the filter widget, because rows are hidden
+        zebra : ["even", "odd"],
+
+        // class names added to columns when sorted
+        columns: [ "primary", "secondary", "tertiary" ],
+
+        // reset filters button
+        filter_reset : ".reset",
+
+        // extra css class name (string or array) added to the filter element (input or select)
+        filter_cssFilter: "form-control",
+
+        // set the uitheme widget to use the bootstrap theme class names
+        // this is no longer required, if theme is set
+        // ,uitheme : "bootstrap"
+
+      }
+    })
+    .tablesorterPager({
+
+      // target the pager markup - see the HTML block below
+      container: $(".ts-pager"),
+
+      // target the pager page select dropdown - choose a page
+      cssGoto  : ".pagenum",
+
+      // remove rows from the table to speed up the sort of large tables.
+      // setting this to false, only hides the non-visible rows; needed if you plan to add/remove rows with the pager enabled.
+      removeRows: false,
+
+      // output string - default is '{page}/{totalPages}';
+      // possible variables: {page}, {totalPages}, {filteredPages}, {startRow}, {endRow}, {filteredRows} and {totalRows}
+      output: '{startRow} - {endRow} / {filteredRows} filtered traits  (out of {totalRows} available traits)'
+
+    });
+  });
+
+  </script>
+{% endblock %}
+
+{% block body %}
+
+<div class="container">
+    <div class="row">
+        <div class="col col-md-12">
+            <h1>Rare variant association analysis of 500k array coding variant data with MRP</h1>
+            <hr/>
+            <h5>Version 1.0, 06.14.2021</h5>
+            <p>Guhan R. Venkataraman and Manuel A. Rivas</p>
+            <p>Note: this page is under active development.</p>
+        </div>
+    </div>
+          <p>
+            Here, we display available gene based aggregate results in UK Biobank.
+	    <br>
+	    Results are available for <a href="https://github.com/rivas-lab/public-resources/tree/master/uk_biobank/mrp_gene/"><button class="btn"><i class="fa fa-download"></i> Download</button></a>
+          </p>
+          <br>
+
+</div>
+    <div class="row">
+        <div class="col col-md-12">
+          <div id="container_prs_summary" style="font-size:100%;">
+            <!-- https://mottie.github.io/tablesorter/docs/index.html -->
+            <table id="table_mrp_trait_list"> <!-- bootstrap classes added by the uitheme widget -->
+              <thead>
+                <tr>
+                    {% for table_col in table_mrp_trait_list_cols %}
+                    <th>{{ table_col }}</th>
+                    {% endfor %}
+                </tr>
+              </thead>
+              <tfoot>
+                <tr>
+                    {% for table_col in table_mrp_trait_list_cols %}
+                    <th>{{ table_col }}</th>
+                    {% endfor %}
+                </tr>
+                <tr>
+                  <th colspan="{{ table_mrp_trait_list_col_len }}" class="ts-pager form-inline">
+                    <div class="btn-group btn-group-sm" role="group">
+                      <button type="button" class="btn btn-default first"><< First</button>
+                      <button type="button" class="btn btn-default prev">< Prev.</button>
+                    </div>
+                    <span class="pagedisplay"></span>
+                    <div class="btn-group btn-group-sm" role="group">
+                      <button type="button" class="btn btn-default next">Next ></button>
+                      <button type="button" class="btn btn-default last">Last >></button>
+                    </div>
+                    <select class="form-control input-sm pagesize" title="Select page size">
+                      <option selected="selected" value="10">10</option>
+                      <option value="30">30</option>
+                      <option value="50">50</option>
+                      <option value="100">100</option>
+                      <option value="all">All Rows</option>
+                    </select>
+                    <select class="form-control input-sm pagenum" title="Select page number"></select>
+                  </th>
+                </tr>
+              </tfoot>
+              <tbody>
+                {{ table_mrp_trait_list_tbody_str|safe }}
+              </tbody>
+            </table>
+          </div>
+          <br>
+          <h3>Description of the columns</h3>
+          <ul>
+              <li>GBE_ID: UK Biobank trait code.</li>
+              <li>GBE_short_name: UK Biobank trait description.</li>
+              <li>pops: String containing populations used in meta-analysis.</li>
+              <li>num_pops: Number of populations used in meta-analysis.</li>
+              <li>gene: Gene name.</li>
+              <li>n_pav: Number of protein-altering variants passing QC in gene.</li>
+              <li>n_ptv: Number of protein-truncating variants passing QC in gene.</li>
+              <li>l10BF_IEM_pav: log 10 Bayes Factor using independent effects model for protein-altering variants.</li>
+              <li>l10BF_SEM_pav: log 10 Bayes Factor using similar effects model for protein-altering variants.</li>
+              <li>l10BF_SEM_ptv: log 10 Bayes Factor using similar effects model for protein-truncating variants.</li>
+              <li>GBE_link: Link to GBE trait page.</li>
+	      <li>MRPMM: Link to MRP Mixture Model results for identifying variants that are driving the association.</li>
+          </ul>
+          <br>
+          <hr/>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+     
+  </div>
+
+</div>
+{% endblock %}
+

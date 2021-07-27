@@ -1,0 +1,162 @@
+<script type="text/javascript">
+    window.is_gene = typeof window.transcripts_in_gene != 'undefined';
+
+</script>
+<script type="text/template" id="variant-table-template">
+{% if transcripts_in_gene is defined %}
+    <span style="float:left">
+        <small>&dagger; denotes a consequence that is for a non-canonical transcript</small>
+    </span>
+{% endif %}
+<table id="variant_table" class="tablesorter">
+    <thead>
+        <tr>
+            <th class="tooltip-table-header" data-tooltip="chr:pos reference/alternate &#xa;(dbSNP135 rsID)">
+                Variant</th>
+            <th class='tooltip-table-header' data-tooltip="hg19 genomic position">Position</th>
+            <th class='tooltip-table-header' data-tooltip="Filter">Filter</th>
+            <th class='tooltip-table-header' data-tooltip="First 3 associated gene symbols, comma separated">Gene symbol</th>
+            <th class="tooltip-table-header" data-tooltip="HGVS annotation (protein change, where defined, or transcript change for splice variants, otherwise empty)">Consequence</th>
+            <th class="tooltip-table-header" data-tooltip="Variant Effect Predictor (VEP) &#xa; annotation using Gencode 75.&#xa; Worst across all transcripts of this gene.">Annotation</th>
+{% if "enrichp" in icd[0] %}
+            <th class="tooltip-table-header" data-tooltip="Enrichment &#xa;">Enrich</th>
+	    {% endif %}
+            <th class="tooltip-table-header" data-tooltip="Minor allele frequency &#xa;">
+                MAF</th> 
+<!--            <th class="tooltip-table-header" data-tooltip="ExAC NFE alternate allele frequency &#xa;">
+                ExAC NFE AF</th>-->
+            <th class="tooltip-table-header" data-tooltip="Odds ratio (disease traits) or beta (quantitative traits)">Odds Ratio (Disease) or Beta (QT)</th>
+            <th class="tooltip-table-header" data-tooltip="Minimum p-value &#xa;the graphic displays &#xa; p-value on a  &#xa; discrete scale: &#xa; <0.01, <0.001, < 1e-4, <1e-5">
+P-value</th>
+              </tr>
+    </thead>
+    <tbody>
+    <% _.each(table_variants, function(variant) { %>
+        <tr class="table_variant" id="variant_<%= variant.variant_identity %>"
+            category="<%= variant.category %>" filter_status="<%= variant.filter %>" frequency="<%= variant.allele_freq %>">
+            <!-- VARIANT FIELD -->
+            <td>
+                <a href="/<%= window.namespace %>/variant/<%= variant.chrom %>-<%= variant.pos %>-<%= variant.ref %>-<%= variant.alt %>" target="_blank">
+                <%= variant.chrom %>:<%= variant.pos %>
+                <% if (variant.ref.length > 20) { %>
+                    <%= variant.ref.slice(0,20) %>...
+                <% } else { %>
+                    <%= variant.ref %>
+                <% } %> /
+                <% if (variant.alt.length > 20) { %>
+                    <%= variant.alt.slice(0,20) %>...
+                <% } else { %>
+                    <%= variant.alt %>
+                <% } %>
+                <% if (variant.rsid != '.') { %>
+                    (<%= variant.rsid %>)
+                <% } %>
+                </a>
+            </td>
+            <!-- VARIANT POSITION -->
+            <td> <%= variant.pos %></td>
+            <td> <%= variant.filter %></td>
+            <!-- GENE -->
+            <td>
+	      <% if (variant.gene_name != null ){ %>
+            <% var gene_array = variant.gene_name.split(','); %>
+            <% var symbol_array = variant.gene_symbol.split(','); %>
+	    <% } else { %>
+	    <% var gene_array = []; var symbol_array = []; %>
+	    <% }  %> 
+            <% var gene_links = []; %>
+            <% for(var i = 0; i < gene_array.length; i++) { %>
+                <a href="/gene/<%= gene_array[i] %>" target="_blank"> <%= symbol_array[i]%>
+                <% if (i < gene_array.length - 1) { %>
+                    <%= "," %>
+                <% } %>
+            <% } %>
+            </td>
+
+            <!-- CONSEQUENCE -->
+            <td>
+                <% if (variant.HGVSp != '') { %>
+                    <%= variant.HGVSp %><% if (is_gene & variant.CANONICAL != 'YES') { %>&dagger;<% } %>
+                <% } else { %>
+                    <% if (variant.major_consequence == 'splice_donor_variant' | variant.major_consequence == 'splice_acceptor_variant' | variant.major_consequence == 'splice_region_variant') { %>
+                        <% if (variant.HGVSc.length > 100) { %>
+                            <%= variant.HGVSc.slice(0,100) %>...<% } else { %>
+                            <%= variant.HGVSc %><% } %><% if (is_gene & variant.CANONICAL != 'YES') { %>&dagger;<% } %>
+                    <% } %>
+                <% } %>
+            </td>
+            <!-- ANNOTATION -->
+            <td class="<%= variant.category %>" data-consequence="<%= variant.major_consequence %>"><b>
+                <% if (variant.major_consequence) { %>
+                    <%= variant.major_consequence.replace('_variant', '').replace(/_/g, ' ').replace('utr', 'UTR').replace('3 prime', "3'").replace('5 prime', "5'").replace('nc ', "non-coding ") %>
+                <% } %>
+            </b> </td>
+            <!-- ENCODE ANNOTATION -->
+<!--            <td></td> -->
+            <!-- UKBB AF -->
+	    <% if ("enrichp" in variant) { %>
+	    <% if (variant.enrichp < .0001 && !(Number.isNaN(Math.exp(variant.enrichlogor)))) { %>
+            <td>
+                    <%= (Math.exp(variant.enrichlogor)).toPrecision(3) %>
+		</td>
+	    <% } else { %>
+	    <td></td>
+	    <% } } %>
+            <td>
+                <% if (variant.ukbb_freq != -9) { %>
+                <% if (variant.ukbb_freq > .5) { %>
+                    <%= (1 - variant.ukbb_freq).toPrecision(3) %>
+                <% } else { %>
+		<%= variant.ukbb_freq.toPrecision(3) %>
+                <% } %>
+                <% } else { %>
+
+                <% } %>
+            </td> 
+            <!-- EXAC AF 
+            <td>
+                <% if (variant.exac_nfe != -9) { %>
+                    <%= variant.exac_nfe %>
+                <% } else { %>
+
+                <% } %>
+            </td> -->
+            <!-- ODDS RATIO -->
+            <td>
+                <% if (variant.or_val != -9) { %>
+                <% if (variant.or_val == 0) { %>
+                    <% '< 1e-16' %>
+                <% } else { %>
+                <%= parseFloat(variant.or_val).toPrecision(3) %>
+                <%  } %>
+		        <% } else { %>
+                    <% if (variant.or_val != -9) { %>
+                    <%= parseFloat(variant.or_val).toPrecision(3) %>
+                <% } else { %>
+		        <%= parseFloat(variant.or_val).toPrecision(3) %>
+		        <%  } %>
+                <% } %>
+            </td>
+            <!-- P-VALUE -->
+            <td>
+                <% if (variant.pvalue != -9) { %>
+                    <% if (variant.pvalue < .000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) { %>
+                    <%= '< 1e-16' %>
+                <% } else { %>
+                <%= parseFloat(variant.pvalue).toPrecision(3) %>
+                <% } %>
+                <% } else { %>
+                    <% if (variant.pvalue != -9) { %>
+                      <%= parseFloat(variant.pvalue).toPrecision(3) %>
+                <% } else { %>
+                <%= parseFloat(variant.pvalue).toPrecision(3) %>
+                <% } %>
+
+                <% } %>
+                <div id="variant_af_box_<%= variant.variant_identity %>" style="float: right;"></div>
+            </td>
+        </tr>
+    <% }); %>
+    </tbody>
+</table>
+</script>

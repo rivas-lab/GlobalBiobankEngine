@@ -1,0 +1,239 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="container" style="font-size: 16px;">
+   <h1>Frequently Asked Questions</h1>
+   <br/>
+   <ul class="media-list">
+   <li class="media">
+      <a name="targetname"></a>
+      <div class="media-body">
+         <h4 class="media-heading">What's on this page?</h4>
+         <ul>
+            <li><a href="#cite">How should I cite discoveries made using Global Biobank Engine?</a></li>
+         </ul>
+         <ul>
+            <li><a href="#download">Can I download the data?</a></li>
+         </ul>
+         <ul>
+            <li><a href="#processing">How was the data processed for analysis?</a></li>
+         </ul>
+         <ul>
+            <li><a href="#gwas">How were the Genome-wide Association analyses performed?</a></li>
+         </ul>
+         <ul>
+            <li><a href="#cutoff">What p-value cutoff should I use for GWAS and PheWAS significance?</a></li>
+         </ul>
+         <ul>
+            <li><a href="#aggregate">How was the rare variant aggregate analysis performed?</a></li>
+         </ul>
+         <ul>
+            <li><a href="#bayes">How should I interpret the Bayes Factor?</a></li>
+         </ul>
+         <ul>
+            <li><a href="#correlation">What do the different variables mean in the Genetic Correlation App?</a></li>
+         </ul>
+         <ul>
+            <li><a href="#phenotypes">How are the phenotypes defined?</a></li>
+         </ul>
+         <ul>
+            <li><a href="#group">How are the phenotypes grouped?</a></li>
+         </ul>
+      </div>
+   </li>
+   <br/>
+   <ul class="media-list">
+      <li class="media">
+         <a name="cite"></a>
+         <div class="media-body">
+            <h4 class="media-heading">How should I cite discoveries made using Global Biobank Engine?</h4>
+            <p>
+               We request that any use of data obtained from the Global Biobank Engine be cited in publications using the following format:
+            </p>
+            <ul>
+               <li>
+	          G. McInnes, Y. Tanigawa, C. DeBoever, A. Lavertu, J. E. Olivieri, M. Aguirre, M. A. Rivas, Global Biobank Engine: enabling genotype-phenotype browsing for biobank summary statistics. Bioinformatics (2019), <a href="https://doi.org/10.1093/bioinformatics/bty999">doi:10.1093/bioinformatics/bty999</a>.
+               </li>
+            </ul>
+            <br/>
+            <p>
+               We also ask that the developers of the engine be acknowledged as follows:
+            </p>
+            <ul>
+               <li>The authors would like to thank the Rivas lab for making the resource available.</li>
+            </ul>
+         </div>
+      </li>
+      <br/>
+      <li class="media">
+         <a name="download"></a>
+         <div class="media-body">
+            <h4 class="media-heading">Can I download the data?</h4>
+            <p>
+               Summary statistics of the data presented in GBE can be downloaded from the <a href="https://github.com/rivas-lab/public-resources">Rivas Lab GitHub page</a> within the <a href="https://github.com/rivas-lab/public-resources/tree/master/uk_biobank/summary_stats">summary stats</a> section.
+            </p>
+            <p>
+               Additionally, the Neale Lab has made the summary statistics from their heritability analysis available for download <a href="http://www.nealelab.is/blog/2017/9/15/heritability-of-2000-traits-and-disorders-in-the-uk-biobank">here</a>.
+            </p>
+         </div>
+      </li>
+      <br/>
+      <li class="media">
+         <a name="processing"></a>
+         <div class="media-body">
+            <h4 class="media-heading">How was the data processed for analysis?</h4>
+            <p>
+               Data presented in GBE is from the UK Biobank dataset release version 2. To minimize the impact of cofounders and unreliable observations, we used a subset of individuals that satisfied all of the following criteria: (1) selfreported white British ancestry, (2) used to compute principal components, (3) not marked as outliers for heterozygosity and missing rates, (4) do not show putative sex chromosome aneuploidy, and (5) have at most 10 putative third-degree relatives. These criteria are reported by the UK Biobank in the file “ukb_sqc_v2.txt” in the following columns respectively: (1) “in_white_British_ancestry_subset,” (2) “used_in_pca_calculation,” (3) “het_missing_outliers,” (4) “putative_sex_chromosome_aneuploidy”, and (5) “excess_relatives.” We removed 151,169 individuals that did not meet these criteria. Similar criteria was applied to the exome sequencing data from UK Biobank.
+            </p>
+	    <p>
+	      We processed <a href="https://humandbs.biosciencedbc.jp/en/hum0014-v14">summary statistics</a> from <a href="https://biobankjp.org/english/index.html">Biobank Japan</a>.
+	      </p>
+	    <p>
+	      We processed summary statistics from the United States' <a href="https://www.ncbi.nlm.nih.gov/projects/gap/cgi-bin/study.cgi?study_id=phs001672.v3.p1">Million Veterans Program</a>.
+	      </p>
+         </div>
+      </li>
+      <br/>
+      <li class="media">
+         <a name="gwas"></a>
+         <div class="media-body">
+            <h4 class="media-heading">How were the Genome-wide Association analyses performed?</h4>
+            <p>
+               Genome-wide association analysis was performed with Firth-fallback using PLINK v2.00a (17 July 2017).  We used the following covariates in our analysis: age, sex, array type, and the first four principal components, where array type is a binary variable that represents whether an individual was genotyped with UK Biobank Axiom Array or UK BiLEVE Axiom Array. For variants that were specific to one array, we did not use array as a covariate.
+            </p>
+         </div>
+      </li>
+      <br/>
+      <li class="media">
+         <a name="cutoff"></a>
+         <div class="media-body">
+            <h4 class="media-heading">What p-value cutoff should I use for GWAS and PheWAS significance?</h4>
+            <p>
+               Current best practices for determining significance of associations with p-values in genetic association studies require that the significance threshold be adjusted to reflect the number of associations tested, a method known as the Bonferroni correction.  For GWAS, 820,897 tests are performed, one for each variant on the array.  For PheWAS, 1,766 tests, one for each phenotype tested for each variant.  Thus the appropriate p-value cutoffs are 6.0x10<sup>-8</sup> for GWAS and 2.8x10<sup>-5</sup> for PheWAS.
+            </p>
+         </div>
+      </li>
+      <br/>
+      <li class="media">
+         <a name="aggregate"></a>
+         <div class="media-body">
+            <h4 class="media-heading">How was the rare variant aggregate analysis performed?</h4>
+            <p>
+               The method used for aggregate analysis shown on GBE is described in detail in our manuscript, “<a href="https://www.biorxiv.org/content/early/2018/04/14/257162">Bayesian Model Comparison for rare variant association studies of multiple phenotypes</a>”.  Briefly, we run a model called MRP, which considers correlation, scale, and location of genetic effects across a group of genetic variants, phenotypes, and studies. By sharing information across rare variants and phenotypes, we improve our ability to identify rare variants associated with disease compared to considering a single rare variant and a single phenotype.
+            </p>
+            <p>
+               Variants were filtered using the variant filter table.tsv file available on <a href="https://github.com/rivas-lab/public-resources">GitHub</a> (commit 6f9f726) to filter variants on the UK Biobank array for use with MRP. We first chose variants with minor allele frequency less than 1%. We then filtered out all variants with all filters less than one. This removes variants with missingness greater than 1% (calculated on an array-specific basis for array-specific variants) or Hardy-Weinberg equilibrium p < 10<sup>-7</sup>. This also removes some PTVs for which manual inspection revealed irregular cluster plots. We LD pruned the variants by only using variants with ld equal to one. We included missense variants and PTVs indicated by the following annotations: missense variant, stop gained, frameshift variant, splice acceptor variant, splice donor variant, splice region variant, start lost, stop lost.
+            </p>
+         </div>
+      </li>
+      <br/>
+      <li class="media">
+         <a name="bayes"></a>
+         <div class="media-body">
+            <h4 class="media-heading">How should I interpret the Bayes Factor?</h4>
+            <p>
+               The Bayes Factor (BF) is a scoring method used to convey confidence of one hypothesis over another, i.e. the alternative hypothesis over the null hypothesis.  We present a log BF as a measure of support for results of the rare variant aggregate analyses.  In practice, there is no threshold that indicates significance for Bayes Factors, unlike p-values.  However, a log BF greater than 3 indicates moderate evidence for the alternative hypothesis.  See <a href="http://www.andrew.cmu.edu/user/kk3n/simplicity/KassRaftery1995.pdf">Kass & Raftery (1995)</a> for a thorough discussion on Bayes Factors.
+            </p>
+         </div>
+      </li>
+      <br/>
+      <li class="media">
+         <a name="correlation"></a>
+         <div class="media-body">
+            <h4 class="media-heading">What do the different variables mean in the Genetic Correlation App?</h4>
+            <p>
+               The purpose of the Genetic Correlation App is to display genetic correlation estimates from the <a href="https://www.biorxiv.org/content/10.1101/738856v2.full">multivariate polygenic mixture model</a> (MVPMM).  Users can select phenotypes that are available in GBE from the search box at the bottom of the page.
+            </p>
+            <p>
+               The following is a description of each of the relevant variables within the application.
+            <ul>
+               <li>gcorr is the genetic correlation estimate for a pair of phenotypes.</li>
+               <li>gcorr SE is the standard error of the genetic correlation estimate.</li>
+               <li>z provides the z-score for the genetic correlation between the two phenotypes.</li>
+               <li>pi2 indicates the fraction of variants included in the model that are predicted to have non-zero effects on the pair of phenotypes.</li>
+               <li>tau1 and tau2 are estimates of the scale of the genetic effects.  They provide information about the relative size of the genetic effects between the two phenotypes.</li>
+            </ul>
+            </p>
+            <p>
+               Users can filter by z-score, pi2, genetic correlation, and phenotype category.
+            </p>
+            <p>For a video walkthrough of the application please see this youtube <a href="https://www.youtube.com/watch?time_continue=47&v=wnCp3-t_r4o">video</a>.</p>
+         </div>
+      </li>
+      <br/>
+      <li class="media">
+         <a name="phenotypes"></a>
+         <div class="media-body">
+            <h4 class="media-heading">How are the phenotypes defined?</h4>
+	    <br/>
+            <h5 class="media-heading">Cancer phenotypes (<q>cancer</q> <a href="#group">phenotype group</a>)</h5>
+            <p>
+               We combined cancer diagnoses from the UK Cancer Register with self-reported diagnoses from the UK Biobank questionnaire to define cases and controls for cancer GWAS. Individual level ICD-10 codes from the <a href="http://biobank.ctsu.ox.ac.uk/crystal/label.cgi?id=100092">UK Cancer Register</a>, <a href="http://biobank.ctsu.ox.ac.uk/crystal/field.cgi?id=40006">Data-Field 40006</a>, and the <a href="http://biobank.ctsu.ox.ac.uk/crystal/label.cgi?id=2022">National Health Service</a>, <a href="http://biobank.ctsu.ox.ac.uk/crystal/field.cgi?id=41202">Data-Field 41202</a>, in the UK Biobank were mapped to the self-reported cancer codes, <a href="http://biobank.ctsu.ox.ac.uk/crystal/field.cgi?id=20001">Data-Field 20001</a>. The mapping was performed via manual curation of ICD-10 codes for each of the self-reported cancer codes. UKB field codes for self-reported cancer were created with a tree structure such that more specific cancer subtypes (e.g., “malignant melanoma”) are nested under more general categories (“skin cancer”). This tree structure was preserved in the field code to ICD-10 mapping. For example, the self-reported phenotype of “lip cancer” was mapped to its field code, 1010, and the ICD-10 codes for “malignant neoplasm of lip”, C00 and C000-C009. After this mapping, individuals with an affirmative entry in one or more of the phenotype collections (self-reported cancer, cancer registry, and the NHS) were included in the case cohort for the GWAS. No secondary neoplasms were included in the cancer phenotype mappings.
+            </p>
+	    <br/>
+            <h5 class="media-heading">High confidence phenotype definitions (<q>Disease_outcome</q> <a href="#group">phenotype group</a>)</h5>
+            <p>
+               We combined disease diagnoses from the UK National Health Service Hospital Episode Statistics with self-reported diagnoses from the UK Biobank questionnaire to define cases and controls for noncancer phenotypes. We used the following procedure to define cases and controls for non-cancer phenotypes (referred to as “high confidence” phenotypes). ICD-10 codes (Data-Field 41202) were grouped with self-reported non-cancer illness codes (Data-Field 20002) that were closely related. This was done by first creating a computationally generated candidate list of closely related ICD-10 codes and selfreported non-cancer illness codes, then manually curating the matches. The computational mapping was performed by calculating the token set ratio between the ICD-10 code description and the self-reported illness code description using the FuzzyWuzzy python package. The high scoring ICD-10 matches for each selfreported illness were then manually curated to ensure high confidence mappings. Manual curation was required to validate the matches because fuzzy string matching may return words that are similar in spelling but not in meaning. For example, to create a hypertension cohort the code description from Data-Field 20002 (“Hypertension”) was mapped to all ICD-10 code descriptions and all closely related codes were returned (“I10: Essential (primary) hypertension” and “I95: Hypotension”). After manual curation code I10 would be kept and code I95 would be discarded. The following paper describes more about the disease outcome phenotypes.
+	       <ul>
+               <li>
+		   C. DeBoever, Y. Tanigawa, M. Aguirre, G. McInnes, A. Lavertu, M. A. Rivas, Assessing Digital Phenotyping to Enhance Genetic Studies of Human Diseases. The American Journal of Human Genetics. 106, 611-622 (2020). <a href="https://doi.org/10.1016/j.ajhg.2020.03.007" target="_blank">doi:10.1016/j.ajhg.2020.03.007</a>
+               </li>
+               </ul>
+            </p>
+            <br/>
+            <h5 class="media-heading">Family history phenotype definitions (<q>Family_history</q> <a href="#group">phenotype group</a>)</h5>
+            <p>
+               We used data from Category 100034 (Family history–Touchscreen–UK Biobank Assessment Centre) to define “cases” and controls for family history phenotypes. This category contains data from the touchscreen questionnaire on questions related to family size, sibling order, family medical history (of parents and siblings), and age of parents (age of death if died). We focused on Data Coding 20107: Illness of father and 20110: Illness of mother.
+            </p>
+            <br/>
+
+            <h5 class="media-heading">Blood and urine Biomarkers (<q>Biomarkers</q> <a href="#group">phenotype group</a>)</h5>
+            <p>
+               We applied technical covariate correction for 35 blood and urine biomarker phenotypes. Those phenotypes are listed under "Biomarkers" group and the detailed description on the phenotyping procedure is explained in the following manuscript:
+	       <ul>
+               <li>
+                   N. Sinnott-Armstrong*, Y. Tanigawa*, et al, Genetics of 38 blood and urine biomarkers in the UK Biobank. bioRxiv, 660506 (2019). <a href="https://doi.org/10.1101/660506" target="_blank">doi:10.1101/660506</a>
+               </li>
+               </ul>
+            </p>
+            <br/>
+
+	    <h5 class="media-heading">Other quantitative and binary phenotypes</h5>
+            <p>
+                We defined quantitative and binary phenotypes using data fields in UK Biobank. Typically, we used one data field to derive a phenotype in Global Biobank Engine. Sometimes, we defined multiple phenotypes in Global Biobank Engine from a single data field in UK Biobank. This is the case, for example, when the source UK Biobank field contains an answer for categorical traits.
+            </p>
+            <p>
+                For example, <a href="https://biobank.ctsu.ox.ac.uk/crystal/field.cgi?id=50" target="_blank">field 50 in UK Biobank represents standing height</a>. As you can see in <a href="https://biobank.ctsu.ox.ac.uk/crystal/field.cgi?id=50" target="_blank">the field description page</a>, each individual may have up to 4 times of multiple measurements. Using the information in this field, we defined our phenotype <a href="https://gbe.stanford.edu/RIVAS_HG19/coding/INI50" target="_blank"><q>Standing height</q> (GBE phenotype code: INI50)</a> by taking the median of non-NA values as described in the following publication:
+            
+                <ul>
+                <li>
+                    Y. Tanigawa*, J. Li*, J. M. Justesen, H. Horn, M. Aguirre, C. DeBoever, C. Chang, B. Narasimhan, K. Lage, T. Hastie, C. Y. Park, G. Bejerano, E. Ingelsson, M. A. Rivas, Components of genetic associations across 2,138 phenotypes in the UK Biobank highlight adipocyte biology. Nat Commun. 10, 1-14 (2019). <a href="https://doi.org/10.1038/s41467-019-11953-9" target="_blank">doi:10.1038/s41467-019-11953-9</a>
+                </li>
+                </ul>
+            
+                We processed other quantitative phenotypes in the same way (i.e. the non-NA median was taken).
+            </p>
+            
+            <p>
+                For non-quantitative fields in UK Biobank, we performed manual curation to define case and control. Sometimes, we split categorical results in a single field in UK Biobank into a series of binary traits. For cancer, family history, and disease outcome phenotypes, please see the description above for how we defined the case and controls. For other phenotypes, we will update the description of those phenotypes in the future.
+            </p>
+         </div>
+      </li>
+      <br/>
+
+      <li class="media">
+        <a name="group"></a>
+        <div class="media-body">
+           <h4 class="media-heading">How are the phenotypes grouped?</h4>
+           <p>
+               We provide the phenotype groupings in Global Biobank Engine. Those phenotype groupings are listed in the PheWAS plot in the variant page, for example. The disease outcomes, cancers, family history information, and biomarker phenotypes, are grouped as one category for each. For other phenotypes, we used a modified version of "Primary Category of Origin" information in <a href="http://biobank.ctsu.ox.ac.uk/crystal/browse.cgi" target="_blank">field browser in UK Biobank</a>. Specifically, we removed several bottom-level specific groupings so that we have a moderate number of groups.
+           </p>
+           <p>
+               For standing height, for example, <a href="https://biobank.ctsu.ox.ac.uk/crystal/field.cgi?id=50" target="_blank">the source UK Biobank Field</a> has the following "Primary Category of Origin" information: <q>UK Biobank Assessment Centre / Physical measures / Anthropometry / Body size measures</q>. Using this information, we classified our <a href="https://gbe.stanford.edu/RIVAS_HG19/coding/INI50" target="_blank"><q>Standing height</q> (GBE phenotype code: INI50) phenotype</a> in the <q>Anthropometry</q> group.
+           </p>
+        </div>
+      </li>
+      <br/>
+   </ul>
+</div>
+{% endblock %}
+

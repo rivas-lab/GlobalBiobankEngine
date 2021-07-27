@@ -1,0 +1,74 @@
+{% extends "layout.html" %}
+{% block body %}
+
+    <style>
+.button {
+    background-color: #B3995D; /* Green */
+    border: none;
+    color: white;
+    padding: 16px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    -webkit-transition-duration: 0.1s; /* Safari */
+    transition-duration: 0.1s;
+    cursor: pointer;
+}
+
+.button:hover {
+    background-color: #DAD7CB;
+    color: white;
+    text-decoration: none;
+}
+
+.panel-custom-cardinal {
+    border-color: #8C1515;
+}
+.panel-custom-cardinal > .panel-heading {
+    background: #8C1515;
+    color: #ffffff;
+    border-color: #8C1515;
+}
+
+</style>
+
+  <body>
+  <br>
+  <br>
+    <div class="container">
+           <script type="text/JavaScript" src="/static/js/nav_about.js"></script>
+
+
+
+<!--               <p align="center"><img src="/static/media/6.png" alt="LD Hub logo" width="150" height="150"/></p>-->
+      <div class="row">
+        <div class="col-sm-4 col-sm-push-4">
+          <div class="panel panel-custom-cardinal">
+            <div class="panel-heading">
+              <h3 class="panel-title" align="center">Terms of use</h3>
+            </div>
+            <div class="panel-body">
+            <p><font size="3">Usage of GBE will be subject to the following terms and conditions:</font></p>
+	    <p>1) I will not attempt to download GWAS summary data in bulk from the platform websites.</p>
+	    <p>2) I will not attempt to re-identify research participants.</p>
+	    <p>3) In all outputs arising from usage of GBE, I agree to acknowledge and cite the relevant publications of the studies that provided the summary data.</p>
+	    <p>4) I agree to adhere to the T&Cs of the relevant studies providing the summary data.</p>
+            </div>
+            </div>
+          <p align="center"><a class="button btn btn-info" href="/login" role="button">Sign in with your Google account</a></p>
+          <p align="center" ><a href="/logout/" class="button btn btn-info" role="button">Logout</a></p>
+
+        </div><!-- /.col-sm-4 -->
+
+
+        <!--</div>-->
+      </div>
+
+    </div> <!-- /container -->
+
+  </body>
+
+
+{% endblock %}

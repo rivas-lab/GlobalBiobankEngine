@@ -1,0 +1,253 @@
+{% extends "layout.html" %}
+{% block head %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.0/css/bootstrap.min.css" integrity="sha512-gSfrSyGfjdjA1G2c+eP7498HCNt+5sJ23zTW7qr2zuO2P7ntIcSGOXP2rHXRY3jh3o36jYRWs8mYX8LEVrAkFA==" crossorigin="anonymous" />
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.min.js" integrity="sha512-qzgd5cYSZcosqpzpn7zF2ZId8f/8CHmFKZ8j7mU4OUXTNRd5g+ZHBPsgKEwoqxCtdQvExE5LprwwPAgoicguNg==" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.widgets.min.js" integrity="sha512-dj/9K5GRIEZu+Igm9tC16XPOTz0RdPk9FGxfZxShWf65JJNU2TjbElGjuOo3EhwAJRPhJxwEJ5b+/Ouo+VqZdQ==" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/extras/jquery.tablesorter.pager.min.js" integrity="sha512-y845ijdup9lDunrcSRQAlFdQICHVhkB5UNguWRX8A3L+guxO7Oow0poojw0PLckhcKij++h85bnyro80fjR9+A==" crossorigin="anonymous"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/css/theme.bootstrap_3.min.css" integrity="sha512-1r2gsUynzocV5QbYgEwbcNGYQeQ4jgHUNZLl+PMr6o248376S3f9k8zmXvsKkU06wH0MrmQacKd0BjJ/kWeeng==" crossorigin="anonymous" />
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/css/jquery.tablesorter.pager.min.css" integrity="sha512-TWYBryfpFn3IugX13ZCIYHNK3/2sZk3dyXMKp3chZL+0wRuwFr1hDqZR9Qd5SONzn+Lja10hercP2Xjuzz5O3g==" crossorigin="anonymous" />
+
+<style>
+    .img-fluid {
+        max-width: 100%;
+        height: auto
+      }
+</style>
+
+<script>
+    $(function() {
+      // NOTE: $.tablesorter.themes.bootstrap is ALREADY INCLUDED in the jquery.tablesorter.widgets.js
+      // file; it is included here to show how you can modify the default classes
+      $.tablesorter.themes.bootstrap = {
+        // these classes are added to the table. To see other table classes available,
+        // look here: http://getbootstrap.com/css/#tables
+        table        : 'table table-bordered table-striped',
+        caption      : 'caption',
+        // header class names
+        header       : 'bootstrap-header', // give the header a gradient background (theme.bootstrap_2.css)
+        sortNone     : '',
+        sortAsc      : '',
+        sortDesc     : '',
+        active       : '', // applied when column is sorted
+        hover        : '', // custom css required - a defined bootstrap style may not override other classes
+        // icon class names
+        icons        : '', // add "bootstrap-icon-white" to make them white; this icon class is added to the <i> in the header
+        iconSortNone : 'bootstrap-icon-unsorted', // class name added to icon when column is not sorted
+        iconSortAsc  : 'glyphicon glyphicon-chevron-up', // class name added to icon when column has ascending sort
+        iconSortDesc : 'glyphicon glyphicon-chevron-down', // class name added to icon when column has descending sort
+        filterRow    : '', // filter row class; use widgetOptions.filter_cssFilter for the input/select element
+        footerRow    : '',
+        footerCells  : '',
+        even         : '', // even row zebra striping
+        odd          : ''  // odd row zebra striping
+      };
+
+    // call the tablesorter plugin and apply the uitheme widget
+    $("#table_results").tablesorter({
+      theme : "bootstrap",
+      widthFixed: true,
+      headerTemplate : '{content} {icon}', // new in v2.7. Needed to add the bootstrap icon!
+      widgets : [ "uitheme", "filter", "columns", "zebra" ],
+      widgetOptions : {
+        zebra : ["even", "odd"],
+        columns: [ "primary", "secondary", "tertiary" ],
+        filter_reset : ".reset",
+        filter_cssFilter: "form-control",
+    }
+    })
+    .tablesorterPager({
+      container: $(".ts-pager"),
+      cssGoto  : ".pagenum",
+      removeRows: false,
+      output: '{startRow} - {endRow} / {filteredRows} ({totalRows})'
+    });
+  });
+
+</script>
+{% endblock %}
+
+
+{% block body %}
+
+<div class="container">
+    <div class="row">
+        <div class="col col-md-12">
+            <h1>COVID-19 HGI, PRS-PheWAS analysis</h1>
+            <hr/>
+            <h3>2021/1/18-20 (beta)</h3>
+            <h5>Yosuke Tanigawa and Manuel A. Rivas</h5>
+            <p>
+                Thanks to the <a href="https://www.covid19hg.org/" target="_blank">COVID-19 host genetics initiative (HGI)</a>, we have access to the meta-analyzed GWAS summary statistics.
+                Here, we performed PRS-PheWAS analysis using UK Biobank to see whether the genetic associations identified for the COVID-19 are related to other traits.
+                Please see the <a href="#methods">Methods</a> section below for more information.
+            </p>
+            <hr/>
+            <h2>Browse the results</h2>
+            <p>
+                We currently display the results of COVID-19 HGI PRS-PheWAS analysis for the following 4 datasets.
+                Please see the <a href="#methods">Methods</a> section below for more information.
+            </p>
+            <ul>
+                <li><a href="/covid19HGI/PRS_PheWAS/eur_leave_ukbb_23andme">EUR (-UKB) ("eur_leave_ukbb_23andme")</a></li>
+                <li><a href="/covid19HGI/PRS_PheWAS/eur_leave_23andme">EUR ("eur_leave_23andme")</a></li>
+                <li><a href="/covid19HGI/PRS_PheWAS/leave_UKBB_23andme">ALL (-UKB) ("leave_UKBB_23andme")</a></li>
+                <li><a href="/covid19HGI/PRS_PheWAS/leave_23andme">ALL ("leave_23andme")</a></li>
+            </ul>
+            <!-- <ul>
+                {% for HGI_suffix in _HGI_suffices %}
+                <li>PRS PheWAS results for <a href="/covid19HGI/PRS_PheWAS/{{ HGI_suffix }}">{{ HGI_suffix }}</a></li>
+                {% endfor %}
+            </ul> -->
+            <hr/>
+        </div>
+    </div>
+
+
+    {%for clumpp in [ '1e-5' ] %}
+    <div class="row">
+        <div class="col col-md-12">
+            <h2>Examples of PRS-PheWAS associations</h2>
+            <p>
+                Here, we show two example results from the <a href="/covid19HGI/PRS_PheWAS/eur_leave_ukbb_23andme">EUR (-UKB) ("eur_leave_ukbb_23andme")</a> dataset.
+                The two examples are from the meta-analyzed COVID-19 HGI summary statistics of <a href="/covid19HGI/PRS_PheWAS/eur_leave_ukbb_23andme/B2">B2 (Hospitalized covid vs. population)</a> and <a href="/covid19HGI/PRS_PheWAS/eur_leave_ukbb_23andme/C2">C2 (Covid vs. population)</a>. For example, higher COVID-19 PRS is associated with lower alkaline phosphatase value in both panels.
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        {%for HGI_cc in [ 'B2', 'C2' ] %}
+        <div class="col col-md-6">
+            <h3>{{ HGI_cc }}, LD clumping p-value threshold: {{ clumpp }}</h3>
+            <img class="img-fluid" src="{{ url_for('static', filename='covid19HGI/fig/UKB_PRS_PheWAS' )}}/{{ _HGI_sx }}/{{ _HGI_v }}_{{ HGI_cc }}_{{ _HGI_sx }}.clump{{ clumpp }}.png" />
+            <p>
+                The PRS-PheWAS analysis for COVID-19 HGI case/control definition, {{ HGI_cc }}. Using phenotypes in UK Biobank (y-axis), we performed PRS-PheWAS analysis and display the significance (x-axis) and the direction (shape) of the association.
+            </p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="row">
+        <div class="col col-md-12">
+            <hr/>
+        </div>
+    </div>
+    {% endfor %}
+
+    <div class="row">
+        <div class="col col-md-12">
+            <h2 align="center">All PRS-PheWAS associations (p < 1e-5)</h2>
+            <p>Here, we display PRS-PheWAS association summary statistics (p < 1e-5). One can use sort and/or filter function. For example, you may enter "<1e-10" in the P-value column to change the p-value threshold.</p>
+            <br>
+            <!-- https://mottie.github.io/tablesorter/docs/index.html -->
+            <table id="table_results"> <!-- bootstrap classes added by the uitheme widget -->
+                <thead>
+                    <tr>
+                        {% for table_col in table_cols %}
+                        {% if table_col in table_cols_select %}
+                        <th class="filter-select filter-exact" data-placeholder="Select">{{ table_col }}</th>
+                        {% else %}
+                        <th>{{ table_col }}</th>
+                        {% endif %}
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                        {% for table_col in table_cols %}
+                        <th>{{ table_col }}</th>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <th colspan="8" class="ts-pager form-inline">
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-default first"><< First</button>
+                                <button type="button" class="btn btn-default prev">< Prev.</button>
+                            </div>
+                            <span class="pagedisplay"></span>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-default next">Next ></button>
+                                <button type="button" class="btn btn-default last">Last >></button>
+                            </div>
+                            <select class="form-control input-sm pagesize" title="Select page size">
+                                <option selected="selected" value="10">10</option>
+                                <option value="30">30</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                                <option value="all">All Rows</option>
+                            </select>
+                            <select class="form-control input-sm pagenum" title="Select page number">
+                            </select>
+                        </th>
+                    </tr>
+                </tfoot>
+                <tbody>
+                    {{ table_body_str|safe }}
+                </tbody>
+            </table>
+            <br>
+            <h3>Description of the columns</h3>
+            <ul>
+                <li>HGI: the case/control definition from the COVID-19 HGI.</li>
+                <li>subset: the sample inclusion criteria in the meta-analysis performed by COVID-19 HGI.</li>
+                <li>clump p1: the LD clumping p-value threshold used in the clumping-based PRS analysis.</li>
+                <li>Trait: a trait in UK Biobank.</li>
+                <li>Category: trait categories used in the Global Biobank Engine. Its <a href="https://gbe.stanford.edu/faq#group" target="_blank">FAQ page</a> has more information.</li>
+                <li>BETA: the effect size estimates (BETA or log(OR)) of the PRS-PheWAS association.</li>
+                <li>SE: the standard error of the BETA or log(OR).</li>
+                <li>P: the p-value of the association.</li>
+            </ul>
+            <hr/>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col col-md-12">
+            <a name="methods"></a>
+            <h2>Methods</h2>
+            <h3>Construction of COVID-19 PRS model from meta-analyzed summary statistics</h3>
+            <ul>
+                <li>We took the <a href="https://www.covid19hg.org/results/" target="_blank">latest (round 5, Jan. 2021) release</a> of the meta-analyzed GWAS summary statistics from the <a href="https://www.covid19hg.org/" target="_blank">covid-19 host genetics initiative</a>. We performed analysis for the following 4 case/control definition.</li>
+                <ul>
+                    <li>B2: Hospitalized covid vs. population</li>
+                    <li>C2: Covid vs. population</li>
+                    <li>B1: Hospitalized covid vs. not hospitalized covid</li>
+                    <li>A2: Very severe respiratory confirmed covid vs. population</li>
+                </ul>
+                <li>For each case/control definition, the COVID-19 HGI released the following 4 different versions of the summary statistics, corresponding to a different set of individuals included in the analysis.</li>
+                <ul>
+                    <li>EUR (-UKB) ("eur_leave_ukbb_23andme"): the individuals with European ancestry who are recruited outside of 23andMe or UK Biobank.</li>
+                    <li>EUR ("eur_leave_23andme"): the individuals with European ancestry who are recruited outside of 23andMe.</li>
+                    <li>ALL (-UKB) ("leave_UKBB_23andme"): the individuals with European ancestry who are recruited outside of 23andMe or UK Biobank.</li>
+                    <li>ALL ("leave_23andme"): the individuals who are recruited outside of 23andMe.</li>
+                </ul>
+                <li>We focused on association summary statistics on the genetic variants that are directly genotyped in UK Biobank study.</li>
+                <li>We performed LD clumping analysis using the genotype data of unrelated white British individuals in UK Biobank with different p-value threshold: 1e-5, 1e-4, and 1e-3.</li>
+                <li>We constructed polygenic risk score with the identified lead SNPs from the LD clumping analysis.</li>
+                <li>We computed the PRS score for each individual in UK Biobank. Note this prediction model captures genetic components of COVID-19 susceptibility/severity - many studies revealed that there are many non-genetic factors influencing on the risk.</li>
+            </ul>
+            <h3>PRS-PheWAS analysis in UK Biobank cohort</h3>
+            <ul>
+                <li>We focused on ~3000 phenotypes in UK Biobank, which are available as a part of Global Biobank Engine. This includes blood and urine biomarker measurements, blood test results, disease outcomes, and other traits.</li>
+                <li>Using the COVID-19 PRS scores, we performed PRS-PheWAS analysis using unrelated white British individuals in UK Biobank. We included age, age^2, sex, genotype PC1-PC10 as covariates.</li>
+                <li>We summarized the association summary statistics, including BETA (or log(OR)), standard error (SE), and P-value.</li>
+            </ul>
+            <h3>Additional analysis regarding the chr3 region</h3>
+            <ul>
+                <li>The COVID-19 GWAS associations on chr3 genes have been previously reported (for example in <a href="https://www.covid19hg.org/blog/2020-09-24-freeze-3-results/" target="_blank">COVID-19 HGI's Blog post for data freeze 3</a>). To see if the observed PRS-PheWAS associations are completely dominated by the GWAS associations in this region, we performed 2 additional analysis.</li>
+                <ol>
+                    <li>We removed the chr3 region (3 Mbp window surronding chr3:45850783 (hg19)) from the LD clumped summary statistics and repeated the PRS-PheWAS analysis. We compared the BETA[SE] and p-value of the PRS-PheWAS associations.</li>
+                    <li>Focusing on the identified traits in UK Biobank, we performed GWAS analysis and compared the GWAS BETA[SE] and p-value with that in the COVID-19 HGI meta-analyzed summary statistics.</li>
+                </ol>
+            </ul>
+            <hr/>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

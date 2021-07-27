@@ -1,0 +1,88 @@
+{% extends "layout.html" %}
+{% block head %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.min.js" integrity="sha512-qzgd5cYSZcosqpzpn7zF2ZId8f/8CHmFKZ8j7mU4OUXTNRd5g+ZHBPsgKEwoqxCtdQvExE5LprwwPAgoicguNg==" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.widgets.min.js" integrity="sha512-dj/9K5GRIEZu+Igm9tC16XPOTz0RdPk9FGxfZxShWf65JJNU2TjbElGjuOo3EhwAJRPhJxwEJ5b+/Ouo+VqZdQ==" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/extras/jquery.tablesorter.pager.min.js" integrity="sha512-y845ijdup9lDunrcSRQAlFdQICHVhkB5UNguWRX8A3L+guxO7Oow0poojw0PLckhcKij++h85bnyro80fjR9+A==" crossorigin="anonymous"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/css/jquery.tablesorter.pager.min.css" integrity="sha512-TWYBryfpFn3IugX13ZCIYHNK3/2sZk3dyXMKp3chZL+0wRuwFr1hDqZR9Qd5SONzn+Lja10hercP2Xjuzz5O3g==" crossorigin="anonymous" />
+
+{% endblock %}
+
+
+{% block body %}
+
+<div class="container">
+    <div class="row">
+        <div class="col col-md-12">
+            <h1>PRS-PheWAS results</h1>
+            <hr/>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col col-md-12">
+            <ul>
+                <li>Go back to the <a href="/covid19HGI">top page</a></li>
+
+                {% for HGI_suffix in _HGI_suffices %}
+                {% if HGI_suffix == HGI_sx %}
+                <li>PRS PheWAS results for {{ HGI_suffix }} (this page)</li>
+                {% else %}
+                <li>PRS PheWAS results for <a href="../{{ HGI_suffix }}">{{ HGI_suffix }}</a></li>
+                {% endif %}
+                {% endfor %}
+            </ul>
+            <hr/>
+        </div>
+    </div>
+
+
+    {% for clumpp in _clump_p1s %}
+    <div class="row">
+        <div class="col col-md-12">
+            <h2>LD clumping p-value threshold: {{ clumpp }}</h2>
+        </div>
+    </div>
+
+    {% for HGI_cc in _HGI_case_controls %}
+    <div class="row">
+        <div class="col col-md-6">
+            <h3>{{ HGI_cc }}</h3>
+            <img class="img-fluid" src="{{ url_for('static', filename='covid19HGI/fig/UKB_PRS_PheWAS' )}}/{{ HGI_sx }}/{{ _HGI_v }}_{{ HGI_cc }}_{{ HGI_sx }}.clump{{ clumpp }}.png" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col col-md-12">
+            <h3>The effects of chr3 region (with chemokine genes)</h3>
+            <img class="img-fluid" src="{{ url_for('static', filename='covid19HGI/fig/remove_chr3_chemokine' )}}/{{ HGI_sx }}/{{ _HGI_v }}_{{ HGI_cc }}_{{ HGI_sx }}.clump{{ clumpp }}.remove_chr3_chemokine.png" />
+        </div>
+    </div>
+
+    {% if HGI_sx == 'eur_leave_ukbb_23andme' %}
+    {% for GBE_ID in _GBE_IDs %}
+    <div class="row">
+        <div class="col col-md-12">
+            <h4>{{ GBE_ID }}</h4>
+            <img class="img-fluid" src="{{ url_for('static', filename='covid19HGI/fig/UKB_PRS_PheWAS_follow_up_GWAS' )}}/{{ HGI_sx }}/{{ HGI_cc }}/{{ _HGI_v }}_{{ HGI_cc }}_{{ HGI_sx }}.clump{{ clumpp }}.{{ GBE_ID }}.png" />
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+
+    {% endfor %}
+
+    <div class="row">
+        <div class="col col-md-12">
+            <hr/>
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+{% endblock %}
+

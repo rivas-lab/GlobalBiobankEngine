@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+{% block body %}
+    <!-- Render context vars in JS here -->
+    <script type="text/javascript">
+        window.icd = {{ icd|tojson|safe }};
+        window.namespace = {{ namespace|tojson|safe }};
+        window.page_name = window.icd[0].icd_id;
+    </script>
+
+
+    <script>
+        filtered_variants = _.filter(window.table_variants, function(d) {
+            return d.filter == 'PASS';
+        });
+        $('#number_of_variants').replaceWith(filtered_variants.length);
+        lof_filtered_variants = _.filter(window.table_variants, function(d) {
+            return d.filter == 'PASS' && d.category == 'lof_variant';
+        });$('#number_of_lof_variants').replaceWith(lof_filtered_variants.length);
+    </script>
+
+    <style>
+                        h3{background-color:#826aa5;color:#fff;padding:3px;}
+                        h3 span{float:right;font-size:28px;font-weight:normal;padding:1px;}
+                        h3 span a{color:#fff;text-decoration:none;}
+
+                </style>
+
+
+    <div class="container-fluid">
+        <div class="row">
+
+            <h1><span class="hidden-xs">Code Phenotype: {{icd[0].Name}}</span></h1>
+
+        <hr/>
+     <dl class="dl-horizontal" style="margin-bottom: 0px;">
+                        <dt>Code:</dt>
+			{% if icd[0].icd %}
+			<dt>Case Count or N:</dt>
+			{% else %}
+			<dt>Case Count or N:</dt>
+			{% endif %}
+			<dt>Gene-based results:</dt>                        
+			<dt>Manhattan plot:</dt>                        
+                        <dd>{{ icd[0].icd.replace('ICD','') }}</dd>
+                                             <dd>{{ icd[0].Case }}
+                                             </dd>
+                        <dd><a href="/{{namespace}}/coding/gene-mh/{{ icd[0].icd}}">{{ icd[0].icd.replace('ICD','') }}</a></dd>
+                        <dd><a href="/{{namespace}}/coding/{{ icd[0].icd}}">{{ icd[0].icd.replace('ICD','') }}</a></dd>
+			<a href = "https://biobank.ctsu.ox.ac.uk/crystal/field.cgi?id={{ icd[0].icd.replace('INI','') }}"><object align="middle" data="https://biobank.ctsu.ox.ac.uk/crystal/crystal/graphs/c{{ icd[0].icd.replace('INI','') }}.png"></a>
+                           <img src="https://upload.wikimedia.org/wikipedia/commons/8/80/Comingsoon.png"></img>
+			  </object>
+                    </dl>
+           <hr />
+         </div>
+
+
+
+    </div>
+
+{% endblock %}

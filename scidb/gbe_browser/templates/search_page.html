@@ -1,0 +1,2343 @@
+{% extends "layout.html" %}
+{% block body %}
+    <head>
+<style>
+.dropdown-submenu {
+ position: relative;
+}
+
+.dropdown-submenu .dropdown-menu {
+    top: 0; 
+    left: 100%; 
+    margin-top: -1px;
+}
+
+.dropbtn1 {
+    background-color: #B3995D;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+
+
+.dropbtn1:hover, .dropbtn:focus {
+    background-color: #B6B1A9;
+}
+
+
+
+
+.button {
+    background-color: #428bca; /* Green */
+    border: none;
+    color: white;
+    padding: 16px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    -webkit-transition-duration: 0.1s; /* Safari */
+    transition-duration: 0.1s;
+    cursor: pointer;
+}
+
+.button:hover {
+    background-color: #DAD7CB;
+    color: white;
+    text-decoration: none;
+}
+
+
+
+
+#myInput {
+    border-box: box-sizing;
+    background-image: url('searchicon.png');
+    background-position: 14px 12px;
+    background-repeat: no-repeat;
+    font-size: 16px;
+    padding: 14px 20px 12px 45px;
+    border: none;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f6f6f6;
+    min-width: 330px;
+    overflow: auto;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown a:hover {background-color: #ddd}
+
+.show {display:block;}
+#exTab1 .tab-content {
+  color : white;
+  background-color: #428bca;
+  padding : 5px 15px;
+}
+
+#exTab2 h3 {
+  color : white;
+  background-color: #428bca;
+  padding : 5px 15px;
+}
+
+/* remove border radius for the tab */
+
+#exTab1 .nav-pills > li > a {
+  border-radius: 0;
+}
+
+/* change border radius for the tab , apply corners on top*/
+
+#exTab3 .nav-pills > li > a {
+  border-radius: 4px 4px 0 0 ;
+}
+
+#exTab3 .tab-content {
+  color : white;
+  background-color: #428bca;
+  padding : 5px 15px;
+}
+
+
+
+</style>
+</head>
+
+    <script>
+        $('#navbar_form_container').hide();
+    </script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-68395741-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+<script>
+/* When the user clicks on the button,
+toggle between hiding and showing the dropdown content */
+function myFunction() {
+    document.getElementById("myDropdown").classList.toggle("show");
+}
+
+function filterFunction() {
+    var input, filter, ul, li, a, i;
+    input = document.getElementById("myInput");
+    filter = input.value.toUpperCase();
+    div = document.getElementById("myDropdown");
+    a = div.getElementsByTagName("a");
+    for (i = 0; i < a.length; i++) {
+        if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
+            a[i].style.display = "";
+        } else {
+            a[i].style.display = "none";
+        }
+    }
+}
+
+
+
+
+function myFunction2() {
+    document.getElementById("myDropdown2").classList.toggle("show");
+}
+
+function filterFunction2() {
+    var input, filter, ul, li, a, i;
+    input = document.getElementById("myInput2");
+    filter = input.value.toUpperCase();
+    div = document.getElementById("myDropdown2");
+    a = div.getElementsByTagName("a");
+    for (i = 0; i < a.length; i++) {
+        if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
+            a[i].style.display = "";
+        } else {
+            a[i].style.display = "none";
+        }
+    }
+}
+
+
+
+function myFunction3() {
+    document.getElementById("myDropdown3").classList.toggle("show");
+}
+
+function filterFunction3() {
+    var input, filter, ul, li, a, i;
+    input = document.getElementById("myInput3");
+    filter = input.value.toUpperCase();
+    div = document.getElementById("myDropdown3");
+    a = div.getElementsByTagName("a");
+    for (i = 0; i < a.length; i++) {
+        if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
+            a[i].style.display = "";
+        } else {
+            a[i].style.display = "none";
+        }
+    }
+}
+
+
+
+
+function myFunction4() {
+    document.getElementById("myDropdown4").classList.toggle("show");
+}
+
+function filterFunction4() {
+    var input, filter, ul, li, a, i;
+    input = document.getElementById("myInput4");
+    filter = input.value.toUpperCase();
+    div = document.getElementById("myDropdown4");
+    a = div.getElementsByTagName("a");
+    for (i = 0; i < a.length; i++) {
+        if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
+            a[i].style.display = "";
+        } else {
+            a[i].style.display = "none";
+        }
+    }
+}
+
+
+
+function myFunction5() {
+    document.getElementById("myDropdown5").classList.toggle("show");
+}
+
+function filterFunction5() {
+    var input, filter, ul, li, a, i;
+    input = document.getElementById("myInput5");
+    filter = input.value.toUpperCase();
+    div = document.getElementById("myDropdown5");
+    a = div.getElementsByTagName("a");
+    for (i = 0; i < a.length; i++) {
+        if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
+            a[i].style.display = "";
+        } else {
+            a[i].style.display = "none";
+        }
+    }
+}
+
+
+
+
+function myFunction6() {
+    document.getElementById("myDropdown6").classList.toggle("show");
+}
+
+function filterFunction6() {
+    var input, filter, ul, li, a, i;
+    input = document.getElementById("myInput6");
+    filter = input.value.toUpperCase();
+    div = document.getElementById("myDropdown6");
+    a = div.getElementsByTagName("a");
+    for (i = 0; i < a.length; i++) {
+        if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
+            a[i].style.display = "";
+        } else {
+            a[i].style.display = "none";
+        }
+    }
+}
+
+
+
+
+function myFunction7() {
+    document.getElementById("myDropdown7").classList.toggle("show");
+}
+
+function filterFunction7() {
+    var input, filter, ul, li, a, i;
+    input = document.getElementById("myInput7");
+    filter = input.value.toUpperCase();
+    div = document.getElementById("myDropdown7");
+    a = div.getElementsByTagName("a");
+    for (i = 0; i < a.length; i++) {
+        if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
+            a[i].style.display = "";
+        } else {
+            a[i].style.display = "none";
+        }
+    }
+}
+
+
+
+
+
+function myFunction8() {
+    document.getElementById("myDropdown8").classList.toggle("show");
+}
+
+function filterFunction8() {
+    var input, filter, ul, li, a, i;
+    input = document.getElementById("myInput8");
+    filter = input.value.toUpperCase();
+    div = document.getElementById("myDropdown8");
+    a = div.getElementsByTagName("a");
+    for (i = 0; i < a.length; i++) {
+        if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
+            a[i].style.display = "";
+        } else {
+            a[i].style.display = "none";
+        }
+    }
+}
+</script>
+
+
+
+
+    <div class="container">
+        <h1 id="home-title">Global Biobank Engine <a href="/about" style="color: black;"></a></li></h1>
+        <div class="row">
+            <div class="col-md-12">
+  <form method=post enctype=multipart/form-data>
+              <select name="functionassocset" id="functionassocset" class="selectpicker" data-live-search="true"  data-width="fit"/>
+<option selected disabled hidden value="default">Select an association set</option>
+<option value="RIVAS_HG19" data-tokens="uk biobank array">UK Biobank array - Meta-analysis (White British, European, African, South Asian, East Asian, Admixed, Related)</option>
+<option value="RIVAS_HG38" data-tokens="uk biobank exomes">UK Biobank exome - Meta-analysis (White British, European, African, South Asian, East Asian, Admixed, Related)</option>
+</select>
+<input type="submit" value="Submit" name="submit" class="btn btn-info">
+</form>
+                <div id="home-searchbox">
+                    <form action="/awesome/{{ ns[0].id }}">
+                        <input type="submit" style="display: none;"/>
+                        <input id="home-searchbox-input" name="query" class="form-control input-lg awesomebar" type="text" placeholder="Search for a gene or variant or region or phenotype"/>
+                        <input type="submit" style="position: absolute; left: -9999px"/>
+                    </form>
+                    <p class="text-muted">
+                        Examples - Gene: <a href="/awesome?query=F5">F5</a></li>,
+                        Transcript: <a href="/transcript/ENST00000367797">ENST00000367797</a></li>,
+                        Variant: <a href="/variant/1-169519049">1:169519049</a></li>,
+                      RS ID: <a href="/awesome?query=rs6025">rs6025</a></li>,
+                      Region: <a href="/region/10-114686614-114786614">10:114686614-114786614</a></li>,
+                      Phenotype: <a href="/coding/HC382">asthma</a></li>
+                     </p>
+                </div>
+            </div>
+        </div>
+
+
+
+<br>
+
+
+                <div class="row" style="font-size: 16px;">
+	  <div class="col-md-8">
+<h3 align="center">Genetic Association Results</h3>
+        <p><b>Note: </b>We present summary statistic results from the UK Biobank hospital in-patient health-related outcomes summary information data (<a href="http://biobank.ctsu.ox.ac.uk/showcase/field.cgi?id=41202">Data-Field 41202</a>); computational grouping of phenotypes with cancer (<a href="http://biobank.ctsu.ox.ac.uk/crystal/label.cgi?id=100092">Category 100092</a>) registry, death registry data (<a href="http://biobank.ctsu.ox.ac.uk/crystal/label.cgi?id=100093">Category 100093</a>), algorithmically-defined outcomes (<a href="http://biobank.ctsu.ox.ac.uk/crystal/label.cgi?id=42">Category 42</a>), and verbal questionnaire data (<a href="http://biobank.ctsu.ox.ac.uk/crystal/label.cgi?id=100071">Category 100071</a>); and manually curated grouping of phenotypes.</p> We are also actively adding genetic association results from other studies, which will contribute to several activities in Global Biobank Engine.
+   <p>
+
+<h3 align="left">Browseable phenotypes</h3>
+<div class="btn-group-vertical" role="group" align="left" style="width: 100%;">
+
+<div class="btn-group" role="group">
+<div class="dropdown" align="center">
+<button onclick="myFunction()" class="button">Cancer</button>
+  <div id="myDropdown" class="dropdown-content">
+    <input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()">
+<a class="dropdown-item" href="coding/cancer1003"> skin cancer (19170)</a>
+<a class="dropdown-item" href="coding/cancer1060"> non-melanoma skin cancer (16791)</a>
+<a class="dropdown-item" href="coding/cancer1002"> breast cancer (11243)</a>
+<a class="dropdown-item" href="coding/cancer1044"> prostate cancer (6460)</a>
+<a class="dropdown-item" href="coding/cancer1037"> female genital tract cancer (4947)</a>
+<a class="dropdown-item" href="coding/cancer1020"> large bowel cancer/colorectal cancer (4382)</a>
+<a class="dropdown-item" href="coding/cancer1059"> malignant melanoma (4099)</a>
+<a class="dropdown-item" href="coding/cancer1038"> male genital tract cancer (3449)</a>
+<a class="dropdown-item" href="coding/cancer1022"> colon cancer/sigmoid cancer (3251)</a>
+<a class="dropdown-item" href="coding/cancer1041"> cervical cancer (2815)</a>
+<a class="dropdown-item" href="coding/cancer1084"> respiratory / intrathoracic cancer (2392)</a>
+<a class="dropdown-item" href="coding/cancer1023"> rectal cancer (2026)</a>
+<a class="dropdown-item" href="coding/cancer1035"> bladder cancer (1997)</a>
+<a class="dropdown-item" href="coding/cancer1001"> lung cancer (1981)</a>
+<a class="dropdown-item" href="coding/cancer1047"> lymphoma (1852)</a>
+<a class="dropdown-item" href="coding/cancer1085"> bone metastases / bony secondaries (1780)</a>
+<a class="dropdown-item" href="coding/cancer1040"> uterine/endometrial cancer (1610)</a>
+<a class="dropdown-item" href="coding/cancer1053"> non-hodgkins lymphoma (1429)</a>
+<a class="dropdown-item" href="coding/cancer1039"> ovarian cancer (1208)</a>
+<a class="dropdown-item" href="coding/cancer1034"> kidney/renal cell cancer (1093)</a>
+<a class="dropdown-item" href="coding/cancer1048"> leukaemia (870)</a>
+<a class="dropdown-item" href="coding/cancer1045"> testicular cancer (678)</a>
+<a class="dropdown-item" href="coding/cancer1017"> oesophageal cancer (667)</a>
+<a class="dropdown-item" href="coding/cancer1004"> cancer of lip/mouth/pharynx/oral cavity (659)</a>
+<a class="dropdown-item" href="coding/cancer1055"> chronic lymphocytic (596)</a>
+<a class="dropdown-item" href="coding/cancer1026"> pancreas cancer (593)</a>
+<a class="dropdown-item" href="coding/cancer1018"> stomach cancer (568)</a>
+<a class="dropdown-item" href="coding/cancer1032"> brain cancer / primary malignant brain tumour (555)</a>
+<a class="dropdown-item" href="coding/cancer1065"> thyroid cancer (513)</a>
+<a class="dropdown-item" href="coding/cancer1050"> multiple myeloma (501)</a>
+<a class="dropdown-item" href="coding/cancer1024"> liver/hepatocellular cancer (437)</a>
+<a class="dropdown-item" href="coding/cancer1052"> hodgkins lymphoma / hodgkins disease (432)</a>
+<a class="dropdown-item" href="coding/cancer1056"> chronic myeloid (413)</a>
+<a class="dropdown-item" href="coding/cancer1006"> larynx/throat cancer (362)</a>
+<a class="dropdown-item" href="coding/cancer1019"> small intestine/small bowel cancer (329)</a>
+<a class="dropdown-item" href="coding/cancer1011"> tongue cancer (317)</a>
+<a class="dropdown-item" href="coding/cancer1074"> acute myeloid leukaemia (288)</a>
+<a class="dropdown-item" href="coding/cancer1068"> sarcoma/fibrosarcoma (236)</a>
+<a class="dropdown-item" href="coding/cancer1030"> eye and/or adnexal cancer (213)</a>
+<a class="dropdown-item" href="coding/cancer1063"> primary bone cancer (208)</a>
+<a class="dropdown-item" href="coding/cancer1025"> gallbladder/bile duct cancer (203)</a>
+<a class="dropdown-item" href="coding/cancer1077"> mouth cancer (197)</a>
+<a class="dropdown-item" href="coding/cancer1064"> mesothelioma (181)</a>
+<a class="dropdown-item" href="coding/cancer1043"> vulval cancer (131)</a>
+<a class="dropdown-item" href="coding/cancer1015"> parotid gland cancer (127)</a>
+<a class="dropdown-item" href="coding/cancer1005"> salivary gland cancer (121)</a>
+<a class="dropdown-item" href="coding/cancer1086"> appendix cancer (99)</a>
+<a class="dropdown-item" href="coding/cancer1079"> oropharynx / oropharyngeal cancer (79)</a>
+<a class="dropdown-item" href="coding/cancer1036"> other cancer of urinary tract (74)</a>
+<a class="dropdown-item" href="coding/cancer1046"> penis cancer (67)</a>
+<a class="dropdown-item" href="coding/cancer1007"> nasal cavity cancer (62)</a>
+<a class="dropdown-item" href="coding/cancer1033"> spinal cord or cranial nerve cancer (59)</a>
+<a class="dropdown-item" href="coding/cancer1010"> lip cancer (59)</a>
+<a class="dropdown-item" href="coding/cancer1042"> vaginal cancer (58)</a>
+<a class="dropdown-item" href="coding/cancer1067"> adrenal cancer (55)</a>
+<a class="dropdown-item" href="coding/cancer1082"> heart / mediastinum cancer (51)</a>
+<!--<a class="dropdown-item" href="coding/cancer1012"> gum cancer (47)</a>
+<a class="dropdown-item" href="coding/cancer1031"> meningeal cancer / malignant meningioma (46)</a>
+<a class="dropdown-item" href="coding/cancer1087"> fallopian tube cancer (44)</a>
+<a class="dropdown-item" href="coding/cancer1029"> peripheral nerve/autonomic nerve cancer (37)</a>
+<a class="dropdown-item" href="coding/cancer1081"> thymus cancer / malignant thymoma (26)</a>
+<a class="dropdown-item" href="coding/cancer1009"> sinus cancer (26)</a>
+<a class="dropdown-item" href="coding/cancer1066"> parathyroid cancer (24)</a>
+<a class="dropdown-item" href="coding/cancer1051"> myelofibrosis or myelodysplasia (19)</a>
+<a class="dropdown-item" href="coding/cancer1088"> malignant insulinoma (16)</a>
+<a class="dropdown-item" href="coding/cancer1008"> ear cancer (16)</a>
+<a class="dropdown-item" href="coding/cancer1080"> trachea cancer (15)</a>
+<a class="dropdown-item" href="coding/cancer1075"> retinoblastoma (12)</a>
+<a class="dropdown-item" href="coding/cancer1076"> kaposis sarcoma (10)</a> -->
+</div>
+</div>
+</div>
+<!--
+<div class="btn-group" role="group">
+<div class="dropdown" align="center">
+<button onclick="myFunction2()" class="button dropdown-toggle" data-toggle="dropdown">Common diseases</button>
+  <div id="myDropdown2" class="dropdown-content">
+    <input type="text" placeholder="Search.." id="myInput2" onkeyup="filterFunction2()">
+<a class="dropdown-item" href="coding/RH141">osteoarthritis (14793)</a>
+<a class="dropdown-item" href="coding/RH160">asthma (10608)</a>
+<a class="dropdown-item" href="coding/RH134">diabetes mellitus type 2 (7825)</a>
+<a class="dropdown-item" href="coding/RH107">acquired hypothyroidism (5271)</a>
+<a class="dropdown-item" href="coding/RH32">depression (4703)</a>
+<a class="dropdown-item" href="coding/RH9">hyperplasia of the prostate (4326)</a>
+<a class="dropdown-item" href="coding/RH24">cataract (3205)</a>
+<a class="dropdown-item" href="coding/RH48">skin cyst (3078)</a>
+<a class="dropdown-item" href="coding/RH45">prostate cancer (2827)</a>
+<a class="dropdown-item" href="coding/RH3">acute myocardial infarction (2073)</a>
+<a class="dropdown-item" href="coding/RH95">colorectal cancer (1863)</a>
+<a class="dropdown-item" href="coding/RH91">anxiety (1822)</a>
+<a class="dropdown-item" href="coding/RH56">deep vein thrombosis (1621)</a>
+<a class="dropdown-item" href="coding/RH81">pulmonary embolism and infarction (1440)</a>
+<a class="dropdown-item" href="coding/RH86">epilepsy (1410)</a>
+<a class="dropdown-item" href="coding/RH110">cerebral infarction (1267)</a>
+<a class="dropdown-item" href="coding/RH36">eczema (1238)</a>
+<a class="dropdown-item" href="coding/RH140">melanoma (1150)</a>
+<a class="dropdown-item" href="coding/RH130">diabetes mellitus type 1 (1127)</a>
+<a class="dropdown-item" href="coding/RH145">lung cancer (1045)</a>
+<a class="dropdown-item" href="coding/RH129">migraine (1032)</a>
+<a class="dropdown-item" href="coding/RH74">rheumatoid arthritis (1012)</a>
+<a class="dropdown-item" href="coding/RH119">glaucoma (961)</a>
+<a class="dropdown-item" href="coding/RH108">emphysema (852)</a>
+<a class="dropdown-item" href="coding/RH146">bladder cancer (841)</a>
+<a class="dropdown-item" href="coding/RH89">psoriasis (814)</a>
+<a class="dropdown-item" href="coding/RH128">crohns disease (676)</a>
+<a class="dropdown-item" href="coding/RH7">gout (670)</a>
+<a class="dropdown-item" href="coding/RH150">celiac disease (657)</a>
+<a class="dropdown-item" href="coding/RH67">unspecified viral infection (common cold) (646)</a>
+<a class="dropdown-item" href="coding/RH122">uterine cancer (546)</a>
+<a class="dropdown-item" href="coding/RH65">bipolar disorder (404)</a>
+<a class="dropdown-item" href="coding/RH159">parkinsonism (396)</a>
+<a class="dropdown-item" href="coding/RH157">bronchitis (389)</a>
+<a class="dropdown-item" href="coding/RH50">lymphosarcoma/reticulorsarcoma (273)</a>
+<a class="dropdown-item" href="coding/RH99">gastric cancer (251)</a>
+<a class="dropdown-item" href="coding/RH94">schizophrenia (238)</a>
+<a class="dropdown-item" href="coding/RH77">sarcoidosis (224)</a>
+<a class="dropdown-item" href="coding/RH60">liche (222)</a>
+<a class="dropdown-item" href="coding/RH126">phobia (209)</a>
+-<a class="dropdown-item" href="coding/RH156">malignant brain neoplasm (198)</a>
+<a class="dropdown-item" href="coding/RH131">haemophilia (172)</a>
+<a class="dropdown-item" href="coding/RH51">lupus (163)</a>
+<a class="dropdown-item" href="coding/RH84">rosacea (120)</a>
+<a class="dropdown-item" href="coding/RH37">hypopituitarism (105)</a>
+</div>
+</div>
+</div>
+-->
+<div class="btn-group" role="group">
+<div class="dropdown" align="center">
+<button onclick="myFunction3()" class="button dropdown-toggle" data-toggle="dropdown">Family History</button>
+  <div id="myDropdown3" class="dropdown-content">
+    <input type="text" placeholder="Search.." id="myInput3" onkeyup="filterFunction3()">
+<a class="dropdown-item" href="coding/FH1065"> High blood pressure (199068)</a>
+<a class="dropdown-item" href="coding/FH1001"> Lung cancer (123832)</a>
+<a class="dropdown-item" href="coding/FH1220"> Diabetes (79177)</a>
+<a class="dropdown-item" href="coding/FH1113"> Chronic bronchitis/emphysema (78578)</a>
+<a class="dropdown-item" href="coding/FH1019"> Bowel cancer (74244)</a>
+<a class="dropdown-item" href="coding/FH1002"> Breast cancer (62401)</a>
+<a class="dropdown-item" href="coding/FH1286"> Severe depression (54576)</a>
+<a class="dropdown-item" href="coding/FH1263"> Alzheimer's disease/dementia (51794)</a>
+<a class="dropdown-item" href="coding/FH1044"> Prostate cancer (34359)</a>
+<a class="dropdown-item" href="coding/FH1262"> Parkinson's disease (21755)</a>
+</div>
+</div>
+</div>
+
+<div class="btn-group" role="group">
+<div class="dropdown" align="center">
+<button onclick="myFunction6()" class="button">Verbal and ICD disease grouping</button>
+  <div id="myDropdown6" class="dropdown-content">
+    <input type="text" placeholder="Search.." id="myInput6" onkeyup="filterFunction6()">
+<a class="dropdown-item" href="coding/HC215"> hypertension (107407)</a>
+<a class="dropdown-item" href="coding/HC273"> essential hypertension (64234)</a>
+<a class="dropdown-item" href="coding/HC382"> asthma (43626)</a>
+<a class="dropdown-item" href="coding/HC269"> high cholesterol (43054)</a>
+<a class="dropdown-item" href="coding/HC310"> hiatus hernia (41260)</a>
+<a class="dropdown-item" href="coding/HC285"> other joint disorder (31606)</a>
+<a class="dropdown-item" href="coding/HC164"> gastro-oesophageal reflux (gord) / gastric reflux (30231)</a>
+<a class="dropdown-item" href="coding/HC376"> osteoarthritis (29946)</a>
+<a class="dropdown-item" href="coding/HC49"> hayfever/allergic rhinitis (20724)</a>
+<a class="dropdown-item" href="coding/HC41"> depression (20461)</a>
+<a class="dropdown-item" href="coding/HC221"> diabetes (20440)</a>
+<a class="dropdown-item" href="coding/HC61"> haemorrhoids / piles (19958)</a>
+<a class="dropdown-item" href="coding/HC219"> hypothyroidism/myxoedema (19920)</a>
+<a class="dropdown-item" href="coding/HC25"> cataract (19448)</a>
+<a class="dropdown-item" href="coding/HC132"> angina (18473)</a>
+<a class="dropdown-item" href="coding/HC125"> anaemia (15944)</a>
+<a class="dropdown-item" href="coding/HC78"> arthritis (nos) (15332)</a>
+<a class="dropdown-item" href="coding/HC188"> cholelithiasis/gall stones (14940)</a>
+<!--<a class="dropdown-item" href="coding/HC43"> unclassifiable (14357)</a>-->
+<a class="dropdown-item" href="coding/HC243"> inguinal hernia (14042)</a>
+<a class="dropdown-item" href="coding/HC225"> cholecystitis (12963)</a>
+<a class="dropdown-item" href="coding/HC281"> atrial fibrillation (12665)</a>
+<a class="dropdown-item" href="coding/HC36"> pneumonia (12614)</a>
+<a class="dropdown-item" href="coding/HC440"> atrial flutter (12186)</a>
+<a class="dropdown-item" href="coding/HC86"> migraine (12180)</a>
+<a class="dropdown-item" href="coding/HC326"> heart attack/myocardial infarction (12138)</a>
+<a class="dropdown-item" href="coding/HC261"> eczema/dermatitis (11643)</a>
+<a class="dropdown-item" href="coding/HC64"> irritable bowel syndrome (11556)</a>
+<a class="dropdown-item" href="coding/HC404"> urinary tract infection/kidney infection (11509)</a>
+<a class="dropdown-item" href="coding/HC401"> varicose veins (10153)</a>
+<a class="dropdown-item" href="coding/HC316"> dyspepsia / indigestion (10003)</a>
+<a class="dropdown-item" href="coding/HC60"> oesophagitis/barretts oesophagus (9528)</a>
+<a class="dropdown-item" href="coding/HC22"> osteoporosis (9135)</a>
+<a class="dropdown-item" href="coding/HC7"> back pain (8709)</a>
+<a class="dropdown-item" href="coding/HC118"> constipation (8691)</a>
+<a class="dropdown-item" href="coding/HC362"> respiratory infection (8173)</a>
+<a class="dropdown-item" href="coding/HC295"> carpal tunnel syndrome (8152)</a>
+<a class="dropdown-item" href="coding/HC179"> iron deficiency anaemia (7811)</a>
+<a class="dropdown-item" href="coding/HC153"> joint pain (7726)</a>
+<a class="dropdown-item" href="coding/HC442"> chronic obstructive airways disease/copd (7287)</a>
+<a class="dropdown-item" href="coding/HC294"> renal/kidney failure (7081)</a>
+<a class="dropdown-item" href="coding/HC166"> deep venous thrombosis (dvt) (6929)</a>
+<a class="dropdown-item" href="coding/HC328"> gout (6278)</a>
+<a class="dropdown-item" href="coding/HC185"> cellulitis (6168)</a>
+<a class="dropdown-item" href="coding/HC83"> fracture forearm / wrist (6014)</a>
+<a class="dropdown-item" href="coding/HC237"> back problem (5950)</a>
+<a class="dropdown-item" href="coding/HC176"> prolapsed disc/slipped disc (5942)</a>
+<a class="dropdown-item" href="coding/HC339"> fracture lower leg / ankle (5881)</a>
+<a class="dropdown-item" href="coding/HC276"> glaucoma (5863)</a>
+<a class="dropdown-item" href="coding/HC110"> stroke (5783)</a>
+<a class="dropdown-item" href="coding/HC106"> emphysema/chronic bronchitis (5601)</a>
+<a class="dropdown-item" href="coding/HC430"> rheumatoid arthritis (5587)</a>
+<a class="dropdown-item" href="coding/HC79"> appendicitis (5533)</a>
+<a class="dropdown-item" href="coding/HC31"> uterine fibroids (5417)</a>
+<a class="dropdown-item" href="coding/HC205"> endometriosis (5391)</a>
+<a class="dropdown-item" href="coding/HC15"> sciatica (5152)</a>
+<a class="dropdown-item" href="coding/HC85"> enlarged prostate (5078)</a>
+<a class="dropdown-item" href="coding/HC38"> psoriasis (5074)</a>
+<a class="dropdown-item" href="coding/HC371"> bronchitis (4987)</a>
+<a class="dropdown-item" href="coding/HC135"> anxiety/panic attacks (4986)</a>
+<a class="dropdown-item" href="coding/HC203"> pulmonary embolism +/- dvt (4968)</a>
+<a class="dropdown-item" href="coding/HC299"> heart failure/pulmonary odema (4657)</a>
+<a class="dropdown-item" href="coding/HC156"> nasal polyps (4608)</a>
+<a class="dropdown-item" href="coding/HC57"> fracture radius (4584)</a>
+<a class="dropdown-item" href="coding/HC239"> subdural haemorrhage/haematoma (4451)</a>
+<a class="dropdown-item" href="coding/HC323"> head injury (4399)</a>
+<a class="dropdown-item" href="coding/HC298"> chronic sinusitis (4395)</a>
+<a class="dropdown-item" href="coding/HC146"> pleural effusion (4391)</a>
+<a class="dropdown-item" href="coding/HC418"> cervical spondylosis (4317)</a>
+<a class="dropdown-item" href="coding/HC142"> synovitis (4303)</a>
+<a class="dropdown-item" href="coding/HC437"> epilepsy (4210)</a>
+<a class="dropdown-item" href="coding/HC364"> sleep apnoea (4082)</a>
+<a class="dropdown-item" href="coding/HC262"> diverticular disease/diverticulitis (4036)</a>
+<a class="dropdown-item" href="coding/HC95"> inflammatory bowel disease (3783)</a>
+<a class="dropdown-item" href="coding/HC55"> hyperthyroidism/thyrotoxicosis (3647)</a>
+<a class="dropdown-item" href="coding/HC357"> duodenal ulcer (3621)</a>
+<a class="dropdown-item" href="coding/HC1"> bowel / intestinal obstruction (3599)</a>
+<a class="dropdown-item" href="coding/HC385"> peripheral vascular disease (3517)</a>
+<a class="dropdown-item" href="coding/HC77"> allergy or anaphylactic reaction to drug (3397)</a>
+<a class="dropdown-item" href="coding/HC274"> umbilical hernia (3311)</a>
+<a class="dropdown-item" href="coding/HC302"> retinal detachment (3247)</a>
+<a class="dropdown-item" href="coding/HC201"> ulcerative colitis (3147)</a>
+<a class="dropdown-item" href="coding/HC402"> spinal stenosis (3114)</a>
+<a class="dropdown-item" href="coding/HC435"> ear/vestibular disorder (3088)</a>
+<a class="dropdown-item" href="coding/HC158"> spine arthritis/spondylitis (3031)</a>
+<a class="dropdown-item" href="coding/HC119"> disc degeneration (2984)</a>
+<a class="dropdown-item" href="coding/HC443"> headaches (not migraine) (2974)</a>
+<a class="dropdown-item" href="coding/HC282"> whooping cough / pertussis (2964)</a>
+<a class="dropdown-item" href="coding/HC123"> muscle/soft tissue problem (2836)</a>
+<a class="dropdown-item" href="coding/HC427"> ovarian cyst or cysts (2831)</a>
+<a class="dropdown-item" href="coding/HC400"> transient ischaemic attack (tia) (2828)</a>
+<a class="dropdown-item" href="coding/HC129"> muscle or soft tissue injuries (2822)</a>
+<a class="dropdown-item" href="coding/HC374"> kidney stone/ureter stone/bladder stone (2812)</a>
+<a class="dropdown-item" href="coding/HC133"> anal fissure (2721)</a>
+<a class="dropdown-item" href="coding/HC283"> cystitis (2713)</a>
+<a class="dropdown-item" href="coding/HC6"> eye/eyelid problem (2698)</a>
+<a class="dropdown-item" href="coding/HC131"> svt / supraventricular tachycardia (2653)</a>
+<a class="dropdown-item" href="coding/HC331"> tonsiltis (2608)</a>
+<a class="dropdown-item" href="coding/HC121"> peritonitis (2585)</a>
+<a class="dropdown-item" href="coding/HC136"> connective tissue disorder (2515)</a>
+<a class="dropdown-item" href="coding/HC366"> allergy/hypersensitivity/anaphylaxis (2491)</a>
+<a class="dropdown-item" href="coding/HC144"> chickenpox (2458)</a>
+<a class="dropdown-item" href="coding/HC314"> fracture hand (2438)</a>
+<a class="dropdown-item" href="coding/HC396"> fracture shoulder / scapula (2429)</a>
+<a class="dropdown-item" href="coding/HC209"> gastric/stomach ulcers (2408)</a>
+<a class="dropdown-item" href="coding/HC165"> type 2 diabetes (2389)</a>
+<a class="dropdown-item" href="coding/HC58"> benign breast lump (2354)</a>
+<a class="dropdown-item" href="coding/HC406"> fracture neck of femur / hip (2335)</a>
+<a class="dropdown-item" href="coding/HC231"> heart valve problem/heart murmur (2326)</a>
+<a class="dropdown-item" href="coding/HC311"> measles / morbillivirus (2120)</a>
+<a class="dropdown-item" href="coding/HC392"> pancreatitis (2106)</a>
+<a class="dropdown-item" href="coding/HC303"> malabsorption/coeliac disease (2094)</a>
+<a class="dropdown-item" href="coding/HC395"> bladder problem (not cancer) (2066)</a>
+<a class="dropdown-item" href="coding/HC405"> vaginal prolapse/uterine prolapse (2041)</a>
+<a class="dropdown-item" href="coding/HC424"> fracture skull / head (2012)</a>
+<a class="dropdown-item" href="coding/HC28"> bronchiectasis (1939)</a>
+<a class="dropdown-item" href="coding/HC204"> bursitis (1929)</a>
+<a class="dropdown-item" href="coding/HC193"> heart arrhythmia (1884)</a>
+<a class="dropdown-item" href="coding/HC155"> joint disorder (1861)</a>
+<a class="dropdown-item" href="coding/HC82"> cerebral palsy (1844)</a>
+<a class="dropdown-item" href="coding/HC423"> respiratory failure (1819)</a>
+<a class="dropdown-item" href="coding/HC200"> fracture tibia (1811)</a>
+<a class="dropdown-item" href="coding/HC140"> urinary frequency / incontinence (1767)</a>
+<a class="dropdown-item" href="coding/HC290"> fracture upper arm / humerus / elbow (1749)</a>
+<a class="dropdown-item" href="coding/HC62"> tuberculosis (tb) (1739)</a>
+<a class="dropdown-item" href="coding/HC322"> crohns disease (1652)</a>
+<a class="dropdown-item" href="coding/HC320"> meningitis (1640)</a>
+<a class="dropdown-item" href="coding/HC8"> gall bladder disease (1639)</a>
+<a class="dropdown-item" href="coding/HC34"> pleurisy (1627)</a>
+<a class="dropdown-item" href="coding/HC234"> allergy or anaphylactic reaction to food (1621)</a>
+<a class="dropdown-item" href="coding/HC259"> aortic stenosis (1593)</a>
+<a class="dropdown-item" href="coding/HC334"> fracture sternum (1587)</a>
+<a class="dropdown-item" href="coding/HC431"> emphysema (1581)</a>
+<a class="dropdown-item" href="coding/HC98"> stomach disorder (1570)</a>
+<a class="dropdown-item" href="coding/HC386"> helicobacter pylori (1564)</a>
+<a class="dropdown-item" href="coding/HC72"> chronic fatigue syndrome (1559)</a>
+<a class="dropdown-item" href="coding/HC32"> other renal/kidney problem (1502)</a>
+<a class="dropdown-item" href="coding/HC240"> fracture finger (1498)</a>
+<a class="dropdown-item" href="coding/HC380"> fracture ulna (1485)</a>
+<a class="dropdown-item" href="coding/HC151"> multiple sclerosis (1467)</a>
+<a class="dropdown-item" href="coding/HC134"> bone disorder (1459)</a>
+<a class="dropdown-item" href="coding/HC96"> polymyalgia rheumatica (1421)</a>
+<a class="dropdown-item" href="coding/HC109"> gestational hypertension/pre-eclampsia (1418)</a>
+<a class="dropdown-item" href="coding/HC353"> other neurological problem (1406)</a>
+<a class="dropdown-item" href="coding/HC42"> spontaneous pneumothorax/recurrent pneumothorax (1398)</a>
+<a class="dropdown-item" href="coding/HC139"> breast cysts (1398)</a>
+<a class="dropdown-item" href="coding/HC116"> tinnitus / tiniitis (1369)</a>
+<a class="dropdown-item" href="coding/HC263"> nasal/sinus disorder (1327)</a>
+<a class="dropdown-item" href="coding/HC414"> cardiomyopathy (1309)</a>
+<a class="dropdown-item" href="coding/HC76"> fracture foot (1270)</a>
+<a class="dropdown-item" href="coding/HC223"> fracture pelvis (1269)</a>
+<a class="dropdown-item" href="coding/HC45"> mumps / epidemic parotitis (1228)</a>
+<a class="dropdown-item" href="coding/HC178"> stress (1216)</a>
+<a class="dropdown-item" href="coding/HC415"> aortic aneurysm (1210)</a>
+<a class="dropdown-item" href="coding/HC253"> meniere's disease (1199)</a>
+<a class="dropdown-item" href="coding/HC52"> aortic dissection (1186)</a>
+<a class="dropdown-item" href="coding/HC74"> female infertility (1185)</a>
+<a class="dropdown-item" href="coding/HC422"> ankylosing spondylitis (1184)</a>
+<a class="dropdown-item" href="coding/HC346"> fibromyalgia (1166)</a>
+<a class="dropdown-item" href="coding/HC88"> heart/cardiac problem (1148)</a>
+<a class="dropdown-item" href="coding/HC216"> pneumothorax (1143)</a>
+<a class="dropdown-item" href="coding/HC438"> hepatitis (1138)</a>
+<a class="dropdown-item" href="coding/HC389"> urticaria (1125)</a>
+<a class="dropdown-item" href="coding/HC254"> uterine polyps (1122)</a>
+<a class="dropdown-item" href="coding/HC340"> menorrhagia (unknown cause) (1112)</a>
+<a class="dropdown-item" href="coding/HC398"> fracture wrist / colles fracture (1096)</a>
+<a class="dropdown-item" href="coding/HC308"> hypertrophic cardiomyopathy (hcm / hocm) (1096)</a>
+<a class="dropdown-item" href="coding/HC307"> colitis/not crohns or ulcerative colitis (1095)</a>
+<a class="dropdown-item" href="coding/HC255"> subarachnoid haemorrhage (1091)</a>
+<a class="dropdown-item" href="coding/HC184"> aortic aneurysm rupture (1085)</a>
+<a class="dropdown-item" href="coding/HC202"> trapped nerve/compressed nerve (1084)</a>
+<a class="dropdown-item" href="coding/HC206"> parkinsons disease (1082)</a>
+<a class="dropdown-item" href="coding/HC182"> osteopenia (1063)</a>
+<a class="dropdown-item" href="coding/HC4"> nephritis (1061)</a>
+<a class="dropdown-item" href="coding/HC16"> rectal or colon adenoma/polyps (1057)</a>
+<a class="dropdown-item" href="coding/HC169"> pernicious anaemia (1048)</a>
+<a class="dropdown-item" href="coding/HC0"> scoliosis (1047)</a>
+<a class="dropdown-item" href="coding/HC149"> rheumatic fever (1011)</a>
+<a class="dropdown-item" href="coding/HC161"> prostatitis (984)</a>
+<a class="dropdown-item" href="coding/HC44"> bile duct obstruction/ascending cholangitis (980)</a>
+<a class="dropdown-item" href="coding/HC107"> miscarriage (978)</a>
+<a class="dropdown-item" href="coding/HC355"> rectal prolapse (965)</a>
+<a class="dropdown-item" href="coding/HC233"> mania/bipolar disorder/manic depression (958)</a>
+<a class="dropdown-item" href="coding/HC91"> psoriatic arthropathy (954)</a>
+<a class="dropdown-item" href="coding/HC104"> osteomyelitis (948)</a>
+<a class="dropdown-item" href="coding/HC361"> anorexia/bulimia/other eating disorder (902)</a>
+<a class="dropdown-item" href="coding/HC180"> thyroid problem (not cancer) (894)</a>
+<a class="dropdown-item" href="coding/HC150"> rosacea (880)</a>
+<a class="dropdown-item" href="coding/HC195"> ureteric obstruction/hydronephrosis (870)</a>
+<a class="dropdown-item" href="coding/HC373"> fracture rib (853)</a>
+<a class="dropdown-item" href="coding/HC170"> sarcoidosis (841)</a>
+<a class="dropdown-item" href="coding/HC260"> fracture fibula (798)</a>
+<a class="dropdown-item" href="coding/HC222"> arterial embolism (782)</a>
+<a class="dropdown-item" href="coding/HC171"> alcoholic liver disease / alcoholic cirrhosis (778)</a>
+<a class="dropdown-item" href="coding/HC196"> labyrinthitis (764)</a>
+<a class="dropdown-item" href="coding/HC84"> pulmonary fibrosis (748)</a>
+<a class="dropdown-item" href="coding/HC17"> diabetic eye disease (728)</a>
+<a class="dropdown-item" href="coding/HC267"> tennis elbow / lateral epicondylitis (725)</a>
+<a class="dropdown-item" href="coding/HC383"> bph / benign prostatic hypertrophy (720)</a>
+<a class="dropdown-item" href="coding/HC102"> vertigo (712)</a>
+<a class="dropdown-item" href="coding/HC379"> infective/viral hepatitis (709)</a>
+<a class="dropdown-item" href="coding/HC198"> hyperparathyroidism (699)</a>
+<a class="dropdown-item" href="coding/HC113"> irregular heart beat (689)</a>
+<a class="dropdown-item" href="coding/HC53"> spinal injury (683)</a>
+<a class="dropdown-item" href="coding/HC93"> dry eyes (672)</a>
+<a class="dropdown-item" href="coding/HC54"> peptic ulcer (662)</a>
+<a class="dropdown-item" href="coding/HC271"> epicondylitis (655)</a>
+<a class="dropdown-item" href="coding/HC194"> liver/biliary/pancreas problem (640)</a>
+<a class="dropdown-item" href="coding/HC224"> rubella / german measles (638)</a>
+<a class="dropdown-item" href="coding/HC143"> retinal problem (601)</a>
+<a class="dropdown-item" href="coding/HC257"> femoral hernia (597)</a>
+<a class="dropdown-item" href="coding/HC342"> prostate problem (not cancer) (594)</a>
+<a class="dropdown-item" href="coding/HC363"> fracture clavicle / collar bone (591)</a>
+<a class="dropdown-item" href="coding/HC68"> disorder of adrenal gland (588)</a>
+<a class="dropdown-item" href="coding/HC287"> infectious mononucleosis / glandular fever / epstein barr virus (ebv) (588)</a>
+<a class="dropdown-item" href="coding/HC39"> lichen planus (586)</a>
+<a class="dropdown-item" href="coding/HC370"> other respiratory problems (585)</a>
+<a class="dropdown-item" href="coding/HC275"> gastritis/gastric erosions (573)</a>
+<a class="dropdown-item" href="coding/HC246"> schizophrenia (568)</a>
+<a class="dropdown-item" href="coding/HC280"> peripheral neuropathy (567)</a>
+<a class="dropdown-item" href="coding/HC172"> gynaecological disorder (not cancer) (562)</a>
+<a class="dropdown-item" href="coding/HC117"> abdominal hernia (557)</a>
+<a class="dropdown-item" href="coding/HC397"> scarlet fever / scarlatina (555)</a>
+<a class="dropdown-item" href="coding/HC321"> sjogren's syndrome/sicca syndrome (555)</a>
+<a class="dropdown-item" href="coding/HC101"> eye trauma (536)</a>
+<a class="dropdown-item" href="coding/HC114"> pericardial effusion (531)</a>
+<a class="dropdown-item" href="coding/HC40"> nervous breakdown (530)</a>
+<a class="dropdown-item" href="coding/HC232"> abnormal smear (cervix) (527)</a>
+<a class="dropdown-item" href="coding/HC347"> blistering/desquamating skin disorder (525)</a>
+<a class="dropdown-item" href="coding/HC284"> fracture nose (522)</a>
+<a class="dropdown-item" href="coding/HC351"> blepharitis / eyelid infection (519)</a>
+<a class="dropdown-item" href="coding/HC433"> lymphoedema (516)</a>
+<a class="dropdown-item" href="coding/HC3"> ectopic pregnancy (514)</a>
+<a class="dropdown-item" href="coding/HC293"> fracture patella / knee (511)</a>
+<a class="dropdown-item" href="coding/HC291"> polycystic ovaries/polycystic ovarian syndrome (511)</a>
+<a class="dropdown-item" href="coding/HC12"> testicular problems (not cancer) (492)</a>
+<a class="dropdown-item" href="coding/HC432"> mitral valve prolapse (487)</a>
+<a class="dropdown-item" href="coding/HC69"> polycythaemia vera (482)</a>
+<a class="dropdown-item" href="coding/HC421"> other abdominal problem (478)</a>
+<a class="dropdown-item" href="coding/HC375"> alcohol dependency (477)</a>
+<a class="dropdown-item" href="coding/HC278"> cerebral aneurysm (477)</a>
+<a class="dropdown-item" href="coding/HC256"> fracture toe (476)</a>
+<a class="dropdown-item" href="coding/HC352"> systemic lupus erythematosis/sle (474)</a>
+<a class="dropdown-item" href="coding/HC327"> fracture metatarsal (461)</a>
+<a class="dropdown-item" href="coding/HC445"> oesophageal varicies (456)</a>
+<a class="dropdown-item" href="coding/HC390"> trigemminal neuralgia (447)</a>
+<a class="dropdown-item" href="coding/HC384"> throat or larynx disorder (423)</a>
+<a class="dropdown-item" href="coding/HC47"> malaria (421)</a>
+<a class="dropdown-item" href="coding/HC417"> sclerosing cholangitis (420)</a>
+<a class="dropdown-item" href="coding/HC167"> raynaud's phenomenon/disease (410)</a>
+<a class="dropdown-item" href="coding/HC208"> parathyroid gland problem (not cancer) (400)</a>
+<a class="dropdown-item" href="coding/HC270"> encephalitis (398)</a>
+<a class="dropdown-item" href="coding/HC105"> shingles (391)</a>
+<a class="dropdown-item" href="coding/HC122"> disorder or pituitary gland (390)</a>
+<a class="dropdown-item" href="coding/HC33"> spinal cord disorder (389)</a>
+<a class="dropdown-item" href="coding/HC59"> thyroiditis (388)</a>
+<a class="dropdown-item" href="coding/HC220"> interstitial lung disease (380)</a>
+<a class="dropdown-item" href="coding/HC173"> fracture shaft of femur (373)</a>
+<a class="dropdown-item" href="coding/HC419"> otosclerosis (368)</a>
+<a class="dropdown-item" href="coding/HC296"> fracture thumb (367)</a>
+<a class="dropdown-item" href="coding/HC48"> aplastic anaemia (366)</a>
+<a class="dropdown-item" href="coding/HC317"> breast fibroadenoma (365)</a>
+<a class="dropdown-item" href="coding/HC338"> giant cell/temporal arteritis (360)</a>
+<a class="dropdown-item" href="coding/HC226"> herpes simplex (359)</a>
+<a class="dropdown-item" href="coding/HC277"> menopausal symptoms / menopause (357)</a>
+<a class="dropdown-item" href="coding/HC210"> non-infective hepatitis (354)</a>
+<a class="dropdown-item" href="coding/HC306"> insomnia (348)</a>
+<a class="dropdown-item" href="coding/HC344"> post-natal depression (346)</a>
+<a class="dropdown-item" href="coding/HC103"> thyroid goitre (346)</a>
+<a class="dropdown-item" href="coding/HC35"> sick sinus syndrome (344)</a>
+<a class="dropdown-item" href="coding/HC408"> polio / poliomyelitis (343)</a>
+<a class="dropdown-item" href="coding/HC348"> bell's palsy/facial nerve palsy (338)</a>
+<a class="dropdown-item" href="coding/HC157"> jaundice (unknown cause) (338)</a>
+<a class="dropdown-item" href="coding/HC181"> eye infection (337)</a>
+<a class="dropdown-item" href="coding/HC318"> vocal cord polyp (336)</a>
+<a class="dropdown-item" href="coding/HC217"> neck problem/injury (332)</a>
+<a class="dropdown-item" href="coding/HC441"> hypopituitarism (327)</a>
+<a class="dropdown-item" href="coding/HC197"> clotting disorder/excessive bleeding (327)</a>
+<a class="dropdown-item" href="coding/HC177"> dupuytren's contracture (326)</a>
+<a class="dropdown-item" href="coding/HC89"> food intolerance (321)</a>
+<a class="dropdown-item" href="coding/HC420"> psychological/psychiatric problem (320)</a>
+<a class="dropdown-item" href="coding/HC230"> disc problem (320)</a>
+<a class="dropdown-item" href="coding/HC304"> burns N/A (319)</a>
+<a class="dropdown-item" href="coding/HC162"> brain abscess/intracranial abscess (316)</a>
+<a class="dropdown-item" href="coding/HC315"> fracture neck / cervical fracture (315)</a>
+<a class="dropdown-item" href="coding/HC24"> mrsa / methicillin resistant staphylococcus aureus (314)</a>
+<a class="dropdown-item" href="coding/HC332"> post-traumatic stress disorder (309)</a>
+<a class="dropdown-item" href="coding/HC247"> breast disease (not cancer) (308)</a>
+<a class="dropdown-item" href="coding/HC126"> polycystic kidney (308)</a>
+<a class="dropdown-item" href="coding/HC356"> retinal artery/vein occlusion (307)</a>
+<a class="dropdown-item" href="coding/HC337"> type 1 diabetes (307)</a>
+<a class="dropdown-item" href="coding/HC242"> pericarditis (297)</a>
+<a class="dropdown-item" href="coding/HC412"> tendonitis / tendinitis / tenosynovitis (295)</a>
+<a class="dropdown-item" href="coding/HC14"> fracture vertebra / crush fracture / vertebral collapse (294)</a>
+<a class="dropdown-item" href="coding/HC5"> myositis/myopathy (292)</a>
+<a class="dropdown-item" href="coding/HC51"> paraplegia (292)</a>
+<a class="dropdown-item" href="coding/HC436"> acne/acne vulgaris (292)</a>
+<a class="dropdown-item" href="coding/HC413"> hereditary/genetic haematological disorder (291)</a>
+<a class="dropdown-item" href="coding/HC434"> macular degeneration (283)</a>
+<a class="dropdown-item" href="coding/HC428"> low platelets/platelet disorder (280)</a>
+<a class="dropdown-item" href="coding/HC248"> allergy to house dust mite (278)</a>
+<a class="dropdown-item" href="coding/HC9"> renal failure not requiring dialysis (270)</a>
+<a class="dropdown-item" href="coding/HC250"> acute infective polyneuritis/guillain-barre syndrome (269)</a>
+<a class="dropdown-item" href="coding/HC410"> cervical intra-epithelial neoplasia (cin) / precancerous cells cervix (268)</a>
+<a class="dropdown-item" href="coding/HC252"> leg claudication/ intermittent claudication (265)</a>
+<a class="dropdown-item" href="coding/HC300"> benign / essential tremor (258)</a>
+<a class="dropdown-item" href="coding/HC154"> pelvic inflammatory disease/ pid (254)</a>
+<a class="dropdown-item" href="coding/HC10"> dysmenorrhoea / dysmenorrhea (249)</a>
+<a class="dropdown-item" href="coding/HC11"> septicaemia / sepsis (246)</a>
+<a class="dropdown-item" href="coding/HC212"> oesophageal disorder (242)</a>
+<a class="dropdown-item" href="coding/HC429"> hiv/aids (241)</a>
+<a class="dropdown-item" href="coding/HC251"> liver failure/cirrhosis (241)</a>
+<a class="dropdown-item" href="coding/HC227"> erectile dysfunction / impotence (241)</a>
+<a class="dropdown-item" href="coding/HC313"> primary biliary cirrhosis (240)</a>
+<a class="dropdown-item" href="coding/HC391"> pyloric stenosis (228)</a>
+<a class="dropdown-item" href="coding/HC292"> vasculitis (227)</a>
+<a class="dropdown-item" href="coding/HC218"> motor neurone disease (221)</a>
+<a class="dropdown-item" href="coding/HC56"> monoclonal gammopathy/not myeloma (219)</a>
+<a class="dropdown-item" href="coding/HC63"> pituitary adenoma/tumour (218)</a>
+<a class="dropdown-item" href="coding/HC268"> varicose ulcer (215)</a>
+<a class="dropdown-item" href="coding/HC241"> cranial nerve problem/palsy (206)</a>
+<a class="dropdown-item" href="coding/HC191"> peripheral nerve injury (205)</a>
+<a class="dropdown-item" href="coding/HC359"> adrenocortical insufficiency/addison's disease (203)</a>
+<a class="dropdown-item" href="coding/HC330"> myasthenia gravis (202)</a>
+<a class="dropdown-item" href="coding/HC115"> contact dermatitis (202)</a>
+<a class="dropdown-item" href="coding/HC124"> undescended testicle (199)</a>
+<a class="dropdown-item" href="coding/HC358"> optic neuritis (196)</a>
+<a class="dropdown-item" href="coding/HC324"> obsessive compulsive disorder (ocd) (195)</a>
+<a class="dropdown-item" href="coding/HC21"> mitral valve disease (195)</a>
+<a class="dropdown-item" href="coding/HC130"> housemaid's knee (prepatellar bursitis) (194)</a>
+<a class="dropdown-item" href="coding/HC264"> hepatitis a (193)</a>
+<a class="dropdown-item" href="coding/HC128"> peripheral nerve disorder (192)</a>
+<a class="dropdown-item" href="coding/HC90"> myasthenia gravis (187)</a>
+<a class="dropdown-item" href="coding/HC87"> spina bifida (187)</a>
+<a class="dropdown-item" href="coding/HC163"> scleroderma/systemic sclerosis (187)</a>
+<a class="dropdown-item" href="coding/HC369"> gestational diabetes (182)</a>
+<a class="dropdown-item" href="coding/HC213"> pericardial problem (179)</a>
+<a class="dropdown-item" href="coding/HC444"> fracture jaw (174)</a>
+<a class="dropdown-item" href="coding/HC286"> plantar fascitis (174)</a>
+<a class="dropdown-item" href="coding/HC26"> iritis (166)</a>
+<a class="dropdown-item" href="coding/HC2"> myocarditis (165)</a>
+<!--<a class="dropdown-item" href="coding/HC152"> deliberate self-harm/suicide attempt (161)</a>-->
+<a class="dropdown-item" href="coding/HC341"> fracture face / orbit / eye socket (159)</a>
+<a class="dropdown-item" href="coding/HC46"> renal failure requiring dialysis (156)</a>
+<a class="dropdown-item" href="coding/HC289"> vitiligo (155)</a>
+<a class="dropdown-item" href="coding/HC309"> brain haemorrhage (150)</a>
+<a class="dropdown-item" href="coding/HC305"> mitral stenosis (145)</a>
+<a class="dropdown-item" href="coding/HC13"> lichen sclerosis (139)</a>
+<a class="dropdown-item" href="coding/HC168"> cervical polyps (136)</a>
+<a class="dropdown-item" href="coding/HC301"> asbestosis (133)</a>
+<a class="dropdown-item" href="coding/HC329"> benign neuroma (132)</a>
+<a class="dropdown-item" href="coding/HC249"> hepatitis c (132)</a>
+<a class="dropdown-item" href="coding/HC312"> wegners granulmatosis (131)</a>
+<a class="dropdown-item" href="coding/HC27"> gastrointestinal bleeding (127)</a>
+<a class="dropdown-item" href="coding/HC288"> alopecia / hair loss (120)</a>
+<a class="dropdown-item" href="coding/HC394"> mitral regurgitation / incompetence (119)</a>
+<a class="dropdown-item" href="coding/HC100"> gastroenteritis/dysentry (118)</a>
+<a class="dropdown-item" href="coding/HC325"> chronic/degenerative neurological problem (112)</a>
+<a class="dropdown-item" href="coding/HC187"> chronic laryngitis (111)</a>
+<a class="dropdown-item" href="coding/HC160"> fibrocystic disease (109)</a>
+<a class="dropdown-item" href="coding/HC388"> diabetic neuropathy/ulcers (108)</a>
+<a class="dropdown-item" href="coding/HC229"> chronic skin ulcers (105)</a>
+<a class="dropdown-item" href="coding/HC112"> pyelonephritis (105)</a>
+<a class="dropdown-item" href="coding/HC92"> allergy to elastoplast (100)</a>
+<a class="dropdown-item" href="coding/HC81"> essential thrombocytosis (100)</a>
+<a class="dropdown-item" href="coding/HC67"> hepatitis b (100)</a>
+<a class="dropdown-item" href="coding/HC333"> lung abscess (98)</a>
+<a class="dropdown-item" href="coding/HC319"> cushings syndrome (97)</a>
+<a class="dropdown-item" href="coding/HC127"> hydatiform mole (94)</a>
+<a class="dropdown-item" href="coding/HC99"> neutropenia/lymphopenia (92)</a>
+<a class="dropdown-item" href="coding/HC345"> neurological injury/trauma (92)</a>
+<a class="dropdown-item" href="coding/HC111"> meningioma / benign meningeal tumour (92)</a>
+<a class="dropdown-item" href="coding/HC94"> dementia/alzheimers/cognitive impairment (90)</a>
+<a class="dropdown-item" href="coding/HC37"> parathyroid hyperplasia/adenoma (90)</a>
+<a class="dropdown-item" href="coding/HC30"> aortic regurgitation / incompetence (90)</a>
+<a class="dropdown-item" href="coding/HC18"> pemphigoid/pemphigus (86)</a>
+<a class="dropdown-item" href="coding/HC368"> diabetes insipidus (85)</a>
+<a class="dropdown-item" href="coding/HC350"> hyperprolactinaemia (85)</a>
+<a class="dropdown-item" href="coding/HC377"> oesophageal stricture (83)</a>
+<a class="dropdown-item" href="coding/HC360"> grave's disease (81)</a>
+<a class="dropdown-item" href="coding/HC238"> acromegaly (81)</a>
+<a class="dropdown-item" href="coding/HC20"> cervical erosion (81)</a>
+<a class="dropdown-item" href="coding/HC211"> dermatomyositis (79)</a>
+<a class="dropdown-item" href="coding/HC145"> thyroid radioablation therapy (77)</a>
+<a class="dropdown-item" href="coding/HC189"> hyperaldosteronism/conn's syndrome (72)</a>
+<a class="dropdown-item" href="coding/HC174"> haemochromatosis (72)</a>
+<a class="dropdown-item" href="coding/HC399"> incisional hernia (71)</a>
+<a class="dropdown-item" href="coding/HC73"> dermatopolymyositis (69)</a>
+<a class="dropdown-item" href="coding/HC23"> fibrosing alveolitis/unspecified alveolitis (69)</a>
+<a class="dropdown-item" href="coding/HC393"> allergy to nickel (66)</a>
+<a class="dropdown-item" href="coding/HC387"> polymyositis (66)</a>
+<a class="dropdown-item" href="coding/HC190"> scrotal problem (not cancer) (66)</a>
+<a class="dropdown-item" href="coding/HC137"> anal problem (66)</a>
+<a class="dropdown-item" href="coding/HC411"> thalassaemia (64)</a>
+<a class="dropdown-item" href="coding/HC207"> soft tissue inflammation (64)</a>
+<a class="dropdown-item" href="coding/HC381"> venous thromboembolic disease (63)</a>
+<a class="dropdown-item" href="coding/HC236"> ovarian problem (61)</a>
+<a class="dropdown-item" href="coding/HC97"> pleural plaques (not known asbestosis) (58)</a>
+<a class="dropdown-item" href="coding/HC147"> diphtheria (58)</a>
+<a class="dropdown-item" href="coding/HC409"> male infertility (56)</a>
+<a class="dropdown-item" href="coding/HC148"> wolff parkinson white / wpw syndrome (56)</a>
+<a class="dropdown-item" href="coding/HC66"> myelofibrosis (54)</a>
+<!--<a class="dropdown-item" href="coding/HC372"> uterine problem (52)</a>
+<a class="dropdown-item" href="coding/HC244"> carcinoid syndrome/tumour (52)</a>
+<a class="dropdown-item" href="coding/HC279"> myeloproliferative disorder (51)</a>
+<a class="dropdown-item" href="coding/HC354"> kidney nephropathy (50)</a>
+<a class="dropdown-item" href="coding/HC192"> bowel / intestinal perforation (50)</a>
+<a class="dropdown-item" href="coding/HC235"> other demyelinating disease (49)</a>
+<a class="dropdown-item" href="coding/HC343"> glomerulnephritis (47)</a>
+<a class="dropdown-item" href="coding/HC228"> infection of nervous system (43)</a>
+<a class="dropdown-item" href="coding/HC186"> paget's disease (43)</a>
+<a class="dropdown-item" href="coding/HC349"> bowen's disease (42)</a>
+<a class="dropdown-item" href="coding/HC336"> iga nephropathy (42)</a>
+<a class="dropdown-item" href="coding/HC138"> polyartertis nodosa (42)</a>
+<a class="dropdown-item" href="coding/HC407"> pancreatic disease (39)</a>
+<a class="dropdown-item" href="coding/HC70"> aortic valve disease (38)</a>
+<a class="dropdown-item" href="coding/HC367"> other substance abuse/dependency (37)</a>
+<a class="dropdown-item" href="coding/HC258"> haemophilia (37)</a>
+<a class="dropdown-item" href="coding/HC199"> cervical problem (35)</a>
+<a class="dropdown-item" href="coding/HC272"> stevens johnson syndrome (32)</a>
+<a class="dropdown-item" href="coding/HC416"> retinitis pigmentosa (31)</a>
+<a class="dropdown-item" href="coding/HC120"> typhoid fever (29)</a>
+<a class="dropdown-item" href="coding/HC425"> adrenal tumour (28)</a>
+<a class="dropdown-item" href="coding/HC365"> schistosomiasis/bilharzia (27)</a>
+<a class="dropdown-item" href="coding/HC297"> dengue fever (24)</a>
+<a class="dropdown-item" href="coding/HC183"> spinal abscess (22)</a>
+<a class="dropdown-item" href="coding/HC141"> antiphospholipid syndrome (22)</a>
+<a class="dropdown-item" href="coding/HC159"> opioid dependency (20)</a>
+<a class="dropdown-item" href="coding/HC265"> bowel / intestinal infarction (19)</a>
+<a class="dropdown-item" href="coding/HC245"> bile duct disease (18)</a>
+<a class="dropdown-item" href="coding/HC214"> empyema (18)</a>
+<a class="dropdown-item" href="coding/HC266"> other venous/lymphatic disease (17)</a>
+<a class="dropdown-item" href="coding/HC80"> sickle cell disease (16)</a>
+<a class="dropdown-item" href="coding/HC75"> alpha-1 antitrypsin deficiency (15)</a>
+<a class="dropdown-item" href="coding/HC175"> ischaemic stroke (15)</a>
+<a class="dropdown-item" href="coding/HC19"> phaeochromocytoma (14)</a>
+<a class="dropdown-item" href="coding/HC108"> giardia / giardiasis (14)</a>
+<a class="dropdown-item" href="coding/HC71"> microscopic polyarteritis (13)</a>
+<a class="dropdown-item" href="coding/HC378"> diabetic nephropathy (11)</a>
+<a class="dropdown-item" href="coding/HC439"> hepatitis e (8)</a>
+<a class="dropdown-item" href="coding/HC50"> chlamydia (7)</a>
+<a class="dropdown-item" href="coding/HC29"> yellow fever (7)</a>
+<a class="dropdown-item" href="coding/HC403"> varicella zoster virus (4)</a>
+<a class="dropdown-item" href="coding/HC335"> pancytopenia (4)</a>
+<a class="dropdown-item" href="coding/HC65"> hepatitis d (0)</a> -->
+</div>
+</div>
+</div>
+
+
+
+<div class="btn-group" role="group">
+<div class="dropdown" align="center">
+<button onclick="myFunction7()" class="button">Quantitative measures</button>
+  <div id="myDropdown7" class="dropdown-content">
+    <input type="text" placeholder="Search.." id="myInput7" onkeyup="filterFunction7()">
+<a class="dropdown-item" href="coding/INI30000"> White_blood_cell_(leukocyte)_count (328029)</a>
+<a class="dropdown-item" href="coding/INI30010"> Red_blood_cell_(erythrocyte)_count (328032)</a>
+<a class="dropdown-item" href="coding/INI30020"> Haemoglobin_concentration (328031)</a>
+<a class="dropdown-item" href="coding/INI30030"> Haematocrit_percentage (328032)</a>
+<a class="dropdown-item" href="coding/INI30040"> Mean_corpuscular_volume (328031)</a>
+<a class="dropdown-item" href="coding/INI30050"> Mean_corpuscular_haemoglobin (328028)</a>
+<a class="dropdown-item" href="coding/INI30060"> Mean_corpuscular_haemoglobin_concentration (328025)</a>
+<a class="dropdown-item" href="coding/INI30070"> Red_blood_cell_(erythrocyte)_distribution_width (328031)</a>
+<a class="dropdown-item" href="coding/INI30080"> Platelet_count (328031)</a>
+<!--<a class="dropdown-item" href="coding/INI30090"> Platelet_crit (327881)</a>
+<a class="dropdown-item" href="coding/INI30100"> Mean_platelet_(thrombocyte)_volume (328027)</a>-->
+<a class="dropdown-item" href="coding/INI30110"> Platelet_distribution_width (327880)</a>
+<a class="dropdown-item" href="coding/INI30120"> Lymphocyte_count (327479)</a>
+<a class="dropdown-item" href="coding/INI30130"> Monocyte_count (327479)</a>
+<a class="dropdown-item" href="coding/INI30140"> Neutrophill_count (327479)</a>
+<a class="dropdown-item" href="coding/INI30150"> Eosinophill_count (327479)</a>
+<a class="dropdown-item" href="coding/INI30160"> Basophill_count (327479)</a>
+<a class="dropdown-item" href="coding/INI30170"> Nucleated_red_blood_cell_count (327321)</a>
+<a class="dropdown-item" href="coding/INI30180"> Lymphocyte_percentage (327482)</a>
+<a class="dropdown-item" href="coding/INI30190"> Monocyte_percentage (327482)</a>
+<a class="dropdown-item" href="coding/INI30200"> Neutrophill_percentage (327482)</a>
+<a class="dropdown-item" href="coding/INI30210"> Eosinophill_percentage (327482)</a>
+<a class="dropdown-item" href="coding/INI30220"> Basophill_percentage (327482)</a>
+<a class="dropdown-item" href="coding/INI30230"> Nucleated_red_blood_cell_percentage (327318)</a>
+<a class="dropdown-item" href="coding/INI30240"> Reticulocyte_percentage (322933)</a>
+<a class="dropdown-item" href="coding/INI30250"> Reticulocyte_count (322934)</a>
+<a class="dropdown-item" href="coding/INI30260"> Mean_reticulocyte_volume (322934)</a>
+<a class="dropdown-item" href="coding/INI30270"> Mean_sphered_cell_volume (322755)</a>
+<!--<a class="dropdown-item" href="coding/INI30280"> Immature_reticulocyte_fraction (322755)</a>
+<a class="dropdown-item" href="coding/INI30290"> High_light_scatter_reticulocyte_percentage (322755)</a>
+<a class="dropdown-item" href="coding/INI30300"> High_light_scatter_reticulocyte_count (322755)</a>
+<a class="dropdown-item" href="coding/INI30500"> Microalbumin_in_urine (104119)</a>
+<a class="dropdown-item" href="coding/INI30510"> Creatinine_(enzymatic)_in_urine (327981)</a> -->
+<a class="dropdown-item" href="coding/INI30520"> Potassium_in_urine (327299)</a>
+<a class="dropdown-item" href="coding/INI30530"> Sodium_in_urine (327302)</a>
+</div>
+</div>
+</div>
+
+
+<div class="btn-group" role="group">
+<div class="dropdown" align="center">
+<button onclick="myFunction8()" class="button">Quantitative measures II</button>
+  <div id="myDropdown8" class="dropdown-content">
+    <input type="text" placeholder="Search.." id="myInput8" onkeyup="filterFunction8()">
+
+<a class="dropdown-item" href="coding/INI48"> Waist_circumference (336659)</a>
+<a class="dropdown-item" href="coding/INI49"> Hip_circumference (336620)</a>
+<!--<a class="dropdown-item" href="coding/INI50"> Standing_height (336500)</a> -->
+<a class="dropdown-item" href="coding/INI84"> Cancer_year/age_first_occurred (29993)</a>
+<a class="dropdown-item" href="coding/INI87"> Non-cancer_illness_year/age_first_occurred (256433)</a>
+<a class="dropdown-item" href="coding/INI93"> Systolic_blood_pressure,_manual_reading (30077)</a>
+<a class="dropdown-item" href="coding/INI94"> Diastolic_blood_pressure,_manual_reading (30077)</a>
+<a class="dropdown-item" href="coding/INI95"> Pulse_rate_(during_blood-pressure_measurement) (30077)</a>
+<a class="dropdown-item" href="coding/INI102"> Pulse_rate,_automated_reading (318344)</a>
+<a class="dropdown-item" href="coding/INI134"> Number_of_self-reported_cancers (337163)</a>
+<a class="dropdown-item" href="coding/INI135"> Number_of_self-reported_non-cancer_illnesses (337163)</a>
+<a class="dropdown-item" href="coding/INI137"> Number_of_treatments/medications_taken (337163)</a>
+<a class="dropdown-item" href="coding/INI1050"> Time_spend_outdoors_in_summer (337201)</a>
+<a class="dropdown-item" href="coding/INI1060"> Time_spent_outdoors_in_winter (337201)</a>
+<a class="dropdown-item" href="coding/INI1160"> Sleep_duration (337201)</a>
+<a class="dropdown-item" href="coding/INI1289"> Cooked_vegetable_intake (337201)</a>
+<a class="dropdown-item" href="coding/INI1299"> Salad_/_raw_vegetable_intake (337201)</a>
+<a class="dropdown-item" href="coding/INI1309"> Fresh_fruit_intake (337201)</a>
+<a class="dropdown-item" href="coding/INI1319"> Dried_fruit_intake (337201)</a>
+<a class="dropdown-item" href="coding/INI1438"> Bread_intake (337201)</a>
+<a class="dropdown-item" href="coding/INI1458"> Cereal_intake (337201)</a>
+<a class="dropdown-item" href="coding/INI1488"> Tea_intake (337201)</a>
+<a class="dropdown-item" href="coding/INI1498"> Coffee_intake (337201)</a>
+<a class="dropdown-item" href="coding/INI1528"> Water_intake (337201)</a>
+<a class="dropdown-item" href="coding/INI1568"> Average_weekly_red_wine_intake (243166)</a>
+<a class="dropdown-item" href="coding/INI1578"> Average_weekly_champagne_plus_white_wine_intake (243166)</a>
+<a class="dropdown-item" href="coding/INI1588"> Average_weekly_beer_plus_cider_intake (243166)</a>
+<a class="dropdown-item" href="coding/INI1598"> Average_weekly_spirits_intake (243166)</a>
+<a class="dropdown-item" href="coding/INI1608"> Average_weekly_fortified_wine_intake (243166)</a>
+<a class="dropdown-item" href="coding/INI1737"> Childhood_sunburn_occasions (337201)</a>
+<a class="dropdown-item" href="coding/INI1807"> Father's_age_at_death (257090)</a>
+<a class="dropdown-item" href="coding/INI1845"> Mother's_age (131654)</a>
+<a class="dropdown-item" href="coding/INI1873"> Number_of_full_brothers (332646)</a>
+<a class="dropdown-item" href="coding/INI1883"> Number_of_full_sisters (332646)</a>
+<a class="dropdown-item" href="coding/INI2139"> Age_first_had_sexual_intercourse (310228)</a>
+<a class="dropdown-item" href="coding/INI2149"> Lifetime_number_of_sexual_partners (307333)</a>
+<a class="dropdown-item" href="coding/INI2714"> Age_when_periods_started_(menarche) (181063)</a>
+<a class="dropdown-item" href="coding/INI2744"> Birth_weight_of_first_child (147795)</a>
+<a class="dropdown-item" href="coding/INI3062"> Forced_vital_capacity_(FVC) (309028)</a>
+<a class="dropdown-item" href="coding/INI3063"> Forced_expiratory_volume_in_1-second_(FEV1) (309028)</a>
+<a class="dropdown-item" href="coding/INI3064"> Peak_expiratory_flow_(PEF) (309028)</a>
+<a class="dropdown-item" href="coding/INI3160"> Weight,_manual_entry (5183)</a>
+<a class="dropdown-item" href="coding/INI3456"> Number_of_cigarettes_currently_smoked_daily_(current_cigarette_smokers) (23493)</a>
+<a class="dropdown-item" href="coding/INI30500"> Microalbumin_in_urine (104119)</a>
+<a class="dropdown-item" href="coding/INI30510"> Creatinine_(enzymatic)_in_urine (327981)</a>
+<a class="dropdown-item" href="coding/INI30520"> Potassium_in_urine (327299)</a>
+<a class="dropdown-item" href="coding/INI30530"> Sodium_in_urine (327302)</a>
+<a class="dropdown-item" href="coding/INI3526"> Mother's_age_at_death (205977)</a>
+<!--<a class="dropdown-item" href="coding/INI10694"> Forced_vital_capacity_(FVC)_(pilot) (291)</a>
+<a class="dropdown-item" href="coding/INI10695"> Forced_expiratory_volume_in_1-second_(FEV1)_(pilot) (291)</a>
+<a class="dropdown-item" href="coding/INI10696"> Peak_expiratory_flow_(PEF)_(pilot) (291)</a>-->
+<a class="dropdown-item" href="coding/INI134"> Number_of_self-reported_cancers (337163)</a>
+<a class="dropdown-item" href="coding/INI135"> Number_of_self-reported_non-cancer_illnesses (337163)</a>
+<a class="dropdown-item" href="coding/INI137"> Number_of_treatments/medications_taken (337163)</a>
+<a class="dropdown-item" href="coding/INI20121"> Cascot_confidence_score (9825)</a>
+<a class="dropdown-item" href="coding/INI20127"> Neuroticism_score (274108)</a>
+<a class="dropdown-item" href="coding/INI20150"> Forced_expiratory_volume_in_1-second_(FEV1),_Best_measure (255494)</a>
+<a class="dropdown-item" href="coding/INI20151"> Forced_vital_capacity_(FVC),_Best_measure (255494)</a>
+<a class="dropdown-item" href="coding/INI20153"> Forced_expiratory_volume_in_1-second_(FEV1),_predicted (110424)</a>
+<a class="dropdown-item" href="coding/INI20154"> Forced_expiratory_volume_in_1-second_(FEV1),_predicted_percentage (110424)</a>
+<a class="dropdown-item" href="coding/INI20191"> Fluid_intelligence_score (86738)</a>
+<a class="dropdown-item" href="coding/INI21001"> Body_mass_index_(BMI) (336144)</a>
+<a class="dropdown-item" href="coding/INI21002"> Weight (336260)</a>
+<a class="dropdown-item" href="coding/INI21021"> Pulse_wave_Arterial_Stiffness_index (125775)</a>
+<a class="dropdown-item" href="coding/INI2139"> Age_first_had_sexual_intercourse (310228)</a>
+<a class="dropdown-item" href="coding/INI2149"> Lifetime_number_of_sexual_partners (307333)</a>
+<a class="dropdown-item" href="coding/INI22146"> Age_hayfever_or_allergic_rhinitis_diagnosed_by_doctor (19390)</a>
+<a class="dropdown-item" href="coding/INI22147"> Age_asthma_diagnosed_by_doctor (10842)</a>
+<a class="dropdown-item" href="coding/INI22148"> Age_emphysema_diagnosed_by_doctor (260)</a>
+<a class="dropdown-item" href="coding/INI22149"> Age_chronic_bronchitis_diagnosed_by_doctor (961)</a>
+<a class="dropdown-item" href="coding/INI22150"> Age_COPD_(Chronic_Obstructive_Pulmonary_Disease)_diagnosed_by_doctor (1265)</a>
+<a class="dropdown-item" href="coding/INI22152"> Age_alpha-1_antitrypsin_deficiency_diagnosed_by_doctor (36)</a>
+<a class="dropdown-item" href="coding/INI22153"> Age_sarcoidosis_diagnosed_by_doctor (361)</a>
+<a class="dropdown-item" href="coding/INI22154"> Age_bronchiectasis_diagnosed_by_doctor (758)</a>
+<a class="dropdown-item" href="coding/INI22155"> Age_idiopathic_pulmonary_fibrosis_diagnosed_by_doctor (87)</a>
+<a class="dropdown-item" href="coding/INI22156"> Age_fibrosing_alveolitis/unspecified_alveolitis_diagnosed_by_doctor (38)</a>
+<a class="dropdown-item" href="coding/INI22157"> Age_tuberculosis_diagnosed_by_doctor (440)</a>
+<a class="dropdown-item" href="coding/INI22159"> Age_asbestosis_diagnosed_by_doctor (61)</a>
+<a class="dropdown-item" href="coding/INI22160"> Age_lung_cancer_(not_mesothelioma)_diagnosed_by_doctor (101)</a>
+<a class="dropdown-item" href="coding/INI2217"> Age_started_wearing_glasses_or_contact_lenses (302436)</a>
+<a class="dropdown-item" href="coding/INI22403"> Anterior_thigh_lean_muscle_volume_(right) (675)</a>
+<a class="dropdown-item" href="coding/INI22404"> Posterior_thigh_lean_muscle_volume_(right) (675)</a>
+<a class="dropdown-item" href="coding/INI22405"> Anterior_thigh_lean_muscle_volume_(left) (669)</a>
+<a class="dropdown-item" href="coding/INI22406"> Posterior_thigh_lean_muscle_volume_(left) (669)</a>
+<a class="dropdown-item" href="coding/INI22407"> Visceral_adipose_tissue_volume_(VAT) (703)</a>
+<a class="dropdown-item" href="coding/INI22408"> Abdominal_subcutaneous_adipose_tissue_volume_(ASAT) (703)</a>
+<a class="dropdown-item" href="coding/INI22409"> Total_thigh_muscle_volume (666)</a>
+<a class="dropdown-item" href="coding/INI22410"> Total_trunk_fat (703)</a>
+<a class="dropdown-item" href="coding/INI22420"> LV_ejection_fraction (3374)</a>
+<a class="dropdown-item" href="coding/INI22421"> LV_end_diastolic_volume (3374)</a>
+<a class="dropdown-item" href="coding/INI22422"> LV_end_systolic_volume (3374)</a>
+<a class="dropdown-item" href="coding/INI22423"> LV_stroke_volume (3374)</a>
+<a class="dropdown-item" href="coding/INI22424"> Cardiac_output (3374)</a>
+<a class="dropdown-item" href="coding/INI22425"> Cardiac_index (3374)</a>
+<a class="dropdown-item" href="coding/INI22426"> Average_heart_rate (3374)</a>
+<a class="dropdown-item" href="coding/INI22427"> Body_surface_area (3374)</a>
+<a class="dropdown-item" href="coding/INI22503"> Years_of_cough_on_most_days (11689)</a>
+<a class="dropdown-item" href="coding/INI22505"> Years_of_bringing_up_phlegm/sputum/mucus_on_most_days (7175)</a>
+<a class="dropdown-item" href="coding/INI22670"> Minimum_carotid_IMT_(intima-medial_thickness)_at_120_degrees (1809)</a>
+<a class="dropdown-item" href="coding/INI22671"> Mean_carotid_IMT_(intima-medial_thickness)_at_120_degrees (1809)</a>
+<a class="dropdown-item" href="coding/INI22672"> Maximum_carotid_IMT_(intima-medial_thickness)_at_120_degrees (1809)</a>
+<a class="dropdown-item" href="coding/INI22673"> Minimum_carotid_IMT_(intima-medial_thickness)_at_150_degrees (1826)</a>
+<a class="dropdown-item" href="coding/INI22674"> Mean_carotid_IMT_(intima-medial_thickness)_at_150_degrees (1826)</a>
+<a class="dropdown-item" href="coding/INI22675"> Maximum_carotid_IMT_(intima-medial_thickness)_at_150_degrees (1826)</a>
+<a class="dropdown-item" href="coding/INI22676"> Minimum_carotid_IMT_(intima-medial_thickness)_at_210_degrees (1816)</a>
+<a class="dropdown-item" href="coding/INI22677"> Mean_carotid_IMT_(intima-medial_thickness)_at_210_degrees (1816)</a>
+<a class="dropdown-item" href="coding/INI22678"> Maximum_carotid_IMT_(intima-medial_thickness)_at_210_degrees (1816)</a>
+<a class="dropdown-item" href="coding/INI22679"> Minimum_carotid_IMT_(intima-medial_thickness)_at_240_degrees (1790)</a>
+<a class="dropdown-item" href="coding/INI22680"> Mean_carotid_IMT_(intima-medial_thickness)_at_240_degrees (1790)</a>
+<a class="dropdown-item" href="coding/INI22681"> Maximum_carotid_IMT_(intima-medial_thickness)_at_240_degrees (1790)</a>
+<a class="dropdown-item" href="coding/INI2316"> Wheeze_or_whistling_in_the_chest_in_last_year (337198)</a>
+<a class="dropdown-item" href="coding/INI23200"> L1-L4_area (3678)</a>
+<a class="dropdown-item" href="coding/INI23201"> L1-L4_average_height (3678)</a>
+<a class="dropdown-item" href="coding/INI23202"> L1-L4_average_width (3678)</a>
+<a class="dropdown-item" href="coding/INI23206"> Femur_lower_neck_BMD_(bone_mineral_density)_(right) (1681)</a>
+<a class="dropdown-item" href="coding/INI23208"> Femur_neck_BMD_(bone_mineral_density)_(right) (3704)</a>
+<a class="dropdown-item" href="coding/INI23209"> Femur_neck_BMD_(bone_mineral_density)_T-score_(right) (3682)</a>
+<a class="dropdown-item" href="coding/INI23210"> Femur_shaft_BMD_(bone_mineral_density)_(right) (3694)</a>
+<a class="dropdown-item" href="coding/INI23212"> Femur_total_BMD_(bone_mineral_density)_(right) (3694)</a>
+<a class="dropdown-item" href="coding/INI23213"> Femur_total_BMD_(bone_mineral_density)_T-score_(right) (3672)</a>
+<a class="dropdown-item" href="coding/INI23214"> Femur_troch_BMD_(bone_mineral_density)_(right) (3704)</a>
+<a class="dropdown-item" href="coding/INI23215"> Femur_troch_BMD_(bone_mineral_density)_T-score_(right) (3682)</a>
+<a class="dropdown-item" href="coding/INI23216"> Femur_upper_neck_BMD_(bone_mineral_density)_(right) (1681)</a>
+<a class="dropdown-item" href="coding/INI23220"> Arm_BMC_(bone_mineral_content)_(left) (3100)</a>
+<a class="dropdown-item" href="coding/INI23221"> Arm_BMD_(bone_mineral_density)_(left) (3100)</a>
+<a class="dropdown-item" href="coding/INI23222"> Arm_BMC_(bone_mineral_content)_(right) (3100)</a>
+<a class="dropdown-item" href="coding/INI23223"> Arm_BMD_(bone_mineral_density)_(right) (3100)</a>
+<a class="dropdown-item" href="coding/INI23224"> Arms_BMC_(bone_mineral_content) (3694)</a>
+<a class="dropdown-item" href="coding/INI23225"> Arms_BMD_(bone_mineral_density) (3694)</a>
+<a class="dropdown-item" href="coding/INI23244"> Android_bone_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23245"> Android_fat_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23246"> Android_lean_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23247"> Android_tissue_fat_percentage (3694)</a>
+<a class="dropdown-item" href="coding/INI23248"> Android_total_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23249"> Arm_fat_mass_(left) (3100)</a>
+<a class="dropdown-item" href="coding/INI23250"> Arm_lean_mass_(left) (3100)</a>
+<a class="dropdown-item" href="coding/INI23251"> Arm_tissue_fat_percentage_(left) (3100)</a>
+<a class="dropdown-item" href="coding/INI23252"> Arm_total_mass_(left) (3100)</a>
+<a class="dropdown-item" href="coding/INI23253"> Arm_fat_mass_(right) (3100)</a>
+<a class="dropdown-item" href="coding/INI23254"> Arm_lean_mass_(right) (3100)</a>
+<a class="dropdown-item" href="coding/INI23255"> Arm_tissue_fat_percentage_(right) (3100)</a>
+<a class="dropdown-item" href="coding/INI23256"> Arm_total_mass_(right) (3100)</a>
+<a class="dropdown-item" href="coding/INI23257"> Arms_fat_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23258"> Arms_lean_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23259"> Arms_tissue_fat_percentage (3694)</a>
+<a class="dropdown-item" href="coding/INI23260"> Arms_total_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23261"> Gynoid_bone_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23262"> Gynoid_fat_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23263"> Gynoid_lean_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23264"> Gynoid_tissue_fat_percentage (3694)</a>
+<a class="dropdown-item" href="coding/INI23265"> Gynoid_total_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23266"> Leg_fat_mass_(left) (3100)</a>
+<a class="dropdown-item" href="coding/INI23267"> Leg_lean_mass_(left) (3100)</a>
+<a class="dropdown-item" href="coding/INI23268"> Leg_tissue_fat_percentage_(left) (3100)</a>
+<a class="dropdown-item" href="coding/INI23269"> Leg_total_mass_(left) (3100)</a>
+<a class="dropdown-item" href="coding/INI23270"> Leg_fat_mass_(right) (3100)</a>
+<a class="dropdown-item" href="coding/INI23271"> Leg_lean_mass_(right) (3100)</a>
+<a class="dropdown-item" href="coding/INI23272"> Leg_tissue_fat_percentage_(right) (3100)</a>
+<a class="dropdown-item" href="coding/INI23273"> Leg_total_mass_(right) (3100)</a>
+<a class="dropdown-item" href="coding/INI23274"> Legs_fat_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23275"> Legs_lean_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23276"> Legs_tissue_fat_percentage (3694)</a>
+<a class="dropdown-item" href="coding/INI23277"> Legs_total_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23278"> Total_fat_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23279"> Total_fat-free_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23280"> Total_lean_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23281"> Total_tissue_fat_percentage (3694)</a>
+<a class="dropdown-item" href="coding/INI23282"> Total_tissue_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23283"> Total_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23284"> Trunk_fat_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23285"> Trunk_lean_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23286"> Trunk_tissue_fat_percentage (3694)</a>
+<a class="dropdown-item" href="coding/INI23287"> Trunk_total_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23288"> VAT_(visceral_adipose_tissue)_mass (3652)</a>
+<a class="dropdown-item" href="coding/INI23289"> VAT_(visceral_adipose_tissue)_volume (3652)</a>
+<a class="dropdown-item" href="coding/INI23290"> Femur_shaft_BMD_(bone_mineral_density)_(left) (3693)</a>
+<a class="dropdown-item" href="coding/INI23291"> Femur_total_BMD_(bone_mineral_density)_(left) (3693)</a>
+<a class="dropdown-item" href="coding/INI23292"> Femur_upper_neck_BMD_(bone_mineral_density)_(left) (1681)</a>
+<a class="dropdown-item" href="coding/INI23293"> Femur_total_BMD_(bone_mineral_density)_T-score_(left) (3671)</a>
+<a class="dropdown-item" href="coding/INI23295"> Femur_troch_BMD_(bone_mineral_density)_(left) (3704)</a>
+<a class="dropdown-item" href="coding/INI23296"> Femur_upper_neck_BMD_(bone_mineral_density)_T-score_(left) (1673)</a>
+<a class="dropdown-item" href="coding/INI23298"> Femur_troch_BMD_(bone_mineral_density)_T-score_(left) (3682)</a>
+<a class="dropdown-item" href="coding/INI23299"> Femur_neck_BMD_(bone_mineral_density)_(left) (3704)</a>
+<a class="dropdown-item" href="coding/INI23300"> Femur_neck_BMD_(bone_mineral_density)_T-score_(left) (3682)</a>
+<a class="dropdown-item" href="coding/INI23302"> Femur_lower_neck_BMD_(bone_mineral_density)_(left) (1681)</a>
+<a class="dropdown-item" href="coding/INI23304"> Trunk_bone_area (3694)</a>
+<a class="dropdown-item" href="coding/INI23305"> Head_bone_area (3694)</a>
+<a class="dropdown-item" href="coding/INI23307"> Pelvis_bone_area (3694)</a>
+<a class="dropdown-item" href="coding/INI23309"> Ribs_bone_area (3694)</a>
+<a class="dropdown-item" href="coding/INI23311"> Spine_bone_area (3694)</a>
+<a class="dropdown-item" href="coding/INI23313"> Arm_bone_area_(left) (3100)</a>
+<a class="dropdown-item" href="coding/INI23314"> Arm_bone_area_(right) (3100)</a>
+<a class="dropdown-item" href="coding/INI23315"> Leg_bone_area_(left) (3100)</a>
+<a class="dropdown-item" href="coding/INI23316"> Leg_bone_area_(right) (3100)</a>
+<a class="dropdown-item" href="coding/INI23317"> Arms_combined_bone_area (3694)</a>
+<a class="dropdown-item" href="coding/INI23318"> Legs_combined_bone_area (3694)</a>
+<a class="dropdown-item" href="coding/INI2335"> Chest_pain_or_discomfort (337197)</a>
+<a class="dropdown-item" href="coding/INI2405"> Number_of_children_fathered (156135)</a>
+<a class="dropdown-item" href="coding/INI25000"> Volumetric_scaling_from_T1_head_image_to_standard_space (7059)</a>
+<a class="dropdown-item" href="coding/INI25001"> Volume_of_peripheral_cortical_grey_matter_(normalised_for_head_size) (7059)</a>
+<a class="dropdown-item" href="coding/INI25002"> Volume_of_peripheral_cortical_grey_matter (7059)</a>
+<a class="dropdown-item" href="coding/INI25003"> Volume_of_ventricular_cerebrospinal_fluid_(normalised_for_head_size) (7059)</a>
+<a class="dropdown-item" href="coding/INI25004"> Volume_of_ventricular_cerebrospinal_fluid (7059)</a>
+<a class="dropdown-item" href="coding/INI25005"> Volume_of_grey_matter_(normalised_for_head_size) (7059)</a>
+<a class="dropdown-item" href="coding/INI25006"> Volume_of_grey_matter (7059)</a>
+<a class="dropdown-item" href="coding/INI25007"> Volume_of_white_matter_(normalised_for_head_size) (7059)</a>
+<a class="dropdown-item" href="coding/INI25008"> Volume_of_white_matter (7059)</a>
+<a class="dropdown-item" href="coding/INI25009"> Volume_of_brain,_grey+white,_normalised_for_head_size (7059)</a>
+<a class="dropdown-item" href="coding/INI25010"> Volume_of_brain,_grey+white (7059)</a>
+<a class="dropdown-item" href="coding/INI25011"> Volume_of_thalamus_(left) (7059)</a>
+<a class="dropdown-item" href="coding/INI25012"> Volume_of_thalamus_(right) (7059)</a>
+<a class="dropdown-item" href="coding/INI25013"> Volume_of_caudate_(left) (7059)</a>
+<a class="dropdown-item" href="coding/INI25014"> Volume_of_caudate_(right) (7059)</a>
+<a class="dropdown-item" href="coding/INI25015"> Volume_of_putamen_(left) (7059)</a>
+<a class="dropdown-item" href="coding/INI25016"> Volume_of_putamen_(right) (7059)</a>
+<a class="dropdown-item" href="coding/INI25017"> Volume_of_pallidum_(left) (7059)</a>
+<a class="dropdown-item" href="coding/INI25018"> Volume_of_pallidum_(right) (7059)</a>
+<a class="dropdown-item" href="coding/INI25019"> Volume_of_hippocampus_(left) (7059)</a>
+<a class="dropdown-item" href="coding/INI25020"> Volume_of_hippocampus_(right) (7059)</a>
+<a class="dropdown-item" href="coding/INI25021"> Volume_of_amygdala_(left) (7059)</a>
+<a class="dropdown-item" href="coding/INI25022"> Volume_of_amygdala_(right) (7059)</a>
+<a class="dropdown-item" href="coding/INI25023"> Volume_of_accumbens_(left) (7059)</a>
+<a class="dropdown-item" href="coding/INI25024"> Volume_of_accumbens_(right) (7059)</a>
+<a class="dropdown-item" href="coding/INI25025"> Volume_of_brain_stem_+_4th_ventricle (7059)</a>
+<a class="dropdown-item" href="coding/INI25026"> Median_T2star_in_thalamus_(left) (6549)</a>
+<a class="dropdown-item" href="coding/INI25027"> Median_T2star_in_thalamus_(right) (6549)</a>
+<a class="dropdown-item" href="coding/INI25028"> Median_T2star_in_caudate_(left) (6549)</a>
+<a class="dropdown-item" href="coding/INI25029"> Median_T2star_in_caudate_(right) (6549)</a>
+<a class="dropdown-item" href="coding/INI25030"> Median_T2star_in_putamen_(left) (6549)</a>
+<a class="dropdown-item" href="coding/INI25031"> Median_T2star_in_putamen_(right) (6549)</a>
+<a class="dropdown-item" href="coding/INI25032"> Median_T2star_in_pallidum_(left) (6549)</a>
+<a class="dropdown-item" href="coding/INI25033"> Median_T2star_in_pallidum_(right) (6549)</a>
+<a class="dropdown-item" href="coding/INI25034"> Median_T2star_in_hippocampus_(left) (6549)</a>
+<a class="dropdown-item" href="coding/INI25035"> Median_T2star_in_hippocampus_(right) (6549)</a>
+<a class="dropdown-item" href="coding/INI25036"> Median_T2star_in_amygdala_(left) (6549)</a>
+<a class="dropdown-item" href="coding/INI25037"> Median_T2star_in_amygdala_(right) (6549)</a>
+<a class="dropdown-item" href="coding/INI25038"> Median_T2star_in_accumbens_(left) (6549)</a>
+<a class="dropdown-item" href="coding/INI25039"> Median_T2star_in_accumbens_(right) (6549)</a>
+<a class="dropdown-item" href="coding/INI2714"> Age_when_periods_started_(menarche) (181063)</a>
+<a class="dropdown-item" href="coding/INI2734"> Number_of_live_births (181063)</a>
+<a class="dropdown-item" href="coding/INI2744"> Birth_weight_of_first_child (147795)</a>
+<a class="dropdown-item" href="coding/INI2887"> Number_of_cigarettes_previously_smoked_daily (79683)</a>
+<a class="dropdown-item" href="coding/INI2926"> Number_of_unsuccessful_stop-smoking_attempts (83656)</a>
+<a class="dropdown-item" href="coding/INI2966"> Age_high_blood_pressure_diagnosed (92146)</a>
+<a class="dropdown-item" href="coding/INI2976"> Age_diabetes_diagnosed (15953)</a>
+<a class="dropdown-item" href="coding/INI30000"> White_blood_cell_(leukocyte)_count (328029)</a>
+<a class="dropdown-item" href="coding/INI30010"> Red_blood_cell_(erythrocyte)_count (328032)</a>
+<a class="dropdown-item" href="coding/INI30020"> Haemoglobin_concentration (328031)</a>
+<a class="dropdown-item" href="coding/INI30030"> Haematocrit_percentage (328032)</a>
+<a class="dropdown-item" href="coding/INI30040"> Mean_corpuscular_volume (328031)</a>
+<a class="dropdown-item" href="coding/INI30050"> Mean_corpuscular_haemoglobin (328028)</a>
+<a class="dropdown-item" href="coding/INI30060"> Mean_corpuscular_haemoglobin_concentration (328025)</a>
+<a class="dropdown-item" href="coding/INI30070"> Red_blood_cell_(erythrocyte)_distribution_width (328031)</a>
+<a class="dropdown-item" href="coding/INI30080"> Platelet_count (328031)</a>
+<a class="dropdown-item" href="coding/INI30090"> Platelet_crit (327881)</a>
+<a class="dropdown-item" href="coding/INI30100"> Mean_platelet_(thrombocyte)_volume (328027)</a>
+<a class="dropdown-item" href="coding/INI30110"> Platelet_distribution_width (327880)</a>
+<a class="dropdown-item" href="coding/INI30120"> Lymphocyte_count (327479)</a>
+<a class="dropdown-item" href="coding/INI30130"> Monocyte_count (327479)</a>
+<a class="dropdown-item" href="coding/INI30140"> Neutrophill_count (327479)</a>
+<a class="dropdown-item" href="coding/INI30150"> Eosinophill_count (327479)</a>
+<a class="dropdown-item" href="coding/INI30160"> Basophill_count (327479)</a>
+<a class="dropdown-item" href="coding/INI30170"> Nucleated_red_blood_cell_count (327321)</a>
+<a class="dropdown-item" href="coding/INI30180"> Lymphocyte_percentage (327482)</a>
+<a class="dropdown-item" href="coding/INI30190"> Monocyte_percentage (327482)</a>
+<a class="dropdown-item" href="coding/INI30200"> Neutrophill_percentage (327482)</a>
+<a class="dropdown-item" href="coding/INI30210"> Eosinophill_percentage (327482)</a>
+<a class="dropdown-item" href="coding/INI30220"> Basophill_percentage (327482)</a>
+<a class="dropdown-item" href="coding/INI30230"> Nucleated_red_blood_cell_percentage (327318)</a>
+<a class="dropdown-item" href="coding/INI30240"> Reticulocyte_percentage (322933)</a>
+<a class="dropdown-item" href="coding/INI30250"> Reticulocyte_count (322934)</a>
+<a class="dropdown-item" href="coding/INI30260"> Mean_reticulocyte_volume (322934)</a>
+<a class="dropdown-item" href="coding/INI30270"> Mean_sphered_cell_volume (322755)</a>
+<a class="dropdown-item" href="coding/INI30280"> Immature_reticulocyte_fraction (322755)</a>
+<a class="dropdown-item" href="coding/INI30290"> High_light_scatter_reticulocyte_percentage (322755)</a>
+<a class="dropdown-item" href="coding/INI30300"> High_light_scatter_reticulocyte_count (322755)</a>
+<a class="dropdown-item" href="coding/INI30500"> Microalbumin_in_urine (104119)</a>
+<a class="dropdown-item" href="coding/INI30510"> Creatinine_(enzymatic)_in_urine (327981)</a>
+<a class="dropdown-item" href="coding/INI30520"> Potassium_in_urine (327299)</a>
+<a class="dropdown-item" href="coding/INI30530"> Sodium_in_urine (327302)</a>
+<a class="dropdown-item" href="coding/INI3062"> Forced_vital_capacity_(FVC) (309028)</a>
+<a class="dropdown-item" href="coding/INI3063"> Forced_expiratory_volume_in_1-second_(FEV1) (309028)</a>
+<a class="dropdown-item" href="coding/INI3064"> Peak_expiratory_flow_(PEF) (309028)</a>
+<a class="dropdown-item" href="coding/INI3160"> Weight,_manual_entry (5183)</a>
+<a class="dropdown-item" href="coding/INI3456"> Number_of_cigarettes_currently_smoked_daily_(current_cigarette_smokers) (23493)</a>
+<a class="dropdown-item" href="coding/INI3526"> Mother's_age_at_death (205977)</a>
+<a class="dropdown-item" href="coding/INI3536"> Age_started_hormone-replacement_therapy_(HRT) (71776)</a>
+<a class="dropdown-item" href="coding/INI3546"> Age_last_used_hormone-replacement_therapy_(HRT) (71776)</a>
+<a class="dropdown-item" href="coding/INI3581"> Age_at_menopause_(last_menstrual_period) (113456)</a>
+<a class="dropdown-item" href="coding/INI3627"> Age_angina_diagnosed (10792)</a>
+<a class="dropdown-item" href="coding/INI3669"> Lifetime_number_of_same-sex_sexual_partners (10074)</a>
+<a class="dropdown-item" href="coding/INI3710"> Length_of_menstrual_cycle (40465)</a>
+<a class="dropdown-item" href="coding/INI3761"> Age_hay_fever,_rhinitis_or_eczema_diagnosed (78538)</a>
+<a class="dropdown-item" href="coding/INI3786"> Age_asthma_diagnosed (39088)</a>
+<a class="dropdown-item" href="coding/INI3829"> Number_of_stillbirths (56362)</a>
+<a class="dropdown-item" href="coding/INI3839"> Number_of_spontaneous_miscarriages (56362)</a>
+<a class="dropdown-item" href="coding/INI3849"> Number_of_pregnancy_terminations (56362)</a>
+<a class="dropdown-item" href="coding/INI3894"> Age_heart_attack_diagnosed (7942)</a>
+<a class="dropdown-item" href="coding/INI3992"> Age_emphysema/chronic_bronchitis_diagnosed (5728)</a>
+<a class="dropdown-item" href="coding/INI40007"> Age_at_death (9760)</a>
+<a class="dropdown-item" href="coding/INI40008"> Age_at_cancer_diagnosis (54827)</a>
+<a class="dropdown-item" href="coding/INI40009"> Reported_occurrences_of_cancer (54827)</a>
+<a class="dropdown-item" href="coding/INI4012"> Age_deep-vein_thrombosis_(DVT,_blood_clot_in_leg)_diagnosed (6915)</a>
+<a class="dropdown-item" href="coding/INI4022"> Age_pulmonary_embolism_(blood_clot_in_lung)_diagnosed (2846)</a>
+<a class="dropdown-item" href="coding/INI4056"> Age_stroke_diagnosed (5311)</a>
+<a class="dropdown-item" href="coding/INI4079"> Diastolic_blood_pressure,_automated_reading (318344)</a>
+<a class="dropdown-item" href="coding/INI4080"> Systolic_blood_pressure,_automated_reading (318342)</a>
+<a class="dropdown-item" href="coding/INI4194"> Pulse_rate (126142)</a>
+<a class="dropdown-item" href="coding/INI4195"> Pulse_wave_reflection_index (126142)</a>
+<a class="dropdown-item" href="coding/INI4196"> Pulse_wave_peak_to_peak_time (126082)</a>
+<a class="dropdown-item" href="coding/INI4198"> Position_of_the_pulse_wave_peak (126142)</a>
+<a class="dropdown-item" href="coding/INI4199"> Position_of_pulse_wave_notch (126142)</a>
+<a class="dropdown-item" href="coding/INI4230"> Signal-to-noise-ratio_(SNR)_of_triplet_(left) (123089)</a>
+<a class="dropdown-item" href="coding/INI4233"> Mean_signal-to-noise_ratio_(SNR),_(left) (113829)</a>
+<a class="dropdown-item" href="coding/INI4241"> Signal-to-noise-ratio_(SNR)_of_triplet_(right) (123050)</a>
+<a class="dropdown-item" href="coding/INI4244"> Mean_signal-to-noise_ratio_(SNR),_(right) (113917)</a>
+<a class="dropdown-item" href="coding/INI4282"> Maximum_digits_remembered_correctly (35661)</a>
+<a class="dropdown-item" href="coding/INI4609"> Longest_period_of_depression (67453)</a>
+<a class="dropdown-item" href="coding/INI4620"> Number_of_depression_episodes (67453)</a>
+<a class="dropdown-item" href="coding/INI46"> Hand_grip_strength_(left) (335881)</a>
+<a class="dropdown-item" href="coding/INI4689"> Age_glaucoma_diagnosed (2268)</a>
+<a class="dropdown-item" href="coding/INI4700"> Age_cataract_diagnosed (6822)</a>
+<a class="dropdown-item" href="coding/INI47"> Hand_grip_strength_(right) (335903)</a>
+<a class="dropdown-item" href="coding/INI4814"> Tinnitus_severity/nuisance (37281)</a>
+<a class="dropdown-item" href="coding/INI48"> Waist_circumference (336659)</a>
+<a class="dropdown-item" href="coding/INI49"> Hip_circumference (336620)</a>
+<a class="dropdown-item" href="coding/INI50"> Standing_height (336500)</a>
+<a class="dropdown-item" href="coding/INI5078"> logMAR_in_round_(left) (84829)</a>
+<a class="dropdown-item" href="coding/INI5079"> logMAR_in_round_(right) (84859)</a>
+<a class="dropdown-item" href="coding/INI5084"> Spherical_power_(right) (82752)</a>
+<a class="dropdown-item" href="coding/INI5085"> Spherical_power_(left) (82484)</a>
+<a class="dropdown-item" href="coding/INI5086"> Cylindrical_power_(left) (82491)</a>
+<a class="dropdown-item" href="coding/INI5087"> Cylindrical_power_(right) (82759)</a>
+<a class="dropdown-item" href="coding/INI5088"> Astigmatism_angle_(right) (82759)</a>
+<a class="dropdown-item" href="coding/INI5089"> Astigmatism_angle_(left) (82491)</a>
+<a class="dropdown-item" href="coding/INI5096"> 3mm_weak_meridian_(left) (79815)</a>
+<a class="dropdown-item" href="coding/INI5097"> 6mm_weak_meridian_(left) (69123)</a>
+<a class="dropdown-item" href="coding/INI5098"> 6mm_weak_meridian_(right) (70062)</a>
+<a class="dropdown-item" href="coding/INI5099"> 3mm_weak_meridian_(right) (79835)</a>
+<a class="dropdown-item" href="coding/INI5100"> 3mm_weak_meridian_angle_(right) (79835)</a>
+<a class="dropdown-item" href="coding/INI5101"> 6mm_weak_meridian_angle_(right) (70062)</a>
+<a class="dropdown-item" href="coding/INI5102"> 6mm_weak_meridian_angle_(left) (69123)</a>
+<a class="dropdown-item" href="coding/INI5103"> 3mm_weak_meridian_angle_(left) (79815)</a>
+<a class="dropdown-item" href="coding/INI5104"> 3mm_strong_meridian_angle_(left) (79815)</a>
+<a class="dropdown-item" href="coding/INI5105"> 6mm_strong_meridian_angle_(left) (69123)</a>
+<a class="dropdown-item" href="coding/INI5106"> 6mm_strong_meridian_angle_(right) (70062)</a>
+<a class="dropdown-item" href="coding/INI5107"> 3mm_strong_meridian_angle_(right) (79835)</a>
+<a class="dropdown-item" href="coding/INI5108"> 3mm_asymmetry_angle_(right) (78321)</a>
+<a class="dropdown-item" href="coding/INI5109"> 6mm_asymmetry_angle_(right) (43608)</a>
+<a class="dropdown-item" href="coding/INI5110"> 6mm_asymmetry_angle_(left) (42746)</a>
+<a class="dropdown-item" href="coding/INI5111"> 3mm_asymmetry_angle_(left) (78057)</a>
+<a class="dropdown-item" href="coding/INI5112"> 3mm_cylindrical_power_angle_(left) (79802)</a>
+<a class="dropdown-item" href="coding/INI5113"> 6mm_cylindrical_power_angle_(left) (69097)</a>
+<a class="dropdown-item" href="coding/INI5114"> 6mm_cylindrical_power_angle_(right) (70045)</a>
+<a class="dropdown-item" href="coding/INI5115"> 3mm_cylindrical_power_angle_(right) (79827)</a>
+<a class="dropdown-item" href="coding/INI5116"> 3mm_cylindrical_power_(right) (79835)</a>
+<a class="dropdown-item" href="coding/INI5117"> 6mm_cylindrical_power_(right) (70062)</a>
+<a class="dropdown-item" href="coding/INI5118"> 6mm_cylindrical_power_(left) (69123)</a>
+<a class="dropdown-item" href="coding/INI5119"> 3mm_cylindrical_power_(left) (79815)</a>
+<a class="dropdown-item" href="coding/INI5132"> 3mm_strong_meridian_(right) (79835)</a>
+<a class="dropdown-item" href="coding/INI5133"> 6mm_strong_meridian_(right) (70062)</a>
+<a class="dropdown-item" href="coding/INI5134"> 6mm_strong_meridian_(left) (69123)</a>
+<a class="dropdown-item" href="coding/INI5135"> 3mm_strong_meridian_(left) (79815)</a>
+<a class="dropdown-item" href="coding/INI5156"> 3mm_asymmetry_index_(left) (78057)</a>
+<a class="dropdown-item" href="coding/INI5157"> 6mm_asymmetry_index_(left) (42746)</a>
+<a class="dropdown-item" href="coding/INI5158"> 6mm_asymmetry_index_(right) (43608)</a>
+<a class="dropdown-item" href="coding/INI5159"> 3mm_asymmetry_index_(right) (78321)</a>
+<a class="dropdown-item" href="coding/INI5160"> 3mm_regularity_index_(right) (78344)</a>
+<a class="dropdown-item" href="coding/INI5161"> 6mm_regularity_index_(right) (43670)</a>
+<a class="dropdown-item" href="coding/INI5162"> 6mm_regularity_index_(left) (42760)</a>
+<a class="dropdown-item" href="coding/INI5163"> 3mm_regularity_index_(left) (78069)</a>
+<a class="dropdown-item" href="coding/INI5199"> logMAR,_initial_(right) (84863)</a>
+<a class="dropdown-item" href="coding/INI5201"> logMAR,_final_(right) (84273)</a>
+<a class="dropdown-item" href="coding/INI5206"> logMAR,_initial_(left) (84830)</a>
+<a class="dropdown-item" href="coding/INI5208"> logMAR,_final_(left) (84249)</a>
+<a class="dropdown-item" href="coding/INI5237"> 3mm_index_of_best_keratometry_results_(right) (79835)</a>
+<a class="dropdown-item" href="coding/INI5251"> 6mm_index_of_best_keratometry_results_(right) (70062)</a>
+<a class="dropdown-item" href="coding/INI5254"> Intra-ocular_pressure,_corneal-compensated_(right) (81534)</a>
+<a class="dropdown-item" href="coding/INI5255"> Intra-ocular_pressure,_Goldmann-correlated_(right) (81534)</a>
+<a class="dropdown-item" href="coding/INI5256"> Corneal_hysteresis_(right) (81534)</a>
+<a class="dropdown-item" href="coding/INI5257"> Corneal_resistance_factor_(right) (81534)</a>
+<a class="dropdown-item" href="coding/INI5262"> Intra-ocular_pressure,_corneal-compensated_(left) (81412)</a>
+<a class="dropdown-item" href="coding/INI5263"> Intra-ocular_pressure,_Goldmann-correlated_(left) (81412)</a>
+<a class="dropdown-item" href="coding/INI5264"> Corneal_hysteresis_(left) (81412)</a>
+<a class="dropdown-item" href="coding/INI5265"> Corneal_resistance_factor_(left) (81412)</a>
+<a class="dropdown-item" href="coding/INI5274"> Vertex_distance_(left) (82491)</a>
+<a class="dropdown-item" href="coding/INI5276"> Index_of_best_refractometry_result_(left) (82491)</a>
+<a class="dropdown-item" href="coding/INI5292"> 3mm_index_of_best_keratometry_results_(left) (79815)</a>
+<a class="dropdown-item" href="coding/INI5306"> 6mm_index_of_best_keratometry_results_(left) (69123)</a>
+<a class="dropdown-item" href="coding/INI5375"> Longest_period_of_unenthusiasm_/_disinterest (45120)</a>
+<a class="dropdown-item" href="coding/INI5386"> Number_of_unenthusiastic/disinterested_episodes (45119)</a>
+<a class="dropdown-item" href="coding/INI5430"> Age_when_loss_of_vision_due_to_injury_or_trauma_diagnosed (659)</a>
+<a class="dropdown-item" href="coding/INI5901"> Age_when_diabetes-related_eye_disease_diagnosed (1142)</a>
+<a class="dropdown-item" href="coding/INI5923"> Age_macular_degeneration_diagnosed (1231)</a>
+<a class="dropdown-item" href="coding/INI5945"> Age_other_serious_eye_condition_diagnosed (2059)</a>
+<a class="dropdown-item" href="coding/INI84"> Cancer_year/age_first_occurred (29993)</a>
+<a class="dropdown-item" href="coding/INI87"> Non-cancer_illness_year/age_first_occurred (256433)</a>
+<a class="dropdown-item" href="coding/INI93"> Systolic_blood_pressure,_manual_reading (30077)</a>
+<a class="dropdown-item" href="coding/INI94"> Diastolic_blood_pressure,_manual_reading (30077)</a>
+<a class="dropdown-item" href="coding/INI95"> Pulse_rate_(during_blood-pressure_measurement) (30077)</a>
+<a class="dropdown-item" href="coding/INI20015"> Sitting_height (336513)</a>
+<a class="dropdown-item" href="coding/INI20016"> Fluid_intelligence_score (123079)</a>
+<a class="dropdown-item" href="coding/INI20019"> Speech-reception-threshold_(SRT)_estimate_(left) (115066)</a>
+<a class="dropdown-item" href="coding/INI20021"> Speech-reception-threshold_(SRT)_estimate_(right) (115218)</a>
+<a class="dropdown-item" href="coding/INI20150"> Forced_expiratory_volume_in_1-second_(FEV1),_Best_measure (255494)</a>
+<a class="dropdown-item" href="coding/INI20151"> Forced_vital_capacity_(FVC),_Best_measure (255494)</a>
+<a class="dropdown-item" href="coding/INI20153"> Forced_expiratory_volume_in_1-second_(FEV1),_predicted (110424)</a>
+<a class="dropdown-item" href="coding/INI20154"> Forced_expiratory_volume_in_1-second_(FEV1),_predicted_percentage (110424)</a>
+<a class="dropdown-item" href="coding/INI21001"> Body_mass_index_(BMI) (336144)</a>
+<a class="dropdown-item" href="coding/INI21002"> Weight (336260)</a>
+<a class="dropdown-item" href="coding/INI22420"> LV_ejection_fraction (3374)</a>
+<a class="dropdown-item" href="coding/INI22421"> LV_end_diastolic_volume (3374)</a>
+<a class="dropdown-item" href="coding/INI22422"> LV_end_systolic_volume (3374)</a>
+<a class="dropdown-item" href="coding/INI22423"> LV_stroke_volume (3374)</a>
+<a class="dropdown-item" href="coding/INI22424"> Cardiac_output (3374)</a>
+<a class="dropdown-item" href="coding/INI22425"> Cardiac_index (3374)</a>
+<a class="dropdown-item" href="coding/INI22426"> Average_heart_rate (3374)</a>
+<a class="dropdown-item" href="coding/INI22427"> Body_surface_area (3374)</a>
+<a class="dropdown-item" href="coding/INI22503"> Years_of_cough_on_most_days (11689)</a>
+<a class="dropdown-item" href="coding/INI22505"> Years_of_bringing_up_phlegm/sputum/mucus_on_most_days (7175)</a>
+<a class="dropdown-item" href="coding/INI23200"> L1-L4_area (3678)</a>
+<a class="dropdown-item" href="coding/INI23201"> L1-L4_average_height (3678)</a>
+<a class="dropdown-item" href="coding/INI23202"> L1-L4_average_width (3678)</a>
+<a class="dropdown-item" href="coding/INI23206"> Femur_lower_neck_BMD_(bone_mineral_density)_(right) (1681)</a>
+<a class="dropdown-item" href="coding/INI23207"> Femur_lower_neck_BMD_(bone_mineral_density)_T-score_(right) (0)</a>
+<a class="dropdown-item" href="coding/INI23208"> Femur_neck_BMD_(bone_mineral_density)_(right) (3704)</a>
+<a class="dropdown-item" href="coding/INI23209"> Femur_neck_BMD_(bone_mineral_density)_T-score_(right) (3682)</a>
+<a class="dropdown-item" href="coding/INI23210"> Femur_shaft_BMD_(bone_mineral_density)_(right) (3694)</a>
+<a class="dropdown-item" href="coding/INI23211"> Femur_shaft_BMD_(bone_mineral_density)_T-score_(right) (0)</a>
+<a class="dropdown-item" href="coding/INI23212"> Femur_total_BMD_(bone_mineral_density)_(right) (3694)</a>
+<a class="dropdown-item" href="coding/INI23213"> Femur_total_BMD_(bone_mineral_density)_T-score_(right) (3672)</a>
+<a class="dropdown-item" href="coding/INI23214"> Femur_troch_BMD_(bone_mineral_density)_(right) (3704)</a>
+<a class="dropdown-item" href="coding/INI23215"> Femur_troch_BMD_(bone_mineral_density)_T-score_(right) (3682)</a>
+<a class="dropdown-item" href="coding/INI23216"> Femur_upper_neck_BMD_(bone_mineral_density)_(right) (1681)</a>
+<a class="dropdown-item" href="coding/INI23220"> Arm_BMC_(bone_mineral_content)_(left) (3100)</a>
+<a class="dropdown-item" href="coding/INI23221"> Arm_BMD_(bone_mineral_density)_(left) (3100)</a>
+<a class="dropdown-item" href="coding/INI23222"> Arm_BMC_(bone_mineral_content)_(right) (3100)</a>
+<a class="dropdown-item" href="coding/INI23223"> Arm_BMD_(bone_mineral_density)_(right) (3100)</a>
+<a class="dropdown-item" href="coding/INI23224"> Arms_BMC_(bone_mineral_content) (3694)</a>
+<a class="dropdown-item" href="coding/INI23225"> Arms_BMD_(bone_mineral_density) (3694)</a>
+<a class="dropdown-item" href="coding/INI23244"> Android_bone_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23245"> Android_fat_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23246"> Android_lean_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23247"> Android_tissue_fat_percentage (3694)</a>
+<a class="dropdown-item" href="coding/INI23248"> Android_total_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23249"> Arm_fat_mass_(left) (3100)</a>
+<a class="dropdown-item" href="coding/INI23250"> Arm_lean_mass_(left) (3100)</a>
+<a class="dropdown-item" href="coding/INI23251"> Arm_tissue_fat_percentage_(left) (3100)</a>
+<a class="dropdown-item" href="coding/INI23252"> Arm_total_mass_(left) (3100)</a>
+<a class="dropdown-item" href="coding/INI23253"> Arm_fat_mass_(right) (3100)</a>
+<a class="dropdown-item" href="coding/INI23254"> Arm_lean_mass_(right) (3100)</a>
+<a class="dropdown-item" href="coding/INI23255"> Arm_tissue_fat_percentage_(right) (3100)</a>
+<a class="dropdown-item" href="coding/INI23256"> Arm_total_mass_(right) (3100)</a>
+<a class="dropdown-item" href="coding/INI23257"> Arms_fat_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23258"> Arms_lean_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23259"> Arms_tissue_fat_percentage (3694)</a>
+<a class="dropdown-item" href="coding/INI23260"> Arms_total_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23261"> Gynoid_bone_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23262"> Gynoid_fat_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23263"> Gynoid_lean_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23264"> Gynoid_tissue_fat_percentage (3694)</a>
+<a class="dropdown-item" href="coding/INI23265"> Gynoid_total_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23266"> Leg_fat_mass_(left) (3100)</a>
+<a class="dropdown-item" href="coding/INI23267"> Leg_lean_mass_(left) (3100)</a>
+<a class="dropdown-item" href="coding/INI23268"> Leg_tissue_fat_percentage_(left) (3100)</a>
+<a class="dropdown-item" href="coding/INI23269"> Leg_total_mass_(left) (3100)</a>
+<a class="dropdown-item" href="coding/INI23270"> Leg_fat_mass_(right) (3100)</a>
+<a class="dropdown-item" href="coding/INI23271"> Leg_lean_mass_(right) (3100)</a>
+<a class="dropdown-item" href="coding/INI23272"> Leg_tissue_fat_percentage_(right) (3100)</a>
+<a class="dropdown-item" href="coding/INI23273"> Leg_total_mass_(right) (3100)</a>
+<a class="dropdown-item" href="coding/INI23274"> Legs_fat_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23275"> Legs_lean_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23276"> Legs_tissue_fat_percentage (3694)</a>
+<a class="dropdown-item" href="coding/INI23277"> Legs_total_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23278"> Total_fat_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23279"> Total_fat-free_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23280"> Total_lean_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23281"> Total_tissue_fat_percentage (3694)</a>
+<a class="dropdown-item" href="coding/INI23282"> Total_tissue_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23283"> Total_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23284"> Trunk_fat_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23285"> Trunk_lean_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23286"> Trunk_tissue_fat_percentage (3694)</a>
+<a class="dropdown-item" href="coding/INI23287"> Trunk_total_mass (3694)</a>
+<a class="dropdown-item" href="coding/INI23288"> VAT_(visceral_adipose_tissue)_mass (3652)</a>
+<a class="dropdown-item" href="coding/INI23289"> VAT_(visceral_adipose_tissue)_volume (3652)</a>
+<a class="dropdown-item" href="coding/INI23290"> Femur_shaft_BMD_(bone_mineral_density)_(left) (3693)</a>
+<a class="dropdown-item" href="coding/INI23291"> Femur_total_BMD_(bone_mineral_density)_(left) (3693)</a>
+<a class="dropdown-item" href="coding/INI23292"> Femur_upper_neck_BMD_(bone_mineral_density)_(left) (1681)</a>
+<a class="dropdown-item" href="coding/INI23293"> Femur_total_BMD_(bone_mineral_density)_T-score_(left) (3671)</a>
+<a class="dropdown-item" href="coding/INI23294"> Femur_lower_neck_BMD_(bone_mineral_density)_T-score_(left) (0)</a>
+<a class="dropdown-item" href="coding/INI23295"> Femur_troch_BMD_(bone_mineral_density)_(left) (3704)</a>
+<a class="dropdown-item" href="coding/INI23296"> Femur_upper_neck_BMD_(bone_mineral_density)_T-score_(left) (1673)</a>
+<a class="dropdown-item" href="coding/INI23298"> Femur_troch_BMD_(bone_mineral_density)_T-score_(left) (3682)</a>
+<a class="dropdown-item" href="coding/INI23299"> Femur_neck_BMD_(bone_mineral_density)_(left) (3704)</a>
+<a class="dropdown-item" href="coding/INI23300"> Femur_neck_BMD_(bone_mineral_density)_T-score_(left) (3682)</a>
+<a class="dropdown-item" href="coding/INI23302"> Femur_lower_neck_BMD_(bone_mineral_density)_(left) (1681)</a>
+<a class="dropdown-item" href="coding/INI23303"> Femur_shaft_BMD_(bone_mineral_density)_T-score_(left) (0)</a>
+<a class="dropdown-item" href="coding/INI23304"> Trunk_bone_area (3694)</a>
+<a class="dropdown-item" href="coding/INI23305"> Head_bone_area (3694)</a>
+<a class="dropdown-item" href="coding/INI23307"> Pelvis_bone_area (3694)</a>
+<a class="dropdown-item" href="coding/INI23309"> Ribs_bone_area (3694)</a>
+<a class="dropdown-item" href="coding/INI23311"> Spine_bone_area (3694)</a>
+<a class="dropdown-item" href="coding/INI23313"> Arm_bone_area_(left) (3100)</a>
+<a class="dropdown-item" href="coding/INI23314"> Arm_bone_area_(right) (3100)</a>
+<a class="dropdown-item" href="coding/INI23315"> Leg_bone_area_(left) (3100)</a>
+<a class="dropdown-item" href="coding/INI23316"> Leg_bone_area_(right) (3100)</a>
+<a class="dropdown-item" href="coding/INI23317"> Arms_combined_bone_area (3694)</a>
+<a class="dropdown-item" href="coding/INI23318"> Legs_combined_bone_area (3694)</a>
+<a class="dropdown-item" href="coding/INI25000"> Volumetric_scaling_from_T1_head_image_to_standard_space (7059)</a>
+<a class="dropdown-item" href="coding/INI25001"> Volume_of_peripheral_cortical_grey_matter_(normalised_for_head_size) (7059)</a>
+<a class="dropdown-item" href="coding/INI25002"> Volume_of_peripheral_cortical_grey_matter (7059)</a>
+<a class="dropdown-item" href="coding/INI25003"> Volume_of_ventricular_cerebrospinal_fluid_(normalised_for_head_size) (7059)</a>
+<a class="dropdown-item" href="coding/INI25004"> Volume_of_ventricular_cerebrospinal_fluid (7059)</a>
+<a class="dropdown-item" href="coding/INI25005"> Volume_of_grey_matter_(normalised_for_head_size) (7059)</a>
+<a class="dropdown-item" href="coding/INI25006"> Volume_of_grey_matter (7059)</a>
+<a class="dropdown-item" href="coding/INI25007"> Volume_of_white_matter_(normalised_for_head_size) (7059)</a>
+<a class="dropdown-item" href="coding/INI25008"> Volume_of_white_matter (7059)</a>
+<a class="dropdown-item" href="coding/INI25009"> Volume_of_brain,_grey+white,_normalised_for_head_size (7059)</a>
+<a class="dropdown-item" href="coding/INI25010"> Volume_of_brain,_grey+white (7059)</a>
+<a class="dropdown-item" href="coding/INI25011"> Volume_of_thalamus_(left) (7059)</a>
+<a class="dropdown-item" href="coding/INI25012"> Volume_of_thalamus_(right) (7059)</a>
+<a class="dropdown-item" href="coding/INI25013"> Volume_of_caudate_(left) (7059)</a>
+<a class="dropdown-item" href="coding/INI25014"> Volume_of_caudate_(right) (7059)</a>
+<a class="dropdown-item" href="coding/INI25015"> Volume_of_putamen_(left) (7059)</a>
+<a class="dropdown-item" href="coding/INI25016"> Volume_of_putamen_(right) (7059)</a>
+<a class="dropdown-item" href="coding/INI25017"> Volume_of_pallidum_(left) (7059)</a>
+<a class="dropdown-item" href="coding/INI25018"> Volume_of_pallidum_(right) (7059)</a>
+<a class="dropdown-item" href="coding/INI25019"> Volume_of_hippocampus_(left) (7059)</a>
+<a class="dropdown-item" href="coding/INI25020"> Volume_of_hippocampus_(right) (7059)</a>
+<a class="dropdown-item" href="coding/INI25021"> Volume_of_amygdala_(left) (7059)</a>
+<a class="dropdown-item" href="coding/INI25022"> Volume_of_amygdala_(right) (7059)</a>
+<a class="dropdown-item" href="coding/INI25023"> Volume_of_accumbens_(left) (7059)</a>
+<a class="dropdown-item" href="coding/INI25024"> Volume_of_accumbens_(right) (7059)</a>
+<a class="dropdown-item" href="coding/INI25025"> Volume_of_brain_stem_+_4th_ventricle (7059)</a>
+<a class="dropdown-item" href="coding/INI25026"> Median_T2star_in_thalamus_(left) (6549)</a>
+<a class="dropdown-item" href="coding/INI25027"> Median_T2star_in_thalamus_(right) (6549)</a>
+<a class="dropdown-item" href="coding/INI25028"> Median_T2star_in_caudate_(left) (6549)</a>
+<a class="dropdown-item" href="coding/INI25029"> Median_T2star_in_caudate_(right) (6549)</a>
+<a class="dropdown-item" href="coding/INI25030"> Median_T2star_in_putamen_(left) (6549)</a>
+<a class="dropdown-item" href="coding/INI25031"> Median_T2star_in_putamen_(right) (6549)</a>
+<a class="dropdown-item" href="coding/INI25032"> Median_T2star_in_pallidum_(left) (6549)</a>
+<a class="dropdown-item" href="coding/INI25033"> Median_T2star_in_pallidum_(right) (6549)</a>
+<a class="dropdown-item" href="coding/INI25034"> Median_T2star_in_hippocampus_(left) (6549)</a>
+<a class="dropdown-item" href="coding/INI25035"> Median_T2star_in_hippocampus_(right) (6549)</a>
+<a class="dropdown-item" href="coding/INI25036"> Median_T2star_in_amygdala_(left) (6549)</a>
+<a class="dropdown-item" href="coding/INI25037"> Median_T2star_in_amygdala_(right) (6549)</a>
+<a class="dropdown-item" href="coding/INI25038"> Median_T2star_in_accumbens_(left) (6549)</a>
+<a class="dropdown-item" href="coding/INI25039"> Median_T2star_in_accumbens_(right) (6549)</a>
+<a class="dropdown-item" href="coding/INI25040"> Median_BOLD_effect_(in_group-defined_mask)_for_shapes_activation (6364)</a>
+<a class="dropdown-item" href="coding/INI25042"> Median_z-statistic_(in_group-defined_mask)_for_shapes_activation (6364)</a>
+<a class="dropdown-item" href="coding/INI25044"> Median_BOLD_effect_(in_group-defined_mask)_for_faces_activation (6364)</a>
+<a class="dropdown-item" href="coding/INI25046"> Median_z-statistic_(in_group-defined_mask)_for_faces_activation (6364)</a>
+<a class="dropdown-item" href="coding/INI25048"> Median_BOLD_effect_(in_group-defined_mask)_for_shapes-faces_contrast (6364)</a>
+<a class="dropdown-item" href="coding/INI25050"> Median_z-statistic_(in_group-defined_mask)_for_shapes-faces_contrast (6364)</a>
+<a class="dropdown-item" href="coding/INI25052"> Median_BOLD_effect_(in_group-defined_amygdala_activation_mask)_for_shapes-faces_contrast (6364)</a>
+<a class="dropdown-item" href="coding/INI25054"> Median_z-statistic_(in_group-defined_amygdala_activation_mask)_for_shapes-faces_contrast (6364)</a>
+<a class="dropdown-item" href="coding/INI25056"> Mean_FA_in_middle_cerebellar_peduncle_on_FA_skeleton (6302)</a>
+<a class="dropdown-item" href="coding/INI25057"> Mean_FA_in_pontine_crossing_tract_on_FA_skeleton (6302)</a>
+<a class="dropdown-item" href="coding/INI25058"> Mean_FA_in_genu_of_corpus_callosum_on_FA_skeleton (6302)</a>
+<a class="dropdown-item" href="coding/INI25059"> Mean_FA_in_body_of_corpus_callosum_on_FA_skeleton (6302)</a>
+<a class="dropdown-item" href="coding/INI25060"> Mean_FA_in_splenium_of_corpus_callosum_on_FA_skeleton (6302)</a>
+<a class="dropdown-item" href="coding/INI25061"> Mean_FA_in_fornix_on_FA_skeleton (6302)</a>
+<a class="dropdown-item" href="coding/INI25062"> Mean_FA_in_corticospinal_tract_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25063"> Mean_FA_in_corticospinal_tract_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25064"> Mean_FA_in_medial_lemniscus_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25065"> Mean_FA_in_medial_lemniscus_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25066"> Mean_FA_in_inferior_cerebellar_peduncle_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25067"> Mean_FA_in_inferior_cerebellar_peduncle_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25068"> Mean_FA_in_superior_cerebellar_peduncle_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25069"> Mean_FA_in_superior_cerebellar_peduncle_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25070"> Mean_FA_in_cerebral_peduncle_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25071"> Mean_FA_in_cerebral_peduncle_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25072"> Mean_FA_in_anterior_limb_of_internal_capsule_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25073"> Mean_FA_in_anterior_limb_of_internal_capsule_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25074"> Mean_FA_in_posterior_limb_of_internal_capsule_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25075"> Mean_FA_in_posterior_limb_of_internal_capsule_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25076"> Mean_FA_in_retrolenticular_part_of_internal_capsule_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25077"> Mean_FA_in_retrolenticular_part_of_internal_capsule_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25078"> Mean_FA_in_anterior_corona_radiata_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25079"> Mean_FA_in_anterior_corona_radiata_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25080"> Mean_FA_in_superior_corona_radiata_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25081"> Mean_FA_in_superior_corona_radiata_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25082"> Mean_FA_in_posterior_corona_radiata_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25083"> Mean_FA_in_posterior_corona_radiata_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25084"> Mean_FA_in_posterior_thalamic_radiation_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25085"> Mean_FA_in_posterior_thalamic_radiation_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25086"> Mean_FA_in_sagittal_stratum_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25087"> Mean_FA_in_sagittal_stratum_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25088"> Mean_FA_in_external_capsule_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25089"> Mean_FA_in_external_capsule_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25090"> Mean_FA_in_cingulum_cingulate_gyrus_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25091"> Mean_FA_in_cingulum_cingulate_gyrus_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25092"> Mean_FA_in_cingulum_hippocampus_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25093"> Mean_FA_in_cingulum_hippocampus_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25094"> Mean_FA_in_fornix_cres+stria_terminalis_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25095"> Mean_FA_in_fornix_cres+stria_terminalis_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25096"> Mean_FA_in_superior_longitudinal_fasciculus_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25097"> Mean_FA_in_superior_longitudinal_fasciculus_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25098"> Mean_FA_in_superior_fronto-occipital_fasciculus_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25099"> Mean_FA_in_superior_fronto-occipital_fasciculus_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25100"> Mean_FA_in_uncinate_fasciculus_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25101"> Mean_FA_in_uncinate_fasciculus_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25102"> Mean_FA_in_tapetum_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25103"> Mean_FA_in_tapetum_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25344"> Mean_ICVF_in_middle_cerebellar_peduncle_on_FA_skeleton (6302)</a>
+<a class="dropdown-item" href="coding/INI25345"> Mean_ICVF_in_pontine_crossing_tract_on_FA_skeleton (6302)</a>
+<a class="dropdown-item" href="coding/INI25346"> Mean_ICVF_in_genu_of_corpus_callosum_on_FA_skeleton (6302)</a>
+<a class="dropdown-item" href="coding/INI25347"> Mean_ICVF_in_body_of_corpus_callosum_on_FA_skeleton (6302)</a>
+<a class="dropdown-item" href="coding/INI25348"> Mean_ICVF_in_splenium_of_corpus_callosum_on_FA_skeleton (6302)</a>
+<a class="dropdown-item" href="coding/INI25349"> Mean_ICVF_in_fornix_on_FA_skeleton (6302)</a>
+<a class="dropdown-item" href="coding/INI25350"> Mean_ICVF_in_corticospinal_tract_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25351"> Mean_ICVF_in_corticospinal_tract_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25352"> Mean_ICVF_in_medial_lemniscus_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25353"> Mean_ICVF_in_medial_lemniscus_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25354"> Mean_ICVF_in_inferior_cerebellar_peduncle_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25355"> Mean_ICVF_in_inferior_cerebellar_peduncle_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25356"> Mean_ICVF_in_superior_cerebellar_peduncle_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25357"> Mean_ICVF_in_superior_cerebellar_peduncle_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25358"> Mean_ICVF_in_cerebral_peduncle_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25359"> Mean_ICVF_in_cerebral_peduncle_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25360"> Mean_ICVF_in_anterior_limb_of_internal_capsule_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25361"> Mean_ICVF_in_anterior_limb_of_internal_capsule_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25362"> Mean_ICVF_in_posterior_limb_of_internal_capsule_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25363"> Mean_ICVF_in_posterior_limb_of_internal_capsule_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25364"> Mean_ICVF_in_retrolenticular_part_of_internal_capsule_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25365"> Mean_ICVF_in_retrolenticular_part_of_internal_capsule_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25366"> Mean_ICVF_in_anterior_corona_radiata_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25367"> Mean_ICVF_in_anterior_corona_radiata_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25368"> Mean_ICVF_in_superior_corona_radiata_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25369"> Mean_ICVF_in_superior_corona_radiata_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25370"> Mean_ICVF_in_posterior_corona_radiata_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25371"> Mean_ICVF_in_posterior_corona_radiata_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25372"> Mean_ICVF_in_posterior_thalamic_radiation_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25373"> Mean_ICVF_in_posterior_thalamic_radiation_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25374"> Mean_ICVF_in_sagittal_stratum_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25375"> Mean_ICVF_in_sagittal_stratum_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25376"> Mean_ICVF_in_external_capsule_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25377"> Mean_ICVF_in_external_capsule_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25378"> Mean_ICVF_in_cingulum_cingulate_gyrus_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25379"> Mean_ICVF_in_cingulum_cingulate_gyrus_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25380"> Mean_ICVF_in_cingulum_hippocampus_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25381"> Mean_ICVF_in_cingulum_hippocampus_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25382"> Mean_ICVF_in_fornix_cres+stria_terminalis_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25383"> Mean_ICVF_in_fornix_cres+stria_terminalis_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25384"> Mean_ICVF_in_superior_longitudinal_fasciculus_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25385"> Mean_ICVF_in_superior_longitudinal_fasciculus_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25386"> Mean_ICVF_in_superior_fronto-occipital_fasciculus_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25387"> Mean_ICVF_in_superior_fronto-occipital_fasciculus_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25388"> Mean_ICVF_in_uncinate_fasciculus_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25389"> Mean_ICVF_in_uncinate_fasciculus_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25390"> Mean_ICVF_in_tapetum_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25391"> Mean_ICVF_in_tapetum_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25440"> Mean_ISOVF_in_middle_cerebellar_peduncle_on_FA_skeleton (6302)</a>
+<a class="dropdown-item" href="coding/INI25441"> Mean_ISOVF_in_pontine_crossing_tract_on_FA_skeleton (6302)</a>
+<a class="dropdown-item" href="coding/INI25442"> Mean_ISOVF_in_genu_of_corpus_callosum_on_FA_skeleton (6302)</a>
+<a class="dropdown-item" href="coding/INI25443"> Mean_ISOVF_in_body_of_corpus_callosum_on_FA_skeleton (6302)</a>
+<a class="dropdown-item" href="coding/INI25444"> Mean_ISOVF_in_splenium_of_corpus_callosum_on_FA_skeleton (6302)</a>
+<a class="dropdown-item" href="coding/INI25445"> Mean_ISOVF_in_fornix_on_FA_skeleton (6302)</a>
+<a class="dropdown-item" href="coding/INI25446"> Mean_ISOVF_in_corticospinal_tract_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25447"> Mean_ISOVF_in_corticospinal_tract_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25448"> Mean_ISOVF_in_medial_lemniscus_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25449"> Mean_ISOVF_in_medial_lemniscus_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25450"> Mean_ISOVF_in_inferior_cerebellar_peduncle_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25451"> Mean_ISOVF_in_inferior_cerebellar_peduncle_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25452"> Mean_ISOVF_in_superior_cerebellar_peduncle_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25453"> Mean_ISOVF_in_superior_cerebellar_peduncle_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25454"> Mean_ISOVF_in_cerebral_peduncle_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25455"> Mean_ISOVF_in_cerebral_peduncle_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25456"> Mean_ISOVF_in_anterior_limb_of_internal_capsule_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25457"> Mean_ISOVF_in_anterior_limb_of_internal_capsule_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25458"> Mean_ISOVF_in_posterior_limb_of_internal_capsule_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25459"> Mean_ISOVF_in_posterior_limb_of_internal_capsule_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25460"> Mean_ISOVF_in_retrolenticular_part_of_internal_capsule_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25461"> Mean_ISOVF_in_retrolenticular_part_of_internal_capsule_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25462"> Mean_ISOVF_in_anterior_corona_radiata_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25463"> Mean_ISOVF_in_anterior_corona_radiata_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25464"> Mean_ISOVF_in_superior_corona_radiata_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25465"> Mean_ISOVF_in_superior_corona_radiata_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25466"> Mean_ISOVF_in_posterior_corona_radiata_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25467"> Mean_ISOVF_in_posterior_corona_radiata_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25468"> Mean_ISOVF_in_posterior_thalamic_radiation_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25469"> Mean_ISOVF_in_posterior_thalamic_radiation_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25470"> Mean_ISOVF_in_sagittal_stratum_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25471"> Mean_ISOVF_in_sagittal_stratum_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25472"> Mean_ISOVF_in_external_capsule_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25473"> Mean_ISOVF_in_external_capsule_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25474"> Mean_ISOVF_in_cingulum_cingulate_gyrus_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25475"> Mean_ISOVF_in_cingulum_cingulate_gyrus_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25476"> Mean_ISOVF_in_cingulum_hippocampus_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25477"> Mean_ISOVF_in_cingulum_hippocampus_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25478"> Mean_ISOVF_in_fornix_cres+stria_terminalis_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25479"> Mean_ISOVF_in_fornix_cres+stria_terminalis_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25482"> Mean_ISOVF_in_superior_fronto-occipital_fasciculus_on_FA_skeleton_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25483"> Mean_ISOVF_in_superior_fronto-occipital_fasciculus_on_FA_skeleton_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25488"> Weighted-mean_FA_in_tract_acoustic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25489"> Weighted-mean_FA_in_tract_acoustic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25490"> Weighted-mean_FA_in_tract_anterior_thalamic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25491"> Weighted-mean_FA_in_tract_anterior_thalamic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25492"> Weighted-mean_FA_in_tract_cingulate_gyrus_part_of_cingulum_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25493"> Weighted-mean_FA_in_tract_cingulate_gyrus_part_of_cingulum_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25494"> Weighted-mean_FA_in_tract_parahippocampal_part_of_cingulum_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25495"> Weighted-mean_FA_in_tract_parahippocampal_part_of_cingulum_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25496"> Weighted-mean_FA_in_tract_corticospinal_tract_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25497"> Weighted-mean_FA_in_tract_corticospinal_tract_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25498"> Weighted-mean_FA_in_tract_forceps_major (6302)</a>
+<a class="dropdown-item" href="coding/INI25499"> Weighted-mean_FA_in_tract_forceps_minor (6302)</a>
+<a class="dropdown-item" href="coding/INI25500"> Weighted-mean_FA_in_tract_inferior_fronto-occipital_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25501"> Weighted-mean_FA_in_tract_inferior_fronto-occipital_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25502"> Weighted-mean_FA_in_tract_inferior_longitudinal_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25503"> Weighted-mean_FA_in_tract_inferior_longitudinal_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25504"> Weighted-mean_FA_in_tract_middle_cerebellar_peduncle (6302)</a>
+<a class="dropdown-item" href="coding/INI25505"> Weighted-mean_FA_in_tract_medial_lemniscus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25506"> Weighted-mean_FA_in_tract_medial_lemniscus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25507"> Weighted-mean_FA_in_tract_posterior_thalamic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25508"> Weighted-mean_FA_in_tract_posterior_thalamic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25509"> Weighted-mean_FA_in_tract_superior_longitudinal_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25510"> Weighted-mean_FA_in_tract_superior_longitudinal_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25511"> Weighted-mean_FA_in_tract_superior_thalamic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25512"> Weighted-mean_FA_in_tract_superior_thalamic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25513"> Weighted-mean_FA_in_tract_uncinate_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25514"> Weighted-mean_FA_in_tract_uncinate_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25515"> Weighted-mean_MD_in_tract_acoustic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25516"> Weighted-mean_MD_in_tract_acoustic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25517"> Weighted-mean_MD_in_tract_anterior_thalamic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25518"> Weighted-mean_MD_in_tract_anterior_thalamic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25519"> Weighted-mean_MD_in_tract_cingulate_gyrus_part_of_cingulum_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25520"> Weighted-mean_MD_in_tract_cingulate_gyrus_part_of_cingulum_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25521"> Weighted-mean_MD_in_tract_parahippocampal_part_of_cingulum_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25522"> Weighted-mean_MD_in_tract_parahippocampal_part_of_cingulum_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25523"> Weighted-mean_MD_in_tract_corticospinal_tract_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25524"> Weighted-mean_MD_in_tract_corticospinal_tract_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25525"> Weighted-mean_MD_in_tract_forceps_major (6302)</a>
+<a class="dropdown-item" href="coding/INI25526"> Weighted-mean_MD_in_tract_forceps_minor (6302)</a>
+<a class="dropdown-item" href="coding/INI25527"> Weighted-mean_MD_in_tract_inferior_fronto-occipital_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25528"> Weighted-mean_MD_in_tract_inferior_fronto-occipital_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25529"> Weighted-mean_MD_in_tract_inferior_longitudinal_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25530"> Weighted-mean_MD_in_tract_inferior_longitudinal_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25531"> Weighted-mean_MD_in_tract_middle_cerebellar_peduncle (6302)</a>
+<a class="dropdown-item" href="coding/INI25532"> Weighted-mean_MD_in_tract_medial_lemniscus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25533"> Weighted-mean_MD_in_tract_medial_lemniscus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25534"> Weighted-mean_MD_in_tract_posterior_thalamic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25535"> Weighted-mean_MD_in_tract_posterior_thalamic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25536"> Weighted-mean_MD_in_tract_superior_longitudinal_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25537"> Weighted-mean_MD_in_tract_superior_longitudinal_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25538"> Weighted-mean_MD_in_tract_superior_thalamic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25539"> Weighted-mean_MD_in_tract_superior_thalamic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25540"> Weighted-mean_MD_in_tract_uncinate_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25541"> Weighted-mean_MD_in_tract_uncinate_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25542"> Weighted-mean_MO_in_tract_acoustic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25543"> Weighted-mean_MO_in_tract_acoustic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25544"> Weighted-mean_MO_in_tract_anterior_thalamic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25545"> Weighted-mean_MO_in_tract_anterior_thalamic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25546"> Weighted-mean_MO_in_tract_cingulate_gyrus_part_of_cingulum_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25547"> Weighted-mean_MO_in_tract_cingulate_gyrus_part_of_cingulum_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25548"> Weighted-mean_MO_in_tract_parahippocampal_part_of_cingulum_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25549"> Weighted-mean_MO_in_tract_parahippocampal_part_of_cingulum_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25550"> Weighted-mean_MO_in_tract_corticospinal_tract_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25551"> Weighted-mean_MO_in_tract_corticospinal_tract_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25552"> Weighted-mean_MO_in_tract_forceps_major (6302)</a>
+<a class="dropdown-item" href="coding/INI25553"> Weighted-mean_MO_in_tract_forceps_minor (6302)</a>
+<a class="dropdown-item" href="coding/INI25554"> Weighted-mean_MO_in_tract_inferior_fronto-occipital_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25555"> Weighted-mean_MO_in_tract_inferior_fronto-occipital_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25556"> Weighted-mean_MO_in_tract_inferior_longitudinal_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25557"> Weighted-mean_MO_in_tract_inferior_longitudinal_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25558"> Weighted-mean_MO_in_tract_middle_cerebellar_peduncle (6302)</a>
+<a class="dropdown-item" href="coding/INI25559"> Weighted-mean_MO_in_tract_medial_lemniscus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25560"> Weighted-mean_MO_in_tract_medial_lemniscus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25561"> Weighted-mean_MO_in_tract_posterior_thalamic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25562"> Weighted-mean_MO_in_tract_posterior_thalamic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25563"> Weighted-mean_MO_in_tract_superior_longitudinal_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25564"> Weighted-mean_MO_in_tract_superior_longitudinal_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25565"> Weighted-mean_MO_in_tract_superior_thalamic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25566"> Weighted-mean_MO_in_tract_superior_thalamic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25567"> Weighted-mean_MO_in_tract_uncinate_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25568"> Weighted-mean_MO_in_tract_uncinate_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25569"> Weighted-mean_L1_in_tract_acoustic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25570"> Weighted-mean_L1_in_tract_acoustic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25571"> Weighted-mean_L1_in_tract_anterior_thalamic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25572"> Weighted-mean_L1_in_tract_anterior_thalamic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25573"> Weighted-mean_L1_in_tract_cingulate_gyrus_part_of_cingulum_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25574"> Weighted-mean_L1_in_tract_cingulate_gyrus_part_of_cingulum_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25575"> Weighted-mean_L1_in_tract_parahippocampal_part_of_cingulum_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25576"> Weighted-mean_L1_in_tract_parahippocampal_part_of_cingulum_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25577"> Weighted-mean_L1_in_tract_corticospinal_tract_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25578"> Weighted-mean_L1_in_tract_corticospinal_tract_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25579"> Weighted-mean_L1_in_tract_forceps_major (6302)</a>
+<a class="dropdown-item" href="coding/INI25580"> Weighted-mean_L1_in_tract_forceps_minor (6302)</a>
+<a class="dropdown-item" href="coding/INI25581"> Weighted-mean_L1_in_tract_inferior_fronto-occipital_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25582"> Weighted-mean_L1_in_tract_inferior_fronto-occipital_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25583"> Weighted-mean_L1_in_tract_inferior_longitudinal_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25584"> Weighted-mean_L1_in_tract_inferior_longitudinal_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25585"> Weighted-mean_L1_in_tract_middle_cerebellar_peduncle (6302)</a>
+<a class="dropdown-item" href="coding/INI25586"> Weighted-mean_L1_in_tract_medial_lemniscus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25587"> Weighted-mean_L1_in_tract_medial_lemniscus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25588"> Weighted-mean_L1_in_tract_posterior_thalamic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25589"> Weighted-mean_L1_in_tract_posterior_thalamic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25590"> Weighted-mean_L1_in_tract_superior_longitudinal_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25591"> Weighted-mean_L1_in_tract_superior_longitudinal_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25592"> Weighted-mean_L1_in_tract_superior_thalamic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25593"> Weighted-mean_L1_in_tract_superior_thalamic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25594"> Weighted-mean_L1_in_tract_uncinate_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25595"> Weighted-mean_L1_in_tract_uncinate_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25596"> Weighted-mean_L2_in_tract_acoustic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25597"> Weighted-mean_L2_in_tract_acoustic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25598"> Weighted-mean_L2_in_tract_anterior_thalamic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25599"> Weighted-mean_L2_in_tract_anterior_thalamic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25600"> Weighted-mean_L2_in_tract_cingulate_gyrus_part_of_cingulum_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25601"> Weighted-mean_L2_in_tract_cingulate_gyrus_part_of_cingulum_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25602"> Weighted-mean_L2_in_tract_parahippocampal_part_of_cingulum_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25603"> Weighted-mean_L2_in_tract_parahippocampal_part_of_cingulum_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25604"> Weighted-mean_L2_in_tract_corticospinal_tract_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25605"> Weighted-mean_L2_in_tract_corticospinal_tract_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25606"> Weighted-mean_L2_in_tract_forceps_major (6302)</a>
+<a class="dropdown-item" href="coding/INI25607"> Weighted-mean_L2_in_tract_forceps_minor (6302)</a>
+<a class="dropdown-item" href="coding/INI25608"> Weighted-mean_L2_in_tract_inferior_fronto-occipital_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25609"> Weighted-mean_L2_in_tract_inferior_fronto-occipital_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25610"> Weighted-mean_L2_in_tract_inferior_longitudinal_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25611"> Weighted-mean_L2_in_tract_inferior_longitudinal_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25612"> Weighted-mean_L2_in_tract_middle_cerebellar_peduncle (6302)</a>
+<a class="dropdown-item" href="coding/INI25613"> Weighted-mean_L2_in_tract_medial_lemniscus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25614"> Weighted-mean_L2_in_tract_medial_lemniscus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25615"> Weighted-mean_L2_in_tract_posterior_thalamic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25616"> Weighted-mean_L2_in_tract_posterior_thalamic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25617"> Weighted-mean_L2_in_tract_superior_longitudinal_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25618"> Weighted-mean_L2_in_tract_superior_longitudinal_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25619"> Weighted-mean_L2_in_tract_superior_thalamic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25620"> Weighted-mean_L2_in_tract_superior_thalamic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25621"> Weighted-mean_L2_in_tract_uncinate_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25622"> Weighted-mean_L2_in_tract_uncinate_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25623"> Weighted-mean_L3_in_tract_acoustic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25624"> Weighted-mean_L3_in_tract_acoustic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25625"> Weighted-mean_L3_in_tract_anterior_thalamic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25626"> Weighted-mean_L3_in_tract_anterior_thalamic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25627"> Weighted-mean_L3_in_tract_cingulate_gyrus_part_of_cingulum_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25628"> Weighted-mean_L3_in_tract_cingulate_gyrus_part_of_cingulum_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25629"> Weighted-mean_L3_in_tract_parahippocampal_part_of_cingulum_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25630"> Weighted-mean_L3_in_tract_parahippocampal_part_of_cingulum_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25631"> Weighted-mean_L3_in_tract_corticospinal_tract_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25632"> Weighted-mean_L3_in_tract_corticospinal_tract_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25633"> Weighted-mean_L3_in_tract_forceps_major (6302)</a>
+<a class="dropdown-item" href="coding/INI25634"> Weighted-mean_L3_in_tract_forceps_minor (6302)</a>
+<a class="dropdown-item" href="coding/INI25635"> Weighted-mean_L3_in_tract_inferior_fronto-occipital_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25636"> Weighted-mean_L3_in_tract_inferior_fronto-occipital_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25637"> Weighted-mean_L3_in_tract_inferior_longitudinal_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25638"> Weighted-mean_L3_in_tract_inferior_longitudinal_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25639"> Weighted-mean_L3_in_tract_middle_cerebellar_peduncle (6302)</a>
+<a class="dropdown-item" href="coding/INI25640"> Weighted-mean_L3_in_tract_medial_lemniscus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25641"> Weighted-mean_L3_in_tract_medial_lemniscus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25642"> Weighted-mean_L3_in_tract_posterior_thalamic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25643"> Weighted-mean_L3_in_tract_posterior_thalamic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25644"> Weighted-mean_L3_in_tract_superior_longitudinal_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25645"> Weighted-mean_L3_in_tract_superior_longitudinal_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25646"> Weighted-mean_L3_in_tract_superior_thalamic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25647"> Weighted-mean_L3_in_tract_superior_thalamic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25648"> Weighted-mean_L3_in_tract_uncinate_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25649"> Weighted-mean_L3_in_tract_uncinate_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25650"> Weighted-mean_ICVF_in_tract_acoustic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25651"> Weighted-mean_ICVF_in_tract_acoustic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25652"> Weighted-mean_ICVF_in_tract_anterior_thalamic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25653"> Weighted-mean_ICVF_in_tract_anterior_thalamic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25654"> Weighted-mean_ICVF_in_tract_cingulate_gyrus_part_of_cingulum_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25655"> Weighted-mean_ICVF_in_tract_cingulate_gyrus_part_of_cingulum_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25656"> Weighted-mean_ICVF_in_tract_parahippocampal_part_of_cingulum_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25657"> Weighted-mean_ICVF_in_tract_parahippocampal_part_of_cingulum_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25658"> Weighted-mean_ICVF_in_tract_corticospinal_tract_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25659"> Weighted-mean_ICVF_in_tract_corticospinal_tract_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25660"> Weighted-mean_ICVF_in_tract_forceps_major (6302)</a>
+<a class="dropdown-item" href="coding/INI25661"> Weighted-mean_ICVF_in_tract_forceps_minor (6302)</a>
+<a class="dropdown-item" href="coding/INI25662"> Weighted-mean_ICVF_in_tract_inferior_fronto-occipital_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25663"> Weighted-mean_ICVF_in_tract_inferior_fronto-occipital_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25664"> Weighted-mean_ICVF_in_tract_inferior_longitudinal_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25665"> Weighted-mean_ICVF_in_tract_inferior_longitudinal_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25666"> Weighted-mean_ICVF_in_tract_middle_cerebellar_peduncle (6302)</a>
+<a class="dropdown-item" href="coding/INI25667"> Weighted-mean_ICVF_in_tract_medial_lemniscus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25668"> Weighted-mean_ICVF_in_tract_medial_lemniscus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25669"> Weighted-mean_ICVF_in_tract_posterior_thalamic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25670"> Weighted-mean_ICVF_in_tract_posterior_thalamic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25671"> Weighted-mean_ICVF_in_tract_superior_longitudinal_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25672"> Weighted-mean_ICVF_in_tract_superior_longitudinal_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25673"> Weighted-mean_ICVF_in_tract_superior_thalamic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25674"> Weighted-mean_ICVF_in_tract_superior_thalamic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25675"> Weighted-mean_ICVF_in_tract_uncinate_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25676"> Weighted-mean_ICVF_in_tract_uncinate_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25677"> Weighted-mean_OD_in_tract_acoustic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25678"> Weighted-mean_OD_in_tract_acoustic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25679"> Weighted-mean_OD_in_tract_anterior_thalamic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25680"> Weighted-mean_OD_in_tract_anterior_thalamic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25681"> Weighted-mean_OD_in_tract_cingulate_gyrus_part_of_cingulum_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25682"> Weighted-mean_OD_in_tract_cingulate_gyrus_part_of_cingulum_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25683"> Weighted-mean_OD_in_tract_parahippocampal_part_of_cingulum_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25684"> Weighted-mean_OD_in_tract_parahippocampal_part_of_cingulum_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25685"> Weighted-mean_OD_in_tract_corticospinal_tract_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25686"> Weighted-mean_OD_in_tract_corticospinal_tract_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25687"> Weighted-mean_OD_in_tract_forceps_major (6302)</a>
+<a class="dropdown-item" href="coding/INI25688"> Weighted-mean_OD_in_tract_forceps_minor (6302)</a>
+<a class="dropdown-item" href="coding/INI25689"> Weighted-mean_OD_in_tract_inferior_fronto-occipital_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25690"> Weighted-mean_OD_in_tract_inferior_fronto-occipital_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25691"> Weighted-mean_OD_in_tract_inferior_longitudinal_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25692"> Weighted-mean_OD_in_tract_inferior_longitudinal_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25693"> Weighted-mean_OD_in_tract_middle_cerebellar_peduncle (6302)</a>
+<a class="dropdown-item" href="coding/INI25694"> Weighted-mean_OD_in_tract_medial_lemniscus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25695"> Weighted-mean_OD_in_tract_medial_lemniscus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25696"> Weighted-mean_OD_in_tract_posterior_thalamic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25697"> Weighted-mean_OD_in_tract_posterior_thalamic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25698"> Weighted-mean_OD_in_tract_superior_longitudinal_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25699"> Weighted-mean_OD_in_tract_superior_longitudinal_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25700"> Weighted-mean_OD_in_tract_superior_thalamic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25701"> Weighted-mean_OD_in_tract_superior_thalamic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25702"> Weighted-mean_OD_in_tract_uncinate_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25703"> Weighted-mean_OD_in_tract_uncinate_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25704"> Weighted-mean_ISOVF_in_tract_acoustic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25705"> Weighted-mean_ISOVF_in_tract_acoustic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25706"> Weighted-mean_ISOVF_in_tract_anterior_thalamic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25707"> Weighted-mean_ISOVF_in_tract_anterior_thalamic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25708"> Weighted-mean_ISOVF_in_tract_cingulate_gyrus_part_of_cingulum_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25709"> Weighted-mean_ISOVF_in_tract_cingulate_gyrus_part_of_cingulum_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25710"> Weighted-mean_ISOVF_in_tract_parahippocampal_part_of_cingulum_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25711"> Weighted-mean_ISOVF_in_tract_parahippocampal_part_of_cingulum_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25712"> Weighted-mean_ISOVF_in_tract_corticospinal_tract_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25713"> Weighted-mean_ISOVF_in_tract_corticospinal_tract_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25714"> Weighted-mean_ISOVF_in_tract_forceps_major (6302)</a>
+<a class="dropdown-item" href="coding/INI25715"> Weighted-mean_ISOVF_in_tract_forceps_minor (6302)</a>
+<a class="dropdown-item" href="coding/INI25716"> Weighted-mean_ISOVF_in_tract_inferior_fronto-occipital_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25717"> Weighted-mean_ISOVF_in_tract_inferior_fronto-occipital_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25718"> Weighted-mean_ISOVF_in_tract_inferior_longitudinal_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25719"> Weighted-mean_ISOVF_in_tract_inferior_longitudinal_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25720"> Weighted-mean_ISOVF_in_tract_middle_cerebellar_peduncle (6302)</a>
+<a class="dropdown-item" href="coding/INI25721"> Weighted-mean_ISOVF_in_tract_medial_lemniscus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25722"> Weighted-mean_ISOVF_in_tract_medial_lemniscus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25723"> Weighted-mean_ISOVF_in_tract_posterior_thalamic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25724"> Weighted-mean_ISOVF_in_tract_posterior_thalamic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25725"> Weighted-mean_ISOVF_in_tract_superior_longitudinal_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25726"> Weighted-mean_ISOVF_in_tract_superior_longitudinal_fasciculus_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25727"> Weighted-mean_ISOVF_in_tract_superior_thalamic_radiation_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25728"> Weighted-mean_ISOVF_in_tract_superior_thalamic_radiation_(right) (6302)</a>
+<a class="dropdown-item" href="coding/INI25729"> Weighted-mean_ISOVF_in_tract_uncinate_fasciculus_(left) (6302)</a>
+<a class="dropdown-item" href="coding/INI25730"> Weighted-mean_ISOVF_in_tract_uncinate_fasciculus_(right) (6302)</a>
+</div>
+</div>
+</div>
+
+<!--
+
+<div class="btn-group" role="group">
+<div class="dropdown" align="center">
+<button onclick="myFunction8()" class="button">Medications</button>
+  <div id="myDropdown8" class="dropdown-content">
+    <input type="text" placeholder="Search.." id="myInput8" onkeyup="filterFunction8()">
+<a class="dropdown-item" href="coding/MED1">paracetamol (21364)</a>
+<a class="dropdown-item" href="coding/MED2">aspirin (16007)</a>
+<a class="dropdown-item" href="coding/MED3">ibuprofen (14234)</a>
+<a class="dropdown-item" href="coding/MED4">simvastatin (13918)</a>
+<a class="dropdown-item" href="coding/MED5">glucosamine_product (7710)</a>
+<a class="dropdown-item" href="coding/MED6">omeprazole (7100)</a>
+<a class="dropdown-item" href="coding/MED7">cod_liver_oil_capsule (6786)</a>
+<a class="dropdown-item" href="coding/MED8">bendroflumethiazide (6606)</a>
+<a class="dropdown-item" href="coding/MED9">ramipril (5708)</a>
+<a class="dropdown-item" href="coding/MED10">amlodipine (4958)</a>
+<a class="dropdown-item" href="coding/MED11">levothyroxine_sodium (4738)</a>
+<a class="dropdown-item" href="coding/MED12">atenolol (4596)</a>
+<a class="dropdown-item" href="coding/MED13">omega-3/fish_oil_supplement (4486)</a>
+<a class="dropdown-item" href="coding/MED14">lansoprazole (4278)</a>
+<a class="dropdown-item" href="coding/MED15">ventolin_100micrograms_inhaler (3795)</a>
+<a class="dropdown-item" href="coding/MED16">atorvastatin (3791)</a>
+<a class="dropdown-item" href="coding/MED17">multivitamins (3646)</a>
+<a class="dropdown-item" href="coding/MED18">lisinopril (3328)</a>
+<a class="dropdown-item" href="coding/MED19">metformin (3180)</a>
+<a class="dropdown-item" href="coding/MED20">co-codamol (2902)</a>
+<a class="dropdown-item" href="coding/MED21">diclofenac (2394)</a>
+<a class="dropdown-item" href="coding/MED22">amitriptyline (2287)</a>
+<a class="dropdown-item" href="coding/MED23">citalopram (2080)</a>
+<a class="dropdown-item" href="coding/MED24">ranitidine (1886)</a>
+<a class="dropdown-item" href="coding/MED25">bisoprolol (1829)</a>
+<a class="dropdown-item" href="coding/MED26">evening_primrose_oil (1808)</a>
+<a class="dropdown-item" href="coding/MED27">perindopril (1739)</a>
+<a class="dropdown-item" href="coding/MED28">multivitamin+mineral_preparations (1661)</a>
+<a class="dropdown-item" href="coding/MED29">garlic_product (1600)</a>
+<a class="dropdown-item" href="coding/MED30">seretide_50_evohaler (1576)</a>
+<a class="dropdown-item" href="coding/MED31">salbutamol (1560)</a>
+<a class="dropdown-item" href="coding/MED32">vitamin_c_product (1468)</a>
+<a class="dropdown-item" href="coding/MED33">chondroitin_product (1444)</a>
+<a class="dropdown-item" href="coding/MED34">fluoxetine (1413)</a>
+<a class="dropdown-item" href="coding/MED35">tramadol (1363)</a>
+<a class="dropdown-item" href="coding/MED36">allopurinol (1354)</a>
+<a class="dropdown-item" href="coding/MED37">cetirizine (1338)</a>
+<a class="dropdown-item" href="coding/MED38">doxazosin (1329)</a>
+<a class="dropdown-item" href="coding/MED39">candesartan_cilexetil (1327)</a>
+<a class="dropdown-item" href="coding/MED40">alendronate_sodium (1321)</a>
+<a class="dropdown-item" href="coding/MED41">thyroxine_product (1261)</a>
+<a class="dropdown-item" href="coding/MED42">warfarin (1243)</a>
+<a class="dropdown-item" href="coding/MED43">insulin_product (1237)</a>
+<a class="dropdown-item" href="coding/MED44">beclometasone (1163)</a>
+<a class="dropdown-item" href="coding/MED45">tamsulosin (1137)</a>
+<a class="dropdown-item" href="coding/MED46">calcichew_d3_tablet (1119)</a>
+<a class="dropdown-item" href="coding/MED47">losartan (1096)</a>
+<a class="dropdown-item" href="coding/MED48">gliclazide (1081)</a>
+<a class="dropdown-item" href="coding/MED49">felodipine (1060)</a>
+<a class="dropdown-item" href="coding/MED50">folic_acid_product (1018)</a>
+<a class="dropdown-item" href="coding/MED51">furosemide (958)</a>
+<a class="dropdown-item" href="coding/MED52">enalapril (905)</a>
+<a class="dropdown-item" href="coding/MED53">irbesartan (895)</a>
+<a class="dropdown-item" href="coding/MED54">lipitor_10mg_tablet (872)</a>
+<a class="dropdown-item" href="coding/MED55">symbicort_100/6_turbohaler (855)</a>
+<a class="dropdown-item" href="coding/MED56">loratadine (852)</a>
+<a class="dropdown-item" href="coding/MED57">adcal-d3_1.5g/10micrograms_chewable_tablet (840)</a>
+<a class="dropdown-item" href="coding/MED58">vitamin_b_compound_tablet (833)</a>
+<a class="dropdown-item" href="coding/MED59">naproxen (812)</a>
+<a class="dropdown-item" href="coding/MED60">quinine (809)</a>
+<a class="dropdown-item" href="coding/MED61">salbutamol_100micrograms_spacehaler (798)</a>
+<a class="dropdown-item" href="coding/MED62">clopidogrel (792)</a>
+<a class="dropdown-item" href="coding/MED63">zinc_product (791)</a>
+<a class="dropdown-item" href="coding/MED64">co-dydramol (790)</a>
+<a class="dropdown-item" href="coding/MED65">beconase_50micrograms_nasal_spray (775)</a>
+<a class="dropdown-item" href="coding/MED66">becotide_50_inhaler (755)</a>
+<a class="dropdown-item" href="coding/MED67">rosuvastatin (753)</a>
+<a class="dropdown-item" href="coding/MED68">aspirin_75mg_tablet (748)</a>
+<a class="dropdown-item" href="coding/MED69">propranolol (747)</a>
+<a class="dropdown-item" href="coding/MED70">ezetimibe (724)</a>
+<a class="dropdown-item" href="coding/MED71">prednisolone (694)</a>
+<a class="dropdown-item" href="coding/MED72">calcium_salts (666)</a>
+<a class="dropdown-item" href="coding/MED73">ginkgo_forte_tablet (651)</a>
+<a class="dropdown-item" href="coding/MED74">methotrexate (651)</a>
+<a class="dropdown-item" href="coding/MED75">gaviscon_liquid (637)</a>
+<a class="dropdown-item" href="coding/MED76">codeine (630)</a>
+<a class="dropdown-item" href="coding/MED77">pravastatin (627)</a>
+<a class="dropdown-item" href="coding/MED78">bendrofluazide (614)</a>
+<a class="dropdown-item" href="coding/MED79">gabapentin (586)</a>
+<a class="dropdown-item" href="coding/MED80">mebeverine (578)</a>
+<a class="dropdown-item" href="coding/MED81">ferrous_sulphate (574)</a>
+<a class="dropdown-item" href="coding/MED82">nasonex_0.05%_aqueous_nasal_spray (566)</a>
+<a class="dropdown-item" href="coding/MED83">sertraline (548)</a>
+<a class="dropdown-item" href="coding/MED84">fluticasone (545)</a>
+<a class="dropdown-item" href="coding/MED85">calcium+vitamin_d_500units_tablet (531)</a>
+<a class="dropdown-item" href="coding/MED86">valsartan (511)</a>
+<a class="dropdown-item" href="coding/MED87">qvar_50_inhaler (504)</a>
+<!--<a class="dropdown-item" href="coding/MED88">venlafaxine (490)</a>
+<a class="dropdown-item" href="coding/MED89">beclomethasone (487)</a>
+<a class="dropdown-item" href="coding/MED90">flixonase_50micrograms_aqueous_nasal_spray (463)</a>
+<a class="dropdown-item" href="coding/MED91">premarin_625micrograms_tablet (459)</a>
+<a class="dropdown-item" href="coding/MED92">zopiclone (442)</a>
+<a class="dropdown-item" href="coding/MED93">vitamin_e_product (429)</a>
+<a class="dropdown-item" href="coding/MED94">dihydrocodeine (424)</a>
+<a class="dropdown-item" href="coding/MED95">food_supplement/plant/herbal_extract (420)</a>
+<a class="dropdown-item" href="coding/MED96">co-enzyme_q10/ubiquinone/bio-quinone/coenzyme_q10 (407)</a>
+<a class="dropdown-item" href="coding/MED97">nicorandil (407)</a>
+<a class="dropdown-item" href="coding/MED98">betnovate_cream (405)</a>
+<a class="dropdown-item" href="coding/MED99">loperamide (402)</a>
+<a class="dropdown-item" href="coding/MED100">paroxetine (402)</a>
+<a class="dropdown-item" href="coding/MED101">isosorbide_mononitrate (402)</a>
+<a class="dropdown-item" href="coding/MED102">tiotropium (400)</a>
+<a class="dropdown-item" href="coding/MED103">indapamide (398)</a>
+<a class="dropdown-item" href="coding/MED104">esomeprazole (395)</a>
+<a class="dropdown-item" href="coding/MED105">fexofenadine (394)</a>
+<a class="dropdown-item" href="coding/MED106">finasteride (393)</a>
+<a class="dropdown-item" href="coding/MED107">glyceryl_trinitrate (392)</a>
+<a class="dropdown-item" href="coding/MED108">dosulepin (390)</a>
+<a class="dropdown-item" href="coding/MED109">salamol_100micrograms_inhaler (387)</a>
+<a class="dropdown-item" href="coding/MED110">beclazone_50_inhaler (385)</a>
+<a class="dropdown-item" href="coding/MED111">serevent_25mcg_inhaler (385)</a>
+<a class="dropdown-item" href="coding/MED112">vitamin_b12_preparation (379)</a>
+<a class="dropdown-item" href="coding/MED113">selenium_product (371)</a>
+<a class="dropdown-item" href="coding/MED114">vitamin_d_product (368)</a>
+<a class="dropdown-item" href="coding/MED115">xalatan_0.005%_eye_drops (366)</a>
+<a class="dropdown-item" href="coding/MED116">meloxicam (355)</a>
+<a class="dropdown-item" href="coding/MED117">movicol_oral_powder (351)</a>
+<a class="dropdown-item" href="coding/MED118">iron_product (346)</a>
+<a class="dropdown-item" href="coding/MED119">adcal_600mg_chewable_tablet (344)</a>
+<a class="dropdown-item" href="coding/MED120">betahistine (343)</a>
+<a class="dropdown-item" href="coding/MED121">tamoxifen (343)</a>
+<a class="dropdown-item" href="coding/MED122">mirtazapine (340)</a>
+<a class="dropdown-item" href="coding/MED123">oxytetracycline (340)</a>
+<a class="dropdown-item" href="coding/MED124">diazepam (334)</a>
+<a class="dropdown-item" href="coding/MED125">salmeterol (322)</a>
+<a class="dropdown-item" href="coding/MED126">digoxin (318)</a>
+<a class="dropdown-item" href="coding/MED127">bricanyl_250mcg_inhaler (308)</a>
+<a class="dropdown-item" href="coding/MED128">thyroxine_sodium (304)</a>
+<a class="dropdown-item" href="coding/MED129">vitamin_c_product (303)</a>
+<a class="dropdown-item" href="coding/MED130">lactulose_product (296)</a>
+<a class="dropdown-item" href="coding/MED131">gtn_400micrograms_spray (294)</a>
+<a class="dropdown-item" href="coding/MED132">sumatriptan (286)</a>
+<a class="dropdown-item" href="coding/MED133">lercanidipine (285)</a>
+<a class="dropdown-item" href="coding/MED134">vagifem_25mcg_pessary (285)</a>
+<a class="dropdown-item" href="coding/MED135">pregabalin (277)</a>
+<a class="dropdown-item" href="coding/MED136">oxybutynin (273)</a>
+<a class="dropdown-item" href="coding/MED137">viscotears_liquid_eye_gel (272)</a>
+<a class="dropdown-item" href="coding/MED138">budesonide (270)</a>
+<a class="dropdown-item" href="coding/MED139">cerazette_75micrograms_tablet (269)</a>
+<a class="dropdown-item" href="coding/MED140">elleste_duet_conti_tablet (266)</a>
+<a class="dropdown-item" href="coding/MED141">pioglitazone (265)</a>
+<a class="dropdown-item" href="coding/MED142">tegretol_100mg_tablet (262)</a>
+<a class="dropdown-item" href="coding/MED143">alfuzosin (260)</a>
+<a class="dropdown-item" href="coding/MED144">nifedipine (259)</a>
+<a class="dropdown-item" href="coding/MED145">minerals_-_magnesium (254)</a>
+<a class="dropdown-item" href="coding/MED146">sildenafil (252)</a>
+<a class="dropdown-item" href="coding/MED147">salmeterol+fluticasone_propionate (250)</a>
+<a class="dropdown-item" href="coding/MED148">azathioprine (250)</a>
+<a class="dropdown-item" href="coding/MED149">spiriva_18micrograms_inhalation_capsule (248)</a>
+<a class="dropdown-item" href="coding/MED150">evening_primrose_oil_product (247)</a>
+<a class="dropdown-item" href="coding/MED151">domperidone (247)</a>
+<a class="dropdown-item" href="coding/MED152">adalat_5mg_capsule (247)</a>
+<a class="dropdown-item" href="coding/MED153">mometasone (245)</a>
+<a class="dropdown-item" href="coding/MED154">diltiazem (244)</a>
+<a class="dropdown-item" href="coding/MED155">latanoprost (238)</a>
+<a class="dropdown-item" href="coding/MED156">calcichew_1.25g_chewable_tablet (238)</a>
+<a class="dropdown-item" href="coding/MED157">ezetrol_10mg_tablet (236)</a>
+<a class="dropdown-item" href="coding/MED158">montelukast_product (236)</a>
+<a class="dropdown-item" href="coding/MED159">kliovance_1mg/0.5mg_tablet (232)</a>
+<a class="dropdown-item" href="coding/MED160">terbinafine (232)</a>
+<a class="dropdown-item" href="coding/MED161">premique_0.625mg/5mg_tablet (232)</a>
+<a class="dropdown-item" href="coding/MED162">metoprolol (230)</a>
+<a class="dropdown-item" href="coding/MED163">tildiem_60mg_m/r_tablet (229)</a>
+<a class="dropdown-item" href="coding/MED164">rino_clenil_50micrograms_nasal_spray (228)</a>
+<a class="dropdown-item" href="coding/MED165">temazepam (225)</a>
+<a class="dropdown-item" href="coding/MED166">fybogel_orange_s/f_granules (224)</a>
+<a class="dropdown-item" href="coding/MED167">tolterodine_l-tartrate (221)</a>
+<a class="dropdown-item" href="coding/MED168">spironolactone (220)</a>
+<a class="dropdown-item" href="coding/MED169">st_john's_wort/hypericum_[ctsu] (217)</a>
+<a class="dropdown-item" href="coding/MED170">risedronate_sodium (217)</a>
+<a class="dropdown-item" href="coding/MED171">pantoprazole (215)</a>
+<a class="dropdown-item" href="coding/MED172">flixotide_25micrograms_inhaler (214)</a>
+<a class="dropdown-item" href="coding/MED173">gtn_-_glyceryl_trinitrate (211)</a>
+<a class="dropdown-item" href="coding/MED174">frusemide (211)</a>
+<a class="dropdown-item" href="coding/MED175">hydrocortisone (210)</a>
+<a class="dropdown-item" href="coding/MED176">estradiol_product (209)</a>
+<a class="dropdown-item" href="coding/MED177">salbutamol_product (208)</a>
+<a class="dropdown-item" href="coding/MED178">senna (208)</a>
+<a class="dropdown-item" href="coding/MED179">dipyridamole (208)</a>
+<a class="dropdown-item" href="coding/MED180">verapamil (206)</a>
+<a class="dropdown-item" href="coding/MED181">sotalol (204)</a>
+<a class="dropdown-item" href="coding/MED182">nexium_20mg_tablet (203)</a>
+<a class="dropdown-item" href="coding/MED183">elleste-solo_1mg_tablet (203)</a>
+<a class="dropdown-item" href="coding/MED184">pulmicort_ls_50micrograms_inhaler (201)</a>
+<a class="dropdown-item" href="coding/MED185">tibolone (198)</a>
+<a class="dropdown-item" href="coding/MED186">sulfasalazine (196)</a>
+<a class="dropdown-item" href="coding/MED187">solifenacin (195)</a>
+<a class="dropdown-item" href="coding/MED188">diprobase_cream (192)</a>
+<a class="dropdown-item" href="coding/MED189">rosiglitazone (191)</a>
+<a class="dropdown-item" href="coding/MED190">terbutaline (191)</a>
+<a class="dropdown-item" href="coding/MED191">rabeprazole_sodium (189)</a>
+<a class="dropdown-item" href="coding/MED192">calcium_carbonate+cholecalciferol_1.25g/200iu_tablet (189)</a>
+<a class="dropdown-item" href="coding/MED193">escitalopram (188)</a>
+<a class="dropdown-item" href="coding/MED194">betamethasone (187)</a>
+<a class="dropdown-item" href="coding/MED195">evorel_25_patch (184)</a>
+<a class="dropdown-item" href="coding/MED196">estraderm_mx_25_patch (183)</a>
+<a class="dropdown-item" href="coding/MED197">piriton_4mg_tablet (183)</a>
+<a class="dropdown-item" href="coding/MED198">flax_oil_tablet (182)</a>
+<a class="dropdown-item" href="coding/MED199">flecainide (182)</a>
+<a class="dropdown-item" href="coding/MED200">ipratropium (182)</a>
+<a class="dropdown-item" href="coding/MED201">hypromellose (182)</a>
+<a class="dropdown-item" href="coding/MED202">arthrotec_tablet (182)</a>
+<a class="dropdown-item" href="coding/MED203">detrusitol_1mg_tablet (179)</a>
+<a class="dropdown-item" href="coding/MED204">telmisartan (178)</a>
+<a class="dropdown-item" href="coding/MED205">ginseng_product (178)</a>
+<a class="dropdown-item" href="coding/MED206">epilim_100mg_crushable_tablet (178)</a>
+<a class="dropdown-item" href="coding/MED207">carbamazepine (177)</a>
+<a class="dropdown-item" href="coding/MED208">mirena_52mg_intrauterine_system (177)</a>
+<a class="dropdown-item" href="coding/MED209">imigran_50mg_tablet (177)</a>
+<a class="dropdown-item" href="coding/MED210">fybogel_mebeverine_sachet (176)</a>
+<a class="dropdown-item" href="coding/MED211">mirena_20mcg/24hrs_intrauterine_system (174)</a>
+<a class="dropdown-item" href="coding/MED212">dermovate_cream (174)</a>
+<a class="dropdown-item" href="coding/MED213">fenofibrate (174)</a>
+<a class="dropdown-item" href="coding/MED214">tadalafil (173)</a>
+<a class="dropdown-item" href="coding/MED215">thiamine_preparation (173)</a>
+<a class="dropdown-item" href="coding/MED216">arimidex_1mg_tablet (172)</a>
+<a class="dropdown-item" href="coding/MED217">lacri-lube_eye_ointment (172)</a>
+<a class="dropdown-item" href="coding/MED218">prochlorperazine (172)</a>
+<a class="dropdown-item" href="coding/MED219">starflower_oil (171)</a>
+<a class="dropdown-item" href="coding/MED220">mesalazine (171)</a>
+<a class="dropdown-item" href="coding/MED221">prozac_20mg_capsule (169)</a>
+<a class="dropdown-item" href="coding/MED222">simvador_10mg_tablet (168)</a>
+<a class="dropdown-item" href="coding/MED223">prempak_0.625_tablet (168)</a>
+<a class="dropdown-item" href="coding/MED224">femoston_1/10_tablet (167)</a>
+<a class="dropdown-item" href="coding/MED225">hydroxychloroquine (167)</a>
+<a class="dropdown-item" href="coding/MED226">desloratadine (164)</a>
+<a class="dropdown-item" href="coding/MED227">co-tenidone (164)</a>
+<a class="dropdown-item" href="coding/MED228">seroxat_20mg_tablet (164)</a>
+<a class="dropdown-item" href="coding/MED229">pizotifen (160)</a>
+<a class="dropdown-item" href="coding/MED230">asacol_400mg_e/c_tablet (157)</a>
+<a class="dropdown-item" href="coding/MED231">atrovent_20micrograms_inhaler (156)</a>
+<a class="dropdown-item" href="coding/MED232">livial_2.5mg_tablet (150)</a>
+<a class="dropdown-item" href="coding/MED233">omacor_1g_capsule (148)</a>
+<a class="dropdown-item" href="coding/MED234">selenium_ace_tablet (147)</a>
+<a class="dropdown-item" href="coding/MED235">clonidine (146)</a>
+<a class="dropdown-item" href="coding/MED236">tranexamic_acid (145)</a>
+<a class="dropdown-item" href="coding/MED237">trazodone (144)</a>
+<a class="dropdown-item" href="coding/MED238">microgynon_30_tablet (144)</a>
+<a class="dropdown-item" href="coding/MED239">voltarol_25mg_e/c_tablet (141)</a>
+<a class="dropdown-item" href="coding/MED240">colofac-100_tablet (139)</a>
+<a class="dropdown-item" href="coding/MED241">micronor_tablet (139)</a>
+<a class="dropdown-item" href="coding/MED242">dovobet_ointment (138)</a>
+<a class="dropdown-item" href="coding/MED243">lamotrigine (138)</a>
+<a class="dropdown-item" href="coding/MED244">climaval_1mg_tablet (138)</a>
+<a class="dropdown-item" href="coding/MED245">cardicor_1.25mg_tablet (136)</a>
+<a class="dropdown-item" href="coding/MED246">dicloflex_25mg_e/c_tablet (136)</a>
+<a class="dropdown-item" href="coding/MED247">metoclopramide (135)</a>
+<a class="dropdown-item" href="coding/MED248">olanzapine (134)</a>
+<a class="dropdown-item" href="coding/MED249">baclofen (131)</a>
+<a class="dropdown-item" href="coding/MED250">nitrolingual_400micrograms_spray (131)</a>
+<a class="dropdown-item" href="coding/MED251">migraleve_tablet (129)</a>
+<a class="dropdown-item" href="coding/MED252">orlistat (128)</a>
+<a class="dropdown-item" href="coding/MED253">neoclarityn_5mg_tablet (127)</a>
+<a class="dropdown-item" href="coding/MED254">saw_palmetto_product (125)</a>
+<a class="dropdown-item" href="coding/MED255">fosamax_5mg_tablet (125)</a>
+<a class="dropdown-item" href="coding/MED256">vitamin_b6_preparation (125)</a>
+<a class="dropdown-item" href="coding/MED257">eumovate_cream (125)</a>
+<a class="dropdown-item" href="coding/MED258">cozaar_25mg_tablet (124)</a>
+<a class="dropdown-item" href="coding/MED259">evorel_conti_patch (124)</a>
+<a class="dropdown-item" href="coding/MED260">cipralex_5mg_tablet (123)</a>
+<a class="dropdown-item" href="coding/MED261">amias_2mg_tablet (122)</a>
+<a class="dropdown-item" href="coding/MED262">aloe_vera_product (121)</a>
+<a class="dropdown-item" href="coding/MED263">olmesartan (121)</a>
+<a class="dropdown-item" href="coding/MED264">phenytoin (120)</a>
+<a class="dropdown-item" href="coding/MED265">vesicare_5mg_tablet (120)</a>
+<a class="dropdown-item" href="coding/MED266">glucophage_500mg_tablet (118)</a>
+<a class="dropdown-item" href="coding/MED267">hydroxocobalamin (117)</a>
+<a class="dropdown-item" href="coding/MED268">glimepiride (117)</a>
+<a class="dropdown-item" href="coding/MED269">doxycycline (117)</a>
+<a class="dropdown-item" href="coding/MED270">ispaghula_husk (117)</a>
+<a class="dropdown-item" href="coding/MED271">sodium_valproate (116)</a>
+<a class="dropdown-item" href="coding/MED272">buscopan_10mg_tablet (116)</a>
+<a class="dropdown-item" href="coding/MED273">adizem-60_m/r_tablet (115)</a>
+<a class="dropdown-item" href="coding/MED274">ibandronic_acid (114)</a>
+<a class="dropdown-item" href="coding/MED275">anastrozole (114)</a>
+<a class="dropdown-item" href="coding/MED276">amiodarone (114)</a>
+<a class="dropdown-item" href="coding/MED277">trimethoprim (114)</a>
+<a class="dropdown-item" href="coding/MED278">lacidipine (114)</a>
+<a class="dropdown-item" href="coding/MED279">celecoxib (113)</a>
+<a class="dropdown-item" href="coding/MED280">peptac_liquid (112)</a>
+<a class="dropdown-item" href="coding/MED281">cosopt_2%/0.5%_eye_drops (111)</a>
+<a class="dropdown-item" href="coding/MED282">bezafibrate (110)</a>
+<a class="dropdown-item" href="coding/MED283">solpadol_caplet (109)</a>
+<a class="dropdown-item" href="coding/MED284">co-amilofruse (108)</a>
+<a class="dropdown-item" href="coding/MED285">arthrotec_50_tablet (107)</a>
+<a class="dropdown-item" href="coding/MED286">clarityn_10mg_tablet (107)</a>
+<a class="dropdown-item" href="coding/MED287">colpermin_0.2ml_m/r_gel_e/c_capsule (106)</a>
+<a class="dropdown-item" href="coding/MED288">bumetanide (105)</a>
+<a class="dropdown-item" href="coding/MED289">diovan_40mg_capsule (104)</a>
+<a class="dropdown-item" href="coding/MED290">glyceryl_trinitrate_product (103)</a>
+<a class="dropdown-item" href="coding/MED291">lumigan_0.3mg/ml_eye_drops (102)</a>
+<a class="dropdown-item" href="coding/MED292">timolol_0.25%_eye_drops (102)</a>
+<a class="dropdown-item" href="coding/MED293">syndol_tablet (101)</a>
+<a class="dropdown-item" href="coding/MED294">etoricoxib (100)</a>
+<a class="dropdown-item" href="coding/MED295">etodolac (100)</a>
+</div>
+</div>
+</div>
+-->
+</div>
+
+ <h3 align="center"> <a href="/about" style="color: black;">Terms of use</a></h3>
+                    <div class="alert alert-info" role="alert">
+<p>
+
+  We encourage use of the initial browser but note that case-control results are provided as general guides and specific results may not have yet been subjected to the data quality, statistical and population genetics review that would normally be required for publication or clinical inference.
+</p>
+</div>
+ <h3 align="center">Tutorial</h3>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/lSYgC0U7t4o" frameborder="0" allowfullscreen></iframe>
+  </div>
+
+              <div class="col-md-4">
+		  <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#demo">
+				Recent News </button>
+		    <div id="demo" class="collapse" >
+              <h3 align="center">Up next</h3>
+		<h4>October 10-18, 2017</h4> - Imputation results upload with (<a href="http://www.nealelab.is/">Neale Lab</a>).
+		<h4>November 21, 2017</h4> - HLA Disease Map added (<a href="https://biobankengine.stanford.edu/hla-assoc">Here</a>).
+		<h4>October 25, 2017</h4> - Update of gene-based results: Top 100 genes per phenotype and top 100 phenotypes per gene.
+		<h4>October 18, 2017</h4> - Release of genetic parameters app I: <a href="https://biobankengine.stanford.edu/gcorr">genetic correlation</a>.
+		<h4>October 18, 2017</h4> - Release of <a href="https://biobankengine.stanford.edu/decomposition-app">decomposition app</a>.
+		<h4>September 1, 2017</h4> - Check out quantitative measures II.
+		<h4>August 24, 2017</h4> - <a href="https://biobankengine.stanford.edu/power">GBE Power App available</a>.
+		<h4>August 18, 2017</h4> - Support for gene-based results: top five phenotypes per gene (independent effects model; more documentation soon).
+		<h4>August 13, 2017</h4> - Support for gene-based results per phenotype (Independent effects model for all protein-altering variants; Similar effects model for PTVs, description coming soon).
+		<h4>August 12, 2017</h4> - Support for UK Biobank minor allele frequency.
+		<h4>August 9, 2017</h4> - Support for spanish translation.
+		<h4>August 9, 2017</h4> - Initial support for quantitative measures (<a href="#" class="text-warning">more QC required</a>).
+		<h4>August 8, 2017</h4> - Included cluster plots for PTVs (see <a href="https://biobankengine.stanford.edu/intensity/rs328">example</a>). Updated support for region and variant search (see example, Thanks to <a href="https://www.atgu.mgh.harvard.edu/people/raymond_walters">Raymond Walters</a>). 
+		<h4>August 7, 2017</h4> - Links to Mouse Knockout project
+		<h4>July 24, 2017</h4> - Initial support for 337,000 individuals in UK Biobank 
+		<h4>July 10, 2017</h4> - Added support for HWE filtering and cancer phenotypes
+		<h4>July 7, 2017</h4> - Added support for region search (phenotype tooltips soon)
+		<h4>July 2, 2017</h4> - Quality control of variants
+		<h4>July 2, 2017</h4> - Additional data loaded along with phenotype tooltips
+		<h4>June 7, 2017</h4> - Public release of Global Biobank Engine!
+                <h4>April 1, 2017</h4> - Internal release.
+		</div>
+		  <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#demo2">
+				Lab manuscripts </button>
+		    <div id="demo2" class="collapse" >
+                bioRxiv preprints
+		<h4>August 28, 2017</h4> - <a href="http://www.biorxiv.org/content/early/2017/08/23/179762">Medical relevance of protein-truncating variants across 337,208 individuals in the UK Biobank study</a> (<a href="https://www.youtube.com/watch?v=JpFFjjoTMLk">video journal club</a>)
+		<h4>October 27, 2017</h4> - <a href="https://www.biorxiv.org/content/early/2017/10/27/210302">Large-scale phenome-wide association study of PCSK9 loss-of-function variants demonstrates protection against ischemic stroke</a> 
+		<h4>October 27, 2017</h4> - <a href="https://www.biorxiv.org/content/early/2017/10/27/206961">Vulnerabilities of transcriptome-wide association studies</a> 
+		<h4>January 31, 2018</h4> - <a href="https://www.biorxiv.org/content/early/2018/01/31/257162">Bayesian model comparison for rare variant association studies of multiple phenotypes</a> 
+		      </div>
+		  </div>
+            
+<br>
+
+
+<footer>
+<!--<p align="center">
+<a href="http://rivaslab.stanford.edu" target="_blank">
+<img width=579 height=170 src="static/images/RivasLab_png.png"></img>
+</a> -->
+</p>
+      <p align="center">
+    This research has been conducted using the <a href="http://www.ukbiobank.ac.uk/">UK Biobank Resource</a>
+</p>
+
+
+   </footer>
+
+
+</div>
+
+
+
+{% endblock %}
+</div>
