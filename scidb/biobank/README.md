@@ -1,3 +1,4 @@
+For SciDB support please e-mail GBE_support@paradigm4.com
 # Loading Data
 
 ## Init SciDB
