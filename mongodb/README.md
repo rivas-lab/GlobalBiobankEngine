@@ -62,18 +62,18 @@ Leave MongoDB running and open a new terminal.  In the new window run the follow
 
 ```
 cd gbe_browser
-python manage.py load_base_coverage
-python manage.py load_variants_file
-python manage.py load_gene_models
-python manage.py load_dbsnp_file
-python manage.py load_icd_info_stats
-python manage.py load_icd_stats
+python manage_mongodb.py load_base_coverage
+python manage_mongodb.py load_variants_file
+python manage_mongodb.py load_gene_models
+python manage_mongodb.py load_dbsnp_file
+python manage_mongodb.py load_icd_info_stats
+python manage_mongodb.py load_icd_stats
 ```
 
 #### 4. Start the GBE server
 
 ```
-python gbe.py
+python gbe_mongodb.py
 ```
 
 #### 5. Use GBE
