@@ -204,6 +204,11 @@ Loading subset 2 of 8 total: 3 contigs from dbsnp150.txt.gz
 
 For fifth step
 
+Before running fifth step 
+```cp icdinfo.txt icdinfo.txt.bk 
+cp icdinfo2018.txt icdinfo.txt
+```
+
 ```
 python2.7 manage_mongodb.py load_icd_info_stats
 starting gbe.py0
