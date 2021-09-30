@@ -10,6 +10,8 @@ from parsing import *
 import lookups_mongodb
 import random
 #import models_mongodb
+import numpy
+import numpy.matlib
 from utils_mongodb import *
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash, jsonify
 from flask_compress import Compress
@@ -25,10 +27,6 @@ import traceback
 import time
 import csv
 import logging
-import pandas
-import numpy
-import numpy.matlib
-import numpy as np
 from flask_wtf import Form
 from wtforms import StringField, BooleanField
 from wtforms.validators import DataRequired
@@ -42,14 +40,6 @@ def graph(*args):
 
 def mrp(*args):
     pass
-
-import collections
-from collections import defaultdict
-#from dash_apps import *
-#import dash
-#import dash_core_components as dcc
-#import dash_html_components as html
-#import plotly.graph_objs as go
 
 ADMINISTRATORS = (
     'ukbb.browsers.errors@gmail.com',
@@ -387,7 +377,155 @@ def load_gene_models():
     print('Done loading metadata. Took %s seconds' % int(time.time() - start_time))
 
     gwasdict = {}
+    if os.path.exists('../gbe_data/gwas/'):
+        gwasf = open('../gbe_data/gwas/diseasegwasinfo.txt','r').readlines()
+        for gwasl in gwasf[1:]:
+            gwasl = gwasl.rstrip()
+            gwasl = gwasl.split('\t')
+            gwasl = [i.strip('"') for i in gwasl]
+            if len(gwasl) < 20:
+                continue
+            gene = gwasl[19].split(',')
+            for geneid in gene:
+                disease = gwasl[4]
+                gwasindex = gwasl[2]
+                gwasvars = int(gwasl[10]) - 1
+                gwasgenes = gwasl[19]
+                gwasstart = gwasl[11]
+                gwasend = gwasl[12]
+                af = gwasl[16]
+                oddsratio = gwasl[17]
+                gwaspvalue = gwasl[18]
+                if (geneid,'disease') in gwasdict:
+                    if disease == "IBD":
+                        gwasdict[geneid,'disease'] = disease
+                else:
+                    gwasdict[geneid,'disease'] = disease
+                if (geneid,'gwasindex') in gwasdict:
+                    gwasdict[geneid,'gwasindex'].append(gwasindex)
+                    gwasdict[geneid,'gwasvars'].append(gwasvars)
+                    gwasdict[geneid,'gwasgenes'].append(gwasgenes)
+                    gwasdict[geneid,'af'].append(af)
+                    gwasdict[geneid,'oddsratio'].append(oddsratio)
+                    gwasdict[geneid,'gwaspvalue'].append(gwaspvalue)
+                    gwasdict[geneid,'gwasstart'].append(gwasstart)
+                    gwasdict[geneid,'gwasend'].append(gwasend)
+                else:
+                    gwasdict[geneid,'gwasindex'] = [gwasindex]
+                    gwasdict[geneid,'gwasvars'] = [gwasvars]
+                    gwasdict[geneid,'gwasgenes'] = [gwasgenes]
+                    gwasdict[geneid,'af'] = [af]
+                    gwasdict[geneid,'oddsratio'] = [oddsratio]
+                    gwasdict[geneid,'gwaspvalue'] = [gwaspvalue]
+                    gwasdict[geneid,'gwasstart'] = [gwasstart]
+                    gwasdict[geneid,'gwasend'] = [gwasend]
+                if geneid in gwasl[15]:
+                    gwasdict[geneid,'directlyimplicated'] = geneid
+
     lofdict = {}
+    if os.path.exists('../gbe_data/lof/'):
+        ibdf = open('../gbe_data/lof/bayesianmodel.ibd.noukbb.countsGENES.txt','r').readlines()
+        for ibdl in ibdf:
+            ibdl = ibdl.rstrip()
+            ibdl = ibdl.split()
+            gene = ibdl[0]
+            if gene == "VARIANT":
+                continue
+            src = ibdl[1]
+            pvalue = float(ibdl[2])
+            oddsratio = float(ibdl[3])
+            vars = ibdl[4]
+            nvars = ibdl[5]
+            cnta = ibdl[6]
+            cntu = ibdl[7]
+            lofdict[gene,'AJnvar','ibd'] = -9
+            lofdict[gene,'NFEnvar','ibd'] = -9
+            lofdict[gene,'FINnvar','ibd'] = -9
+            lofdict[gene,'AJcnta','ibd'] = -9
+            lofdict[gene,'NFEcnta','ibd'] = -9
+            lofdict[gene,'FINcnta','ibd'] = -9
+            lofdict[gene,'AJcntu','ibd'] = -9
+            lofdict[gene,'NFEcntu','ibd'] = -9
+            lofdict[gene,'FINcntu','ibd'] = -9
+            lofdict[gene,'totpvalue','ibd'] = pvalue
+            lofdict[gene,'oddsratio','ibd'] = oddsratio
+            src = src.split(';')
+            for idx in range(0,len(src)):
+                stnvars = nvars.split(';')
+                stcnta = cnta.split(';')
+                stcntu = cntu.split(';')
+                lofdict[gene,str(src[idx]) + 'nvar','ibd'] = int(stnvars[idx])
+                lofdict[gene,str(src[idx]) + 'cnta','ibd'] = int(stcnta[idx])
+                lofdict[gene,str(src[idx]) + 'cntu','ibd'] = int(stcntu[idx])
+
+        cdf = open('../gbe_data/lof/bayesianmodel.cd.noukbb.countsGENES.txt','r').readlines()
+        for cdl in cdf:
+            cdl = cdl.rstrip()
+            cdl = cdl.split()
+            gene = cdl[0]
+            if gene == "VARIANT":
+                continue
+            src = cdl[1]
+            pvalue = float(cdl[2])
+            oddsratio = float(cdl[3])
+            vars = cdl[4]
+            nvars = cdl[5]
+            cnta = cdl[6]
+            cntu = cdl[7]
+            lofdict[gene,'AJnvar','cd'] = -9
+            lofdict[gene,'NFEnvar','cd'] = -9
+            lofdict[gene,'FINnvar','cd'] = -9
+            lofdict[gene,'AJcnta','cd'] = -9
+            lofdict[gene,'NFEcnta','cd'] = -9
+            lofdict[gene,'FINcnta','cd'] = -9
+            lofdict[gene,'AJcntu','cd'] = -9
+            lofdict[gene,'NFEcntu','cd'] = -9
+            lofdict[gene,'FINcntu','cd'] = -9
+            lofdict[gene,'totpvalue','cd'] = pvalue
+            lofdict[gene,'oddsratio','cd'] = oddsratio
+            src = src.split(';')
+            for idx in range(0,len(src)):
+                stnvars = nvars.split(';')
+                stcnta = cnta.split(';')
+                stcntu = cntu.split(';')
+                lofdict[gene,str(src[idx]) + 'nvar','cd'] = int(stnvars[idx])
+                lofdict[gene,str(src[idx]) + 'cnta','cd'] = int(stcnta[idx])
+                lofdict[gene,str(src[idx]) + 'cntu','cd'] = int(stcntu[idx])
+
+        ucf = open('../gbe_data/lof/bayesianmodel.uc.noukbb.countsGENES.txt','r').readlines()
+        for ucl in ucf:
+            ucl = ucl.rstrip()
+            ucl = ucl.split()
+            gene = ucl[0]
+            if gene == "VARIANT":
+                continue
+            src = ucl[1]
+            pvalue = float(ucl[2])
+            oddsratio = float(ucl[3])
+            vars = ucl[4]
+            nvars = ucl[5]
+            cnta = ucl[6]
+            cntu = ucl[7]
+            lofdict[gene,'AJnvar','uc'] = -9
+            lofdict[gene,'NFEnvar','uc'] = -9
+            lofdict[gene,'FINnvar','uc'] = -9
+            lofdict[gene,'AJcnta','uc'] = -9
+            lofdict[gene,'NFEcnta','uc'] = -9
+            lofdict[gene,'FINcnta','uc'] = -9
+            lofdict[gene,'AJcntu','uc'] = -9
+            lofdict[gene,'NFEcntu','uc'] = -9
+            lofdict[gene,'FINcntu','uc'] = -9
+            lofdict[gene,'totpvalue','uc'] = pvalue
+            lofdict[gene,'oddsratio','uc'] = oddsratio
+            src = src.split(';')
+            for idx in range(0,len(src)):
+                stnvars = nvars.split(';')
+                stcnta = cnta.split(';')
+                stcntu = cntu.split(';')
+                lofdict[gene,str(src[idx]) + 'nvar','uc'] = int(stnvars[idx])
+                lofdict[gene,str(src[idx]) + 'cnta','uc'] = int(stcnta[idx])
+                lofdict[gene,str(src[idx]) + 'cntu','uc'] = int(stcntu[idx])
+            
     # grab genes from GTF
     start_time = time.time()
     with gzip.open(app.config['GENCODE_GTF']) as gtf_file:
@@ -405,6 +543,54 @@ def load_gene_models():
                     genesym = ''
                 else:
                     genesym = gene['gene_name']
+                if (genesym,'disease') in gwasdict:
+                    gene['disease'] = gwasdict[genesym,'disease']
+                    gene['gwasindex'] = gwasdict[genesym,'gwasindex']
+                    gene['gwasvars'] = gwasdict[genesym,'gwasvars']
+                    gene['gwasgenes'] = gwasdict[genesym,'gwasgenes']
+                    gene['gwasstart'] = gwasdict[genesym,'gwasstart']
+                    gene['gwasend'] = gwasdict[genesym,'gwasend'] 
+                    gene['af'] = gwasdict[genesym,'af']
+                    gene['oddsratio'] = gwasdict[genesym,'oddsratio']
+                    gene['gwaspvalue'] = gwasdict[genesym,'gwaspvalue']
+                    if (genesym,'directlyimplicated') in gwasdict:
+                        gene['di'] = gwasdict[genesym,'directlyimplicated']
+                if (genesym,'AJnvar','ibd') in lofdict:
+                    gene['AJnvaribdlof'] = lofdict[genesym,'AJnvar','ibd']
+                    gene['AJcntaibdlof'] = lofdict[genesym,'AJcnta','ibd']
+                    gene['AJcntuibdlof'] = lofdict[genesym,'AJcntu','ibd']
+                    gene['FINnvaribdlof'] = lofdict[genesym,'FINnvar','ibd']
+                    gene['FINcntaibdlof'] = lofdict[genesym,'FINcnta','ibd']
+                    gene['FINcntuibdlof'] = lofdict[genesym,'FINcntu','ibd']
+                    gene['NFEnvaribdlof'] = lofdict[genesym,'NFEnvar','ibd']
+                    gene['NFEcntaibdlof'] = lofdict[genesym,'NFEcnta','ibd']
+                    gene['NFEcntuibdlof'] = lofdict[genesym,'NFEcntu','ibd']
+                    gene['totpvalueibdlof'] = lofdict[genesym,'totpvalue','ibd']
+                    gene['oddsratioibdlof'] = lofdict[genesym,'oddsratio','ibd']
+                if (genesym,'AJnvar','cd') in lofdict:
+                    gene['AJnvarcdlof'] = lofdict[genesym,'AJnvar','cd']
+                    gene['AJcntacdlof'] = lofdict[genesym,'AJcnta','cd']
+                    gene['AJcntucdlof'] = lofdict[genesym,'AJcntu','cd']
+                    gene['FINnvarcdlof'] = lofdict[genesym,'FINnvar','cd']
+                    gene['FINcntacdlof'] = lofdict[genesym,'FINcnta','cd']
+                    gene['FINcntucdlof'] = lofdict[genesym,'FINcntu','cd']
+                    gene['NFEnvarcdlof'] = lofdict[genesym,'NFEnvar','cd']
+                    gene['NFEcntacdlof'] = lofdict[genesym,'NFEcnta','cd']
+                    gene['NFEcntucdlof'] = lofdict[genesym,'NFEcntu','cd']
+                    gene['totpvaluecdlof'] = lofdict[genesym,'totpvalue','cd']
+                    gene['oddsratiocdlof'] = lofdict[genesym,'oddsratio','cd']
+                if (genesym,'AJnvar','uc') in lofdict:
+                    gene['AJnvaruclof'] = lofdict[genesym,'AJnvar','uc']
+                    gene['AJcntauclof'] = lofdict[genesym,'AJcnta','uc']
+                    gene['AJcntuuclof'] = lofdict[genesym,'AJcntu','uc']
+                    gene['FINnvaruclof'] = lofdict[genesym,'FINnvar','uc']
+                    gene['FINcntauclof'] = lofdict[genesym,'FINcnta','uc']
+                    gene['FINcntuuclof'] = lofdict[genesym,'FINcntu','uc']
+                    gene['NFEnvaruclof'] = lofdict[genesym,'NFEnvar','uc']
+                    gene['NFEcntauclof'] = lofdict[genesym,'NFEcnta','uc']
+                    gene['NFEcntuuclof'] = lofdict[genesym,'NFEcntu','uc']
+                    gene['totpvalueuclof'] = lofdict[genesym,'totpvalue','uc']
+                    gene['oddsratiouclof'] = lofdict[genesym,'oddsratio','uc']
             db.genes.insert(gene, w=0)
 
     print('Done loading genes. Took %s seconds' % int(time.time() - start_time))
@@ -427,7 +613,6 @@ def load_gene_models():
     start_time = time.time()
     db.transcripts.ensure_index('transcript_id')
     db.transcripts.ensure_index('gene_id')
-    print(transcript for transcript in get_transcripts_from_gencode_gtf(gtf_file))
     print('Done indexing transcript table. Took %s seconds' % int(time.time() - start_time))
 
     # Building up gene definitions
@@ -708,25 +893,22 @@ def variant_icd_page(variant_str):
        # print(xpos)
         icdstats = lookups_mongodb.get_variant_icd(db, xpos)
         indexes = []
+        print(icdstats)
         for idx in range(0,len(icdstats)): 
             # ICD10=T81/Name=Complications of procedures, not elsewhere classified/Chapter=T/L95OR=0.97/U95OR=2.04/OR=1.40/pvalue=0.0756463/l10pval=1.12/Case=1229
             item = icdstats[idx]
             icd10 = item['icd']
             item['Code'] = icd10
             icd10info = lookups_mongodb.get_icd_info(db, icd10)
-            print(icd10info)
-            print("ICD10 INFO!!")
             if len(icd10info) == 0:
                 item['Name'] = 'NA'
                 item['Group'] = 'NA'
                 item['OR'] = 1
                 item['LOR'] = 1
                 item['L95OR'] = 1
-                item['SE'] = 1
                 item['U95OR'] = 1
                 item['pvalue'] = 1
                 item['l10pval'] = 0
-                item['log10pvalue'] = 0
                 item['Case'] = 'NA'
                 indexes.append(idx)
             else:
@@ -751,141 +933,26 @@ def variant_icd_page(variant_str):
                 item['LOR'] = format(float(item['stats'][0]['lor']), '.4g')
                 item['L95OR'] = format(float(item['stats'][0]['l95or']), '.4g')
                 item['U95OR'] = format(float(item['stats'][0]['u95or']), '.4g')
-                item['SE'] = format(float(item['stats'][0]['se']), '.4g')
                 item['pvalue'] = format(float(item['stats'][0]['pvalue']), '.4g')
                 item['l10pval'] = format(float(item['stats'][0]['log10pvalue']), '.4g')
                 item['Case'] = icd10info[0]['Case']
-                item['log10pvalue'] = item['l10pval']
                 se =  format(float(item['stats'][0]['se']), '.4g') 
                 if float(item['l10pval']) <= 1 or float(se) >= .5:
                     indexes.append(idx)
-        #for index in sorted(indexes, reverse=True):
-        #    del icdstats[index]
-        print('MAF')
-        variant['maf'] = variant['allele_freq']
+        for index in sorted(indexes, reverse=True):
+            del icdstats[index]
         print('Rendering variant: %s' % variant_str)
-        print("VARIANT STRING")
-        print(icdstats)
         return render_template(
             'variant_mongodb.html',
             variant=variant,
             icdstats=icdstats,
             consequences=consequences,
-            ordered_csqs=ordered_csqs,
-            debug_message='',
-            #plot_pval_data = [{'x': [1, 2, 3], 'y': [1,2, 3]}],
-            pval_slider_max = variant_page_pval_slider_max(icdstats),
-            plot_pval_data = variant_page_plot_pval_data(icdstats),
-            plot_lor_data  = variant_page_plot_lor_data(icdstats),
-
+            ordered_csqs=ordered_csqs
         )
     except Exception as e:
         print('Failed on variant:', variant_str, '; Error=', traceback.format_exc())
         abort(404)
 
-
-def variant_page_data_prep_sub(icdstats, sort_key='log10pvalue'):
-    plot_d_raw = collections.defaultdict(list)
-    keys = icdstats[0].keys()
-    for key in keys:
-        arrtmp = np.array([x[key] for x in icdstats])
-	if len(arrtmp.shape) == 2 and arrtmp.shape[1] == 1:
-            print(arrtmp)
-            arrtmp = np.squeeze(arrtmp)
-        plot_d_raw[key] = arrtmp
-    print(pandas.DataFrame(plot_d_raw))
-    plot_df = pandas.DataFrame(plot_d_raw).sort_values(
-        by=['Group', sort_key], ascending=[True, False]
-    )
-    plot_d_dict = collections.defaultdict(collections.defaultdict)
-    groups = sorted(set(plot_df['Group']))
-    for group in groups:
-        for key in keys:
-            plot_d_dict[group][key] = list(plot_df[plot_df['Group'] == group][key])
-    for group in groups:
-        for key in ['OR', 'LOR', 'L95OR', 'U95OR', 'pvalue', 'SE', 'log10pvalue']:
-            plot_d_dict[group][key] = [float(x) for x in plot_d_dict[group][key]]
-    for group in groups:
-        #error_bar = {'L95OR': -1, 'U95OR': 1}
-        #for key in error_bar.keys():
-        #    diff = np.array(plot_d_dict[group][key]) - np.array(plot_d_dict[group]['LOR'])
-        #    plot_d_dict[group]['d{}'.format(key)] = [0 if np.isnan(x) else np.abs(x) for x in diff]
-        plot_d_dict[group]['196SE'] = list( 1.96 * np.array(plot_d_dict[group]['SE']) )
-    for group in groups:
-        if group not in set(['Disease_outcome', 'HC','RH', 'FH', 'cancer', 'Mental_health', 'Family_history','Others', 'Health_and_medical_history', 'Psychosocial_factors', 'Digestive_health']):
-            beta_or_lor = 'BETA'
-            beta_or_lor_val = plot_d_dict[group]['LOR']
-            beta_or_lor_l95 = np.array(plot_d_dict[group]['LOR']) - 1.96 * np.array(plot_d_dict[group]['SE'])
-            beta_or_lor_u95 = np.array(plot_d_dict[group]['LOR']) + 1.96 * np.array(plot_d_dict[group]['SE'])
-        else:
-            beta_or_lor = 'OR'
-            beta_or_lor_val = np.exp(np.array(plot_d_dict[group]['LOR']))
-            beta_or_lor_l95 = np.exp(np.array(plot_d_dict[group]['LOR']) - 1.96 * np.array(plot_d_dict[group]['SE']))
-            beta_or_lor_u95 = np.exp(np.array(plot_d_dict[group]['LOR']) + 1.96 * np.array(plot_d_dict[group]['SE']))
-        group_len = len(plot_d_dict[group]['Code'])
-        plot_d_dict[group]['text'] = [
-            '{}. Case: {}, P-value: {:.3e}, {} = {:.5f} (95% [{:.5f}, {:.5f}]), SE = {:.5f}'.format(
-                ''.join([c if c != '_' else ' ' for c in x[0]]), x[1], x[2], x[3], x[4], x[5], x[6], x[7]
-            ) for x in zip(
-                plot_d_dict[group]['Name'],
-                plot_d_dict[group]['Case'],
-                plot_d_dict[group]['pvalue'],
-                [beta_or_lor] * group_len,
-                beta_or_lor_val,
-                beta_or_lor_l95,
-                beta_or_lor_u95,
-                plot_d_dict[group]['SE'],
-                #plot_d_dict[group]['L95OR'],
-                #plot_d_dict[group]['U95OR'],
-            )
-        ]
-    return plot_d_dict
-
-
-def variant_page_pval_slider_max(icdstats):
-#    return 100
-    plot_d_dict = variant_page_data_prep_sub(icdstats, sort_key='log10pvalue')
-    return np.max([np.max(v['log10pvalue']) for v in plot_d_dict.values()])
-
-
-def variant_page_plot_pval_data(icdstats):
-    plot_d_dict = variant_page_data_prep_sub(icdstats, sort_key='log10pvalue')
-    groups = plot_d_dict.keys()
-    plot_d = [{
-        'x':    plot_d_dict[group]['Code'],
-        'y':    plot_d_dict[group]['l10pval'],
-        'text': plot_d_dict[group]['text'],
-        'name': group,
-        'type': 'scatter',
-        'mode': 'markers',
-        'marker': {'size': 16, },
-        'hoverinfo':'x+text',
-    } for group in groups]
-
-    return plot_d
-
-
-def variant_page_plot_lor_data(icdstats):
-    plot_d_dict = variant_page_data_prep_sub(icdstats, sort_key='log10pvalue')
-    groups = plot_d_dict.keys()
-    plot_d = [{
-        'x':    plot_d_dict[group]['Code'],
-        'y':    plot_d_dict[group]['LOR'],
-        'error_y': {
-            'type'       : 'data',
-            'symmetric'  : 'false',
-            'array'      : plot_d_dict[group]['196SE'],
-            'arrayminus' : plot_d_dict[group]['196SE'],
-        },
-        'text': plot_d_dict[group]['text'],
-        'name': group,
-        'type': 'scatter',
-        'mode': 'markers',
-        'marker': {'size': 16, },
-        'hoverinfo':'x+text',
-    } for group in groups]
-
-    return plot_d
 
 @app.route('/coding/<icd_str>')
 def icd_page(icd_str):
@@ -971,7 +1038,6 @@ def intensity_page(affy_str):
 @app.route('/gene/<gene_id>', methods=['GET', 'POST'])
 def gene_page(gene_id):
     if gene_id in GENES_TO_CACHE:
-        print(gene_id)
         return open(os.path.join(GENE_CACHE_DIR, '{}.html'.format(gene_id))).read()
     else:
         if request.method == 'POST':
@@ -992,6 +1058,7 @@ def gene_page(gene_id):
                 genes[i] = genes[i].rstrip()
                 if len(genes[i]) == 0:
                     genes.pop(i)
+           # print(genes)
         return get_gene_page_content(gene_id)
 
 
@@ -1009,30 +1076,27 @@ class LoginForm(Form):
 def get_gene_page_content(gene_id):
     db = get_db()
     try:
-        gene = lookups_mongodb.get_gene_by_name(db, gene_id)
-        print(gene)
+        gene = lookups_mongodb.get_gene(db, gene_id)
         if gene is None:
             abort(404)
         cache_key = 't-gene-{}'.format(gene_id)
         t = cache.get(cache_key)
         if t is None:
            # print(gene_id)
-            variants_in_gene = lookups_mongodb.get_variants_in_region(db, gene['chrom'], gene['start'] - EXON_PADDING, gene['stop'] + EXON_PADDING)
+            variants_in_gene = lookups_mongodb.get_variants_in_gene(db, gene_id)
             transcripts_in_gene = lookups_mongodb.get_transcripts_in_gene(db, gene_id)
+            #print(variants_in_gene)
             # Get some canonical transcript and corresponding info
-            print(variants_in_gene)
             transcript_id = gene['canonical_transcript']
-            print(transcript_id)
             transcript = lookups_mongodb.get_transcript(db, transcript_id)
-            print(transcript)
-            print("rtanscript")
             variants_in_transcript = lookups_mongodb.get_variants_in_transcript(db, transcript_id)
-            print("variants_in_transcript")
-            coverage_stats = lookups_mongodb.get_coverage_for_bases(db, gene['xstart'] - EXON_PADDING, gene['xstop'] + EXON_PADDING)
-            #add_transcript_coordinate_to_variants(db, variants_in_transcript, transcript_id)
-            print("COVERAGE_STATS")
-           # print(coverage_stats)
-          
+            coverage_stats = lookups_mongodb.get_coverage_for_transcript(db, transcript['xstart'] - EXON_PADDING, transcript['xstop'] + EXON_PADDING)
+            add_transcript_coordinate_to_variants(db, variants_in_transcript, transcript_id)
+
+
+            #print("\n\n\n\nVariants in gene")
+            #print(variants_in_gene[0])
+
             # Add minicd info
             for i in range(0,len(variants_in_gene)):
                 variants_in_gene[i]["minicd_info"] = "info_not_found"
@@ -1044,7 +1108,7 @@ def get_gene_page_content(gene_id):
 
                     if "Name" in icd10info[0].keys():
                         variants_in_gene[i]["minicd_info"] = icd10info[0]["Name"]
-            
+
             #print ("Transcripts in gene")
             #print(transcripts_in_gene)
 
@@ -1054,7 +1118,7 @@ def get_gene_page_content(gene_id):
 
 
             t = render_template(
-                'gene_mongodb.html',
+                'gene.html',
                 gene=gene,
                 transcript=transcript,
                 variants_in_gene=variants_in_gene,
@@ -1394,5 +1458,4 @@ def apply_caching(response):
 
 if __name__ == "__main__":
     app.run(host = "0.0.0.0", port = 5000, debug=True, use_debugger=True, use_reloader=False)
-
 
