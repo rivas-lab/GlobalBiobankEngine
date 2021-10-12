@@ -1,0 +1,82 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "semantic-ui-dropdown",
+        "scope": null,
+        "escapedName": "semantic-ui-dropdown",
+        "name": "semantic-ui-dropdown",
+        "rawSpec": "",
+        "spec": "latest",
+        "type": "tag"
+      },
+      "/Users/mrivas/git/browsertmp/GlobalBiobankEngine/gbe_browser/static"
+    ]
+  ],
+  "_from": "semantic-ui-dropdown@latest",
+  "_id": "semantic-ui-dropdown@2.2.10",
+  "_inCache": true,
+  "_location": "/semantic-ui-dropdown",
+  "_nodeVersion": "5.7.0",
+  "_npmOperationalInternal": {
+    "host": "packages-18-east.internal.npmjs.com",
+    "tmp": "tmp/semantic-ui-dropdown-2.2.10.tgz_1490784738575_0.6256177928298712"
+  },
+  "_npmUser": {
+    "name": "semantic-bot",
+    "email": "bot@semantic-ui.com"
+  },
+  "_npmVersion": "3.7.5",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "semantic-ui-dropdown",
+    "scope": null,
+    "escapedName": "semantic-ui-dropdown",
+    "name": "semantic-ui-dropdown",
+    "rawSpec": "",
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "https://registry.npmjs.org/semantic-ui-dropdown/-/semantic-ui-dropdown-2.2.10.tgz",
+  "_shasum": "075a039f7877ad871a07939a299d8d49004b4e9c",
+  "_shrinkwrap": null,
+  "_spec": "semantic-ui-dropdown",
+  "_where": "/Users/mrivas/git/browsertmp/GlobalBiobankEngine/gbe_browser/static",
+  "author": {
+    "name": "Jack Lukic",
+    "email": "jack@semantic-ui.com"
+  },
+  "bugs": {
+    "url": "https://github.com/Semantic-Org/Semantic-UI/issues"
+  },
+  "dependencies": {},
+  "description": "Single component release of dropdown",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "shasum": "075a039f7877ad871a07939a299d8d49004b4e9c",
+    "tarball": "https://registry.npmjs.org/semantic-ui-dropdown/-/semantic-ui-dropdown-2.2.10.tgz"
+  },
+  "gitHead": "1e50ecb4c5f63669a1fa2052b43864dd37244130",
+  "homepage": "http://www.semantic-ui.com",
+  "license": "MIT",
+  "maintainers": [
+    {
+      "name": "semantic-bot",
+      "email": "bot@semantic-ui.com"
+    }
+  ],
+  "name": "semantic-ui-dropdown",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Semantic-Org/UI-Dropdown.git"
+  },
+  "scripts": {},
+  "title": "Semantic UI - Dropdown",
+  "version": "2.2.10"
+}
